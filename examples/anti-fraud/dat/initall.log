@@ -1,0 +1,66 @@
+
+   Database Connection Information
+
+ Database server        = DB2/LINUXX8664 9.7.5
+ SQL authorization ID   = TIGER
+ Local database alias   = AICDB
+
+DB20000I  The SQL command completed successfully.
+
+DB20000I  The SQL command completed successfully.
+
+DB20000I  The SQL command completed successfully.
+
+[2012-10-17 17:28:26]  init table init_KR_TBL_DATASRC_DEF ok
+DB20000I  The SQL command completed successfully.
+
+DB20000I  The SQL command completed successfully.
+
+DB20000I  The SQL command completed successfully.
+
+DB20000I  The SQL command completed successfully.
+
+DB20000I  The SQL command completed successfully.
+
+DB20000I  The SQL command completed successfully.
+
+DB20000I  The SQL command completed successfully.
+
+DB20000I  The SQL command completed successfully.
+
+DB20000I  The SQL command completed successfully.
+
+DB20000I  The SQL command completed successfully.
+
+DB20000I  The SQL command completed successfully.
+
+[2012-10-17 17:28:26]  init table init_KR_TBL_DATASRC_FIELD_DEF ok
+DB20000I  The SQL command completed successfully.
+
+DB20000I  The SQL command completed successfully.
+
+DB20000I  The SQL command completed successfully.
+
+[2012-10-17 17:28:26]  init table init_KR_TBL_DATASRC_INDEX_DEF ok
+DB20000I  The SQL command completed successfully.
+
+DB20000I  The SQL command completed successfully.
+
+DB20000I  The SQL command completed successfully.
+
+[2012-10-17 17:28:26]  init table init_KR_TBL_DDI_DEF ok
+DB20000I  The SQL command completed successfully.
+
+DB20000I  The SQL command completed successfully.
+
+DB20000I  The SQL command completed successfully.
+
+[2012-10-17 17:28:26]  init table init_KR_TBL_RULE ok
+DB20000I  The SQL command completed successfully.
+
+DB20000I  The SQL command completed successfully.
+
+DB20000I  The SQL command completed successfully.
+
+[2012-10-17 17:28:26]  init table init_KR_TBL_SDI_DEF ok
+DB20000I  The SQL command completed successfully.

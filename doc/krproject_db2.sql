@@ -1,7 +1,7 @@
 --==============================================================
 -- Database name:  KRDB
--- DBMS name:      IBM DB2 UDB 9.5 Common Server
--- Created on:     2012-5-30 15:51:45
+-- DBMS name:      IBM DB2 UDB 9.x Common Server
+-- Created on:     2012/10/17 16:43:43
 --==============================================================
 
 
@@ -80,10 +80,6 @@ alter table KR_TBL_SET_TYPE_DEF
 
 drop table KR_TBL_SET_TYPE_DEF;
 
-create tablespace KR_IDX_TBS;
-
-create tablespace KR_TBL_TBS;
-
 --==============================================================
 -- Table: KR_TBL_DATADIC_CFG
 --==============================================================
@@ -121,6 +117,7 @@ create table KR_TBL_DATASRC_DEF
    DATASRC_ID           INTEGER                not null,
    DATASRC_NAME         VARCHAR(30)            not null,
    DATASRC_DESC         VARCHAR(100)           not null,
+   DATASRC_MAP_FUNC     VARCHAR(50)            not null,
    DATASRC_USAGE        CHAR(1)                not null,
    MMAP_FILE_NAME       VARCHAR(100)           not null,
    SIZE_KEEP_MODE       CHAR(1)                not null,
@@ -180,7 +177,8 @@ create table KR_TBL_DDI_DEF
    DDI_DESC             VARCHAR(100)           not null,
    DDI_TYPE             CHAR(1)                not null,
    DDI_VALUE_TYPE       CHAR(1)                not null,
-   DDI_AGGR_FUNC        CHAR(50)               not null,
+   DDI_AGGR_FUNC        VARCHAR(50)            not null,
+   DDI_FREE_FUNC        VARCHAR(50)            not null,
    STATISTICS_DATASRC   INTEGER                not null,
    STATISTICS_INDEX     INTEGER                not null,
    STATISTICS_FIELD     INTEGER                not null,
@@ -219,7 +217,7 @@ create table KR_TBL_DYNDATA_FLAG
 (
    DATA_OBJECT          VARCHAR(30)            not null,
    DATA_ID              INTEGER                not null,
-   DATA_FLAG            CHAR(200)              not null
+   DATA_FLAG            VARCHAR(200)           not null
 );
 
 alter table KR_TBL_DYNDATA_FLAG
@@ -249,16 +247,17 @@ create table KR_TBL_HDI_DEF
    HDI_DESC             VARCHAR(100)           not null,
    HDI_TYPE             CHAR(1)                not null,
    HDI_VALUE_TYPE       CHAR(1)                not null,
-   HDI_AGGR_FUNC        CHAR(50)               not null,
+   HDI_AGGR_FUNC        VARCHAR(50)            not null,
+   HDI_FREE_FUNC        VARCHAR(50)            not null,
+   STATISTICS_DATASRC   INTEGER                not null,
+   STATISTICS_INDEX     INTEGER                not null,
    STATISTICS_TYPE      CHAR(1)                not null,
    STATISTICS_VALUE     INTEGER                not null,
    STATISTICS_METHOD    CHAR(1)                not null,
    HDI_STATUS           CHAR(1)                not null,
    REC_CRET_DTTM        CHAR(17)               not null,
    LST_UPD_DTTM         CHAR(17)               not null,
-   LST_UPD_USER_ID      VARCHAR(15)            not null,
-   STATISTICS_DATASRC   INTEGER                not null,
-   STATISTICS_INDEX     INTEGER                not null
+   LST_UPD_USER_ID      VARCHAR(15)            not null
 );
 
 alter table KR_TBL_HDI_DEF
@@ -275,10 +274,10 @@ create table KR_TBL_RULE
    RULE_STRING          VARCHAR(500)           not null,
    RULE_TYPE            CHAR(1)                not null,
    RULE_WEIGHT          INTEGER                not null,
-   RISK_ADVC_THRESH     NUMERIC(20,4)          not null,
-   RISK_NOTIF_THRESH    NUMERIC(20,4)          not null,
-   RISK_ALERT_THRESH    NUMERIC(20,4)          not null,
-   RISK_WARN_THRESH     NUMERIC(20,4)          not null,
+   RISK_ADVC_THRESH     DECIMAL(20,4)          not null,
+   RISK_NOTIF_THRESH    DECIMAL(20,4)          not null,
+   RISK_ALERT_THRESH    DECIMAL(20,4)          not null,
+   RISK_WARN_THRESH     DECIMAL(20,4)          not null,
    THRESH_IS_CONFIG     CHAR(4)                not null,
    RULE_STATUS          CHAR(1)                not null,
    REC_CRET_DTTM        CHAR(17)               not null,
@@ -299,7 +298,8 @@ create table KR_TBL_SDI_DEF
    SDI_DESC             VARCHAR(100)           not null,
    SDI_TYPE             CHAR(1)                not null,
    SDI_VALUE_TYPE       CHAR(1)                not null,
-   SDI_AGGR_FUNC        CHAR(50)               not null,
+   SDI_AGGR_FUNC        VARCHAR(50)            not null,
+   SDI_FREE_FUNC        VARCHAR(50)            not null,
    STATISTICS_DATASRC   INTEGER                not null,
    STATISTICS_INDEX     INTEGER                not null,
    STATISTICS_FIELD     INTEGER                not null,
@@ -333,7 +333,7 @@ alter table KR_TBL_SET_CFG
 --==============================================================
 create table KR_TBL_SET_DEF
 (
-   SET_ID               NUMERIC                not null,
+   SET_ID               INTEGER                not null,
    SET_NAME             VARCHAR(30)            not null,
    SET_DESC             VARCHAR(100)           not null,
    SET_USAGE            CHAR(2)                not null,

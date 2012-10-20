@@ -1,12 +1,4 @@
-/*==============================================================*/
-/* 检测模块使用：	c	                                        */
-/* WEB模块使用：		                                        */
-/* 采集模块使用：		                                        */
-/*==============================================================*/
-WHENEVER SQLERROR EXIT FAILURE ROLLBACK;
-
 DELETE from KR_TBL_DATASRC_FIELD_DEF;
-commit;
 
 insert into KR_TBL_DATASRC_FIELD_DEF (DATASRC_ID, FIELD_ID, FIELD_NAME, FIELD_DESC, FIELD_TYPE, FIELD_LENGTH, IS_USED_BY_FLT, IS_USED_BY_RULE, FIELD_WEB_TYPE, FIELD_TEXT_RECT, FIELD_DATADIC_RECT, FIELD_USE_RECT, FIELD_SET_RECT)
 values (1, 0, 'krdb_timestamp', '入库时间戳 ', 'L', 8, '1', '0', '3,4,7,8', ' ', 0, '  ', '16');
