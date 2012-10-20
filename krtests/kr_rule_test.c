@@ -2,7 +2,6 @@
 #include "krshm/kr_shm.h"
 #include "krcalc/kr_calc.h"
 #include "krdb/kr_db.h"
-#include "krdb/kr_db_interface.h"
 #include "krrule/kr_rule.h"
 
 #if 0

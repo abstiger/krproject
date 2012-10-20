@@ -1,42 +1,42 @@
 #include "kr_ddi.h"
 #include "kr_ddi_func.h"
 
-int kr_ddi_aggr_func(T_KRDDI *krddi, T_KRContext *calc_param)
+int kr_ddi_aggr_func(T_KRDDI *krddi, T_KRContext *krcontext)
 {
     int iResult = -1;
     
     int iAbsLoc = -1;
     int iRelLoc = -1;
     
-    time_t tCurrTransTime = kr_get_transtime(calc_param->ptCurrRec);
+    time_t tCurrTransTime = kr_get_transtime(krcontext->ptCurrRec);
     time_t tRecTransTime;
     
-    T_KRListNode *node = calc_param->ptRecList->tail;
+    T_KRListNode *node = krcontext->ptRecList->tail;
     while(node)
     {
-        calc_param->ptRecord = (T_KRRecord *)kr_list_value(node);
+        krcontext->ptRecord = (T_KRRecord *)kr_list_value(node);
         
         iAbsLoc++; /*绝对位置加一*/
         
         /*当笔是否包含校验*/
         if ((krddi->ptShmDDIDef->caStatisticsType[0] == \
                                KR_DDI_STATISTICS_EXCLUDE) && 
-            (calc_param->ptRecord == calc_param->ptCurrRec)) {
+            (krcontext->ptRecord == krcontext->ptCurrRec)) {
             KR_LOG(KR_LOGDEBUG, "Current Record is exclude");
             node = node->prev;continue;
         }
         
         /*统计数据源校验*/
-        if (((T_KRTable *)calc_param->ptRecord->ptTable)->iTableId != \
+        if (((T_KRTable *)krcontext->ptRecord->ptTable)->iTableId != \
             krddi->ptShmDDIDef->lStatisticsDatasrc) {
             KR_LOG(KR_LOGDEBUG, "current table[%d] doesn't match[%ld]!", \
-                   ((T_KRTable *)calc_param->ptRecord->ptTable)->iTableId, 
+                   ((T_KRTable *)krcontext->ptRecord->ptTable)->iTableId, 
                    krddi->ptShmDDIDef->lStatisticsDatasrc);
             node = node->prev;continue;
         }
         
         /*时间窗口校验*/
-        tRecTransTime = kr_get_transtime(calc_param->ptRecord);
+        tRecTransTime = kr_get_transtime(krcontext->ptRecord);
         if ((tCurrTransTime - tRecTransTime) > krddi->ptShmDDIDef->lStatisticsValue ) {
             KR_LOG(KR_LOGDEBUG, "Time Window [%ld] not match[%ld] [%ld]", 
                    krddi->ptShmDDIDef->lStatisticsValue, tCurrTransTime, tRecTransTime);
@@ -44,7 +44,7 @@ int kr_ddi_aggr_func(T_KRDDI *krddi, T_KRContext *calc_param)
         }
         
         /*过滤器校验*/
-        iResult = kr_calc_eval(krddi->ptDDICalc, calc_param);
+        iResult = kr_calc_eval(krddi->ptDDICalc, krcontext);
         if (iResult != 0) {
             KR_LOG(KR_LOGERROR, "kr_calc_eval[%ld] failed!", krddi->lDDIId);
 	    	return -1;
@@ -62,8 +62,8 @@ int kr_ddi_aggr_func(T_KRDDI *krddi, T_KRContext *calc_param)
         iRelLoc++; /*相对位置加一*/
                         
         /*获取数据项值*/
-        E_KRFieldType type = kr_get_field_type(calc_param->ptRecord, krddi->ptShmDDIDef->lStatisticsField);
-        void *val = kr_get_field_value(calc_param->ptRecord, krddi->ptShmDDIDef->lStatisticsField);
+        E_KRFieldType type = kr_get_field_type(krcontext->ptRecord, krddi->ptShmDDIDef->lStatisticsField);
+        void *val = kr_get_field_value(krcontext->ptRecord, krddi->ptShmDDIDef->lStatisticsField);
         U_KRFieldVal stValue = {0};
         switch(type)
         {

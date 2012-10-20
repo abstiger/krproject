@@ -11,5 +11,9 @@ EXTRA_DIST = etc/krproject.env \
              etc/krserver.cfg \
              krcalc/parser \
              interface \
-             doc 
+			 examples \
+             doc/krproject_database.doc \
+             doc/krproject_oracle.sql \
+             doc/krproject_db2.sql 
+
 

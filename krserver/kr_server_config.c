@@ -19,6 +19,15 @@ int kr_server_config_parse(char *configfile, T_KRServer *server)
     if (strlen(buf) != 0) server->serverid = kr_strdup(buf);
 printf("server->serverid=[%s]\n", server->serverid);
     
+
+    memset(buf, 0x00, sizeof(buf));
+    if (kr_config_getstring("SYSTEM", "DBMODULEFILE", buf) != 0) {
+        printf("kr_config_getstring DBMODULEFILE failure!");
+        return -1;
+    }
+    if (strlen(buf) != 0) server->dbmodulefile = kr_strdup(buf);
+printf("server->dbmodulefile=[%s]\n", server->dbmodulefile);
+
     if (kr_config_getint("SYSTEM", "DAEMONIZE", &server->daemonize) != 0) {
         printf("kr_config_getint DAEMONIZE failure!");
         return -1;
@@ -168,6 +177,7 @@ void kr_server_config_free(T_KRServer *server)
 {
     if (server->configfile) kr_free(server->configfile);
     if (server->serverid) kr_free(server->serverid);
+    if (server->dbmodulefile) kr_free(server->dbmodulefile);
     if (server->pidfile) kr_free(server->pidfile);
     if (server->logpath) kr_free(server->logpath);
     if (server->tcpbindaddr) kr_free(server->tcpbindaddr);

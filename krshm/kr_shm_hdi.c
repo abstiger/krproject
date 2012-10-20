@@ -24,8 +24,7 @@ int LoadShmHDI(T_KRShmHDI *ptShmHDI)
             KR_LOG(KR_LOGERROR, "dbsHdiCur Fetch Error!");
             nRet = -1;
             break;
-        }
-        else if (iResult == KR_DBNOTFOUND) {
+        } else if (iResult == KR_DBNOTFOUND) {
             KR_LOG(KR_LOGDEBUG, "Load [%d] HDIs Totally!", iCnt);
             break;
         }
@@ -53,6 +52,9 @@ int LoadShmHDI(T_KRShmHDI *ptShmHDI)
         strncpy(ptShmHDIDef->caHdiAggrFunc, \
                 kr_string_rtrim(stHdiCur.caOutHdiAggrFunc), \
                 sizeof(ptShmHDIDef->caHdiAggrFunc));
+        strncpy(ptShmHDIDef->caHdiFreeFunc, \
+                kr_string_rtrim(stHdiCur.caOutHdiFreeFunc), \
+                sizeof(ptShmHDIDef->caHdiFreeFunc));
         ptShmHDIDef->lStatisticsDatasrc = stHdiCur.lOutStatisticsDatasrc;
         ptShmHDIDef->lStatisticsIndex = stHdiCur.lOutStatisticsIndex;
         strncpy(ptShmHDIDef->caStatisticsType, \
@@ -92,8 +94,8 @@ int DumpShmHDI(T_KRShmHDI *ptShmHDI, FILE *fp)
     for (l=0; l<ptShmHDI->lHDIDefCnt; l++) {
         fprintf(fp, "  lHdiId=[%ld], caHdiName=[%s], caHdiDesc=[%s] \n", 
                 ptShmHDIDef->lHdiId, ptShmHDIDef->caHdiName, ptShmHDIDef->caHdiDesc);
-        fprintf(fp, "  caHdiType=[%s], caHdiValueType=[%s], caHdiAggrFunc=[%s] \n", 
-                ptShmHDIDef->caHdiType, ptShmHDIDef->caHdiValueType, ptShmHDIDef->caHdiAggrFunc);
+        fprintf(fp, "  caHdiType=[%s], caHdiValueType=[%s], caHdiAggrFunc=[%s], caHdiFreeFunc=[%s]\n", 
+                ptShmHDIDef->caHdiType, ptShmHDIDef->caHdiValueType, ptShmHDIDef->caHdiAggrFunc, ptShmHDIDef->caHdiFreeFunc);
         fprintf(fp, "  lStatisticsDatasrc=[%ld], lStatisticsIndex=[%ld] \n", 
                 ptShmHDIDef->lStatisticsDatasrc, ptShmHDIDef->lStatisticsIndex);
         fprintf(fp, "  caStatisticsType=[%s], lStatisticsValue=[%ld], caStatisticsMethod=[%s] \n", 

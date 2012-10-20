@@ -26,24 +26,14 @@ static int ViewHDIMemory(char cInd);
 static int ViewRuleMemory(char cInd);
 static void usage(void);
 static int kr_get_shmkey(void);
-static int kr_get_detectmode(void);
 
 
-/** 
- *  @brief 欺诈侦测共享内存操作main函数
- *  @param[in] argc 参数个数
- *  @param[in] argv 参数指针
- *  @return 函数处理结果
- *  @retval   0: 成功
- *  @retval  -1: 失败
- */
 int main(int argc,char* argv[])
 {
     int             ch;
     int             iInputFlag=0;
     int             iShmKey=0;
     
-    /// 获取操作指示代码
     if (argc < 2) {
         usage();
         return -1;
@@ -74,7 +64,7 @@ int main(int argc,char* argv[])
         }
     }
  
-    /// 查看帮助
+    /** show usage */
     if (N_SHM_HELP&iInputFlag) {
         usage();
     }
@@ -85,7 +75,7 @@ int main(int argc,char* argv[])
         return -1;
     }
     
-    /// 创建共享内存
+    /** create share memory */
     if (N_SHM_CREATE&iInputFlag) { 
 		printf("N_SHM_CREATE\n");
 		gptShmBuf=kr_shm_create(iShmKey);
@@ -103,7 +93,7 @@ int main(int argc,char* argv[])
         kr_shm_detach(gptShmBuf);
     }
     
-    /// 加载共享内存
+    /** load share memory */
     if (N_SHM_LOAD&iInputFlag) {
         printf("N_SHM_LOAD\n");
         gptShmBuf=kr_shm_attach(iShmKey);
@@ -120,7 +110,7 @@ int main(int argc,char* argv[])
         kr_shm_detach(gptShmBuf);
     }
     
-    /// 查看共享内存
+    /** view share memory */
     if (N_SHM_VIEW&iInputFlag) {
 		printf("N_SHM_VIEW\n");
         gptShmBuf=kr_shm_attach(iShmKey);
@@ -137,7 +127,7 @@ int main(int argc,char* argv[])
         kr_shm_detach(gptShmBuf);
     }
 
-    /// 删除共享内存
+    /** delete share memory */
     if (N_SHM_REMOVE&iInputFlag) {
 		printf("N_SHM_REMOVE\n");
         printf("Are you sure to remove cum share memory?(Y/N)\n");
@@ -162,48 +152,17 @@ static int kr_get_shmkey(void)
 {
     int     iShmKey;
     
-    if (kr_config_setfile(getenv("KR_CONFIG_FILE")) != 0) 
-    {
-        printf("kr_config_setfile [%s] failed!", getenv("KR_CONFIG_FILE"));
+    if (getenv("KR_SHMKEY") == NULL) {
+        printf("env KR_SHMKEY not set!");
         return -1;
     }
-
-    if (kr_config_getint("SYSTEM", "IPCKEY", &iShmKey) != 0) 
-    {
-        printf("kr_config_getint IPCKEY failed!");
-        return -1;
-    }
+    iShmKey = atoi(getenv("KR_SHMKEY"));
+printf("KR_SHMKEY=[%d]!", iShmKey);
 
     return iShmKey;
 }
 
-static int kr_get_detectmode(void)
-{
-    short     nDetectMode;
-    
-    if (kr_config_setfile(getenv("KR_CONFIG_FILE")) != 0) 
-    {
-        printf("kr_config_setfile [%s] failed!", getenv("KR_CONFIG_FILE"));
-        return -1;
-    }
 
-    if (kr_config_getshort("SYSTEM", "DETECTMODE", &nDetectMode) != 0) 
-    {
-        printf("kr_config_getint DETECTMODE failed!");
-        return -1;
-    }
-
-    return nDetectMode;
-}
-
-/** 
- *  @brief 导出共享内存所有数据
- *  @param[in]  无
- *  @param[out] 无
- *  @return 函数处理结果
- *  @retval   0: 成功
- *  @retval  -1: 失败
- */
 static void DumpAllMemory(void)
 {
     FILE *fp = NULL;
@@ -223,17 +182,10 @@ static void DumpAllMemory(void)
     fclose(fp);
 }
 
-/** 
- *  @brief 加载共享内存所有数据
- *  @param[in]  无
- *  @param[out] 无
- *  @return 函数处理结果
- *  @retval   0: 成功
- *  @retval  -1: 失败
- */
+
 static int LoadAllMemory(void)
 {
-    /// 连接交易数据库
+    /** connect db */
     if (dbsDbConnect( ) != 0) {
         printf("connect to db failed!\n");
         return -1;
@@ -246,20 +198,13 @@ static int LoadAllMemory(void)
         return -1;
     }
     
-    /// 断开数据库链接 
+    /** disconnect db */
     dbsDbDisconnect();
     
     return 0;
 }
 
-/** 
- *  @brief 有选择的查看共享内存块数据
- *  @param[in]  无
- *  @param[out] 无
- *  @return 函数处理结果
- *  @retval   0: 成功
- *  @retval  -1: 失败
- */
+
 static int ViewMemory(void)
 {
     char ch = '\0';
@@ -313,14 +258,6 @@ static int ViewMemory(void)
 }
 
 
-/** 
- *  @brief 查看静态数据项内容
- *  @param[in]  cInd - 主备块指示变量
- *  @param[out] 无
- *  @return 函数处理结果
- *  @retval   0: 成功
- *  @retval  -1: 失败
- */
 static int ViewSDIMemory(char cInd)
 {
     short       nCurrSecId;
@@ -329,8 +266,8 @@ static int ViewSDIMemory(char cInd)
     nCurrSecId = gptShmBuf->nSecId;
     nBackSecId = (gptShmBuf->nSecId+1)%N_MAX_SEC;
     
-    printf("sizeofshm:[%d], nDetectMode=[%d], nCurrSecId=[%d], nBackSecId=[%d]\n", \
-            sizeof(*gptShmBuf), gptShmBuf->nDetectMode, nCurrSecId, nBackSecId);
+    printf("sizeofshm:[%ld], nCurrSecId=[%d], nBackSecId=[%d]\n", \
+            sizeof(*gptShmBuf), nCurrSecId, nBackSecId);
         
     if (cInd == 'A' || cInd == 'a') {
         printf("[SDI] [Active] Memory Block:\n");
@@ -347,14 +284,6 @@ static int ViewSDIMemory(char cInd)
 }
 
 
-/** 
- *  @brief 查看动态统计量内容
- *  @param[in]  cInd - 主备块指示变量
- *  @param[out] 无
- *  @return 函数处理结果
- *  @retval   0: 成功
- *  @retval  -1: 失败
- */
 static int ViewDDIMemory(char cInd)
 {
     short       nCurrSecId;
@@ -363,8 +292,8 @@ static int ViewDDIMemory(char cInd)
     nCurrSecId = gptShmBuf->nSecId;
     nBackSecId = (gptShmBuf->nSecId+1)%N_MAX_SEC;
     
-    printf("sizeofshm:[%d], nDetectMode=[%d], nCurrSecId=[%d], nBackSecId=[%d]\n", \
-            sizeof(*gptShmBuf), gptShmBuf->nDetectMode, nCurrSecId, nBackSecId);
+    printf("sizeofshm:[%ld], nCurrSecId=[%d], nBackSecId=[%d]\n", \
+            sizeof(*gptShmBuf), nCurrSecId, nBackSecId);
     
     if (cInd == 'A' || cInd == 'a') {
         printf("[DDI] [Active] Memory Block:\n");
@@ -381,14 +310,6 @@ static int ViewDDIMemory(char cInd)
 }
 
 
-/** 
- *  @brief 查看历史统计量内容
- *  @param[in]  cInd - 主备块指示变量
- *  @param[out] 无
- *  @return 函数处理结果
- *  @retval   0: 成功
- *  @retval  -1: 失败
- */
 static int ViewHDIMemory(char cInd)
 {
     short       nCurrSecId;
@@ -397,8 +318,8 @@ static int ViewHDIMemory(char cInd)
     nCurrSecId = gptShmBuf->nSecId;
     nBackSecId = (gptShmBuf->nSecId+1)%N_MAX_SEC;
     
-    printf("sizeofshm:[%d], nDetectMode=[%d], nCurrSecId=[%d], nBackSecId=[%d]\n", \
-            sizeof(*gptShmBuf), gptShmBuf->nDetectMode, nCurrSecId, nBackSecId);
+    printf("sizeofshm:[%ld], nCurrSecId=[%d], nBackSecId=[%d]\n", \
+            sizeof(*gptShmBuf), nCurrSecId, nBackSecId);
     
     if (cInd == 'A' || cInd == 'a') {
         printf("[HDI] [Active] Memory Block:\n");
@@ -415,14 +336,6 @@ static int ViewHDIMemory(char cInd)
 }
 
 
-/** 
- *  @brief 查看规则项内容
- *  @param[in]  cInd - 主备块指示变量
- *  @param[out] 无
- *  @return 函数处理结果
- *  @retval   0: 成功
- *  @retval  -1: 失败
- */
 static int ViewRuleMemory(char cInd)
 {
     short       nCurrSecId;
@@ -431,8 +344,8 @@ static int ViewRuleMemory(char cInd)
     nCurrSecId = gptShmBuf->nSecId;
     nBackSecId = (gptShmBuf->nSecId+1)%N_MAX_SEC;
     
-    printf("sizeofshm:[%d], nDetectMode=[%d], nCurrSecId=[%d], nBackSecId=[%d]\n", \
-            sizeof(*gptShmBuf), gptShmBuf->nDetectMode, nCurrSecId, nBackSecId);
+    printf("sizeofshm:[%ld], nCurrSecId=[%d], nBackSecId=[%d]\n", \
+            sizeof(*gptShmBuf), nCurrSecId, nBackSecId);
 
     if (cInd == 'A' || cInd == 'a') {
         printf("[RULE] [Active] Memory Block:\n");
@@ -449,14 +362,6 @@ static int ViewRuleMemory(char cInd)
 }
 
 
-
-
-/** 
- *  @brief 用法帮助
- *  @param[in]  无
- *  @param[out] 无
- *  @return 无
- */
 static void usage(void)
 {
     printf("usage: afdipc [-? -C -R -L -V]");

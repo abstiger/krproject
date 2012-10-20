@@ -16,7 +16,8 @@ typedef struct _kr_server_t
     /* General */
     char *configfile;             /* krserver's configure file */
     char *serverid;               /* server identifier */
-    int daemonize;                /* True if running as a daemon */
+    char *dbmodulefile;           /* krdb's module file */
+    int  daemonize;               /* True if running as a daemon */
     char *pidfile;                /* PID file path */
     int  maxevents;               /* the max event number supported */
     int  hdicachesize;            /* cache size of historical dynamic item */

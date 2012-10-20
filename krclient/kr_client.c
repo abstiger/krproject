@@ -1,8 +1,17 @@
 #include "krutils/kr_utils.h"
 #include "krutils/kr_message.h"
-#include "krdb/kr_db_interface.h"
 #include <errno.h>
 #include <signal.h>
+
+typedef struct _kr_tradflow_t{
+	char     caOutCustNo[20+1];
+	char     caOutTransDate[8+1];
+	char     caOutTransTime[6+1];
+	char     caOutFlowNo[15+1];
+	char     caOutTransType[2+1];
+	double   dOutTransAmt;
+	char     caOutTransLoc[100+1];
+} T_KRTradFlow_1;
 
 #define UNIX_DOMAIN "/tmp/krcoordi.domain"    
 #define TCP_IP "127.0.0.1"

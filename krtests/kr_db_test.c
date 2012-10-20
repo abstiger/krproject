@@ -1,10 +1,19 @@
 #include "krutils/kr_utils.h"
 #include "krdb/kr_db.h"
-#include "krdb/kr_db_interface.h"
 #include "dbs/dbs_basopr.h"
 #include <time.h>
 
 T_KRDB *gptKRDB = NULL;
+
+typedef struct _kr_tradflow_t{
+	char     caOutCustNo[20+1];
+	char     caOutTransDate[8+1];
+	char     caOutTransTime[6+1];
+	char     caOutFlowNo[15+1];
+	char     caOutTransType[2+1];
+	double   dOutTransAmt;
+	char     caOutTransLoc[100+1];
+} T_KRTradFlow_1;
 
 static int MyPrintRecord(T_KRRecord *ptRecord, void *user_data);
 
@@ -29,7 +38,7 @@ int main(int argc,char *argv[])
 	}
 	
 	//Step 1:kr_db_startup
-	gptKRDB = kr_db_startup("AFD KRDB");
+	gptKRDB = kr_db_startup("AFD KRDB", "/home/tiger/krproject/lib/antifraud.so");
 	if (gptKRDB == NULL)
 	{
 	    KR_LOG(KR_LOGERROR, "kr_db_startup Failed!");

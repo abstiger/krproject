@@ -18,6 +18,7 @@ char gcaConfigFileName[KR_FILENAME_LEN + 1] = {0};
 static int _tIsThisEntry(const char *vspLine, const char *vspEntry);
 static void _vClearBlank(char *vspLine);
 static void _vCutContent(char *vspLine, char *vspDest);
+static char *_vReplaceEnv(const char *input, char *output);
 
 
 /*
@@ -137,6 +138,36 @@ static int _tIsThisEntry(const char *vspLine, const char *vspEntry)
 }
 
 
+static char *_vReplaceEnv(const char *input, char *output)
+{
+	char caEnv[1024] = {0};
+	char *pInput = input;
+	char *pOutput = output;
+	char *pEnv = caEnv;
+
+	while(*pInput)
+	{
+		if (*pInput == '$') {
+			memset(caEnv, 0, sizeof(caEnv));
+			if (*(++pInput) == '{') {
+				while(*(++pInput) != '}') {
+					*pEnv++ = *pInput;
+				}
+				++pInput;
+			}
+
+			if (getenv(caEnv) != NULL) {
+				memcpy(pOutput, getenv(caEnv), strlen(getenv(caEnv)));
+				pOutput += strlen(getenv(caEnv));
+			}
+		} else {
+			*pOutput++ = *pInput++;
+		}
+	}
+
+	return output;
+}
+
 /*
  *  Function:  vCutContent
  *
@@ -157,7 +188,8 @@ static void _vCutContent(char *vspLine, char *vspDest)
 
     while (vspLine[i++] != '=');
 
-    strcpy(vspDest, vspLine + i);
+    //strcpy(vspDest, vspLine + i);
+    _vReplaceEnv(vspLine + i, vspDest);
     return;
 }
 

@@ -1,17 +1,17 @@
 #include "kr_sdi.h"
 #include "kr_sdi_func.h"
 
-int kr_sdi_aggr_func(T_KRSDI *krsdi, T_KRContext *calc_param)
+int kr_sdi_aggr_func(T_KRSDI *krsdi, T_KRContext *krcontext)
 {
     int iResult = -1;
     
     int iAbsLoc = -1;
     int iRelLoc = -1;
     
-    T_KRListNode *node = calc_param->ptRecList->tail;
+    T_KRListNode *node = krcontext->ptRecList->tail;
     while(node)
     {
-        calc_param->ptRecord = (T_KRRecord *)kr_list_value(node);
+        krcontext->ptRecord = (T_KRRecord *)kr_list_value(node);
         
         iAbsLoc++; /*绝对位置加一*/
                 
@@ -25,16 +25,16 @@ int kr_sdi_aggr_func(T_KRSDI *krsdi, T_KRContext *calc_param)
         }
         
         /*统计数据源校验*/
-        if (((T_KRTable *)calc_param->ptRecord->ptTable)->iTableId != \
+        if (((T_KRTable *)krcontext->ptRecord->ptTable)->iTableId != \
             krsdi->ptShmSDIDef->lStatisticsDatasrc) {
             KR_LOG(KR_LOGDEBUG, "current table[%d] doesn't match[%ld]!", \
-                   ((T_KRTable *)calc_param->ptRecord->ptTable)->iTableId, 
+                   ((T_KRTable *)krcontext->ptRecord->ptTable)->iTableId, 
                    krsdi->ptShmSDIDef->lStatisticsDatasrc);
             node = node->prev;continue;
         }
         
         /*过滤器校验*/
-        iResult = kr_calc_eval(krsdi->ptSDICalc, calc_param);
+        iResult = kr_calc_eval(krsdi->ptSDICalc, krcontext);
         if (iResult != 0) {
             KR_LOG(KR_LOGERROR, "kr_calc_eval[%ld] failed!", krsdi->lSDIId);
 	    	return -1;
@@ -61,7 +61,7 @@ int kr_sdi_aggr_func(T_KRSDI *krsdi, T_KRContext *calc_param)
         }
             
         /*获取数据项值*/
-        void *val = kr_get_field_value(calc_param->ptRecord, \
+        void *val = kr_get_field_value(krcontext->ptRecord, \
                           krsdi->ptShmSDIDef->lStatisticsField);
         switch(krsdi->eValueType)
         {

@@ -14,20 +14,21 @@ extern void kr_engine_thread_fini(void *ctx);
 
 struct _kr_engine_t
 {
-    char             *version;    /* version of krengine */
-    char             *info;       /* information of krengine */
+    char             *version;      /* version of krengine */
+    char             *info;         /* information of krengine */
 
-    int              shmkey;      /* share memory key */
-    char             *dbname;     /* name of krdb */
-    int              hdicachesize;/* hdi cache size */
-    int              threadcnt;   /* thread pool size */
+    int              shmkey;        /* share memory key */
+    char             *dbname;       /* name of krdb */
+    char             *dbmodulename; /* name of krdb's module */
+    int              hdicachesize;  /* hdi cache size */
+    int              threadcnt;     /* thread pool size */
 
-    T_KRShareMem     *krshm;      /* share memory address */
-    T_KRDB           *krdb;       /* krdb for this server */
-    T_KRCache        *krhdicache; /* cache for hdi */
-    T_KRContextEnv   *krctxenv;   /* environment of the context */
-    T_KRContext      *krctx;      /* dynamic memory address */
-    T_KRThreadPool   *krtp;       /* thread pool */
+    T_KRShareMem     *krshm;        /* share memory address */
+    T_KRDB           *krdb;         /* krdb for this server */
+    T_KRCache        *krhdicache;   /* cache for hdi */
+    T_KRContextEnv   *krctxenv;     /* environment of the context */
+    T_KRContext      *krctx;        /* dynamic memory address */
+    T_KRThreadPool   *krtp;         /* thread pool */
 };
 
 
@@ -56,7 +57,7 @@ void kr_engine_external_shutdown(void)
 }
 
 
-T_KREngine *kr_engine_startup(int shmkey, char *dbname, int hdicachesize, int threadcnt)
+T_KREngine *kr_engine_startup(int shmkey, char *dbname, char *dbmodulename, int hdicachesize, int threadcnt)
 {
     T_KREngine *krengine = kr_calloc(sizeof(T_KREngine));
     if (krengine == NULL) {
@@ -77,6 +78,7 @@ T_KREngine *kr_engine_startup(int shmkey, char *dbname, int hdicachesize, int th
 
     krengine->shmkey = shmkey;
     krengine->dbname = kr_strdup(dbname);
+    krengine->dbmodulename = kr_strdup(dbmodulename);
     krengine->hdicachesize = hdicachesize;
     krengine->threadcnt = threadcnt;
 
@@ -89,9 +91,10 @@ T_KREngine *kr_engine_startup(int shmkey, char *dbname, int hdicachesize, int th
     }
 
     /* Start up krdb */
-    krengine->krdb = kr_db_startup(krengine->dbname);
+    krengine->krdb = kr_db_startup(krengine->dbname, krengine->dbmodulename);
     if (krengine->krdb == NULL) {
-        KR_LOG(KR_LOGERROR, "kr_db_startup [%s] failed!", krengine->dbname);
+        KR_LOG(KR_LOGERROR, "kr_db_startup [%s] [%s] failed!", \
+				krengine->dbname, krengine->dbmodulename);
         goto FAILED;
     }
 
@@ -149,6 +152,7 @@ FAILED:
         if (krengine->version) kr_free(krengine->version);
         if (krengine->info) kr_free(krengine->info);
         if (krengine->dbname) kr_free(krengine->dbname);
+        if (krengine->dbmodulename) kr_free(krengine->dbmodulename);
         kr_free(krengine);
     }
     return NULL;
@@ -179,6 +183,7 @@ void kr_engine_shutdown(T_KREngine *krengine)
     if (krengine->version) kr_free(krengine->version);
     if (krengine->info) kr_free(krengine->info);
     if (krengine->dbname) kr_free(krengine->dbname);
+    if (krengine->dbmodulename) kr_free(krengine->dbmodulename);
     kr_free(krengine);
 }
 

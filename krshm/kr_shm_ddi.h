@@ -15,6 +15,7 @@ typedef struct _kr_shm_ddi_def_t
     char        caDdiType[1+1];
     char        caDdiValueType[1+1];
     char        caDdiAggrFunc[50+1];
+    char        caDdiFreeFunc[50+1];
     long        lStatisticsDatasrc;
     long        lStatisticsIndex;
     long        lStatisticsField;

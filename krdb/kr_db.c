@@ -1,6 +1,5 @@
 #include "kr_db.h"
 #include "kr_db_mmap.h"
-#include "kr_db_interface.h"
 
 #include "dbs/dbs_basopr.h"
 #include "dbs/datasrc_def_cur.h"
@@ -9,8 +8,6 @@
 #include "dbs/datasrc_field_cnt_sel.h"
 #include "dbs/datasrc_field_def_sel.h"
 
-
-extern void *GetFldValAssignFunc(int iDataSrcId);
 
 static void _kr_db_load_field_def(T_KRFieldDef *ptFieldDef, int *piTableId);
 static int  _kr_db_build_index(T_KRDB *ptKRDB, T_KRTable *ptTable);
@@ -75,7 +72,8 @@ static void _kr_db_load_field_def(T_KRFieldDef *ptFieldDef, int *piTableId)
         }
         
         ptFieldDef[iCnt].id = stDatasrcFieldCur.lOutFieldId;
-        strncpy(ptFieldDef[iCnt].name, kr_string_rtrim(stDatasrcFieldCur.caOutFieldName), \
+        strncpy(ptFieldDef[iCnt].name, \
+                kr_string_rtrim(stDatasrcFieldCur.caOutFieldName), \
                 sizeof(ptFieldDef[iCnt].name));
         ptFieldDef[iCnt].type = stDatasrcFieldCur.caOutFieldType[0];
         ptFieldDef[iCnt].length = stDatasrcFieldCur.dOutFieldLength;
@@ -144,7 +142,7 @@ static int _kr_db_build_index(T_KRDB *ptKRDB, T_KRTable *ptTable)
     return iFlag;
 }
 
-T_KRDB* kr_db_startup(char *dbname)
+T_KRDB* kr_db_startup(char *dbname, char *modulefile)
 {
     int iFlag = 0;
     int iResult = 0;
@@ -155,9 +153,9 @@ T_KRDB* kr_db_startup(char *dbname)
     T_DatasrcFieldCntSel stDatasrcFieldCntSel = {0};
     
     /*create db first*/
-    ptKRDB = kr_create_db(dbname);
+    ptKRDB = kr_create_db(dbname, modulefile);
     if (ptKRDB == NULL) {
-        KR_LOG(KR_LOGERROR, "kr_create_db Error!");
+        KR_LOG(KR_LOGERROR, "kr_create_db %s %s error!", dbname, modulefile);
         return NULL;
     }
     
@@ -186,21 +184,41 @@ T_KRDB* kr_db_startup(char *dbname)
             KR_LOG(KR_LOGERROR, "dbsDatasrcFieldCntSel Error!");
             return NULL;
         }
-printf("[%ld][%s] [%s][%s] [%s]stDatasrcCur.caOutSizeKeepMode[%s], stDatasrcCur.lOutSizeKeepValue[%ld] [%ld]\n",\
-        stDatasrcCur.lOutDatasrcId, stDatasrcCur.caOutDatasrcName, \
-        stDatasrcCur.caOutDatasrcDesc, stDatasrcCur.caOutDatasrcUsage, \
-        stDatasrcCur.caOutMmapFileName, stDatasrcCur.caOutSizeKeepMode, \
-        stDatasrcCur.lOutSizeKeepValue, (long )stDatasrcFieldCntSel.lOutFieldCnt);        
 
-        KRFunc AssignFldValFunc = (KRFunc )GetFldValAssignFunc(stDatasrcCur.lOutDatasrcId);
-        ptTable = kr_create_table(ptKRDB, stDatasrcCur.lOutDatasrcId, \
-                                  kr_string_rtrim(stDatasrcCur.caOutDatasrcName), \
-                                  kr_string_rtrim(stDatasrcCur.caOutMmapFileName), \
-                                  stDatasrcCur.caOutSizeKeepMode[0], \
-                                  stDatasrcCur.lOutSizeKeepValue, \
-                                  (long )stDatasrcFieldCntSel.lOutFieldCnt, \
-                                  (KRFunc)_kr_db_load_field_def, \
-                                  (KRFunc)AssignFldValFunc);
+        KR_LOG(KR_LOGDEBUG, "Datasrc:Id[%ld], Name[%s], Desc[%s], Usage[%s],"
+                "MmapFileName[%s], MapFunc[%s], SizeKeepMode[%s], "
+                "SizeKeepValue[%ld] FieldCnt[%ld]\n",\
+                stDatasrcCur.lOutDatasrcId, \
+                stDatasrcCur.caOutDatasrcName, \
+                stDatasrcCur.caOutDatasrcDesc, \
+                stDatasrcCur.caOutDatasrcUsage, \
+                stDatasrcCur.caOutMmapFileName, \
+                stDatasrcCur.caOutDatasrcMapFunc, \
+                stDatasrcCur.caOutSizeKeepMode, \
+                stDatasrcCur.lOutSizeKeepValue, \
+                stDatasrcFieldCntSel.lOutFieldCnt);        
+
+        kr_string_rtrim(stDatasrcCur.caOutDatasrcName);
+        kr_string_rtrim(stDatasrcCur.caOutDatasrcMapFunc);
+        kr_string_rtrim(stDatasrcCur.caOutMmapFileName);
+        KRMapFunc MapFunc = (KRMapFunc )kr_module_symbol(
+                ptKRDB->ptModule, stDatasrcCur.caOutDatasrcMapFunc);
+        if (MapFunc == NULL) {
+            KR_LOG(KR_LOGERROR, "kr_module_symbol [%s] error!", \
+                    stDatasrcCur.caOutDatasrcMapFunc);
+            return NULL;
+        }
+
+        ptTable = kr_create_table(ptKRDB, 
+                stDatasrcCur.lOutDatasrcId, \
+                stDatasrcCur.caOutDatasrcName, \
+                stDatasrcCur.caOutDatasrcMapFunc, \
+                stDatasrcCur.caOutMmapFileName, \
+                stDatasrcCur.caOutSizeKeepMode[0], \
+                stDatasrcCur.lOutSizeKeepValue, \
+                stDatasrcFieldCntSel.lOutFieldCnt, \
+                (KRFunc)_kr_db_load_field_def, \
+                (KRMapFunc)MapFunc);
         if (ptTable == NULL) {
             KR_LOG(KR_LOGERROR, "kr_create_table [%ld] Error!", \
                     stDatasrcCur.lOutDatasrcId);
@@ -302,9 +320,6 @@ T_KRRecord *kr_db_insert(T_KRDB *ptKRDB, int iTableId, void *ptReqData)
         KR_LOG(KR_LOGERROR, "kr_insert_record [%d] Error!", iTableId);
         return NULL;
     }
-    
-    ptKRDB->ptCurrTable = ptTable;
-    ptKRDB->ptCurrRecord = ptRecord;
     
     return ptRecord;
 }

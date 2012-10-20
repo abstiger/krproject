@@ -24,8 +24,7 @@ int LoadShmSDI(T_KRShmSDI *ptShmSDI)
             KR_LOG(KR_LOGERROR, "dbsSdiCur Fetch Error!");
             nRet = -1;
             break;
-        }
-        else if (iResult == KR_DBNOTFOUND) {
+        } else if (iResult == KR_DBNOTFOUND) {
             KR_LOG(KR_LOGDEBUG, "Load [%d] SDIs Totally!", iCnt);
             break;
         }
@@ -53,6 +52,9 @@ int LoadShmSDI(T_KRShmSDI *ptShmSDI)
         strncpy(ptShmSDIDef->caSdiAggrFunc, \
                 kr_string_rtrim(stSdiCur.caOutSdiAggrFunc), \
                 sizeof(ptShmSDIDef->caSdiAggrFunc));
+        strncpy(ptShmSDIDef->caSdiFreeFunc, \
+                kr_string_rtrim(stSdiCur.caOutSdiFreeFunc), \
+                sizeof(ptShmSDIDef->caSdiFreeFunc));
         ptShmSDIDef->lStatisticsDatasrc = stSdiCur.lOutStatisticsDatasrc;
         ptShmSDIDef->lStatisticsIndex = stSdiCur.lOutStatisticsIndex;
         ptShmSDIDef->lStatisticsField = stSdiCur.lOutStatisticsField;
@@ -93,8 +95,10 @@ int DumpShmSDI(T_KRShmSDI *ptShmSDI, FILE *fp)
     for (l=0; l<ptShmSDI->lSDIDefCnt; l++) {
         fprintf(fp, "  lSdiId=[%ld], caSdiName=[%s], caSdiDesc=[%s] \n", 
                 ptShmSDIDef->lSdiId, ptShmSDIDef->caSdiName, ptShmSDIDef->caSdiDesc);
-        fprintf(fp, "  caSdiType=[%s], caSdiValueType=[%s], caSdiAggrFunc=[%s] \n", 
-                ptShmSDIDef->caSdiType, ptShmSDIDef->caSdiValueType, ptShmSDIDef->caSdiAggrFunc);
+        fprintf(fp, "  caSdiType=[%s], caSdiValueType=[%s],", 
+                ptShmSDIDef->caSdiType, ptShmSDIDef->caSdiValueType);
+        fprintf(fp, "  caSdiAggrFunc=[%s], caSdiFreeFunc=[%s] \n", 
+                ptShmSDIDef->caSdiAggrFunc, ptShmSDIDef->caSdiFreeFunc);
         fprintf(fp, "  lStatisticsDatasrc=[%ld], lStatisticsIndex=[%ld], lStatisticsField=[%ld] \n", 
                 ptShmSDIDef->lStatisticsDatasrc, ptShmSDIDef->lStatisticsIndex, ptShmSDIDef->lStatisticsField);
         fprintf(fp, "  lStatisticsLocation=[%ld], caLocationProperty=[%s] \n", 

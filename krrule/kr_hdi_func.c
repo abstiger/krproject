@@ -6,51 +6,51 @@
 #include "dbs/hdi_mon_sel.h"
 #include "dbs/hdi_flag_sel.h"
 
-int kr_hdi_aggr_func(T_KRHDI *krhdi, T_KRContext *calc_param)
+int kr_hdi_aggr_func(T_KRHDI *krhdi, T_KRContext *krcontext)
 {
     int nRet = 0;
     char caDataObject[KR_HDI_OBJECT_LEN+1];
 
-    switch(calc_param->eKeyType)
+    switch(krcontext->eKeyType)
     {
         case KR_FIELDTYPE_INT:
             snprintf(caDataObject, sizeof(caDataObject), \
-                     "%d", *(int *)calc_param->pKeyValue);
+                     "%d", *(int *)krcontext->pKeyValue);
             break;         
         case KR_FIELDTYPE_LONG:
             snprintf(caDataObject, sizeof(caDataObject), \
-                     "%ld", *(long *)calc_param->pKeyValue);
+                     "%ld", *(long *)krcontext->pKeyValue);
             break; 
         case KR_FIELDTYPE_DOUBLE:
             snprintf(caDataObject, sizeof(caDataObject), \
-                     "%lf", *(double *)calc_param->pKeyValue);
+                     "%lf", *(double *)krcontext->pKeyValue);
             break; 
         case KR_FIELDTYPE_STRING:
             snprintf(caDataObject, sizeof(caDataObject), \
-                     "%s", (char *)calc_param->pKeyValue);
+                     "%s", (char *)krcontext->pKeyValue);
             break; 
         default:
             KR_LOG(KR_LOGERROR, "Unsupported object type[%c]!", \
-                   calc_param->eKeyType);
+                   krcontext->eKeyType);
             return -1;
     }
 
     switch(krhdi->ptShmHDIDef->caStatisticsType[0])
     {
         case KR_HDI_STATISTICS_DAY:
-            nRet = kr_hdi_aggr_day(krhdi, calc_param, caDataObject);
+            nRet = kr_hdi_aggr_day(krhdi, krcontext, caDataObject);
             if (nRet != 0) {
                 KR_LOG(KR_LOGERROR, "kr_hdi_aggr_day Error!");
             }
             break;
         case KR_HDI_STATISTICS_MONTH:
-            nRet = kr_hdi_aggr_mon(krhdi, calc_param, caDataObject);
+            nRet = kr_hdi_aggr_mon(krhdi, krcontext, caDataObject);
             if (nRet != 0) {
                 KR_LOG(KR_LOGERROR, "kr_hdi_aggr_mon Error!");
             }
             break;
         case KR_HDI_STATISTICS_FLAG:
-            nRet = kr_hdi_aggr_flag(krhdi, calc_param, caDataObject);
+            nRet = kr_hdi_aggr_flag(krhdi, krcontext, caDataObject);
             if (nRet != 0) {
                 KR_LOG(KR_LOGERROR, "kr_hdi_aggr_flag Error!");
             }
@@ -65,7 +65,7 @@ int kr_hdi_aggr_func(T_KRHDI *krhdi, T_KRContext *calc_param)
 }
 
 
-int kr_hdi_aggr_day(T_KRHDI *krhdi, T_KRContext *calc_param, char *object)
+int kr_hdi_aggr_day(T_KRHDI *krhdi, T_KRContext *krcontext, char *object)
 {
     int iResult = 0;
     double dValue = 0.0;
@@ -73,7 +73,7 @@ int kr_hdi_aggr_day(T_KRHDI *krhdi, T_KRContext *calc_param, char *object)
     T_HdiDaySel stHdiDaySel = {0};
     strcpy(stHdiDaySel.caInDataObject, object);
     stHdiDaySel.lInDataId = krhdi->lHDIId;
-    time_t tEndTime = kr_get_transtime(calc_param->ptCurrRec);
+    time_t tEndTime = kr_get_transtime(krcontext->ptCurrRec);
     time_t tBeginTime = tEndTime - krhdi->ptShmHDIDef->lStatisticsValue;
     kr_ttime_to_date(tBeginTime, stHdiDaySel.caInDataDateBegin);
     kr_ttime_to_date(tEndTime, stHdiDaySel.caInDataDateEnd);
@@ -127,7 +127,7 @@ int kr_hdi_aggr_day(T_KRHDI *krhdi, T_KRContext *calc_param, char *object)
     return 0;
 }
 
-int kr_hdi_aggr_mon(T_KRHDI *krhdi, T_KRContext *calc_param, char *object)
+int kr_hdi_aggr_mon(T_KRHDI *krhdi, T_KRContext *krcontext, char *object)
 {
     int iResult = 0;
     double dValue = 0.0;
@@ -136,7 +136,7 @@ int kr_hdi_aggr_mon(T_KRHDI *krhdi, T_KRContext *calc_param, char *object)
     T_HdiMonSel stHdiMonSel = {0};
     strcpy(stHdiMonSel.caInDataObject, object);
     stHdiMonSel.lInDataId = krhdi->lHDIId;
-    time_t tEndTime = kr_get_transtime(calc_param->ptCurrRec);
+    time_t tEndTime = kr_get_transtime(krcontext->ptCurrRec);
     time_t tBeginTime = tEndTime - krhdi->ptShmHDIDef->lStatisticsValue;
     kr_ttime_to_date(tBeginTime, caDataDate);
     memcpy(stHdiMonSel.caInDataMonthBegin, caDataDate, 6);
@@ -193,7 +193,7 @@ int kr_hdi_aggr_mon(T_KRHDI *krhdi, T_KRContext *calc_param, char *object)
 }
 
 
-int kr_hdi_aggr_flag(T_KRHDI *krhdi, T_KRContext *calc_param, char *object)
+int kr_hdi_aggr_flag(T_KRHDI *krhdi, T_KRContext *krcontext, char *object)
 {
     int iResult = 0;
     char caDataDate[8+1] = {0};

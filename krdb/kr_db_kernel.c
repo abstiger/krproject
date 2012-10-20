@@ -236,6 +236,23 @@ void kr_delete_record(T_KRRecord *krrecord, T_KRTable *krtable)
 }
 
 
+static void 
+kr_assign_field_value(KRMapFunc mapfunc, T_KRRecord *krrecord, void *data)
+{
+    int fldno = 0;
+    int fldlen = 0;
+    void *fldval = NULL;
+    T_KRTable *krtable = (T_KRTable *)krrecord->ptTable;
+
+    for (fldno=0; fldno<krtable->iFieldCnt; fldno++)
+    {
+        fldlen = krtable->ptFieldDef[fldno].length;
+        fldval = kr_get_field_value(krrecord, fldno);
+        mapfunc(fldval, fldno, fldlen, data);
+    }
+}
+
+
 T_KRRecord* kr_create_record_from_data(T_KRTable *krtable, void *data)
 {
     unsigned int offset = 0;
@@ -253,7 +270,7 @@ T_KRRecord* kr_create_record_from_data(T_KRTable *krtable, void *data)
     ptRecord->ptTable  = krtable;
     ptRecord->pRecBuf = &recaddr[offset];
 
-    krtable->AssignFldValFunc(ptRecord, data);
+    kr_assign_field_value(krtable->pMapFunc, ptRecord, data);
     
     return ptRecord;
 }
@@ -285,9 +302,9 @@ void kr_destroy_record(T_KRRecord *krrecord)
 
 
 T_KRTable* kr_create_table(T_KRDB *krdb, int table_id, 
-                char *table_name, char *mmap_file, 
+                char *table_name, char *map_func_name, char *mmap_file, 
                 E_KRSizeKeepMode keep_mode, long keep_value, int field_cnt, 
-                KRFunc load_field_def_func, KRFunc assign_field_val_func)
+                KRFunc load_field_def_func, KRMapFunc map_func)
 {
     T_KRTable *ptTable = kr_calloc(sizeof(T_KRTable));
     if (ptTable == NULL) {
@@ -296,6 +313,7 @@ T_KRTable* kr_create_table(T_KRDB *krdb, int table_id,
     }
     ptTable->iTableId = table_id;
     strncpy(ptTable->caTableName, table_name, sizeof(ptTable->caTableName));
+    strncpy(ptTable->caMapFunc, map_func_name, sizeof(ptTable->caMapFunc));
     strncpy(ptTable->caMMapFile, mmap_file, sizeof(ptTable->caMMapFile));
     ptTable->eSizeKeepMode = keep_mode;
     ptTable->lSizeKeepValue = keep_value;
@@ -314,7 +332,7 @@ T_KRTable* kr_create_table(T_KRDB *krdb, int table_id,
     }
     ptTable->iRecordSize = KR_MEMALIGN(ptTable->iRecordSize);
 
-    ptTable->AssignFldValFunc = assign_field_val_func;
+    ptTable->pMapFunc = map_func;
     ptTable->uiRecordNum = 0;
     ptTable->uiRecordLoc = 0;
 
@@ -356,16 +374,21 @@ void kr_drop_table(T_KRTable *krtable)
 }
 
 
-T_KRDB* kr_create_db(char *name)
+T_KRDB* kr_create_db(char *db_name, char *module_file)
 {
     T_KRDB *ptDB = (T_KRDB *)kr_calloc(sizeof(T_KRDB));
     if (ptDB == NULL) {
         fprintf(stderr, "kr_calloc ptDB failed!\n");
         return NULL;
     }
-    strncpy(ptDB->caDBName, name, sizeof(ptDB->caDBName));
-    ptDB->ptCurrTable = NULL;
-    ptDB->ptCurrRecord = NULL;
+    strncpy(ptDB->caDBName, db_name, sizeof(ptDB->caDBName));
+    strncpy(ptDB->caModuleFile, module_file, sizeof(ptDB->caModuleFile));
+    ptDB->ptModule = kr_module_open(module_file, RTLD_LAZY);
+    if (ptDB->ptModule == NULL) {
+        fprintf(stderr, "kr_module_open %s failed!\n", module_file);
+        kr_free(ptDB);
+        return NULL;
+    }
     
     ptDB->pTableList = kr_list_new();
     kr_list_set_match(ptDB->pTableList, (KRCompareFunc )kr_tableid_match);
@@ -384,6 +407,7 @@ void kr_drop_db(T_KRDB *krdb)
     kr_list_foreach(krdb->pIndexList, (KRForEachFunc)kr_drop_db_index, krdb);
     kr_list_destroy(krdb->pIndexList);
 
+	kr_module_close(krdb->ptModule);
     kr_free(krdb);
 }
 

@@ -24,8 +24,7 @@ int LoadShmRule(T_KRShmRule *ptShmRule)
             KR_LOG(KR_LOGERROR, "dbsRuleCur Fetch Error!");
             nRet = -1;
             break;
-        }
-        else if (iResult == KR_DBNOTFOUND) {
+        } else if (iResult == KR_DBNOTFOUND) {
             KR_LOG(KR_LOGDEBUG, "Load [%d] Rules Totally!", iCnt);
             break;
         }

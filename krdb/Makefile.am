@@ -5,9 +5,7 @@ libkrdb_la_SOURCES  = \
 	 kr_db_mmap.h \
 	 kr_db_mmap.c \
      kr_db_kernel.h \
-     kr_db_kernel.c \
-     kr_db_interface.h \
-     kr_db_interface.c
+     kr_db_kernel.c 
      
 libkrdb_la_LIBADD    = $(top_srcdir)/krutils/libkrutils.la
 libkrdb_la_LIBADD   += $(top_srcdir)/dbs/libdbs.la

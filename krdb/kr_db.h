@@ -3,7 +3,7 @@
 
 #include "krdb/kr_db_kernel.h"
 
-extern T_KRDB* kr_db_startup(char *dbname);
+extern T_KRDB* kr_db_startup(char *dbname, char *modulefile);
 extern int kr_db_shutdown(T_KRDB *ptKRDB);
 extern int kr_db_load(T_KRDB *ptKRDB);
 extern T_KRRecord *kr_db_insert(T_KRDB *ptKRDB, int iTableId, void *ptReqData);

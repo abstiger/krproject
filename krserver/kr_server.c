@@ -184,7 +184,7 @@ int kr_server_initialize(void)
 	
     /* Start up krengine */
     krserver.krengine = kr_engine_startup(
-            krserver.shmkey, krserver.serverid, 
+            krserver.shmkey, krserver.serverid, krserver.dbmodulefile,
             krserver.hdicachesize, krserver.threadcnt);
     if (krserver.krengine == NULL) {
 	    KR_LOG(KR_LOGERROR, "kr_engine_startup failed!\n");

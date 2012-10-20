@@ -15,6 +15,7 @@
 #include "kr_hashtable.h"
 #include "kr_set.h"
 #include "kr_regex.h"
+#include "kr_module.h"
 #include "kr_log.h"
 #include "kr_cfgparser.h"
 #include "kr_net.h"

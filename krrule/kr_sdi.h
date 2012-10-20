@@ -11,7 +11,7 @@ typedef struct _kr_sdi_t
     T_KRShmSDIDef         *ptShmSDIDef;
     long                  lSDIId;
     T_KRCalc              *ptSDICalc;
-    E_KRFieldType           eValueType;
+    E_KRFieldType         eValueType;
     KRSDIAggrFunc         SDIAggrFunc;
     
     T_KRRecord            *ptCurrRec;
@@ -23,7 +23,7 @@ struct _kr_sdi_table_t
 {
     T_KRShmSDI            *ptShmSDIs;
     long                  lSDICnt;
-    T_KRHashTable           *ptSDITable;
+    T_KRHashTable         *ptSDITable;
     time_t                tConstructTime;
 };
 
