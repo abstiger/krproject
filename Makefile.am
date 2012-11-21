@@ -13,7 +13,9 @@ EXTRA_DIST = etc/krproject.env \
              interface \
 			 examples \
              doc/krproject_database.doc \
+             doc/krproject_db2.sql \
              doc/krproject_oracle.sql \
-             doc/krproject_db2.sql 
+             doc/krproject_mysql.sql \
+             doc/krproject_sqlite3.sql 
 
 

@@ -7,6 +7,7 @@
 #include <errno.h>
 
 #include "krutils/kr_utils.h"
+#include "dbs/dbs_basopr.h"
 #include "kr_shm.h"
 
 
@@ -96,7 +97,7 @@ short kr_shm_switch(T_KRShareMem *ptShmBuf)
 }
 
 
-short kr_shm_load(T_KRShareMem *ptShmBuf)
+short kr_shm_load(T_DbsEnv *dbsenv, T_KRShareMem *ptShmBuf)
 {
     short       nSecId = -1;
     short       nCurrSecId;
@@ -111,25 +112,25 @@ short kr_shm_load(T_KRShareMem *ptShmBuf)
     nBackSecId = (ptShmBuf->nSecId+1)%N_MAX_SEC;
             
     memset(&ptShmBuf->stShmSDI[nBackSecId], 0, sizeof(T_KRShmSDI));
-    if (LoadShmSDI(&ptShmBuf->stShmSDI[nBackSecId]) != 0) {
+    if (LoadShmSDI(dbsenv, &ptShmBuf->stShmSDI[nBackSecId]) != 0) {
         KR_LOG(KR_LOGERROR, "LoadShmSDI failed!");
         return -1;
     }
     
     memset(&ptShmBuf->stShmDDI[nBackSecId], 0, sizeof(T_KRShmDDI));
-    if (LoadShmDDI(&ptShmBuf->stShmDDI[nBackSecId]) != 0) {
+    if (LoadShmDDI(dbsenv, &ptShmBuf->stShmDDI[nBackSecId]) != 0) {
         KR_LOG(KR_LOGERROR, "LoadShmDDI failed!");
         return -1;
     }
 
     memset(&ptShmBuf->stShmHDI[nBackSecId], 0, sizeof(T_KRShmHDI));
-    if (LoadShmHDI(&ptShmBuf->stShmHDI[nBackSecId]) != 0) {
+    if (LoadShmHDI(dbsenv, &ptShmBuf->stShmHDI[nBackSecId]) != 0) {
         KR_LOG(KR_LOGERROR, "LoadShmHDI failed!");
         return -1;
     }
     
     memset(&ptShmBuf->stShmRule[nBackSecId], 0, sizeof(T_KRShmRule));
-    if (LoadShmRule(&ptShmBuf->stShmRule[nBackSecId]) != 0) {
+    if (LoadShmRule(dbsenv, &ptShmBuf->stShmRule[nBackSecId]) != 0) {
         KR_LOG(KR_LOGERROR, "LoadShmRule failed!");
         return -1;
     }

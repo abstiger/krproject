@@ -1,9 +1,9 @@
 #include "kr_shm_rule.h"
 #include "krutils/kr_utils.h"
 #include "dbs/dbs_basopr.h"
-#include "dbs/rule_cur.h"
+#include "dbs/dbs/rule_cur.h"
 
-int LoadShmRule(T_KRShmRule *ptShmRule)
+int LoadShmRule(T_DbsEnv *dbsenv, T_KRShmRule *ptShmRule)
 {
     int nRet = 0;
     int iResult = 0;
@@ -11,7 +11,7 @@ int LoadShmRule(T_KRShmRule *ptShmRule)
     T_RuleCur stRuleCur = {0};
     T_KRShmRuleDef *ptShmRuleDef = &ptShmRule->stShmRuleDef[0];
     
-    iResult = dbsRuleCur(KR_DBCUROPEN, &stRuleCur);
+    iResult = dbsRuleCur(dbsenv, KR_DBCUROPEN, &stRuleCur);
     if (iResult != KR_DBOK) {
         KR_LOG(KR_LOGERROR, "dbsRuleCur Open Error!");
         return -1;
@@ -19,7 +19,7 @@ int LoadShmRule(T_KRShmRule *ptShmRule)
     
     while(1)
     {
-        iResult=dbsRuleCur(KR_DBCURFETCH, &stRuleCur);
+        iResult=dbsRuleCur(dbsenv, KR_DBCURFETCH, &stRuleCur);
         if (iResult != KR_DBNOTFOUND && iResult != KR_DBOK) {
             KR_LOG(KR_LOGERROR, "dbsRuleCur Fetch Error!");
             nRet = -1;
@@ -64,7 +64,7 @@ int LoadShmRule(T_KRShmRule *ptShmRule)
     }
     ptShmRule->tLastLoadTime = time(NULL);
 
-    iResult = dbsRuleCur(KR_DBCURCLOSE, &stRuleCur);
+    iResult = dbsRuleCur(dbsenv, KR_DBCURCLOSE, &stRuleCur);
     if (iResult != KR_DBOK) {
         KR_LOG(KR_LOGERROR, "dbsRuleCur Close Error!");
         return -1;

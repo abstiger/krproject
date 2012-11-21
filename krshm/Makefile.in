@@ -79,7 +79,7 @@ am__uninstall_files_from_dir = { \
 am__installdirs = "$(DESTDIR)$(libdir)" "$(DESTDIR)$(bindir)"
 LTLIBRARIES = $(lib_LTLIBRARIES)
 libkrshm_la_DEPENDENCIES = $(top_srcdir)/krutils/libkrutils.la \
-	$(top_srcdir)/dbs/libdbs.la
+	$(top_srcdir)/dbs/dbs/libdbsdbs.la
 am_libkrshm_la_OBJECTS = libkrshm_la-kr_shm.lo \
 	libkrshm_la-kr_shm_sdi.lo libkrshm_la-kr_shm_ddi.lo \
 	libkrshm_la-kr_shm_hdi.lo libkrshm_la-kr_shm_rule.lo
@@ -91,7 +91,8 @@ PROGRAMS = $(bin_PROGRAMS)
 am_krshm_OBJECTS = krshm-krshm.$(OBJEXT)
 krshm_OBJECTS = $(am_krshm_OBJECTS)
 krshm_DEPENDENCIES = $(top_srcdir)/krutils/libkrutils.la \
-	$(top_srcdir)/dbs/libdbs.la $(top_srcdir)/krshm/libkrshm.la
+	$(top_srcdir)/dbs/dbs/libdbsdbs.la \
+	$(top_srcdir)/dbs/libdbsbas.la $(top_srcdir)/krshm/libkrshm.la
 krshm_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
 	--mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(krshm_LDFLAGS) \
 	$(LDFLAGS) -o $@
@@ -126,10 +127,6 @@ CFLAGS = @CFLAGS@
 CPP = @CPP@
 CPPFLAGS = @CPPFLAGS@
 CYGPATH_W = @CYGPATH_W@
-DB2CMD = @DB2CMD@
-DB2_INCLUDE = @DB2_INCLUDE@
-DB2_LDFLAGS = @DB2_LDFLAGS@
-DB2_LIBS = @DB2_LIBS@
 DEFS = @DEFS@
 DEPDIR = @DEPDIR@
 DLLTOOL = @DLLTOOL@
@@ -162,10 +159,6 @@ NM = @NM@
 NMEDIT = @NMEDIT@
 OBJDUMP = @OBJDUMP@
 OBJEXT = @OBJEXT@
-ORACLE_INCLUDE = @ORACLE_INCLUDE@
-ORACLE_LDFLAGS = @ORACLE_LDFLAGS@
-ORACLE_LIBS = @ORACLE_LIBS@
-ORACLE_PROC = @ORACLE_PROC@
 OTOOL = @OTOOL@
 OTOOL64 = @OTOOL64@
 PACKAGE = @PACKAGE@
@@ -248,12 +241,13 @@ libkrshm_la_SOURCES = \
      kr_shm_rule.c
 
 libkrshm_la_LIBADD = $(top_srcdir)/krutils/libkrutils.la \
-	$(top_srcdir)/dbs/libdbs.la
+	$(top_srcdir)/dbs/dbs/libdbsdbs.la
 libkrshm_la_LDFLAGS = 
 libkrshm_la_CPPFLAGS = 
 krshm_SOURCES = krshm.c
 krshm_LDADD = $(top_srcdir)/krutils/libkrutils.la \
-	$(top_srcdir)/dbs/libdbs.la $(top_srcdir)/krshm/libkrshm.la
+	$(top_srcdir)/dbs/dbs/libdbsdbs.la \
+	$(top_srcdir)/dbs/libdbsbas.la $(top_srcdir)/krshm/libkrshm.la
 krshm_CPPFLAGS = 
 krshm_LDFLAGS = 
 all: all-am

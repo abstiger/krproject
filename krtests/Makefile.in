@@ -81,8 +81,9 @@ kr_datetime_test_OBJECTS = $(am_kr_datetime_test_OBJECTS)
 kr_datetime_test_DEPENDENCIES = $(progs_ldadd)
 am_kr_db_test_OBJECTS = kr_db_test-kr_db_test.$(OBJEXT)
 kr_db_test_OBJECTS = $(am_kr_db_test_OBJECTS)
-kr_db_test_DEPENDENCIES = $(progs_ldadd) $(top_srcdir)/dbs/libdbs.la \
-	$(top_srcdir)/krdb/libkrdb.la
+kr_db_test_DEPENDENCIES = $(progs_ldadd) \
+	$(top_srcdir)/dbs/dbs/libdbsdbs.la \
+	$(top_srcdir)/dbs/libdbsbas.la $(top_srcdir)/krdb/libkrdb.la
 am_kr_hashtable_test_OBJECTS =  \
 	kr_hashtable_test-kr_hashtable_test.$(OBJEXT)
 kr_hashtable_test_OBJECTS = $(am_kr_hashtable_test_OBJECTS)
@@ -98,7 +99,9 @@ kr_queue_test_OBJECTS = $(am_kr_queue_test_OBJECTS)
 kr_queue_test_DEPENDENCIES = $(progs_ldadd)
 am_kr_rule_test_OBJECTS = kr_rule_test-kr_rule_test.$(OBJEXT)
 kr_rule_test_OBJECTS = $(am_kr_rule_test_OBJECTS)
-kr_rule_test_DEPENDENCIES = $(progs_ldadd) $(top_srcdir)/dbs/libdbs.la \
+kr_rule_test_DEPENDENCIES = $(progs_ldadd) \
+	$(top_srcdir)/dbs/libdbsbas.la \
+	$(top_srcdir)/dbs/dbs/libdbsdbs.la \
 	$(top_srcdir)/krdb/libkrdb.la $(top_srcdir)/krshm/libkrshm.la \
 	$(top_srcdir)/krcalc/libkrcalc.la \
 	$(top_srcdir)/krrule/libkrrule.la
@@ -158,10 +161,6 @@ CFLAGS = @CFLAGS@
 CPP = @CPP@
 CPPFLAGS = @CPPFLAGS@
 CYGPATH_W = @CYGPATH_W@
-DB2CMD = @DB2CMD@
-DB2_INCLUDE = @DB2_INCLUDE@
-DB2_LDFLAGS = @DB2_LDFLAGS@
-DB2_LIBS = @DB2_LIBS@
 DEFS = @DEFS@
 DEPDIR = @DEPDIR@
 DLLTOOL = @DLLTOOL@
@@ -194,10 +193,6 @@ NM = @NM@
 NMEDIT = @NMEDIT@
 OBJDUMP = @OBJDUMP@
 OBJEXT = @OBJEXT@
-ORACLE_INCLUDE = @ORACLE_INCLUDE@
-ORACLE_LDFLAGS = @ORACLE_LDFLAGS@
-ORACLE_LIBS = @ORACLE_LIBS@
-ORACLE_PROC = @ORACLE_PROC@
 OTOOL = @OTOOL@
 OTOOL64 = @OTOOL64@
 PACKAGE = @PACKAGE@
@@ -311,11 +306,12 @@ kr_calc_test_SOURCES = kr_calc_test.c
 kr_calc_test_LDADD = $(progs_ldadd) $(top_srcdir)/krcalc/libkrcalc.la
 kr_calc_test_CPPFLAGS = -g 
 kr_db_test_SOURCES = kr_db_test.c
-kr_db_test_LDADD = $(progs_ldadd) $(top_srcdir)/dbs/libdbs.la \
-	$(top_srcdir)/krdb/libkrdb.la
+kr_db_test_LDADD = $(progs_ldadd) $(top_srcdir)/dbs/dbs/libdbsdbs.la \
+	$(top_srcdir)/dbs/libdbsbas.la $(top_srcdir)/krdb/libkrdb.la
 kr_db_test_CPPFLAGS = -g 
 kr_rule_test_SOURCES = kr_rule_test.c
-kr_rule_test_LDADD = $(progs_ldadd) $(top_srcdir)/dbs/libdbs.la \
+kr_rule_test_LDADD = $(progs_ldadd) $(top_srcdir)/dbs/libdbsbas.la \
+	$(top_srcdir)/dbs/dbs/libdbsdbs.la \
 	$(top_srcdir)/krdb/libkrdb.la $(top_srcdir)/krshm/libkrshm.la \
 	$(top_srcdir)/krcalc/libkrcalc.la \
 	$(top_srcdir)/krrule/libkrrule.la

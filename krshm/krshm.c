@@ -186,20 +186,39 @@ static void DumpAllMemory(void)
 static int LoadAllMemory(void)
 {
     /** connect db */
-    if (dbsDbConnect( ) != 0) {
-        printf("connect to db failed!\n");
+    T_DbsEnv *dbsenv = NULL;
+    char  szDBName[128];
+    char  szDBUser[128];
+    char  szDBPass[32];
+
+    if (getenv("DBNAME") != NULL) {    
+        strncpy(szDBName, getenv("DBNAME"), sizeof(szDBName));
+    }
+    if (getenv("DBUSER") != NULL) {    
+        strncpy(szDBUser, getenv("DBUSER"), sizeof(szDBUser));
+    }
+    if (getenv("DBPASS") != NULL) {    
+        strncpy(szDBPass, getenv("DBPASS"), sizeof(szDBPass));
+    }
+    printf("DBNAME:[%s], DBUSER:[%s], DBPASS:[%s].\n", \
+            szDBName, szDBUser, szDBPass);
+
+    dbsenv = dbsConnect(szDBName, szDBUser, szDBPass);
+    if (dbsenv == NULL) {
+        printf("connect to [%s] [%s] [%s] failed!\n", 
+                szDBName, szDBUser, szDBPass);
         return -1;
     }
     
     /** load all share memory */
-    gnSecId = kr_shm_load(gptShmBuf);
+    gnSecId = kr_shm_load(dbsenv, gptShmBuf);
     if (gnSecId == -1) {
         printf("kr_shm_load failed!\n");
         return -1;
     }
     
     /** disconnect db */
-    dbsDbDisconnect();
+    dbsDisconnect(dbsenv);
     
     return 0;
 }

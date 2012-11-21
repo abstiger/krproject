@@ -2,22 +2,22 @@
 #include "kr_db_mmap.h"
 
 #include "dbs/dbs_basopr.h"
-#include "dbs/datasrc_def_cur.h"
-#include "dbs/datasrc_field_cur.h"
-#include "dbs/datasrc_index_cur.h"
-#include "dbs/datasrc_field_cnt_sel.h"
-#include "dbs/datasrc_field_def_sel.h"
+#include "dbs/dbs/datasrc_def_cur.h"
+#include "dbs/dbs/datasrc_field_cur.h"
+#include "dbs/dbs/datasrc_index_cur.h"
+#include "dbs/dbs/datasrc_field_cnt_sel.h"
+#include "dbs/dbs/datasrc_field_def_sel.h"
 
 
-static void _kr_db_load_field_def(T_KRFieldDef *ptFieldDef, int *piTableId);
-static int  _kr_db_build_index(T_KRDB *ptKRDB, T_KRTable *ptTable);
+static void _kr_db_load_field_def(T_DbsEnv *dbsenv, T_KRFieldDef *ptFieldDef, int *piTableId);
+static int  _kr_db_build_index(T_DbsEnv *dbsenv, T_KRDB *ptKRDB, T_KRTable *ptTable);
 static void _dump_node(void *key, void *value, void *user_data);
 static void _dump_index(void *p1, void *p2);
 static void _dump_record(void *p1, void *p2);
 static void _dump_table_with_index (void *p1, void *p2);
 static void _dump_table_only_record (void *p1, void *p2);
 
-int kr_db_set_field_def(T_KRFieldDef *ptFieldDef, int iTableId, int iFieldId)
+int kr_db_set_field_def(T_DbsEnv *dbsenv, T_KRFieldDef *ptFieldDef, int iTableId, int iFieldId)
 {
     int iResult = 0;
     int iFlag = 0;
@@ -26,7 +26,7 @@ int kr_db_set_field_def(T_KRFieldDef *ptFieldDef, int iTableId, int iFieldId)
     
     stDatasrcFieldDefSel.lInDatasrcId = iTableId;
     stDatasrcFieldDefSel.lInFieldId = iFieldId;
-    iResult = dbsDatasrcFieldDefSel(KR_DBSELECT, &stDatasrcFieldDefSel);
+    iResult = dbsDatasrcFieldDefSel(dbsenv, KR_DBSELECT, &stDatasrcFieldDefSel);
     if (iResult != KR_DBOK) {
         KR_LOG(KR_LOGERROR, "dbsDatasrcFieldDefSel [%d],[%d] Error!",\
                 stDatasrcFieldDefSel.lInDatasrcId, stDatasrcFieldDefSel.lInFieldId);
@@ -37,13 +37,13 @@ int kr_db_set_field_def(T_KRFieldDef *ptFieldDef, int iTableId, int iFieldId)
     strncpy(ptFieldDef->name, kr_string_rtrim(stDatasrcFieldDefSel.caOutFieldName), \
             sizeof(ptFieldDef->name));
     ptFieldDef->type = stDatasrcFieldDefSel.caOutFieldType[0];
-    ptFieldDef->length = stDatasrcFieldDefSel.dOutFieldLength;
+    ptFieldDef->length = stDatasrcFieldDefSel.lOutFieldLength;
 
     return 0;
 }
 
 
-static void _kr_db_load_field_def(T_KRFieldDef *ptFieldDef, int *piTableId)
+static void _kr_db_load_field_def(T_DbsEnv *dbsenv, T_KRFieldDef *ptFieldDef, int *piTableId)
 {
     int iResult = 0;
     int iFlag = 0;
@@ -52,7 +52,7 @@ static void _kr_db_load_field_def(T_KRFieldDef *ptFieldDef, int *piTableId)
     T_DatasrcFieldCur stDatasrcFieldCur = {0};
     
     stDatasrcFieldCur.lInDatasrcId = *piTableId;
-    iResult = dbsDatasrcFieldCur(KR_DBCUROPEN, &stDatasrcFieldCur);
+    iResult = dbsDatasrcFieldCur(dbsenv, KR_DBCUROPEN, &stDatasrcFieldCur);
     if (iResult != KR_DBOK) {
         KR_LOG(KR_LOGERROR, "dbsDatasrcFieldCur Open Error!");
         return;
@@ -60,7 +60,7 @@ static void _kr_db_load_field_def(T_KRFieldDef *ptFieldDef, int *piTableId)
     
     while(1)
     {
-        iResult=dbsDatasrcFieldCur(KR_DBCURFETCH, &stDatasrcFieldCur);
+        iResult=dbsDatasrcFieldCur(dbsenv, KR_DBCURFETCH, &stDatasrcFieldCur);
         if (iResult != KR_DBNOTFOUND && iResult != KR_DBOK) {
             KR_LOG(KR_LOGERROR, "dbsDatasrcFieldCur Fetch Error[%d]!", iResult);
             iFlag = -1;
@@ -76,14 +76,14 @@ static void _kr_db_load_field_def(T_KRFieldDef *ptFieldDef, int *piTableId)
                 kr_string_rtrim(stDatasrcFieldCur.caOutFieldName), \
                 sizeof(ptFieldDef[iCnt].name));
         ptFieldDef[iCnt].type = stDatasrcFieldCur.caOutFieldType[0];
-        ptFieldDef[iCnt].length = stDatasrcFieldCur.dOutFieldLength;
+        ptFieldDef[iCnt].length = stDatasrcFieldCur.lOutFieldLength;
         ptFieldDef[iCnt].offset = iOffset;
         iOffset += ptFieldDef[iCnt].length;
         
         iCnt++;
     }
 
-    iResult = dbsDatasrcFieldCur(KR_DBCURCLOSE, &stDatasrcFieldCur);
+    iResult = dbsDatasrcFieldCur(dbsenv, KR_DBCURCLOSE, &stDatasrcFieldCur);
     if (iResult != KR_DBOK) {
         KR_LOG(KR_LOGERROR, "dbsDatasrcFieldCur Close Error!");
         return;
@@ -91,7 +91,7 @@ static void _kr_db_load_field_def(T_KRFieldDef *ptFieldDef, int *piTableId)
 }
 
 
-static int _kr_db_build_index(T_KRDB *ptKRDB, T_KRTable *ptTable)
+static int _kr_db_build_index(T_DbsEnv *dbsenv, T_KRDB *ptKRDB, T_KRTable *ptTable)
 {
     int iFlag = 0;
     int iResult = 0;
@@ -100,7 +100,7 @@ static int _kr_db_build_index(T_KRDB *ptKRDB, T_KRTable *ptTable)
     
     
     stDatasrcIndexCur.lInDatasrcId = ptTable->iTableId;
-    iResult = dbsDatasrcIndexCur(KR_DBCUROPEN, &stDatasrcIndexCur);
+    iResult = dbsDatasrcIndexCur(dbsenv, KR_DBCUROPEN, &stDatasrcIndexCur);
     if (iResult != KR_DBOK) {
         KR_LOG(KR_LOGERROR, "dbsDatasrcIndexCur Open Error!");
         return -1;
@@ -108,7 +108,7 @@ static int _kr_db_build_index(T_KRDB *ptKRDB, T_KRTable *ptTable)
     
     while(1)
     {
-        iResult=dbsDatasrcIndexCur(KR_DBCURFETCH, &stDatasrcIndexCur);
+        iResult=dbsDatasrcIndexCur(dbsenv, KR_DBCURFETCH, &stDatasrcIndexCur);
         if (iResult != KR_DBNOTFOUND && iResult != KR_DBOK) {
             KR_LOG(KR_LOGERROR, "dbsDatasrcIndexCur Fetch Error[%d]!", iResult);
             iFlag = -1;
@@ -133,7 +133,7 @@ static int _kr_db_build_index(T_KRDB *ptKRDB, T_KRTable *ptTable)
         iCnt++;
     }
 
-    iResult = dbsDatasrcIndexCur(KR_DBCURCLOSE, &stDatasrcIndexCur);
+    iResult = dbsDatasrcIndexCur(dbsenv, KR_DBCURCLOSE, &stDatasrcIndexCur);
     if (iResult != KR_DBOK) {
         KR_LOG(KR_LOGERROR, "dbsDatasrcIndexCur Close Error!");
         return -1;
@@ -142,7 +142,7 @@ static int _kr_db_build_index(T_KRDB *ptKRDB, T_KRTable *ptTable)
     return iFlag;
 }
 
-T_KRDB* kr_db_startup(char *dbname, char *modulefile)
+T_KRDB* kr_db_startup(T_DbsEnv *dbsenv, char *dbname, char *modulefile)
 {
     int iFlag = 0;
     int iResult = 0;
@@ -160,17 +160,17 @@ T_KRDB* kr_db_startup(char *dbname, char *modulefile)
     }
     
     /*create tables and indexes then*/
-    iResult = dbsDatasrcDefCur(KR_DBCUROPEN, &stDatasrcCur);
+    iResult = dbsDatasrcDefCur(dbsenv, KR_DBCUROPEN, &stDatasrcCur);
     if (iResult != KR_DBOK) {
-        KR_LOG(KR_LOGERROR, "dbsDatasrcDefCur Open Error!");
+        KR_LOG(KR_LOGERROR, "dbsDatasrcDefCur Open Error[%d]!", iResult);
         return NULL;
     }
     
     while(1)
     {
-        iResult=dbsDatasrcDefCur(KR_DBCURFETCH, &stDatasrcCur);
+        iResult=dbsDatasrcDefCur(dbsenv, KR_DBCURFETCH, &stDatasrcCur);
         if (iResult != KR_DBNOTFOUND && iResult != KR_DBOK) {
-            KR_LOG(KR_LOGERROR, "dbsDatasrcDefCur Fetch Error!");
+            KR_LOG(KR_LOGERROR, "dbsDatasrcDefCur Fetch Error[%d]!", iResult);
             return NULL;
         } else if (iResult == KR_DBNOTFOUND) {
             KR_LOG(KR_LOGDEBUG, "Create [%d] Tables Totally!", iCnt);
@@ -179,7 +179,7 @@ T_KRDB* kr_db_startup(char *dbname, char *modulefile)
         
         dbsDatasrcFieldCntSelInit(&stDatasrcFieldCntSel);
         stDatasrcFieldCntSel.lInDatasrcId = stDatasrcCur.lOutDatasrcId;
-        iResult=dbsDatasrcFieldCntSel(KR_DBSELECT, &stDatasrcFieldCntSel);
+        iResult=dbsDatasrcFieldCntSel(dbsenv, KR_DBSELECT, &stDatasrcFieldCntSel);
         if (iResult != KR_DBOK) {
             KR_LOG(KR_LOGERROR, "dbsDatasrcFieldCntSel Error!");
             return NULL;
@@ -217,15 +217,16 @@ T_KRDB* kr_db_startup(char *dbname, char *modulefile)
                 stDatasrcCur.caOutSizeKeepMode[0], \
                 stDatasrcCur.lOutSizeKeepValue, \
                 stDatasrcFieldCntSel.lOutFieldCnt, \
-                (KRFunc)_kr_db_load_field_def, \
-                (KRMapFunc)MapFunc);
+                (KRLoadDefFunc)_kr_db_load_field_def, \
+                (KRMapFunc)MapFunc,
+                dbsenv);
         if (ptTable == NULL) {
             KR_LOG(KR_LOGERROR, "kr_create_table [%ld] Error!", \
                     stDatasrcCur.lOutDatasrcId);
             return NULL;
         }
                            
-        iResult = _kr_db_build_index(ptKRDB, ptTable);
+        iResult = _kr_db_build_index(dbsenv, ptKRDB, ptTable);
         if (iResult != 0) {
             KR_LOG(KR_LOGERROR, "_kr_db_build_index [%ld] Error!", \
                     stDatasrcCur.lOutDatasrcId);
@@ -235,7 +236,7 @@ T_KRDB* kr_db_startup(char *dbname, char *modulefile)
         iCnt++;
     }
 
-    iResult = dbsDatasrcDefCur(KR_DBCURCLOSE, &stDatasrcCur);
+    iResult = dbsDatasrcDefCur(dbsenv, KR_DBCURCLOSE, &stDatasrcCur);
     if (iResult != KR_DBOK) {
         KR_LOG(KR_LOGERROR, "dbsDatasrcDefCur Close Error!");
         return NULL;

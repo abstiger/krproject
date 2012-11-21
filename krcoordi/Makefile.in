@@ -54,11 +54,7 @@ am_krcoordi_OBJECTS = krcoordi-kr_coordi.$(OBJEXT) \
 	krcoordi-kr_coordi_handler.$(OBJEXT) \
 	krcoordi-kr_coordi_config.$(OBJEXT)
 krcoordi_OBJECTS = $(am_krcoordi_OBJECTS)
-krcoordi_DEPENDENCIES = $(top_srcdir)/krutils/libkrutils.la \
-	$(top_srcdir)/dbs/libdbs.la $(top_srcdir)/krshm/libkrshm.la \
-	$(top_srcdir)/krcalc/libkrcalc.la \
-	$(top_srcdir)/krdb/libkrdb.la \
-	$(top_srcdir)/krrule/libkrrule.la
+krcoordi_DEPENDENCIES = $(top_srcdir)/krutils/libkrutils.la
 krcoordi_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
 	--mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(krcoordi_LDFLAGS) \
 	$(LDFLAGS) -o $@
@@ -93,10 +89,6 @@ CFLAGS = @CFLAGS@
 CPP = @CPP@
 CPPFLAGS = @CPPFLAGS@
 CYGPATH_W = @CYGPATH_W@
-DB2CMD = @DB2CMD@
-DB2_INCLUDE = @DB2_INCLUDE@
-DB2_LDFLAGS = @DB2_LDFLAGS@
-DB2_LIBS = @DB2_LIBS@
 DEFS = @DEFS@
 DEPDIR = @DEPDIR@
 DLLTOOL = @DLLTOOL@
@@ -129,10 +121,6 @@ NM = @NM@
 NMEDIT = @NMEDIT@
 OBJDUMP = @OBJDUMP@
 OBJEXT = @OBJEXT@
-ORACLE_INCLUDE = @ORACLE_INCLUDE@
-ORACLE_LDFLAGS = @ORACLE_LDFLAGS@
-ORACLE_LIBS = @ORACLE_LIBS@
-ORACLE_PROC = @ORACLE_PROC@
 OTOOL = @OTOOL@
 OTOOL64 = @OTOOL64@
 PACKAGE = @PACKAGE@
@@ -206,11 +194,7 @@ krcoordi_SOURCES = kr_coordi.h \
                      kr_coordi_handler.c \
                      kr_coordi_config.c 
 
-krcoordi_LDADD = $(top_srcdir)/krutils/libkrutils.la \
-	$(top_srcdir)/dbs/libdbs.la $(top_srcdir)/krshm/libkrshm.la \
-	$(top_srcdir)/krcalc/libkrcalc.la \
-	$(top_srcdir)/krdb/libkrdb.la \
-	$(top_srcdir)/krrule/libkrrule.la
+krcoordi_LDADD = $(top_srcdir)/krutils/libkrutils.la
 krcoordi_LDFLAGS = 
 krcoordi_CPPFLAGS = 
 all: all-am

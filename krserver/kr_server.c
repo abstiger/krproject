@@ -170,20 +170,10 @@ int kr_server_initialize(void)
         kr_server_daemonize();
     }
     
-    /* Set log file and level */
-    kr_log_set_path(krserver.logpath);
-    kr_log_set_name(krserver.serverid);
-    kr_log_set_level(krserver.loglevel);
-    
-    /* Connect db */
-    ret = dbsDbConnect();
-	if (ret != 0) {
-	    KR_LOG(KR_LOGERROR, "dbsDbConnect failed!\n");
-        return -1;
-	}
-	
     /* Start up krengine */
     krserver.krengine = kr_engine_startup(
+            krserver.dbname, krserver.dbuser, krserver.dbpass,
+            krserver.logpath, krserver.serverid, krserver.loglevel,
             krserver.shmkey, krserver.serverid, krserver.dbmodulefile,
             krserver.hdicachesize, krserver.threadcnt);
     if (krserver.krengine == NULL) {
@@ -276,9 +266,6 @@ int kr_server_finalize()
 	/* Server config free */
 	kr_server_config_dump(&krserver, stdout);
 	kr_server_config_free(&krserver);
-	
-	/* disconnect db */
-	dbsDbDisconnect();
 	
 	return 0;
 }

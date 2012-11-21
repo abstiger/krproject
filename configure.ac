@@ -11,8 +11,8 @@ AM_INIT_AUTOMAKE([foreign -Wall -Werror])
 LT_INIT(disable_static)
 
 # Check if we will compile with Oracle
-AC_CHECK_ORACLE
-AC_CHECK_DB2
+#AC_CHECK_ORACLE
+#AC_CHECK_DB2
 
 # Checks for programs.
 AC_PROG_CC
@@ -38,8 +38,7 @@ AC_CONFIG_FILES([
 Makefile 
 krutils/Makefile 
 dbs/Makefile 
-dbs/oracle/Makefile 
-dbs/db2/Makefile 
+dbs/dbs/Makefile 
 krshm/Makefile 
 krcalc/Makefile 
 krdb/Makefile 

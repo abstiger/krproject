@@ -1,21 +1,23 @@
+begin;
+
 DELETE from KR_TBL_DATASRC_FIELD_DEF;
 
 insert into KR_TBL_DATASRC_FIELD_DEF (DATASRC_ID, FIELD_ID, FIELD_NAME, FIELD_DESC, FIELD_TYPE, FIELD_LENGTH, IS_USED_BY_FLT, IS_USED_BY_RULE, FIELD_WEB_TYPE, FIELD_TEXT_RECT, FIELD_DATADIC_RECT, FIELD_USE_RECT, FIELD_SET_RECT)
-values (1, 0, 'krdb_timestamp', '»Îø‚ ±º‰¥¡ ', 'L', 8, '1', '0', '3,4,7,8', ' ', 0, '  ', '16');
+values (1, 0, 'krdb_timestamp', 'ÂÖ•Â∫ìÊó∂Èó¥Êà≥ ', 'L', 8, '1', '0', '3,4,7,8', ' ', 0, '  ', '16');
 insert into KR_TBL_DATASRC_FIELD_DEF (DATASRC_ID, FIELD_ID, FIELD_NAME, FIELD_DESC, FIELD_TYPE, FIELD_LENGTH, IS_USED_BY_FLT, IS_USED_BY_RULE, FIELD_WEB_TYPE, FIELD_TEXT_RECT, FIELD_DATADIC_RECT, FIELD_USE_RECT, FIELD_SET_RECT)
-values (1, 1, 'trans_timestamp', 'Ωª“◊ ±º‰¥¡ ', 'L', 8, '1', '0', '3,4,7,8', ' ', 0, '  ', '16');
+values (1, 1, 'trans_timestamp', '‰∫§ÊòìÊó∂Èó¥Êà≥ ', 'L', 8, '1', '0', '3,4,7,8', ' ', 0, '  ', '16');
 insert into KR_TBL_DATASRC_FIELD_DEF (DATASRC_ID, FIELD_ID, FIELD_NAME, FIELD_DESC, FIELD_TYPE, FIELD_LENGTH, IS_USED_BY_FLT, IS_USED_BY_RULE, FIELD_WEB_TYPE, FIELD_TEXT_RECT, FIELD_DATADIC_RECT, FIELD_USE_RECT, FIELD_SET_RECT)
-values (1, 2, 'cust_no', 'øÕªß∫≈ ', 'S', 21, '1', '0', '3,4,7,8', ' ', 0, '  ', '16');
+values (1, 2, 'cust_no', 'ÂÆ¢Êà∑Âè∑ ', 'S', 21, '1', '0', '3,4,7,8', ' ', 0, '  ', '16');
 insert into KR_TBL_DATASRC_FIELD_DEF (DATASRC_ID, FIELD_ID, FIELD_NAME, FIELD_DESC, FIELD_TYPE, FIELD_LENGTH, IS_USED_BY_FLT, IS_USED_BY_RULE, FIELD_WEB_TYPE, FIELD_TEXT_RECT, FIELD_DATADIC_RECT, FIELD_USE_RECT, FIELD_SET_RECT)
-values (1, 3, 'trans_date', 'Ωª“◊»’∆⁄ ', 'S', 9, '1', '0', '3,4,7,8', ' ', 0, '  ', '12');
+values (1, 3, 'trans_date', '‰∫§ÊòìÊó•Êúü ', 'S', 9, '1', '0', '3,4,7,8', ' ', 0, '  ', '12');
 insert into KR_TBL_DATASRC_FIELD_DEF (DATASRC_ID, FIELD_ID, FIELD_NAME, FIELD_DESC, FIELD_TYPE, FIELD_LENGTH, IS_USED_BY_FLT, IS_USED_BY_RULE, FIELD_WEB_TYPE, FIELD_TEXT_RECT, FIELD_DATADIC_RECT, FIELD_USE_RECT, FIELD_SET_RECT)
-values (1, 4, 'trans_time', 'Ωª“◊ ±º‰ ', 'S', 7, '1', '0', '3,4,7,8', ' ', 0, '  ', '14');
+values (1, 4, 'trans_time', '‰∫§ÊòìÊó∂Èó¥ ', 'S', 7, '1', '0', '3,4,7,8', ' ', 0, '  ', '14');
 insert into KR_TBL_DATASRC_FIELD_DEF (DATASRC_ID, FIELD_ID, FIELD_NAME, FIELD_DESC, FIELD_TYPE, FIELD_LENGTH, IS_USED_BY_FLT, IS_USED_BY_RULE, FIELD_WEB_TYPE, FIELD_TEXT_RECT, FIELD_DATADIC_RECT, FIELD_USE_RECT, FIELD_SET_RECT)
-values (1, 5, 'flow_no', 'Ωª“◊¡˜ÀÆ∫≈ ', 'S',  16, '1', '0', '3,4,7,8', ' ', 38, '  ', '  ');
+values (1, 5, 'flow_no', '‰∫§ÊòìÊµÅÊ∞¥Âè∑ ', 'S',  16, '1', '0', '3,4,7,8', ' ', 38, '  ', '  ');
 insert into KR_TBL_DATASRC_FIELD_DEF (DATASRC_ID, FIELD_ID, FIELD_NAME, FIELD_DESC, FIELD_TYPE, FIELD_LENGTH, IS_USED_BY_FLT, IS_USED_BY_RULE, FIELD_WEB_TYPE, FIELD_TEXT_RECT, FIELD_DATADIC_RECT, FIELD_USE_RECT, FIELD_SET_RECT)
-values (1, 6, 'trans_type', 'Ωª“◊¿‡–Õ ', 'S', 3, '1', '0', '3,4,7,8', ' ', 19, '  ', '04');
+values (1, 6, 'trans_type', '‰∫§ÊòìÁ±ªÂûã ', 'S', 3, '1', '0', '3,4,7,8', ' ', 19, '  ', '04');
 insert into KR_TBL_DATASRC_FIELD_DEF (DATASRC_ID, FIELD_ID, FIELD_NAME, FIELD_DESC, FIELD_TYPE, FIELD_LENGTH, IS_USED_BY_FLT, IS_USED_BY_RULE, FIELD_WEB_TYPE, FIELD_TEXT_RECT, FIELD_DATADIC_RECT, FIELD_USE_RECT, FIELD_SET_RECT)
-values (1, 7, 'trans_amt', 'Ωª“◊Ω∂Ó(»À√Ò±“) ', 'D', 8, '1', '0', '1,2,3,4,5,6,9', ' ', 0, '  ', '  ');
+values (1, 7, 'trans_amt', '‰∫§ÊòìÈáëÈ¢ù(‰∫∫Ê∞ëÂ∏Å) ', 'D', 8, '1', '0', '1,2,3,4,5,6,9', ' ', 0, '  ', '  ');
 insert into KR_TBL_DATASRC_FIELD_DEF (DATASRC_ID, FIELD_ID, FIELD_NAME, FIELD_DESC, FIELD_TYPE, FIELD_LENGTH, IS_USED_BY_FLT, IS_USED_BY_RULE, FIELD_WEB_TYPE, FIELD_TEXT_RECT, FIELD_DATADIC_RECT, FIELD_USE_RECT, FIELD_SET_RECT)
-values (1, 8, 'trans_loc', 'Ωª“◊µÿµ„ ', 'S', 101, '1', '0', '3,4,7,8,9', ' ', 0, '  ', '  ');
+values (1, 8, 'trans_loc', '‰∫§ÊòìÂú∞ÁÇπ ', 'S', 101, '1', '0', '3,4,7,8,9', ' ', 0, '  ', '  ');
 commit;

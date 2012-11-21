@@ -4,6 +4,9 @@
 -- Created on:     2012/10/17 16:43:43
 --==============================================================
 
+-- db2 create db krdb using codeset gbk territory CN collate using identity pagesize 16 k
+-- db2 connect to krdb
+-- db2 grant dbadm on database to user tiger
 
 alter table KR_TBL_DATADIC_CFG
    drop primary key;

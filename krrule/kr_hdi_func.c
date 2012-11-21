@@ -2,9 +2,9 @@
 #include "kr_hdi_func.h"
 
 #include "dbs/dbs_basopr.h"
-#include "dbs/hdi_day_sel.h"
-#include "dbs/hdi_mon_sel.h"
-#include "dbs/hdi_flag_sel.h"
+#include "dbs/dbs/hdi_day_sel.h"
+#include "dbs/dbs/hdi_mon_sel.h"
+#include "dbs/dbs/hdi_flag_sel.h"
 
 int kr_hdi_aggr_func(T_KRHDI *krhdi, T_KRContext *krcontext)
 {
@@ -69,6 +69,7 @@ int kr_hdi_aggr_day(T_KRHDI *krhdi, T_KRContext *krcontext, char *object)
 {
     int iResult = 0;
     double dValue = 0.0;
+    T_DbsEnv *dbsenv = krcontext->ptEnv->ptDbs;
     
     T_HdiDaySel stHdiDaySel = {0};
     strcpy(stHdiDaySel.caInDataObject, object);
@@ -77,7 +78,7 @@ int kr_hdi_aggr_day(T_KRHDI *krhdi, T_KRContext *krcontext, char *object)
     time_t tBeginTime = tEndTime - krhdi->ptShmHDIDef->lStatisticsValue;
     kr_ttime_to_date(tBeginTime, stHdiDaySel.caInDataDateBegin);
     kr_ttime_to_date(tEndTime, stHdiDaySel.caInDataDateEnd);
-    iResult = dbsHdiDaySel(KR_DBSELECT, &stHdiDaySel);
+    iResult = dbsHdiDaySel(dbsenv, KR_DBSELECT, &stHdiDaySel);
     if (iResult != KR_DBOK && iResult != KR_DBNOTFOUND)
     {
         KR_LOG(KR_LOGERROR, "dbsHdiDaySel [%s],[%ld],[%s],[%s] Error!",\
@@ -132,6 +133,7 @@ int kr_hdi_aggr_mon(T_KRHDI *krhdi, T_KRContext *krcontext, char *object)
     int iResult = 0;
     double dValue = 0.0;
     char caDataDate[8+1] = {0};
+    T_DbsEnv *dbsenv = krcontext->ptEnv->ptDbs;
     
     T_HdiMonSel stHdiMonSel = {0};
     strcpy(stHdiMonSel.caInDataObject, object);
@@ -142,7 +144,7 @@ int kr_hdi_aggr_mon(T_KRHDI *krhdi, T_KRContext *krcontext, char *object)
     memcpy(stHdiMonSel.caInDataMonthBegin, caDataDate, 6);
     kr_ttime_to_date(tEndTime, caDataDate);
     memcpy(stHdiMonSel.caInDataMonthEnd, caDataDate, 6);
-    iResult = dbsHdiMonSel(KR_DBSELECT, &stHdiMonSel);
+    iResult = dbsHdiMonSel(dbsenv, KR_DBSELECT, &stHdiMonSel);
     if (iResult != KR_DBOK && iResult != KR_DBNOTFOUND)
     {
         KR_LOG(KR_LOGERROR, "dbsHdiMonSel [%s],[%ld],[%s],[%s] Error!",\
@@ -197,11 +199,12 @@ int kr_hdi_aggr_flag(T_KRHDI *krhdi, T_KRContext *krcontext, char *object)
 {
     int iResult = 0;
     char caDataDate[8+1] = {0};
+    T_DbsEnv *dbsenv = krcontext->ptEnv->ptDbs;
     
     T_HdiFlagSel stHdiFlagSel = {0};
     strcpy(stHdiFlagSel.caInDataObject, object);
     stHdiFlagSel.lInDataId = krhdi->lHDIId;
-    iResult = dbsHdiFlagSel(KR_DBSELECT, &stHdiFlagSel);
+    iResult = dbsHdiFlagSel(dbsenv, KR_DBSELECT, &stHdiFlagSel);
     if (iResult != KR_DBOK && iResult != KR_DBNOTFOUND)
     {
         KR_LOG(KR_LOGERROR, "dbsHdiFlagSel [%s],[%ld] Error!",\

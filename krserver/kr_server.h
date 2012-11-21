@@ -30,6 +30,9 @@ typedef struct _kr_server_t
     
     int threadcnt;                /* Thread pool size, 0: no threads*/
     int shutdown;                 /* Shutdown flag */
+    char *dbname;                 /* data source name */
+    char *dbuser;                 /* database user */
+    char *dbpass;                 /* database password */
 
     /* Networking */
     int tcpport;                  /* TCP listening port */

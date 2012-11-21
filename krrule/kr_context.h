@@ -2,6 +2,7 @@
 #define __KR_CONTEXT_H__
 
 #include "krutils/kr_utils.h"
+#include "dbs/dbs_basopr.h"
 #include "krshm/kr_shm.h"
 #include "krdb/kr_db.h"
 #include "kr_hdi_cache.h"
@@ -11,6 +12,7 @@
 /* static environment, set while init */
 typedef struct _kr_context_env_t
 {
+    T_DbsEnv         *ptDbs;      /* pointer to database connection */
     T_KRShareMem     *ptShm;      /* pointer to share memory */
     T_KRDB           *ptKRDB;     /* pointer to krdb */
     T_KRCache        *ptHDICache; /* pointer to hdi cache */

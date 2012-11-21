@@ -15,6 +15,7 @@
 
 @SET_MAKE@
 
+
 VPATH = @srcdir@
 pkgdatadir = $(datadir)/@PACKAGE@
 pkgincludedir = $(includedir)/@PACKAGE@
@@ -34,6 +35,7 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
+noinst_PROGRAMS = rapodbc$(EXEEXT)
 subdir = dbs
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
@@ -76,25 +78,19 @@ am__uninstall_files_from_dir = { \
   }
 am__installdirs = "$(DESTDIR)$(libdir)"
 LTLIBRARIES = $(lib_LTLIBRARIES)
-libdbs_la_LIBADD =
-am_libdbs_la_OBJECTS = libdbs_la-dbs_basopr.lo \
-	libdbs_la-t_dbs101_datasrc_def_cur.lo \
-	libdbs_la-t_dbs102_datasrc_index_cur.lo \
-	libdbs_la-t_dbs103_datasrc_field_cur.lo \
-	libdbs_la-t_dbs104_datasrc_field_cnt_sel.lo \
-	libdbs_la-t_dbs105_datasrc_field_def_sel.lo \
-	libdbs_la-t_dbs201_set_def_sel.lo \
-	libdbs_la-t_dbs202_set_cfg_cur.lo \
-	libdbs_la-t_dbs301_sdi_cur.lo libdbs_la-t_dbs302_ddi_cur.lo \
-	libdbs_la-t_dbs303_hdi_cur.lo \
-	libdbs_la-t_dbs304_hdi_day_sel.lo \
-	libdbs_la-t_dbs305_hdi_mon_sel.lo \
-	libdbs_la-t_dbs306_hdi_flag_sel.lo \
-	libdbs_la-t_dbs401_rule_cur.lo
-libdbs_la_OBJECTS = $(am_libdbs_la_OBJECTS)
-libdbs_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
+libdbsbas_la_DEPENDENCIES =
+am_libdbsbas_la_OBJECTS = libdbsbas_la-dbs_basopr.lo
+libdbsbas_la_OBJECTS = $(am_libdbsbas_la_OBJECTS)
+libdbsbas_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
-	$(libdbs_la_LDFLAGS) $(LDFLAGS) -o $@
+	$(libdbsbas_la_LDFLAGS) $(LDFLAGS) -o $@
+PROGRAMS = $(noinst_PROGRAMS)
+am_rapodbc_OBJECTS = rapodbc-rapodbc.$(OBJEXT)
+rapodbc_OBJECTS = $(am_rapodbc_OBJECTS)
+rapodbc_LDADD = $(LDADD)
+rapodbc_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
+	--mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(rapodbc_LDFLAGS) \
+	$(LDFLAGS) -o $@
 DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
@@ -108,8 +104,8 @@ CCLD = $(CC)
 LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
 	--mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) \
 	$(LDFLAGS) -o $@
-SOURCES = $(libdbs_la_SOURCES)
-DIST_SOURCES = $(libdbs_la_SOURCES)
+SOURCES = $(libdbsbas_la_SOURCES) $(rapodbc_SOURCES)
+DIST_SOURCES = $(libdbsbas_la_SOURCES) $(rapodbc_SOURCES)
 RECURSIVE_TARGETS = all-recursive check-recursive dvi-recursive \
 	html-recursive info-recursive install-data-recursive \
 	install-dvi-recursive install-exec-recursive \
@@ -124,7 +120,7 @@ AM_RECURSIVE_TARGETS = $(RECURSIVE_TARGETS:-recursive=) \
 	distdir
 ETAGS = etags
 CTAGS = ctags
-DIST_SUBDIRS = db2 oracle .
+DIST_SUBDIRS = $(SUBDIRS)
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 am__relativize = \
   dir0=`pwd`; \
@@ -164,10 +160,6 @@ CFLAGS = @CFLAGS@
 CPP = @CPP@
 CPPFLAGS = @CPPFLAGS@
 CYGPATH_W = @CYGPATH_W@
-DB2CMD = @DB2CMD@
-DB2_INCLUDE = @DB2_INCLUDE@
-DB2_LDFLAGS = @DB2_LDFLAGS@
-DB2_LIBS = @DB2_LIBS@
 DEFS = @DEFS@
 DEPDIR = @DEPDIR@
 DLLTOOL = @DLLTOOL@
@@ -200,10 +192,6 @@ NM = @NM@
 NMEDIT = @NMEDIT@
 OBJDUMP = @OBJDUMP@
 OBJEXT = @OBJEXT@
-ORACLE_INCLUDE = @ORACLE_INCLUDE@
-ORACLE_LDFLAGS = @ORACLE_LDFLAGS@
-ORACLE_LIBS = @ORACLE_LIBS@
-ORACLE_PROC = @ORACLE_PROC@
 OTOOL = @OTOOL@
 OTOOL64 = @OTOOL64@
 PACKAGE = @PACKAGE@
@@ -272,56 +260,23 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-@HAVE_DB2_TRUE@BUILD_DBS = db2
-@HAVE_ORACLE_TRUE@BUILD_DBS = oracle
-@HAVE_DB2_TRUE@DBS_INCLUDE = @DB2_INCLUDE@
-@HAVE_ORACLE_TRUE@DBS_INCLUDE = @ORACLE_INCLUDE@
-@HAVE_DB2_TRUE@DBS_LDFLAGS = @DB2_LDFLAGS@
-@HAVE_ORACLE_TRUE@DBS_LDFLAGS = @ORACLE_LDFLAGS@
-@HAVE_DB2_TRUE@DBS_LIBS = @DB2_LIBS@
-@HAVE_ORACLE_TRUE@DBS_LIBS = @ORACLE_LIBS@
-@HAVE_DB2_TRUE@DB2 = @DB2CMD@
-@HAVE_ORACLE_TRUE@PROC = @ORACLE_PROC@
-GENSQL = $(BUILD_DBS)/gensql
-SUBDIRS = $(BUILD_DBS) .
-lib_LTLIBRARIES = libdbs.la
-libdbs_la_CPPFLAGS = $(DBS_INCLUDE)
-libdbs_la_LDFLAGS = $(DBS_LDFLAGS) $(DBS_LIBS)
-libdbs_la_SOURCES = dbs_basopr.c \
-                           t_dbs101_datasrc_def_cur.c \
-                           t_dbs102_datasrc_index_cur.c \
-                           t_dbs103_datasrc_field_cur.c \
-                           t_dbs104_datasrc_field_cnt_sel.c \
-                           t_dbs105_datasrc_field_def_sel.c \
-                           t_dbs201_set_def_sel.c \
-                           t_dbs202_set_cfg_cur.c \
-                           t_dbs301_sdi_cur.c \
-                           t_dbs302_ddi_cur.c \
-                           t_dbs303_hdi_cur.c \
-                           t_dbs304_hdi_day_sel.c \
-                           t_dbs305_hdi_mon_sel.c \
-                           t_dbs306_hdi_flag_sel.c \
-                           t_dbs401_rule_cur.c
+SUBDIRS = . dbs
+rapodbc_SOURCES = rapodbc.c
+rapodbc_CPPFLAGS = 
+rapodbc_LDFLAGS = -lodbc 
+#rapodbc_CPPFLAGS        = @ODBC_INCLUDE@
+#rapodbc_LDFLAGS         = -lodbc @ODBC_LDFLAGS@ @ODBC_LIBS@
+lib_LTLIBRARIES = libdbsbas.la 
+libdbsbas_la_SOURCES = dbs_basopr.h \
+                         dbs_basopr.c  
 
-EXTRA_DIST = t_dbs101_datasrc_def_cur.cfg \
-                           t_dbs102_datasrc_index_cur.cfg \
-                           t_dbs103_datasrc_field_cur.cfg \
-                           t_dbs104_datasrc_field_cnt_sel.cfg \
-                           t_dbs105_datasrc_field_def_sel.cfg \
-                           t_dbs201_set_def_sel.cfg \
-                           t_dbs202_set_cfg_cur.cfg \
-                           t_dbs301_sdi_cur.cfg \
-                           t_dbs302_ddi_cur.cfg \
-                           t_dbs303_hdi_cur.cfg \
-                           t_dbs304_hdi_day_sel.cfg \
-                           t_dbs305_hdi_mon_sel.cfg \
-                           t_dbs306_hdi_flag_sel.cfg \
-                           t_dbs401_rule_cur.cfg
-
+libdbsbas_la_CPPFLAGS = 
+libdbsbas_la_LDFLAGS = -lodbc 
+libdbsbas_la_LIBADD = 
 all: all-recursive
 
 .SUFFIXES:
-.SUFFIXES: .c .cfg .lo .o .obj
+.SUFFIXES: .c .lo .o .obj
 $(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
 	@for dep in $?; do \
 	  case '$(am__configure_deps)' in \
@@ -383,8 +338,20 @@ clean-libLTLIBRARIES:
 	  echo "rm -f \"$${dir}/so_locations\""; \
 	  rm -f "$${dir}/so_locations"; \
 	done
-libdbs.la: $(libdbs_la_OBJECTS) $(libdbs_la_DEPENDENCIES) $(EXTRA_libdbs_la_DEPENDENCIES) 
-	$(libdbs_la_LINK) -rpath $(libdir) $(libdbs_la_OBJECTS) $(libdbs_la_LIBADD) $(LIBS)
+libdbsbas.la: $(libdbsbas_la_OBJECTS) $(libdbsbas_la_DEPENDENCIES) $(EXTRA_libdbsbas_la_DEPENDENCIES) 
+	$(libdbsbas_la_LINK) -rpath $(libdir) $(libdbsbas_la_OBJECTS) $(libdbsbas_la_LIBADD) $(LIBS)
+
+clean-noinstPROGRAMS:
+	@list='$(noinst_PROGRAMS)'; test -n "$$list" || exit 0; \
+	echo " rm -f" $$list; \
+	rm -f $$list || exit $$?; \
+	test -n "$(EXEEXT)" || exit 0; \
+	list=`for p in $$list; do echo "$$p"; done | sed 's/$(EXEEXT)$$//'`; \
+	echo " rm -f" $$list; \
+	rm -f $$list
+rapodbc$(EXEEXT): $(rapodbc_OBJECTS) $(rapodbc_DEPENDENCIES) $(EXTRA_rapodbc_DEPENDENCIES) 
+	@rm -f rapodbc$(EXEEXT)
+	$(rapodbc_LINK) $(rapodbc_OBJECTS) $(rapodbc_LDADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -392,21 +359,8 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libdbs_la-dbs_basopr.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libdbs_la-t_dbs101_datasrc_def_cur.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libdbs_la-t_dbs102_datasrc_index_cur.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libdbs_la-t_dbs103_datasrc_field_cur.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libdbs_la-t_dbs104_datasrc_field_cnt_sel.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libdbs_la-t_dbs105_datasrc_field_def_sel.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libdbs_la-t_dbs201_set_def_sel.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libdbs_la-t_dbs202_set_cfg_cur.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libdbs_la-t_dbs301_sdi_cur.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libdbs_la-t_dbs302_ddi_cur.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libdbs_la-t_dbs303_hdi_cur.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libdbs_la-t_dbs304_hdi_day_sel.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libdbs_la-t_dbs305_hdi_mon_sel.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libdbs_la-t_dbs306_hdi_flag_sel.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libdbs_la-t_dbs401_rule_cur.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libdbsbas_la-dbs_basopr.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/rapodbc-rapodbc.Po@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
@@ -429,110 +383,26 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LTCOMPILE) -c -o $@ $<
 
-libdbs_la-dbs_basopr.lo: dbs_basopr.c
-@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libdbs_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libdbs_la-dbs_basopr.lo -MD -MP -MF $(DEPDIR)/libdbs_la-dbs_basopr.Tpo -c -o libdbs_la-dbs_basopr.lo `test -f 'dbs_basopr.c' || echo '$(srcdir)/'`dbs_basopr.c
-@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/libdbs_la-dbs_basopr.Tpo $(DEPDIR)/libdbs_la-dbs_basopr.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='dbs_basopr.c' object='libdbs_la-dbs_basopr.lo' libtool=yes @AMDEPBACKSLASH@
+libdbsbas_la-dbs_basopr.lo: dbs_basopr.c
+@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libdbsbas_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libdbsbas_la-dbs_basopr.lo -MD -MP -MF $(DEPDIR)/libdbsbas_la-dbs_basopr.Tpo -c -o libdbsbas_la-dbs_basopr.lo `test -f 'dbs_basopr.c' || echo '$(srcdir)/'`dbs_basopr.c
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/libdbsbas_la-dbs_basopr.Tpo $(DEPDIR)/libdbsbas_la-dbs_basopr.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='dbs_basopr.c' object='libdbsbas_la-dbs_basopr.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libdbs_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libdbs_la-dbs_basopr.lo `test -f 'dbs_basopr.c' || echo '$(srcdir)/'`dbs_basopr.c
+@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libdbsbas_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libdbsbas_la-dbs_basopr.lo `test -f 'dbs_basopr.c' || echo '$(srcdir)/'`dbs_basopr.c
 
-libdbs_la-t_dbs101_datasrc_def_cur.lo: t_dbs101_datasrc_def_cur.c
-@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libdbs_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libdbs_la-t_dbs101_datasrc_def_cur.lo -MD -MP -MF $(DEPDIR)/libdbs_la-t_dbs101_datasrc_def_cur.Tpo -c -o libdbs_la-t_dbs101_datasrc_def_cur.lo `test -f 't_dbs101_datasrc_def_cur.c' || echo '$(srcdir)/'`t_dbs101_datasrc_def_cur.c
-@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/libdbs_la-t_dbs101_datasrc_def_cur.Tpo $(DEPDIR)/libdbs_la-t_dbs101_datasrc_def_cur.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='t_dbs101_datasrc_def_cur.c' object='libdbs_la-t_dbs101_datasrc_def_cur.lo' libtool=yes @AMDEPBACKSLASH@
+rapodbc-rapodbc.o: rapodbc.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(rapodbc_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT rapodbc-rapodbc.o -MD -MP -MF $(DEPDIR)/rapodbc-rapodbc.Tpo -c -o rapodbc-rapodbc.o `test -f 'rapodbc.c' || echo '$(srcdir)/'`rapodbc.c
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/rapodbc-rapodbc.Tpo $(DEPDIR)/rapodbc-rapodbc.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='rapodbc.c' object='rapodbc-rapodbc.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libdbs_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libdbs_la-t_dbs101_datasrc_def_cur.lo `test -f 't_dbs101_datasrc_def_cur.c' || echo '$(srcdir)/'`t_dbs101_datasrc_def_cur.c
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(rapodbc_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o rapodbc-rapodbc.o `test -f 'rapodbc.c' || echo '$(srcdir)/'`rapodbc.c
 
-libdbs_la-t_dbs102_datasrc_index_cur.lo: t_dbs102_datasrc_index_cur.c
-@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libdbs_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libdbs_la-t_dbs102_datasrc_index_cur.lo -MD -MP -MF $(DEPDIR)/libdbs_la-t_dbs102_datasrc_index_cur.Tpo -c -o libdbs_la-t_dbs102_datasrc_index_cur.lo `test -f 't_dbs102_datasrc_index_cur.c' || echo '$(srcdir)/'`t_dbs102_datasrc_index_cur.c
-@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/libdbs_la-t_dbs102_datasrc_index_cur.Tpo $(DEPDIR)/libdbs_la-t_dbs102_datasrc_index_cur.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='t_dbs102_datasrc_index_cur.c' object='libdbs_la-t_dbs102_datasrc_index_cur.lo' libtool=yes @AMDEPBACKSLASH@
+rapodbc-rapodbc.obj: rapodbc.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(rapodbc_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT rapodbc-rapodbc.obj -MD -MP -MF $(DEPDIR)/rapodbc-rapodbc.Tpo -c -o rapodbc-rapodbc.obj `if test -f 'rapodbc.c'; then $(CYGPATH_W) 'rapodbc.c'; else $(CYGPATH_W) '$(srcdir)/rapodbc.c'; fi`
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/rapodbc-rapodbc.Tpo $(DEPDIR)/rapodbc-rapodbc.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='rapodbc.c' object='rapodbc-rapodbc.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libdbs_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libdbs_la-t_dbs102_datasrc_index_cur.lo `test -f 't_dbs102_datasrc_index_cur.c' || echo '$(srcdir)/'`t_dbs102_datasrc_index_cur.c
-
-libdbs_la-t_dbs103_datasrc_field_cur.lo: t_dbs103_datasrc_field_cur.c
-@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libdbs_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libdbs_la-t_dbs103_datasrc_field_cur.lo -MD -MP -MF $(DEPDIR)/libdbs_la-t_dbs103_datasrc_field_cur.Tpo -c -o libdbs_la-t_dbs103_datasrc_field_cur.lo `test -f 't_dbs103_datasrc_field_cur.c' || echo '$(srcdir)/'`t_dbs103_datasrc_field_cur.c
-@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/libdbs_la-t_dbs103_datasrc_field_cur.Tpo $(DEPDIR)/libdbs_la-t_dbs103_datasrc_field_cur.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='t_dbs103_datasrc_field_cur.c' object='libdbs_la-t_dbs103_datasrc_field_cur.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libdbs_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libdbs_la-t_dbs103_datasrc_field_cur.lo `test -f 't_dbs103_datasrc_field_cur.c' || echo '$(srcdir)/'`t_dbs103_datasrc_field_cur.c
-
-libdbs_la-t_dbs104_datasrc_field_cnt_sel.lo: t_dbs104_datasrc_field_cnt_sel.c
-@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libdbs_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libdbs_la-t_dbs104_datasrc_field_cnt_sel.lo -MD -MP -MF $(DEPDIR)/libdbs_la-t_dbs104_datasrc_field_cnt_sel.Tpo -c -o libdbs_la-t_dbs104_datasrc_field_cnt_sel.lo `test -f 't_dbs104_datasrc_field_cnt_sel.c' || echo '$(srcdir)/'`t_dbs104_datasrc_field_cnt_sel.c
-@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/libdbs_la-t_dbs104_datasrc_field_cnt_sel.Tpo $(DEPDIR)/libdbs_la-t_dbs104_datasrc_field_cnt_sel.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='t_dbs104_datasrc_field_cnt_sel.c' object='libdbs_la-t_dbs104_datasrc_field_cnt_sel.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libdbs_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libdbs_la-t_dbs104_datasrc_field_cnt_sel.lo `test -f 't_dbs104_datasrc_field_cnt_sel.c' || echo '$(srcdir)/'`t_dbs104_datasrc_field_cnt_sel.c
-
-libdbs_la-t_dbs105_datasrc_field_def_sel.lo: t_dbs105_datasrc_field_def_sel.c
-@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libdbs_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libdbs_la-t_dbs105_datasrc_field_def_sel.lo -MD -MP -MF $(DEPDIR)/libdbs_la-t_dbs105_datasrc_field_def_sel.Tpo -c -o libdbs_la-t_dbs105_datasrc_field_def_sel.lo `test -f 't_dbs105_datasrc_field_def_sel.c' || echo '$(srcdir)/'`t_dbs105_datasrc_field_def_sel.c
-@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/libdbs_la-t_dbs105_datasrc_field_def_sel.Tpo $(DEPDIR)/libdbs_la-t_dbs105_datasrc_field_def_sel.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='t_dbs105_datasrc_field_def_sel.c' object='libdbs_la-t_dbs105_datasrc_field_def_sel.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libdbs_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libdbs_la-t_dbs105_datasrc_field_def_sel.lo `test -f 't_dbs105_datasrc_field_def_sel.c' || echo '$(srcdir)/'`t_dbs105_datasrc_field_def_sel.c
-
-libdbs_la-t_dbs201_set_def_sel.lo: t_dbs201_set_def_sel.c
-@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libdbs_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libdbs_la-t_dbs201_set_def_sel.lo -MD -MP -MF $(DEPDIR)/libdbs_la-t_dbs201_set_def_sel.Tpo -c -o libdbs_la-t_dbs201_set_def_sel.lo `test -f 't_dbs201_set_def_sel.c' || echo '$(srcdir)/'`t_dbs201_set_def_sel.c
-@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/libdbs_la-t_dbs201_set_def_sel.Tpo $(DEPDIR)/libdbs_la-t_dbs201_set_def_sel.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='t_dbs201_set_def_sel.c' object='libdbs_la-t_dbs201_set_def_sel.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libdbs_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libdbs_la-t_dbs201_set_def_sel.lo `test -f 't_dbs201_set_def_sel.c' || echo '$(srcdir)/'`t_dbs201_set_def_sel.c
-
-libdbs_la-t_dbs202_set_cfg_cur.lo: t_dbs202_set_cfg_cur.c
-@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libdbs_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libdbs_la-t_dbs202_set_cfg_cur.lo -MD -MP -MF $(DEPDIR)/libdbs_la-t_dbs202_set_cfg_cur.Tpo -c -o libdbs_la-t_dbs202_set_cfg_cur.lo `test -f 't_dbs202_set_cfg_cur.c' || echo '$(srcdir)/'`t_dbs202_set_cfg_cur.c
-@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/libdbs_la-t_dbs202_set_cfg_cur.Tpo $(DEPDIR)/libdbs_la-t_dbs202_set_cfg_cur.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='t_dbs202_set_cfg_cur.c' object='libdbs_la-t_dbs202_set_cfg_cur.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libdbs_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libdbs_la-t_dbs202_set_cfg_cur.lo `test -f 't_dbs202_set_cfg_cur.c' || echo '$(srcdir)/'`t_dbs202_set_cfg_cur.c
-
-libdbs_la-t_dbs301_sdi_cur.lo: t_dbs301_sdi_cur.c
-@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libdbs_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libdbs_la-t_dbs301_sdi_cur.lo -MD -MP -MF $(DEPDIR)/libdbs_la-t_dbs301_sdi_cur.Tpo -c -o libdbs_la-t_dbs301_sdi_cur.lo `test -f 't_dbs301_sdi_cur.c' || echo '$(srcdir)/'`t_dbs301_sdi_cur.c
-@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/libdbs_la-t_dbs301_sdi_cur.Tpo $(DEPDIR)/libdbs_la-t_dbs301_sdi_cur.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='t_dbs301_sdi_cur.c' object='libdbs_la-t_dbs301_sdi_cur.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libdbs_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libdbs_la-t_dbs301_sdi_cur.lo `test -f 't_dbs301_sdi_cur.c' || echo '$(srcdir)/'`t_dbs301_sdi_cur.c
-
-libdbs_la-t_dbs302_ddi_cur.lo: t_dbs302_ddi_cur.c
-@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libdbs_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libdbs_la-t_dbs302_ddi_cur.lo -MD -MP -MF $(DEPDIR)/libdbs_la-t_dbs302_ddi_cur.Tpo -c -o libdbs_la-t_dbs302_ddi_cur.lo `test -f 't_dbs302_ddi_cur.c' || echo '$(srcdir)/'`t_dbs302_ddi_cur.c
-@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/libdbs_la-t_dbs302_ddi_cur.Tpo $(DEPDIR)/libdbs_la-t_dbs302_ddi_cur.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='t_dbs302_ddi_cur.c' object='libdbs_la-t_dbs302_ddi_cur.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libdbs_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libdbs_la-t_dbs302_ddi_cur.lo `test -f 't_dbs302_ddi_cur.c' || echo '$(srcdir)/'`t_dbs302_ddi_cur.c
-
-libdbs_la-t_dbs303_hdi_cur.lo: t_dbs303_hdi_cur.c
-@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libdbs_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libdbs_la-t_dbs303_hdi_cur.lo -MD -MP -MF $(DEPDIR)/libdbs_la-t_dbs303_hdi_cur.Tpo -c -o libdbs_la-t_dbs303_hdi_cur.lo `test -f 't_dbs303_hdi_cur.c' || echo '$(srcdir)/'`t_dbs303_hdi_cur.c
-@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/libdbs_la-t_dbs303_hdi_cur.Tpo $(DEPDIR)/libdbs_la-t_dbs303_hdi_cur.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='t_dbs303_hdi_cur.c' object='libdbs_la-t_dbs303_hdi_cur.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libdbs_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libdbs_la-t_dbs303_hdi_cur.lo `test -f 't_dbs303_hdi_cur.c' || echo '$(srcdir)/'`t_dbs303_hdi_cur.c
-
-libdbs_la-t_dbs304_hdi_day_sel.lo: t_dbs304_hdi_day_sel.c
-@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libdbs_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libdbs_la-t_dbs304_hdi_day_sel.lo -MD -MP -MF $(DEPDIR)/libdbs_la-t_dbs304_hdi_day_sel.Tpo -c -o libdbs_la-t_dbs304_hdi_day_sel.lo `test -f 't_dbs304_hdi_day_sel.c' || echo '$(srcdir)/'`t_dbs304_hdi_day_sel.c
-@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/libdbs_la-t_dbs304_hdi_day_sel.Tpo $(DEPDIR)/libdbs_la-t_dbs304_hdi_day_sel.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='t_dbs304_hdi_day_sel.c' object='libdbs_la-t_dbs304_hdi_day_sel.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libdbs_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libdbs_la-t_dbs304_hdi_day_sel.lo `test -f 't_dbs304_hdi_day_sel.c' || echo '$(srcdir)/'`t_dbs304_hdi_day_sel.c
-
-libdbs_la-t_dbs305_hdi_mon_sel.lo: t_dbs305_hdi_mon_sel.c
-@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libdbs_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libdbs_la-t_dbs305_hdi_mon_sel.lo -MD -MP -MF $(DEPDIR)/libdbs_la-t_dbs305_hdi_mon_sel.Tpo -c -o libdbs_la-t_dbs305_hdi_mon_sel.lo `test -f 't_dbs305_hdi_mon_sel.c' || echo '$(srcdir)/'`t_dbs305_hdi_mon_sel.c
-@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/libdbs_la-t_dbs305_hdi_mon_sel.Tpo $(DEPDIR)/libdbs_la-t_dbs305_hdi_mon_sel.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='t_dbs305_hdi_mon_sel.c' object='libdbs_la-t_dbs305_hdi_mon_sel.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libdbs_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libdbs_la-t_dbs305_hdi_mon_sel.lo `test -f 't_dbs305_hdi_mon_sel.c' || echo '$(srcdir)/'`t_dbs305_hdi_mon_sel.c
-
-libdbs_la-t_dbs306_hdi_flag_sel.lo: t_dbs306_hdi_flag_sel.c
-@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libdbs_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libdbs_la-t_dbs306_hdi_flag_sel.lo -MD -MP -MF $(DEPDIR)/libdbs_la-t_dbs306_hdi_flag_sel.Tpo -c -o libdbs_la-t_dbs306_hdi_flag_sel.lo `test -f 't_dbs306_hdi_flag_sel.c' || echo '$(srcdir)/'`t_dbs306_hdi_flag_sel.c
-@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/libdbs_la-t_dbs306_hdi_flag_sel.Tpo $(DEPDIR)/libdbs_la-t_dbs306_hdi_flag_sel.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='t_dbs306_hdi_flag_sel.c' object='libdbs_la-t_dbs306_hdi_flag_sel.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libdbs_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libdbs_la-t_dbs306_hdi_flag_sel.lo `test -f 't_dbs306_hdi_flag_sel.c' || echo '$(srcdir)/'`t_dbs306_hdi_flag_sel.c
-
-libdbs_la-t_dbs401_rule_cur.lo: t_dbs401_rule_cur.c
-@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libdbs_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libdbs_la-t_dbs401_rule_cur.lo -MD -MP -MF $(DEPDIR)/libdbs_la-t_dbs401_rule_cur.Tpo -c -o libdbs_la-t_dbs401_rule_cur.lo `test -f 't_dbs401_rule_cur.c' || echo '$(srcdir)/'`t_dbs401_rule_cur.c
-@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/libdbs_la-t_dbs401_rule_cur.Tpo $(DEPDIR)/libdbs_la-t_dbs401_rule_cur.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='t_dbs401_rule_cur.c' object='libdbs_la-t_dbs401_rule_cur.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libdbs_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libdbs_la-t_dbs401_rule_cur.lo `test -f 't_dbs401_rule_cur.c' || echo '$(srcdir)/'`t_dbs401_rule_cur.c
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(rapodbc_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o rapodbc-rapodbc.obj `if test -f 'rapodbc.c'; then $(CYGPATH_W) 'rapodbc.c'; else $(CYGPATH_W) '$(srcdir)/rapodbc.c'; fi`
 
 mostlyclean-libtool:
 	-rm -f *.lo
@@ -735,7 +605,7 @@ distdir: $(DISTFILES)
 	done
 check-am: all-am
 check: check-recursive
-all-am: Makefile $(LTLIBRARIES)
+all-am: Makefile $(LTLIBRARIES) $(PROGRAMS)
 installdirs: installdirs-recursive
 installdirs-am:
 	for dir in "$(DESTDIR)$(libdir)"; do \
@@ -773,8 +643,8 @@ maintainer-clean-generic:
 	@echo "it deletes files that may require special tools to rebuild."
 clean: clean-recursive
 
-clean-am: clean-generic clean-libLTLIBRARIES clean-libtool clean-local \
-	mostlyclean-am
+clean-am: clean-generic clean-libLTLIBRARIES clean-libtool \
+	clean-noinstPROGRAMS mostlyclean-am
 
 distclean: distclean-recursive
 	-rm -rf ./$(DEPDIR)
@@ -847,7 +717,7 @@ uninstall-am: uninstall-libLTLIBRARIES
 
 .PHONY: $(RECURSIVE_CLEAN_TARGETS) $(RECURSIVE_TARGETS) CTAGS GTAGS \
 	all all-am check check-am clean clean-generic \
-	clean-libLTLIBRARIES clean-libtool clean-local ctags \
+	clean-libLTLIBRARIES clean-libtool clean-noinstPROGRAMS ctags \
 	ctags-recursive distclean distclean-compile distclean-generic \
 	distclean-libtool distclean-tags distdir dvi dvi-am html \
 	html-am info info-am install install-am install-data \
@@ -861,44 +731,6 @@ uninstall-am: uninstall-libLTLIBRARIES
 	pdf pdf-am ps ps-am tags tags-recursive uninstall uninstall-am \
 	uninstall-libLTLIBRARIES
 
-
-clean-local:
-	-rm -f $(libdbs_la_SOURCES)
-
-@HAVE_DB2_TRUE@dbs_basopr.c:$(BUILD_DBS)/dbs_basopr.sqc
-@HAVE_DB2_TRUE@	@cp -f $(BUILD_DBS)/$*.h $*.h	
-@HAVE_DB2_TRUE@	@cp -f $(BUILD_DBS)/$*.sqc $*.sqc
-@HAVE_DB2_TRUE@	@echo "db2 precompiling [$@] ..."
-@HAVE_DB2_TRUE@	@rm -f $*.bnd
-@HAVE_DB2_TRUE@	@$(DB2) connect to $(DBNAME)
-@HAVE_DB2_TRUE@	@$(DB2) prep $*.sqc bindfile 
-@HAVE_DB2_TRUE@	@$(DB2) bind $*.bnd
-@HAVE_DB2_TRUE@	@$(DB2) connect reset
-@HAVE_DB2_TRUE@	@$(DB2) terminate	
-
-@HAVE_DB2_TRUE@.cfg.c:
-@HAVE_DB2_TRUE@	@echo "gensql db2 [$@] ..."
-@HAVE_DB2_TRUE@	@$(GENSQL) $*	
-@HAVE_DB2_TRUE@	@echo "db2 precompiling [$@] ..."
-@HAVE_DB2_TRUE@	@rm -f $*.bnd
-@HAVE_DB2_TRUE@	@$(DB2) connect to $(DBNAME)
-@HAVE_DB2_TRUE@	@$(DB2) prep $*.sqc bindfile 
-@HAVE_DB2_TRUE@	@$(DB2) bind $*.bnd
-@HAVE_DB2_TRUE@	@$(DB2) connect reset
-@HAVE_DB2_TRUE@	@$(DB2) terminate
-
-@HAVE_ORACLE_TRUE@dbs_basopr.c:$(BUILD_DBS)/dbs_basopr.pc
-@HAVE_ORACLE_TRUE@	@cp -f $(BUILD_DBS)/$*.h $*.h
-@HAVE_ORACLE_TRUE@	@cp -f $(BUILD_DBS)/$*.pc $*.pc
-@HAVE_ORACLE_TRUE@	@$(PROC) hold_cursor=yes lines=yes code=ANSI_C include=$(top_srcdir) iname=$*.pc
-@HAVE_ORACLE_TRUE@	@rm -f $*.lis tp*
-
-@HAVE_ORACLE_TRUE@.cfg.c:
-@HAVE_ORACLE_TRUE@	@echo "gensql oracle [$@] ..."
-@HAVE_ORACLE_TRUE@	@$(GENSQL) $*	
-@HAVE_ORACLE_TRUE@	@echo "oracle precompiling [$@] ..."
-@HAVE_ORACLE_TRUE@	@$(PROC) hold_cursor=yes lines=yes code=ANSI_C include=$(top_srcdir) iname=$*.pc
-@HAVE_ORACLE_TRUE@	@rm -f $*.lis tp*
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

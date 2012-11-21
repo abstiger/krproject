@@ -25,7 +25,7 @@ libkrrule_la_SOURCES  = \
 
      
 libkrrule_la_LIBADD    = $(top_srcdir)/krutils/libkrutils.la
-libkrrule_la_LIBADD   += $(top_srcdir)/dbs/libdbs.la
+libkrrule_la_LIBADD   += $(top_srcdir)/dbs/dbs/libdbsdbs.la
 libkrrule_la_LIBADD   += $(top_srcdir)/krshm/libkrshm.la
 libkrrule_la_LIBADD   += $(top_srcdir)/krcalc/libkrcalc.la
 libkrrule_la_LIBADD   += $(top_srcdir)/krdb/libkrdb.la

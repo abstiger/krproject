@@ -9,7 +9,8 @@ libkrengine_la_SOURCES  = \
 
      
 libkrengine_la_LIBADD    = $(top_srcdir)/krutils/libkrutils.la
-libkrengine_la_LIBADD   += $(top_srcdir)/dbs/libdbs.la
+libkrengine_la_LIBADD   += $(top_srcdir)/dbs/libdbsbas.la
+libkrengine_la_LIBADD   += $(top_srcdir)/dbs/dbs/libdbsdbs.la
 libkrengine_la_LIBADD   += $(top_srcdir)/krshm/libkrshm.la
 libkrengine_la_LIBADD   += $(top_srcdir)/krcalc/libkrcalc.la
 libkrengine_la_LIBADD   += $(top_srcdir)/krdb/libkrdb.la

@@ -55,7 +55,9 @@ am_krserver_OBJECTS = krserver-kr_server.$(OBJEXT) \
 	krserver-kr_server_config.$(OBJEXT)
 krserver_OBJECTS = $(am_krserver_OBJECTS)
 krserver_DEPENDENCIES = $(top_srcdir)/krutils/libkrutils.la \
-	$(top_srcdir)/dbs/libdbs.la $(top_srcdir)/krshm/libkrshm.la \
+	$(top_srcdir)/dbs/libdbsbas.la \
+	$(top_srcdir)/dbs/dbs/libdbsdbs.la \
+	$(top_srcdir)/krshm/libkrshm.la \
 	$(top_srcdir)/krcalc/libkrcalc.la \
 	$(top_srcdir)/krdb/libkrdb.la \
 	$(top_srcdir)/krrule/libkrrule.la \
@@ -94,10 +96,6 @@ CFLAGS = @CFLAGS@
 CPP = @CPP@
 CPPFLAGS = @CPPFLAGS@
 CYGPATH_W = @CYGPATH_W@
-DB2CMD = @DB2CMD@
-DB2_INCLUDE = @DB2_INCLUDE@
-DB2_LDFLAGS = @DB2_LDFLAGS@
-DB2_LIBS = @DB2_LIBS@
 DEFS = @DEFS@
 DEPDIR = @DEPDIR@
 DLLTOOL = @DLLTOOL@
@@ -130,10 +128,6 @@ NM = @NM@
 NMEDIT = @NMEDIT@
 OBJDUMP = @OBJDUMP@
 OBJEXT = @OBJEXT@
-ORACLE_INCLUDE = @ORACLE_INCLUDE@
-ORACLE_LDFLAGS = @ORACLE_LDFLAGS@
-ORACLE_LIBS = @ORACLE_LIBS@
-ORACLE_PROC = @ORACLE_PROC@
 OTOOL = @OTOOL@
 OTOOL64 = @OTOOL64@
 PACKAGE = @PACKAGE@
@@ -208,7 +202,9 @@ krserver_SOURCES = kr_server.h \
                      kr_server_config.c 
 
 krserver_LDADD = $(top_srcdir)/krutils/libkrutils.la \
-	$(top_srcdir)/dbs/libdbs.la $(top_srcdir)/krshm/libkrshm.la \
+	$(top_srcdir)/dbs/libdbsbas.la \
+	$(top_srcdir)/dbs/dbs/libdbsdbs.la \
+	$(top_srcdir)/krshm/libkrshm.la \
 	$(top_srcdir)/krcalc/libkrcalc.la \
 	$(top_srcdir)/krdb/libkrdb.la \
 	$(top_srcdir)/krrule/libkrrule.la \

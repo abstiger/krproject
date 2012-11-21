@@ -616,18 +616,6 @@ ac_subst_vars='am__EXEEXT_FALSE
 am__EXEEXT_TRUE
 LTLIBOBJS
 LIBOBJS
-DB2_LDFLAGS
-DB2_INCLUDE
-DB2_LIBS
-DB2CMD
-HAVE_DB2_FALSE
-HAVE_DB2_TRUE
-ORACLE_LDFLAGS
-ORACLE_INCLUDE
-ORACLE_LIBS
-ORACLE_PROC
-HAVE_ORACLE_FALSE
-HAVE_ORACLE_TRUE
 CPP
 OTOOL64
 OTOOL
@@ -747,12 +735,6 @@ enable_dependency_tracking
 with_gnu_ld
 with_sysroot
 enable_libtool_lock
-with_oracle
-with_oracle_incdir
-with_oracle_libdir
-with_db2
-with_db2_incdir
-with_db2_libdir
 '
       ac_precious_vars='build_alias
 host_alias
@@ -1399,12 +1381,6 @@ Optional Packages:
   --with-gnu-ld           assume the C compiler uses GNU ld [default=no]
   --with-sysroot=DIR Search for dependent libraries within DIR
                         (or the compiler's sysroot if not specified).
-  --with-oracle           Include Oracle support.(Specify ORACLE_HOME usually)
-  --with-oracle-incdir    Specifies where the Oracle include files are.
-  --with-oracle-libdir    Specifies where the Oracle libraries are.
-  --with-db2              Include DB2 support.(Specify DB2_HOME usually)
-  --with-db2-incdir       Specifies where the DB2 include files are.
-  --with-db2-libdir       Specifies where the DB2 libraries are.
 
 Some influential environment variables:
   CC          C compiler command
@@ -11432,301 +11408,8 @@ CC="$lt_save_CC"
 
 
 # Check if we will compile with Oracle
-
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking For Oracle support" >&5
-$as_echo_n "checking For Oracle support... " >&6; }
-
- if false; then
-  HAVE_ORACLE_TRUE=
-  HAVE_ORACLE_FALSE='#'
-else
-  HAVE_ORACLE_TRUE='#'
-  HAVE_ORACLE_FALSE=
-fi
-
-
-# Check if we should compile with Oracle support
-
-# Check whether --with-oracle was given.
-if test "${with_oracle+set}" = set; then :
-  withval=$with_oracle; ac_oracle_home=$withval
-else
-  ac_oracle_home=no
-
-fi
-
-
-# Check whether --with-oracle-incdir was given.
-if test "${with_oracle_incdir+set}" = set; then :
-  withval=$with_oracle_incdir; ac_oracle_incdir=$withval
-else
-  ac_oracle_incdir=no
-
-fi
-
-
-# Check whether --with-oracle-libdir was given.
-if test "${with_oracle_libdir+set}" = set; then :
-  withval=$with_oracle_libdir; ac_oracle_libdir=$withval
-else
-  ac_oracle_libdir=no
-
-fi
-
-
-if test "$ac_oracle_home" != "no"; then
-	#check include and library directory
-	if test "$ac_oracle_incdir" = "no" || test "$ac_oracle_libdir" = "no"; then
-		oracle_incdirs="$ac_oracle_home/precomp/public $ORACLE_HOME/precomp/public"
-
-ac_oracle_incdir=no
-for i in $oracle_incdirs; do
-	for j in sqlca.h; do
-		if test -r "$i/$j"; then
-			ac_oracle_incdir=$i
-			break 2
-		fi
-	done
-done
-
-		oracle_libdirs="$ac_oracle_home/lib $ORACLE_HOME/lib"
-
-ac_oracle_libdir=no
-for i in $oracle_libdirs; do
-	for j in libclntsh.so; do
-		if test -r "$i/$j"; then
-			ac_oracle_libdir=$i
-			break 2
-		fi
-	done
-done
-
-		if test "$ac_oracle_incdir" = "no"; then
-			{ $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
-$as_echo "no" >&6; }
-			as_fn_error $? "Invalid Oracle directory - include files not found." "$LINENO" 5
-		fi
-		if test "$ac_oracle_libdir" = "no"; then
-			{ $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
-$as_echo "no" >&6; }
-			as_fn_error $? "Invalid Oracle directory - libraries not found." "$LINENO" 5
-		fi
-	fi
-	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: yes: libs in $ac_oracle_libdir, headers in $ac_oracle_incdir" >&5
-$as_echo "yes: libs in $ac_oracle_libdir, headers in $ac_oracle_incdir" >&6; }
-
-	#check oracle proc precompiler
-	# Extract the first word of "proc", so it can be a program name with args.
-set dummy proc; ac_word=$2
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
-$as_echo_n "checking for $ac_word... " >&6; }
-if ${ac_cv_prog_ORACLE_PROC+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-  if test -n "$ORACLE_PROC"; then
-  ac_cv_prog_ORACLE_PROC="$ORACLE_PROC" # Let the user override the test.
-else
-as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
-for as_dir in $PATH
-do
-  IFS=$as_save_IFS
-  test -z "$as_dir" && as_dir=.
-    for ac_exec_ext in '' $ac_executable_extensions; do
-  if { test -f "$as_dir/$ac_word$ac_exec_ext" && $as_test_x "$as_dir/$ac_word$ac_exec_ext"; }; then
-    ac_cv_prog_ORACLE_PROC="proc"
-    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
-    break 2
-  fi
-done
-  done
-IFS=$as_save_IFS
-
-  test -z "$ac_cv_prog_ORACLE_PROC" && ac_cv_prog_ORACLE_PROC="no"
-fi
-fi
-ORACLE_PROC=$ac_cv_prog_ORACLE_PROC
-if test -n "$ORACLE_PROC"; then
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $ORACLE_PROC" >&5
-$as_echo "$ORACLE_PROC" >&6; }
-else
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
-$as_echo "no" >&6; }
-fi
-
-
-	if test "$ORACLE_PROC" = "no"; then
-		as_fn_error $? "You Need to add Oracle-bin-dir where \"proc\" exists to your PATH." "$LINENO" 5
-	fi
-
-	 if true; then
-  HAVE_ORACLE_TRUE=
-  HAVE_ORACLE_FALSE='#'
-else
-  HAVE_ORACLE_TRUE='#'
-  HAVE_ORACLE_FALSE=
-fi
-
-
-    ORACLE_LIBS="-lclntsh -lclient10"
-	ORACLE_INCLUDE="-I$ac_oracle_incdir"
-	ORACLE_LDFLAGS=-L$ac_oracle_libdir
-
-
-
-
-else
-	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
-$as_echo "no" >&6; }
-fi
-
-
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking For DB2 support" >&5
-$as_echo_n "checking For DB2 support... " >&6; }
-
- if false; then
-  HAVE_DB2_TRUE=
-  HAVE_DB2_FALSE='#'
-else
-  HAVE_DB2_TRUE='#'
-  HAVE_DB2_FALSE=
-fi
-
-
-# Check if we should compile with DB2 support
-
-# Check whether --with-db2 was given.
-if test "${with_db2+set}" = set; then :
-  withval=$with_db2; ac_db2_home=$withval
-else
-  ac_db2_home=no
-
-fi
-
-
-# Check whether --with-db2-incdir was given.
-if test "${with_db2_incdir+set}" = set; then :
-  withval=$with_db2_incdir; ac_db2_incdir=$withval
-else
-  ac_db2_incdir=no
-
-fi
-
-
-# Check whether --with-db2-libdir was given.
-if test "${with_db2_libdir+set}" = set; then :
-  withval=$with_db2_libdir; ac_db2_libdir=$withval
-else
-  ac_db2_libdir=no
-
-fi
-
-
-if test "$ac_db2_home" != "no"; then
-
-    #check include and library directory
-	if test "$ac_db2_incdir" = "no" || test "$ac_db2_libdir" = "no"; then
-		db2_incdirs="$ac_db2_home/include $DB2_HOME/include /opt/ibm/db2/include"
-
-ac_db2_incdir=no
-for i in $db2_incdirs; do
-	for j in sqlca.h; do
-		if test -r "$i/$j"; then
-			ac_db2_incdir=$i
-			break 2
-		fi
-	done
-done
-
-		db2_libdirs="$ac_db2_home/lib $DB2_HOME/lib /opt/ibm/db2/lib"
-
-ac_db2_libdir=no
-for i in $db2_libdirs; do
-	for j in libdb2.so; do
-		if test -r "$i/$j"; then
-			ac_db2_libdir=$i
-			break 2
-		fi
-	done
-done
-
-		if test "$ac_db2_incdir" = "no"; then
-			{ $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
-$as_echo "no" >&6; }
-			as_fn_error $? "Invalid DB2 directory - include files not found." "$LINENO" 5
-		fi
-		if test "$ac_db2_libdir" = "no"; then
-			{ $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
-$as_echo "no" >&6; }
-			as_fn_error $? "Invalid DB2 directory - libraries not found." "$LINENO" 5
-		fi
-	fi
-	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: yes: libs in $ac_db2_libdir, headers in $ac_db2_incdir" >&5
-$as_echo "yes: libs in $ac_db2_libdir, headers in $ac_db2_incdir" >&6; }
-
-    #check db2 command
-	# Extract the first word of "db2", so it can be a program name with args.
-set dummy db2; ac_word=$2
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
-$as_echo_n "checking for $ac_word... " >&6; }
-if ${ac_cv_prog_DB2CMD+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-  if test -n "$DB2CMD"; then
-  ac_cv_prog_DB2CMD="$DB2CMD" # Let the user override the test.
-else
-as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
-for as_dir in $PATH
-do
-  IFS=$as_save_IFS
-  test -z "$as_dir" && as_dir=.
-    for ac_exec_ext in '' $ac_executable_extensions; do
-  if { test -f "$as_dir/$ac_word$ac_exec_ext" && $as_test_x "$as_dir/$ac_word$ac_exec_ext"; }; then
-    ac_cv_prog_DB2CMD="db2"
-    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
-    break 2
-  fi
-done
-  done
-IFS=$as_save_IFS
-
-  test -z "$ac_cv_prog_DB2CMD" && ac_cv_prog_DB2CMD="no"
-fi
-fi
-DB2CMD=$ac_cv_prog_DB2CMD
-if test -n "$DB2CMD"; then
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $DB2CMD" >&5
-$as_echo "$DB2CMD" >&6; }
-else
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
-$as_echo "no" >&6; }
-fi
-
-
-	if test "$DB2CMD" = "no"; then
-		as_fn_error $? "You Need to add db2-bin-dir where \"db2\" exists to your PATH." "$LINENO" 5
-	fi
-
-	 if true; then
-  HAVE_DB2_TRUE=
-  HAVE_DB2_FALSE='#'
-else
-  HAVE_DB2_TRUE='#'
-  HAVE_DB2_FALSE=
-fi
-
-
-	DB2_LIBS="-ldb2"
-	DB2_INCLUDE="-I$ac_db2_incdir"
-	DB2_LDFLAGS="-L$ac_db2_libdir"
-
-
-
-
-else
-	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
-$as_echo "no" >&6; }
-fi
-
+#AC_CHECK_ORACLE
+#AC_CHECK_DB2
 
 # Checks for programs.
 ac_ext=c
@@ -12698,7 +12381,7 @@ fi
 done
 
 
-ac_config_files="$ac_config_files Makefile krutils/Makefile dbs/Makefile dbs/oracle/Makefile dbs/db2/Makefile krshm/Makefile krcalc/Makefile krdb/Makefile krrule/Makefile krengine/Makefile krcoordi/Makefile krserver/Makefile krclient/Makefile krtests/Makefile"
+ac_config_files="$ac_config_files Makefile krutils/Makefile dbs/Makefile dbs/dbs/Makefile krshm/Makefile krcalc/Makefile krdb/Makefile krrule/Makefile krengine/Makefile krcoordi/Makefile krserver/Makefile krclient/Makefile krtests/Makefile"
 
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
@@ -12823,22 +12506,6 @@ Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
 if test -z "${am__fastdepCC_TRUE}" && test -z "${am__fastdepCC_FALSE}"; then
   as_fn_error $? "conditional \"am__fastdepCC\" was never defined.
-Usually this means the macro was only invoked conditionally." "$LINENO" 5
-fi
-if test -z "${HAVE_ORACLE_TRUE}" && test -z "${HAVE_ORACLE_FALSE}"; then
-  as_fn_error $? "conditional \"HAVE_ORACLE\" was never defined.
-Usually this means the macro was only invoked conditionally." "$LINENO" 5
-fi
-if test -z "${HAVE_ORACLE_TRUE}" && test -z "${HAVE_ORACLE_FALSE}"; then
-  as_fn_error $? "conditional \"HAVE_ORACLE\" was never defined.
-Usually this means the macro was only invoked conditionally." "$LINENO" 5
-fi
-if test -z "${HAVE_DB2_TRUE}" && test -z "${HAVE_DB2_FALSE}"; then
-  as_fn_error $? "conditional \"HAVE_DB2\" was never defined.
-Usually this means the macro was only invoked conditionally." "$LINENO" 5
-fi
-if test -z "${HAVE_DB2_TRUE}" && test -z "${HAVE_DB2_FALSE}"; then
-  as_fn_error $? "conditional \"HAVE_DB2\" was never defined.
 Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
 if test -z "${am__fastdepCC_TRUE}" && test -z "${am__fastdepCC_FALSE}"; then
@@ -13732,8 +13399,7 @@ do
     "Makefile") CONFIG_FILES="$CONFIG_FILES Makefile" ;;
     "krutils/Makefile") CONFIG_FILES="$CONFIG_FILES krutils/Makefile" ;;
     "dbs/Makefile") CONFIG_FILES="$CONFIG_FILES dbs/Makefile" ;;
-    "dbs/oracle/Makefile") CONFIG_FILES="$CONFIG_FILES dbs/oracle/Makefile" ;;
-    "dbs/db2/Makefile") CONFIG_FILES="$CONFIG_FILES dbs/db2/Makefile" ;;
+    "dbs/dbs/Makefile") CONFIG_FILES="$CONFIG_FILES dbs/dbs/Makefile" ;;
     "krshm/Makefile") CONFIG_FILES="$CONFIG_FILES krshm/Makefile" ;;
     "krcalc/Makefile") CONFIG_FILES="$CONFIG_FILES krcalc/Makefile" ;;
     "krdb/Makefile") CONFIG_FILES="$CONFIG_FILES krdb/Makefile" ;;

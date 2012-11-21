@@ -83,6 +83,29 @@ printf("server->threadcnt=[%d]\n", server->threadcnt);
         return -1;
     }
 printf("server->hdicachesize=[%d]\n", server->hdicachesize);
+    memset(buf, 0x00, sizeof(buf));
+    if (kr_config_getstring("SYSTEM", "DBNAME", buf) != 0) {
+        printf("kr_config_getstring DBNAME failure!");
+        return -1;
+    }
+    if (strlen(buf) != 0) server->dbname = kr_strdup(buf);
+printf("server->dbname=[%s]\n", server->dbname);
+
+    memset(buf, 0x00, sizeof(buf));
+    if (kr_config_getstring("SYSTEM", "DBUSER", buf) != 0) {
+        printf("kr_config_getstring DBUSER failure!");
+        return -1;
+    }
+    if (strlen(buf) != 0) server->dbuser = kr_strdup(buf);
+printf("server->dbuser=[%s]\n", server->dbuser);
+
+    memset(buf, 0x00, sizeof(buf));
+    if (kr_config_getstring("SYSTEM", "DBPASS", buf) != 0) {
+        printf("kr_config_getstring DBPASS failure!");
+        return -1;
+    }
+    if (strlen(buf) != 0) server->dbpass = kr_strdup(buf);
+printf("server->dbpass=[%s]\n", server->dbpass);
     
     if (kr_config_getint("NETWORK", "TCPPORT", &server->tcpport) != 0) {
         printf("kr_config_getint TCPPORT failure!");
@@ -180,6 +203,9 @@ void kr_server_config_free(T_KRServer *server)
     if (server->dbmodulefile) kr_free(server->dbmodulefile);
     if (server->pidfile) kr_free(server->pidfile);
     if (server->logpath) kr_free(server->logpath);
+    if (server->dbname) kr_free(server->dbname);
+    if (server->dbuser) kr_free(server->dbuser);
+    if (server->dbpass) kr_free(server->dbpass);
     if (server->tcpbindaddr) kr_free(server->tcpbindaddr);
     if (server->unixdomain) kr_free(server->unixdomain);
     if (server->coorddomain) kr_free(server->coorddomain);

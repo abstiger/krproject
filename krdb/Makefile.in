@@ -77,7 +77,7 @@ am__uninstall_files_from_dir = { \
 am__installdirs = "$(DESTDIR)$(libdir)"
 LTLIBRARIES = $(lib_LTLIBRARIES)
 libkrdb_la_DEPENDENCIES = $(top_srcdir)/krutils/libkrutils.la \
-	$(top_srcdir)/dbs/libdbs.la
+	$(top_srcdir)/dbs/dbs/libdbsdbs.la
 am_libkrdb_la_OBJECTS = libkrdb_la-kr_db.lo libkrdb_la-kr_db_mmap.lo \
 	libkrdb_la-kr_db_kernel.lo
 libkrdb_la_OBJECTS = $(am_libkrdb_la_OBJECTS)
@@ -115,10 +115,6 @@ CFLAGS = @CFLAGS@
 CPP = @CPP@
 CPPFLAGS = @CPPFLAGS@
 CYGPATH_W = @CYGPATH_W@
-DB2CMD = @DB2CMD@
-DB2_INCLUDE = @DB2_INCLUDE@
-DB2_LDFLAGS = @DB2_LDFLAGS@
-DB2_LIBS = @DB2_LIBS@
 DEFS = @DEFS@
 DEPDIR = @DEPDIR@
 DLLTOOL = @DLLTOOL@
@@ -151,10 +147,6 @@ NM = @NM@
 NMEDIT = @NMEDIT@
 OBJDUMP = @OBJDUMP@
 OBJEXT = @OBJEXT@
-ORACLE_INCLUDE = @ORACLE_INCLUDE@
-ORACLE_LDFLAGS = @ORACLE_LDFLAGS@
-ORACLE_LIBS = @ORACLE_LIBS@
-ORACLE_PROC = @ORACLE_PROC@
 OTOOL = @OTOOL@
 OTOOL64 = @OTOOL64@
 PACKAGE = @PACKAGE@
@@ -233,7 +225,7 @@ libkrdb_la_SOURCES = \
      kr_db_kernel.c 
 
 libkrdb_la_LIBADD = $(top_srcdir)/krutils/libkrutils.la \
-	$(top_srcdir)/dbs/libdbs.la
+	$(top_srcdir)/dbs/dbs/libdbsdbs.la
 libkrdb_la_LDFLAGS = 
 libkrdb_la_CPPFLAGS = 
 all: all-am

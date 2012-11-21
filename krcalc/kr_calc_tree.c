@@ -289,7 +289,7 @@ static int _kr_evaluate_logic(T_KRCalcTree *t)
             b = (strcmp(t->child[0]->attr.val.s, t->child[1]->attr.val.s) >= 0);
         } else if (t->child[0]->type != KR_CALCTYPE_STRING &&
                    t->child[1]->type != KR_CALCTYPE_STRING) {
-            b = (d0 >+ d1)? TRUE:FALSE;
+            b = (d0 >= d1)? TRUE:FALSE;
         } else {
             return -1;
         }

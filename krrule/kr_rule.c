@@ -17,7 +17,7 @@ E_KRFieldType kr_rule_get_type(char *id, void *param)
     switch(cIdType) 
     {
         case 'A':
-            return kr_aid_get_type(iIdValue);
+            return kr_aid_get_type(ptContext->ptEnv->ptDbs, iIdValue);
             break;
         case 'C':
             return kr_get_field_type(ptContext->ptCurrRec, iIdValue);
@@ -52,7 +52,7 @@ void *kr_rule_get_value(char *id, void *param)
     T_KRContext *ptContext = (T_KRContext *)param;
     switch(id[0]) {
     case 'A':
-        return kr_aid_get_value(iIdValue);
+        return kr_aid_get_value(ptContext->ptEnv->ptDbs, iIdValue);
         break;
     case 'C':
         return kr_get_field_value(ptContext->ptCurrRec, iIdValue);
@@ -95,10 +95,10 @@ T_KRRule *kr_rule_construct(T_KRShmRuleDef *rule_def)
 
 int kr_rule_detect(T_KRRule *krrule, void *krcontext)
 {
-    int nRet = 0;
-    nRet = kr_calc_eval(krrule->ptRuleCalc, krcontext);
-    if (nRet != 0) {
-        KR_LOG(KR_LOGERROR, "kr_calc_eval failed!");
+    krrule->bViolated = FALSE;
+
+    if (kr_calc_eval(krrule->ptRuleCalc, krcontext) != 0) {
+        KR_LOG(KR_LOGERROR, "kr_calc_eval rule[%ld] failed!", krrule->lRuleId);
 		return -1;
     }
     

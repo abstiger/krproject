@@ -5,7 +5,8 @@ krserver_SOURCES   = kr_server.h \
                      kr_server_config.c 
      
 krserver_LDADD     = $(top_srcdir)/krutils/libkrutils.la
-krserver_LDADD    += $(top_srcdir)/dbs/libdbs.la
+krserver_LDADD    += $(top_srcdir)/dbs/libdbsbas.la
+krserver_LDADD    += $(top_srcdir)/dbs/dbs/libdbsdbs.la
 krserver_LDADD    += $(top_srcdir)/krshm/libkrshm.la
 krserver_LDADD    += $(top_srcdir)/krcalc/libkrcalc.la
 krserver_LDADD    += $(top_srcdir)/krdb/libkrdb.la

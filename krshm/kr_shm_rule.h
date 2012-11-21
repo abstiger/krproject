@@ -3,6 +3,7 @@
 
 #include <stdio.h>
 #include <time.h>
+#include "dbs/dbs_basopr.h"
 
 #define N_MAX_RULE_NUM 200
 
@@ -30,7 +31,7 @@ typedef struct _kr_shm_rule_t
 }T_KRShmRule;
 
 
-extern int LoadShmRule(T_KRShmRule *ptShmRule);
+extern int LoadShmRule(T_DbsEnv *dbsenv, T_KRShmRule *ptShmRule);
 extern int DumpShmRule(T_KRShmRule *ptShmRule, FILE *fp);
 
 #endif  /*__KR_SHM_RULE_H__*/

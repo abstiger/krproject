@@ -3,6 +3,7 @@
 
 #include "krutils/kr_utils.h"
 
+typedef void (*KRLoadDefFunc)(void *dbsenv, void *def, void *tableid);
 typedef void (*KRMapFunc)(void *fldval, int fldno, int fldlen, void *data);
 
 /*the two public fieldno of krdb'field definition*/
@@ -85,27 +86,29 @@ static inline void* kr_get_field_value(T_KRRecord *krrecord, int ifldid)
     return &krrecord->pRecBuf[field_offset];
 }
 
-T_KRRecord* kr_create_record_from_data(T_KRTable *krtable, void *source);
-T_KRRecord* kr_create_record_from_mmap(T_KRTable *krtable, void *mmaprec);
-void kr_destroy_record(T_KRRecord *krrecord);
+T_KRRecord*   kr_create_record_from_data(T_KRTable *krtable, void *source);
+T_KRRecord*   kr_create_record_from_mmap(T_KRTable *krtable, void *mmaprec);
+void          kr_destroy_record(T_KRRecord *krrecord);
 
 int           kr_insert_record(T_KRRecord *krrecord, T_KRTable *krtable);
 void          kr_delete_record(T_KRRecord *krrecord, T_KRTable *krtable);
 
-T_KRIndex* kr_create_index(T_KRDB *krdb, T_KRTable *krtable, int index_id, 
-                           char *index_name, E_KRIndexType index_type, 
-                           int index_field_id, int sort_field_id);
+T_KRIndex*    kr_create_index(T_KRDB *krdb, T_KRTable *krtable, int index_id, 
+                char *index_name, E_KRIndexType index_type, 
+                int index_field_id, int sort_field_id);
 void          kr_drop_table_index(T_KRIndex *krindex, T_KRTable *krtable);
 
-T_KRTable* kr_create_table(T_KRDB *krdb, int table_id, 
+T_KRTable*    kr_create_table(T_KRDB *krdb, int table_id, 
                 char *table_name, char *map_func_name, char *mmap_file, 
                 E_KRSizeKeepMode keep_mode, long keep_value, int field_cnt, 
-                KRFunc load_field_def_func, KRMapFunc map_func);
+                KRLoadDefFunc load_field_def_func, KRMapFunc map_func,
+                void *param);
+void          kr_drop_table(T_KRTable *krtable, T_KRDB *krdb);
+
 T_KRTable*    kr_get_table(T_KRDB *krdb, int id);
 T_KRIndex*    kr_get_table_index(T_KRTable *krtable, int id);
 T_KRIndex*    kr_get_db_index(T_KRDB *krdb, int id);
-T_KRList*       kr_get_record_list(T_KRIndex *krindex, void *key);
-void          kr_drop_table(T_KRTable *krtable);
+T_KRList*     kr_get_record_list(T_KRIndex *krindex, void *key);
 
 T_KRDB*       kr_create_db(char *db_name, char *module_file);
 void          kr_drop_db_index(T_KRIndex *krindex, T_KRDB *krdb);

@@ -1,9 +1,9 @@
 #include "kr_shm_hdi.h"
 #include "krutils/kr_utils.h"
 #include "dbs/dbs_basopr.h"
-#include "dbs/hdi_cur.h"
+#include "dbs/dbs/hdi_cur.h"
 
-int LoadShmHDI(T_KRShmHDI *ptShmHDI)
+int LoadShmHDI(T_DbsEnv *dbsenv, T_KRShmHDI *ptShmHDI)
 {
     int nRet = 0;
     int iResult = 0;
@@ -11,7 +11,7 @@ int LoadShmHDI(T_KRShmHDI *ptShmHDI)
     T_HdiCur stHdiCur = {0};
     T_KRShmHDIDef *ptShmHDIDef = &ptShmHDI->stShmHDIDef[0];
     
-    iResult = dbsHdiCur(KR_DBCUROPEN, &stHdiCur);
+    iResult = dbsHdiCur(dbsenv, KR_DBCUROPEN, &stHdiCur);
     if (iResult != KR_DBOK) {
         KR_LOG(KR_LOGERROR, "dbsHdiCur Open Error!");
         return -1;
@@ -19,7 +19,7 @@ int LoadShmHDI(T_KRShmHDI *ptShmHDI)
     
     while(1)
     {
-        iResult=dbsHdiCur(KR_DBCURFETCH, &stHdiCur);
+        iResult=dbsHdiCur(dbsenv, KR_DBCURFETCH, &stHdiCur);
         if (iResult != KR_DBNOTFOUND && iResult != KR_DBOK) {
             KR_LOG(KR_LOGERROR, "dbsHdiCur Fetch Error!");
             nRet = -1;
@@ -71,7 +71,7 @@ int LoadShmHDI(T_KRShmHDI *ptShmHDI)
     }
     ptShmHDI->tLastLoadTime = time(NULL);
 
-    iResult = dbsHdiCur(KR_DBCURCLOSE, &stHdiCur);
+    iResult = dbsHdiCur(dbsenv, KR_DBCURCLOSE, &stHdiCur);
     if (iResult != KR_DBOK) {
         KR_LOG(KR_LOGERROR, "dbsHdiCur Close Error!");
         return -1;

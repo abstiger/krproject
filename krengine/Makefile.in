@@ -79,7 +79,9 @@ am__uninstall_files_from_dir = { \
 am__installdirs = "$(DESTDIR)$(libdir)" "$(DESTDIR)$(includedir)"
 LTLIBRARIES = $(lib_LTLIBRARIES)
 libkrengine_la_DEPENDENCIES = $(top_srcdir)/krutils/libkrutils.la \
-	$(top_srcdir)/dbs/libdbs.la $(top_srcdir)/krshm/libkrshm.la \
+	$(top_srcdir)/dbs/libdbsbas.la \
+	$(top_srcdir)/dbs/dbs/libdbsdbs.la \
+	$(top_srcdir)/krshm/libkrshm.la \
 	$(top_srcdir)/krcalc/libkrcalc.la \
 	$(top_srcdir)/krdb/libkrdb.la \
 	$(top_srcdir)/krrule/libkrrule.la
@@ -121,10 +123,6 @@ CFLAGS = @CFLAGS@
 CPP = @CPP@
 CPPFLAGS = @CPPFLAGS@
 CYGPATH_W = @CYGPATH_W@
-DB2CMD = @DB2CMD@
-DB2_INCLUDE = @DB2_INCLUDE@
-DB2_LDFLAGS = @DB2_LDFLAGS@
-DB2_LIBS = @DB2_LIBS@
 DEFS = @DEFS@
 DEPDIR = @DEPDIR@
 DLLTOOL = @DLLTOOL@
@@ -157,10 +155,6 @@ NM = @NM@
 NMEDIT = @NMEDIT@
 OBJDUMP = @OBJDUMP@
 OBJEXT = @OBJEXT@
-ORACLE_INCLUDE = @ORACLE_INCLUDE@
-ORACLE_LDFLAGS = @ORACLE_LDFLAGS@
-ORACLE_LIBS = @ORACLE_LIBS@
-ORACLE_PROC = @ORACLE_PROC@
 OTOOL = @OTOOL@
 OTOOL64 = @OTOOL64@
 PACKAGE = @PACKAGE@
@@ -237,7 +231,9 @@ libkrengine_la_SOURCES = \
      kr_engine_thread.c 
 
 libkrengine_la_LIBADD = $(top_srcdir)/krutils/libkrutils.la \
-	$(top_srcdir)/dbs/libdbs.la $(top_srcdir)/krshm/libkrshm.la \
+	$(top_srcdir)/dbs/libdbsbas.la \
+	$(top_srcdir)/dbs/dbs/libdbsdbs.la \
+	$(top_srcdir)/krshm/libkrshm.la \
 	$(top_srcdir)/krcalc/libkrcalc.la \
 	$(top_srcdir)/krdb/libkrdb.la \
 	$(top_srcdir)/krrule/libkrrule.la

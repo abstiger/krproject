@@ -8,6 +8,6 @@ libkrdb_la_SOURCES  = \
      kr_db_kernel.c 
      
 libkrdb_la_LIBADD    = $(top_srcdir)/krutils/libkrutils.la
-libkrdb_la_LIBADD   += $(top_srcdir)/dbs/libdbs.la
+libkrdb_la_LIBADD   += $(top_srcdir)/dbs/dbs/libdbsdbs.la
 libkrdb_la_LDFLAGS   = 
 libkrdb_la_CPPFLAGS  = 

@@ -19,6 +19,7 @@ static int MyPrintRecord(T_KRRecord *ptRecord, void *user_data);
 
 int main(int argc,char *argv[])
 {
+/*	
     int i = 0;
     int iResult = 0;
     char caTmpBuff[200] = {0};
@@ -29,7 +30,6 @@ int main(int argc,char *argv[])
 	time_t	lTime;
 	struct tm	*tTmLocal;
 	char	sLogTime[128];
-	
 	iResult = dbsDbConnect();
 	if (iResult != 0)
 	{
@@ -80,7 +80,7 @@ int main(int argc,char *argv[])
         
         if (i%10000 == 0)
         {
-        	/* get current time */
+        	// get current time 
 	        memset (sLogTime, 0x00, sizeof(sLogTime));
 	        lTime = time (NULL);
 	        tTmLocal = localtime (&lTime);
@@ -99,7 +99,6 @@ int main(int argc,char *argv[])
 	    //sleep(1);
     }
 
-/*
     FILE *fpDump;
     if ((fpDump = fopen("KRDB.dump", "w")) == NULL) 
     {
@@ -108,16 +107,13 @@ int main(int argc,char *argv[])
     }
     KRDBDumpDBToFile(gptKRDB, fpDump);
     fclose(fpDump);
-*/
     kr_db_dump_field_def(stdout, gptKRDB, 1);
     kr_db_dump(stdout, gptKRDB, 0);
     //kr_db_dump(stdout, gptKRDB, 1);
-    /*    
     	printf("gptKRDB->ptCurrTable=[%p][%d][%s]\n", 
 	        gptKRDB->ptCurrTable, gptKRDB->ptCurrTable->iRecordSize, 
 	        gptKRDB->ptCurrTable->caMMapFile);
 	kr_db_mmap_file_handle(gptKRDB->ptCurrTable->caMMapFile, MyPrintRecord, NULL);
-*/
     
     //Step 3:kr_db_shutdown
     iResult = kr_db_shutdown(gptKRDB);
@@ -128,8 +124,8 @@ int main(int argc,char *argv[])
 	}
 	
 	dbsDbDisconnect();
-	
 
+*/
 	return 0;
 }
 

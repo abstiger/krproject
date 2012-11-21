@@ -77,7 +77,8 @@ am__uninstall_files_from_dir = { \
 am__installdirs = "$(DESTDIR)$(libdir)"
 LTLIBRARIES = $(lib_LTLIBRARIES)
 libkrrule_la_DEPENDENCIES = $(top_srcdir)/krutils/libkrutils.la \
-	$(top_srcdir)/dbs/libdbs.la $(top_srcdir)/krshm/libkrshm.la \
+	$(top_srcdir)/dbs/dbs/libdbsdbs.la \
+	$(top_srcdir)/krshm/libkrshm.la \
 	$(top_srcdir)/krcalc/libkrcalc.la \
 	$(top_srcdir)/krdb/libkrdb.la
 am_libkrrule_la_OBJECTS = libkrrule_la-kr_context.lo \
@@ -121,10 +122,6 @@ CFLAGS = @CFLAGS@
 CPP = @CPP@
 CPPFLAGS = @CPPFLAGS@
 CYGPATH_W = @CYGPATH_W@
-DB2CMD = @DB2CMD@
-DB2_INCLUDE = @DB2_INCLUDE@
-DB2_LDFLAGS = @DB2_LDFLAGS@
-DB2_LIBS = @DB2_LIBS@
 DEFS = @DEFS@
 DEPDIR = @DEPDIR@
 DLLTOOL = @DLLTOOL@
@@ -157,10 +154,6 @@ NM = @NM@
 NMEDIT = @NMEDIT@
 OBJDUMP = @OBJDUMP@
 OBJEXT = @OBJEXT@
-ORACLE_INCLUDE = @ORACLE_INCLUDE@
-ORACLE_LDFLAGS = @ORACLE_LDFLAGS@
-ORACLE_LIBS = @ORACLE_LIBS@
-ORACLE_PROC = @ORACLE_PROC@
 OTOOL = @OTOOL@
 OTOOL64 = @OTOOL64@
 PACKAGE = @PACKAGE@
@@ -255,7 +248,8 @@ libkrrule_la_SOURCES = \
      kr_dynamicmem.c 
 
 libkrrule_la_LIBADD = $(top_srcdir)/krutils/libkrutils.la \
-	$(top_srcdir)/dbs/libdbs.la $(top_srcdir)/krshm/libkrshm.la \
+	$(top_srcdir)/dbs/dbs/libdbsdbs.la \
+	$(top_srcdir)/krshm/libkrshm.la \
 	$(top_srcdir)/krcalc/libkrcalc.la \
 	$(top_srcdir)/krdb/libkrdb.la
 libkrrule_la_LDFLAGS = 

@@ -3,6 +3,7 @@
 
 #include <stdio.h>
 #include <time.h>
+#include "dbs/dbs_basopr.h"
 #include "kr_shm_sdi.h"
 #include "kr_shm_ddi.h"
 #include "kr_shm_hdi.h"
@@ -29,7 +30,7 @@ T_KRShareMem *kr_shm_attach(int shmkey);
 void kr_shm_detach(T_KRShareMem *ptShmBuf);
 int kr_shm_destroy(int shmkey);
 short kr_shm_switch(T_KRShareMem *ptShmBuf);
-short kr_shm_load(T_KRShareMem *ptShmBuf);
+short kr_shm_load(T_DbsEnv *dbsenv, T_KRShareMem *ptShmBuf);
 void kr_shm_dump(T_KRShareMem *ptShmBuf, FILE *fp);
 
 #endif  /*__KR_SHM_H__*/

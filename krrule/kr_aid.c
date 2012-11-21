@@ -1,12 +1,8 @@
 #include "kr_aid.h"
-#include "krutils/kr_utils.h"
-#include "krcalc/kr_calc.h"
+#include "dbs/dbs/set_def_sel.h"
+#include "dbs/dbs/set_cfg_cur.h"
 
-#include "dbs/dbs_basopr.h"
-#include "dbs/set_def_sel.h"
-#include "dbs/set_cfg_cur.h"
-
-static int kr_aid_load(T_KRSet *krset, int set_id)
+static int kr_aid_load(T_DbsEnv *dbsenv, T_KRSet *krset, int set_id)
 {
     int iCnt = 0;    
     int iResult = 0;
@@ -15,7 +11,7 @@ static int kr_aid_load(T_KRSet *krset, int set_id)
     U_KRFieldVal uEleVal ={0};
     
     stSetCfgCur.lInSetId = set_id;
-    iResult = dbsSetCfgCur(KR_DBCUROPEN, &stSetCfgCur);
+    iResult = dbsSetCfgCur(dbsenv, KR_DBCUROPEN, &stSetCfgCur);
     if (iResult != KR_DBOK) {
         KR_LOG(KR_LOGERROR, "dbsSetCfgCur Open Error!");
         return -1;
@@ -23,7 +19,7 @@ static int kr_aid_load(T_KRSet *krset, int set_id)
     
     while(1)
     {
-        iResult=dbsSetCfgCur(KR_DBCURFETCH, &stSetCfgCur);
+        iResult=dbsSetCfgCur(dbsenv, KR_DBCURFETCH, &stSetCfgCur);
         if (iResult != KR_DBNOTFOUND && iResult != KR_DBOK)
         {
             KR_LOG(KR_LOGERROR, "dbsSetCfgCur Fetch Error!");
@@ -70,7 +66,7 @@ static int kr_aid_load(T_KRSet *krset, int set_id)
         iCnt++;
     }
 
-    iResult = dbsSetCfgCur(KR_DBCURCLOSE, &stSetCfgCur);
+    iResult = dbsSetCfgCur(dbsenv, KR_DBCURCLOSE, &stSetCfgCur);
     if (iResult != KR_DBOK) {
         KR_LOG(KR_LOGERROR, "dbsSetCfgCur Close Error!");
         return -1;
@@ -80,13 +76,13 @@ static int kr_aid_load(T_KRSet *krset, int set_id)
 }
 
 
-T_KRSet *kr_aid_get_value(int set_id)
+T_KRSet *kr_aid_get_value(T_DbsEnv *dbsenv, int set_id)
 {
     int iResult = 0;
     T_SetDefSel stSetDefSel = {0};
     
     stSetDefSel.lInSetId = set_id;
-    iResult = dbsSetDefSel(KR_DBSELECT, &stSetDefSel);
+    iResult = dbsSetDefSel(dbsenv, KR_DBSELECT, &stSetDefSel);
     if (iResult != KR_DBOK) {
         KR_LOG(KR_LOGERROR, "dbsSetDefSel [%ld] Failed!", \
                 stSetDefSel.lInSetId);
@@ -101,7 +97,7 @@ T_KRSet *kr_aid_get_value(int set_id)
         return NULL;
     }
     
-    iResult = kr_aid_load(krset, stSetDefSel.lInSetId);
+    iResult = kr_aid_load(dbsenv, krset, stSetDefSel.lInSetId);
     if (iResult != 0) {
         KR_LOG(KR_LOGERROR, "kr_aid_load [%ld] Failed!", \
                 stSetDefSel.lInSetId);
@@ -112,13 +108,13 @@ T_KRSet *kr_aid_get_value(int set_id)
     return krset;
 }
 
-E_KRFieldType kr_aid_get_type(int set_id)
+E_KRFieldType kr_aid_get_type(T_DbsEnv *dbsenv, int set_id)
 {
     int iResult = 0;
     T_SetDefSel stSetDefSel = {0};
     
     stSetDefSel.lInSetId = set_id;
-    iResult = dbsSetDefSel(KR_DBSELECT, &stSetDefSel);
+    iResult = dbsSetDefSel(dbsenv, KR_DBSELECT, &stSetDefSel);
     if (iResult != KR_DBOK) {
         KR_LOG(KR_LOGERROR, "dbsSetDefSel [%ld] Failed!", \
                 stSetDefSel.lInSetId);

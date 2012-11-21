@@ -18,11 +18,12 @@ struct _kr_engine_t
     char             *info;         /* information of krengine */
 
     int              shmkey;        /* share memory key */
-    char             *dbname;       /* name of krdb */
+    char             *krdbname;     /* name of krdb */
     char             *dbmodulename; /* name of krdb's module */
     int              hdicachesize;  /* hdi cache size */
     int              threadcnt;     /* thread pool size */
 
+    T_DbsEnv         *dbsenv;       /* database pointer */
     T_KRShareMem     *krshm;        /* share memory address */
     T_KRDB           *krdb;         /* krdb for this server */
     T_KRCache        *krhdicache;   /* cache for hdi */
@@ -31,34 +32,17 @@ struct _kr_engine_t
     T_KRThreadPool   *krtp;         /* thread pool */
 };
 
-
-
-int kr_engine_external_startup(char *logpath, char *logname, int loglevel)
+T_KREngine *kr_engine_startup(
+        char *dbname, char *dbuser, char *dbpass,
+        char *logpath, char *logname, int loglevel,
+        int shmkey, char *krdbname, char *dbmodulename, 
+        int hdicachesize, int threadcnt)
 {
     /* Set log file and level */
     if (logpath) kr_log_set_path(logpath);
     if (logname) kr_log_set_name(logname);
     if (loglevel) kr_log_set_level(loglevel);
 
-    /* Connect db */
-    if (dbsDbConnect() != 0) {
-        KR_LOG(KR_LOGERROR, "dbsDbConnect failed!\n");
-        return -1;
-    }
-
-    return 0;
-}
-
-
-void kr_engine_external_shutdown(void)
-{
-    /* disconnect db */
-    dbsDbDisconnect();
-}
-
-
-T_KREngine *kr_engine_startup(int shmkey, char *dbname, char *dbmodulename, int hdicachesize, int threadcnt)
-{
     T_KREngine *krengine = kr_calloc(sizeof(T_KREngine));
     if (krengine == NULL) {
         KR_LOG(KR_LOGERROR, "kr_calloc krengine failed!");
@@ -77,11 +61,18 @@ T_KREngine *kr_engine_startup(int shmkey, char *dbname, char *dbmodulename, int 
     krengine->info = kr_strdup(caInfo);
 
     krengine->shmkey = shmkey;
-    krengine->dbname = kr_strdup(dbname);
+    krengine->krdbname = kr_strdup(krdbname);
     krengine->dbmodulename = kr_strdup(dbmodulename);
     krengine->hdicachesize = hdicachesize;
     krengine->threadcnt = threadcnt;
 
+    /* Connect to database */
+    krengine->dbsenv = dbsConnect(dbname, dbuser, dbpass);
+    if (krengine->dbsenv == NULL) {
+        KR_LOG(KR_LOGERROR, "dbsConnect [%s] [%s] [%s] failed!\n",
+                dbname, dbuser, dbpass);
+        goto FAILED;
+    }
 
     /* Attach share memory */
     krengine->krshm  = kr_shm_attach(krengine->shmkey);
@@ -91,10 +82,10 @@ T_KREngine *kr_engine_startup(int shmkey, char *dbname, char *dbmodulename, int 
     }
 
     /* Start up krdb */
-    krengine->krdb = kr_db_startup(krengine->dbname, krengine->dbmodulename);
+    krengine->krdb = kr_db_startup(krengine->dbsenv, krengine->krdbname, krengine->dbmodulename);
     if (krengine->krdb == NULL) {
         KR_LOG(KR_LOGERROR, "kr_db_startup [%s] [%s] failed!", \
-				krengine->dbname, krengine->dbmodulename);
+				krengine->krdbname, krengine->dbmodulename);
         goto FAILED;
     }
 
@@ -114,6 +105,7 @@ T_KREngine *kr_engine_startup(int shmkey, char *dbname, char *dbmodulename, int 
         KR_LOG(KR_LOGERROR, "kr_calloc krctxenv failed!");
         goto FAILED;
     }
+    krengine->krctxenv->ptDbs = krengine->dbsenv;
     krengine->krctxenv->ptShm = krengine->krshm;
     krengine->krctxenv->ptKRDB = krengine->krdb;
     krengine->krctxenv->ptHDICache = krengine->krhdicache;
@@ -149,9 +141,10 @@ FAILED:
         if (krengine->krhdicache) kr_hdi_cache_destroy(krengine->krhdicache);
         if (krengine->krdb) kr_db_shutdown(krengine->krdb);
         if (krengine->krshm) kr_shm_detach(krengine->krshm);
+        if (krengine->dbsenv) dbsDisconnect(krengine->dbsenv);
         if (krengine->version) kr_free(krengine->version);
         if (krengine->info) kr_free(krengine->info);
-        if (krengine->dbname) kr_free(krengine->dbname);
+        if (krengine->krdbname) kr_free(krengine->krdbname);
         if (krengine->dbmodulename) kr_free(krengine->dbmodulename);
         kr_free(krengine);
     }
@@ -180,9 +173,11 @@ void kr_engine_shutdown(T_KREngine *krengine)
     if (krengine->krdb) kr_db_shutdown(krengine->krdb);
     /* share memory detach */
     if (krengine->krshm) kr_shm_detach(krengine->krshm);
+    /* disconnect database */
+    if (krengine->dbsenv) dbsDisconnect(krengine->dbsenv);
     if (krengine->version) kr_free(krengine->version);
     if (krengine->info) kr_free(krengine->info);
-    if (krengine->dbname) kr_free(krengine->dbname);
+    if (krengine->krdbname) kr_free(krengine->krdbname);
     if (krengine->dbmodulename) kr_free(krengine->dbmodulename);
     kr_free(krengine);
 }

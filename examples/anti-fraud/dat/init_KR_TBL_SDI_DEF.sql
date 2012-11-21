@@ -1,6 +1,8 @@
+begin;
+
 DELETE from KR_TBL_SDI_DEF;
 
 insert into KR_TBL_SDI_DEF (SDI_ID, SDI_NAME, SDI_DESC, SDI_TYPE, SDI_VALUE_TYPE, SDI_AGGR_FUNC, SDI_FREE_FUNC, STATISTICS_DATASRC, STATISTICS_INDEX, STATISTICS_FIELD, STATISTICS_LOCATION, LOCATION_PROPERTY, SDI_FILTER_STRING, SDI_STATUS, REC_CRET_DTTM, LST_UPD_DTTM, LST_UPD_USER_ID)
-values (1, 'last_trans_time', 'ÉÏ±Ê½»Ò×½ð¶î´óÓÚ50²¢ÇÒ½»Ò×µØµãÂú×ãÕýÔòµÄ½»Ò×Ê±¼ä', '0', 'S', ' ',' ', 1, 1, 4, 1, 'R', '(F_7>50)&&(F_8##[^TRANS_LOCATION*]);', '0', '20120523141050   ', '20120523141050   ', 'Tiger');
+values (1, 'last_trans_time', 'ä¸Šç¬”äº¤æ˜“é‡‘é¢å¤§äºŽ50å¹¶ä¸”äº¤æ˜“åœ°ç‚¹æ»¡è¶³æ­£åˆ™çš„äº¤æ˜“æ—¶é—´', '0', 'S', ' ',' ', 1, 1, 4, 1, 'R', '(F_7>50)&&(F_8##[^TRANS_LOCATION*]);', '0', '20120523141050   ', '20120523141050   ', 'Tiger');
 
 commit;

@@ -3,6 +3,7 @@
 
 #include <stdio.h>
 #include <time.h>
+#include "dbs/dbs_basopr.h"
 
 #define N_MAX_SDI_NUM  500
 
@@ -31,7 +32,7 @@ typedef struct _kr_shm_sdi_t
 }T_KRShmSDI;
 
 
-int LoadShmSDI(T_KRShmSDI *ptShmSDI);
+int LoadShmSDI(T_DbsEnv *dbsenv, T_KRShmSDI *ptShmSDI);
 int DumpShmSDI(T_KRShmSDI *ptShmSDI, FILE *fp);
 
 #endif  /*__KR_SHM_SDI_H__*/
