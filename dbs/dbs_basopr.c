@@ -14,6 +14,9 @@ T_DbsEnv *dbsConnect(char *dsn, char *user, char *pass)
 		fprintf(stderr, "calloc DbsEnv failed:[%d]!\n", rc);
 		goto failure;
 	}
+    dbsenv->dsn = strdup(dsn);
+    dbsenv->user = strdup(user);
+    dbsenv->pass = strdup(pass);
 
 	rc = SQLAllocHandle(SQL_HANDLE_ENV, SQL_NULL_HANDLE, &dbsenv->henv);
 	if (rc != SQL_SUCCESS) {
@@ -39,7 +42,7 @@ T_DbsEnv *dbsConnect(char *dsn, char *user, char *pass)
 		goto failure;
 	}
 
-	rc = SQLConnect(dbsenv->hdbc, (SQLCHAR *)dsn, SQL_NTS, (SQLCHAR *)user, SQL_NTS, (SQLCHAR *)pass, SQL_NTS );
+	rc = SQLConnect(dbsenv->hdbc, dbsenv->dsn, SQL_NTS, dbsenv->user, SQL_NTS, dbsenv->pass, SQL_NTS);
 	if (rc != SQL_SUCCESS) {
 		fprintf(stderr, "SQLConnect failed:[%d]!\n", rc);
 		goto failure;
@@ -67,6 +70,9 @@ int dbsDisconnect(T_DbsEnv *dbsenv)
 		    SQLFreeHandle(SQL_HANDLE_DBC, dbsenv->hdbc);
 		}
 		if (dbsenv->henv) SQLFreeHandle(SQL_HANDLE_ENV, dbsenv->henv);
+        free(dbsenv->dsn);
+        free(dbsenv->user);
+        free(dbsenv->pass);
 		free(dbsenv);
 	}
 	return 0;

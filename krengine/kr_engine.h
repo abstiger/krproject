@@ -11,7 +11,7 @@ typedef enum {
 typedef struct _kr_engine_t T_KREngine;
 
 T_KREngine *kr_engine_startup(
-        char *dbname, char *dbuser, char *dbpass,
+        char *dsn, char *user, char *pass,
         char *logpath, char *logname, int loglevel,
         int shmkey, char *krdbname, char *dbmodulename,
         int hdicachesize, int threadcnt);

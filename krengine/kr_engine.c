@@ -33,7 +33,7 @@ struct _kr_engine_t
 };
 
 T_KREngine *kr_engine_startup(
-        char *dbname, char *dbuser, char *dbpass,
+        char *dsn, char *user, char *pass,
         char *logpath, char *logname, int loglevel,
         int shmkey, char *krdbname, char *dbmodulename, 
         int hdicachesize, int threadcnt)
@@ -67,10 +67,10 @@ T_KREngine *kr_engine_startup(
     krengine->threadcnt = threadcnt;
 
     /* Connect to database */
-    krengine->dbsenv = dbsConnect(dbname, dbuser, dbpass);
+    krengine->dbsenv = dbsConnect(dsn, user, pass);
     if (krengine->dbsenv == NULL) {
         KR_LOG(KR_LOGERROR, "dbsConnect [%s] [%s] [%s] failed!\n",
-                dbname, dbuser, dbpass);
+                dsn, user, pass);
         goto FAILED;
     }
 
@@ -82,7 +82,8 @@ T_KREngine *kr_engine_startup(
     }
 
     /* Start up krdb */
-    krengine->krdb = kr_db_startup(krengine->dbsenv, krengine->krdbname, krengine->dbmodulename);
+    krengine->krdb = kr_db_startup(
+            krengine->dbsenv, krengine->krdbname, krengine->dbmodulename);
     if (krengine->krdb == NULL) {
         KR_LOG(KR_LOGERROR, "kr_db_startup [%s] [%s] failed!", \
 				krengine->krdbname, krengine->dbmodulename);

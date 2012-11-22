@@ -10,9 +10,11 @@
 /* db environment, one connection per this */
 typedef struct _dbs_env_t 
 { 
+    SQLCHAR   *dsn;
+    SQLCHAR   *user;
+    SQLCHAR   *pass;
     SQLHENV    henv; 
     SQLHDBC    hdbc; 
-    SQLHSTMT   hstmt; 
 }T_DbsEnv;
 
 /* return code */

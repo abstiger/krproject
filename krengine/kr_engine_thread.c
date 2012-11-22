@@ -9,19 +9,32 @@
 
 void *kr_engine_thread_init(void *env)
 {
-    /* Connect db */
-    /*TODO:oracle mutli thread
-	if (dbsDbConnect() != 0) {
-	    KR_LOG(KR_LOGERROR, "dbsDbConnect failed!\n");
-        return NULL;
-	}
-	*/
-	
 	/* intialize rule detecting context */
-    T_KRContextEnv *krctxenv = (T_KRContextEnv *)env;
+    T_KRContextEnv *krctxenv = kr_calloc(sizeof(T_KRContextEnv));
+    if (krctxenv == NULL) {
+        KR_LOG(KR_LOGERROR, "kr_calloc krctxenv failed!");
+        return NULL;
+    }
+
+    /* reconnect database in thread */
+    T_DbsEnv *dbsenv = ((T_KRContextEnv *)env)->ptDbs;
+    krctxenv->ptDbs = dbsConnect(
+            dbsenv->dsn, dbsenv->user, dbsenv->pass);
+    if (krctxenv->ptDbs == NULL) {
+        KR_LOG(KR_LOGERROR, "dbsConnect [%s] [%s] [%s] in thread failed!\n",
+                dbsenv->dsn, dbsenv->user, dbsenv->pass);
+        kr_free(krctxenv);
+        return NULL;
+    }
+    krctxenv->ptShm = ((T_KRContextEnv *)env)->ptShm;
+    krctxenv->ptKRDB = ((T_KRContextEnv *)env)->ptKRDB;
+    krctxenv->ptHDICache = ((T_KRContextEnv *)env)->ptHDICache;
+
     T_KRContext *krcontext = kr_context_init(krctxenv);
     if (krcontext == NULL) {
         KR_LOG(KR_LOGERROR, "kr_context_init failed!\n");
+        dbsDisconnect(krctxenv->ptDbs);
+        kr_free(krctxenv);
         return NULL;
     }
     
@@ -46,7 +59,7 @@ int kr_engine_thread_worker(void *ctx, void *arg)
         return -1;
     }
     
-    /*TODO:write reponse*/
+    /*TODO: handle detect result and write reponse*/
     
     return 0;
 }
@@ -56,10 +69,10 @@ void kr_engine_thread_fini(void *ctx)
 {
     /* finalize rule detecting context */
     T_KRContext *krcontext = (T_KRContext *)ctx;
-    kr_context_fini(krcontext);
-    
     /* disconnect db */
-	/*
-	dbsDbDisconnect();
-	*/
+    dbsDisconnect(krcontext->ptEnv->ptDbs);
+    /* free context environment */
+    kr_free(krcontext->ptEnv);
+    /* finalize context */
+    kr_context_fini(krcontext);
 }
