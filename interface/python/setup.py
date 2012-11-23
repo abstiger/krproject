@@ -15,7 +15,7 @@ install_path='/home/tiger/krproject/'
 ext_krengine = Extension('_krengine',
         include_dirs = [os.path.join(install_path,'include')],
         library_dirs = [os.path.join(install_path,'lib')],
-        libraries = ['krutils','dbs','krshm','krcalc','krdb','krrule','krengine'],
+        libraries = ['krutils','dbsbas','dbsdbs','krshm','krcalc','krdb','krrule','krengine'],
         sources = ['krengine_module.c'])
 
 setup(name = 'krengine-python',

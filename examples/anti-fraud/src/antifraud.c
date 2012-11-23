@@ -2,7 +2,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
+#include "parson.h"
 
+/*
 typedef struct _kr_tradflow_t{
     char     caOutCustNo[20+1];
     char     caOutTransDate[8+1];
@@ -12,7 +14,7 @@ typedef struct _kr_tradflow_t{
     double   dOutTransAmt;
     char     caOutTransLoc[100+1];
 } T_KRTradFlow_1;
-
+*/
 
 static time_t kr_time_to_ttime(char *pcaTime)
 {
@@ -47,8 +49,9 @@ static time_t kr_time_to_ttime(char *pcaTime)
 
 void map_func_1(void *fldval, int fldno, int fldlen, void *data)
 {
-    T_KRTradFlow_1 *ptReqDef = (T_KRTradFlow_1 *)data;
-	char caTransDateTime[14+1] = {0};
+    JSON_Value *jsonval = json_parse_string((char *)data);
+    JSON_Object *jsonobj = json_value_get_object(jsonval);
+
     memset(fldval, 0x00, fldlen);
     switch(fldno)
     {
@@ -56,31 +59,41 @@ void map_func_1(void *fldval, int fldno, int fldlen, void *data)
             *(long *)fldval = (long )time(NULL);
             break;
         case 1:
-            snprintf(caTransDateTime, 15, "%8s%6s", \
-                    ptReqDef->caOutTransDate, 
-                    ptReqDef->caOutTransTime);
-            *(long *)fldval = kr_time_to_ttime(caTransDateTime);
+        {
+            char caDateTime[14+1] = {0};
+            snprintf(caDateTime, 15, "%8s%6s", \
+                    json_object_get_string(jsonobj, "txndate"), 
+                    json_object_get_string(jsonobj, "txntime"));
+            *(long *)fldval = kr_time_to_ttime(caDateTime);
             break;
+        }
         case 2:
-            memcpy(fldval, ptReqDef->caOutCustNo, fldlen);
+            printf("custno=[%s]\n", json_object_get_string(jsonobj, "custno"));
+            memcpy(fldval, json_object_get_string(jsonobj, "custno"), fldlen);
             break;
         case 3:
-            memcpy(fldval, ptReqDef->caOutTransDate, fldlen);
+            printf("txndate=[%s]\n",json_object_get_string(jsonobj, "txndate"));
+            memcpy(fldval, json_object_get_string(jsonobj, "txndate"), fldlen);
             break;    
         case 4:
-            memcpy(fldval, ptReqDef->caOutTransTime, fldlen);
+            printf("txntime=[%s]\n",json_object_get_string(jsonobj, "txntime"));
+            memcpy(fldval, json_object_get_string(jsonobj, "txntime"), fldlen);
             break;
         case 5:
-            memcpy(fldval, ptReqDef->caOutFlowNo, fldlen);
+            printf("flowno=[%s]\n", json_object_get_string(jsonobj, "flowno"));
+            memcpy(fldval, json_object_get_string(jsonobj, "flowno"), fldlen);
             break;
         case 6:
-            memcpy(fldval, ptReqDef->caOutTransType, fldlen);
+            printf("txntype=[%s]\n",json_object_get_string(jsonobj, "txntype"));
+            memcpy(fldval, json_object_get_string(jsonobj, "txntype"), fldlen);
             break;
         case 7:
-            *(double *)fldval = ptReqDef->dOutTransAmt;
+            printf("txnamt=[%lf]\n", json_object_get_number(jsonobj, "txnamt"));
+            *(double *)fldval = json_object_get_number(jsonobj, "txnamt");
             break;
         case 8:
-            memcpy(fldval, ptReqDef->caOutTransLoc, fldlen);
+            printf("txnloc=[%s]\n", json_object_get_string(jsonobj, "txnloc"));
+            memcpy(fldval, json_object_get_string(jsonobj, "txnloc"), fldlen);
             break;
         default:
             break;

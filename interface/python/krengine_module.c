@@ -3,43 +3,24 @@
 
 
 static PyObject *
-pykrengine_external_startup(PyObject *self, PyObject *args)
+pykrengine_startup(PyObject *self, PyObject *args)
 {
+    char *dsn;
+    char *user;
+    char *pass;
     char *logpath;
     char *logname;
     int loglevel;
-    int ret;
-    
-    if (!PyArg_ParseTuple(args, "ssi", &logpath, &logname, &loglevel))
-        return NULL;
-    ret =kr_engine_external_startup(logpath, logname, loglevel);
-    return Py_BuildValue("i", ret);
-}
-
-
-static PyObject *
-pykrengine_external_shutdown(PyObject *self, PyObject *args)
-{
-    T_KREngine *krengine;
-
-    kr_engine_external_shutdown();
-    Py_INCREF(Py_None);
-    return Py_None;
-}
-
-
-static PyObject *
-pykrengine_startup(PyObject *self, PyObject *args)
-{
     int shmkey;
-    char *dbname;
+    char *krdbname;
+    char *dbmodulename;
     int hdicachesize;
     int threadcnt;
-    
-    if (!PyArg_ParseTuple(args, "isii", &shmkey, &dbname, &hdicachesize, &threadcnt))
+
+    if (!PyArg_ParseTuple(args, "sssssiissii", &dsn, &user, &pass, &logpath, &logname, &loglevel, &shmkey, &krdbname, &dbmodulename, &hdicachesize, &threadcnt))
         return NULL;
     T_KREngine *krengine = \
-        kr_engine_startup(shmkey, dbname, hdicachesize, threadcnt);
+        kr_engine_startup(dsn, user, pass, logpath, logname, loglevel, shmkey, krdbname, dbmodulename, hdicachesize, threadcnt);
     return Py_BuildValue("l", krengine);
 }
 
@@ -88,8 +69,6 @@ pykrengine_info(PyObject *self, PyObject *args)
 
 
 static PyMethodDef KREngineMethods[] = {
-    {"external_startup",  pykrengine_external_startup, METH_VARARGS,""},
-    {"external_shutdown",  pykrengine_external_shutdown, METH_VARARGS,""},
     {"startup",  pykrengine_startup, METH_VARARGS,""},
     {"run",  pykrengine_run, METH_VARARGS,""},
     {"shutdown",  pykrengine_shutdown, METH_VARARGS,""},

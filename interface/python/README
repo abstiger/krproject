@@ -4,7 +4,6 @@ Python interface for krengine
 Install Requirements
 ------------------------------------------------------------
 * install package `python-dev` if you use linux
-* install pika: https://github.com/pika/pika/ (or pip)
 
 Install krengine library
 ------------------------------------------------------------

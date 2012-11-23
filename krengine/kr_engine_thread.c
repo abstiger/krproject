@@ -9,7 +9,7 @@
 
 void *kr_engine_thread_init(void *env)
 {
-	/* intialize rule detecting context */
+    /* intialize rule detecting context */
     T_KRContextEnv *krctxenv = kr_calloc(sizeof(T_KRContextEnv));
     if (krctxenv == NULL) {
         KR_LOG(KR_LOGERROR, "kr_calloc krctxenv failed!");

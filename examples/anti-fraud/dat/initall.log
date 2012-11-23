@@ -1,5 +1,5 @@
-dbms_name: sqlite3
-Start at:[2012-11-21 15:23:43]!
+dbms_name: mysql
+Start at:[2012-11-23 15:55:40]!
   initializing table KR_TBL_DATASRC_DEF ...
   ok!
   initializing table KR_TBL_DATASRC_FIELD_DEF ...
@@ -12,4 +12,4 @@ Start at:[2012-11-21 15:23:43]!
   ok!
   initializing table KR_TBL_SDI_DEF ...
   ok!
-Finish at:[2012-11-21 15:23:43]!
+Finish at:[2012-11-23 15:55:40]!
