@@ -1,4 +1,0 @@
-/usr/local/lib/python2.7/dist-packages/krengine.py
-/usr/local/lib/python2.7/dist-packages/krengine.pyc
-/usr/local/lib/python2.7/dist-packages/_krengine.so
-/usr/local/lib/python2.7/dist-packages/krengine-1.0.0.egg-info
