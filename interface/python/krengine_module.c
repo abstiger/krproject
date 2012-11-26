@@ -5,22 +5,17 @@
 static PyObject *
 pykrengine_startup(PyObject *self, PyObject *args)
 {
-    char *dsn;
-    char *user;
-    char *pass;
-    char *logpath;
-    char *logname;
+    T_KREngine *krengine;
+    char *dsn, *user, *pass;
+    char *logpath, *logname;
     int loglevel;
-    int shmkey;
-    char *krdbname;
-    char *dbmodulename;
-    int hdicachesize;
-    int threadcnt;
+    char *krdbname, *dbmodulename;
+    int shmkey, hdicachesize, threadcnt;
 
     if (!PyArg_ParseTuple(args, "sssssiissii", &dsn, &user, &pass, &logpath, &logname, &loglevel, &shmkey, &krdbname, &dbmodulename, &hdicachesize, &threadcnt))
         return NULL;
-    T_KREngine *krengine = \
-        kr_engine_startup(dsn, user, pass, logpath, logname, loglevel, shmkey, krdbname, dbmodulename, hdicachesize, threadcnt);
+    krengine = kr_engine_startup(dsn, user, pass, logpath, logname, loglevel, 
+            shmkey, krdbname, dbmodulename, hdicachesize, threadcnt);
     return Py_BuildValue("l", krengine);
 }
 
@@ -28,8 +23,7 @@ static PyObject *
 pykrengine_run(PyObject *self, PyObject *args)
 {
     T_KREngine *krengine;
-    int oprcode;
-    int datasrc;
+    int oprcode, datasrc;
     char *msgbuf;
     int ret;
     
@@ -38,7 +32,6 @@ pykrengine_run(PyObject *self, PyObject *args)
     ret=kr_engine_run(krengine, oprcode, datasrc, msgbuf);
     return Py_BuildValue("i", ret);
 }
-
 
 static PyObject *
 pykrengine_shutdown(PyObject *self, PyObject *args)
