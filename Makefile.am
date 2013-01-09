@@ -18,4 +18,8 @@ EXTRA_DIST = etc/krproject.env \
              doc/krproject_mysql.sql \
              doc/krproject_sqlite3.sql 
 
+etcdir    = $(prefix)/etc
+etc_DATA  = etc/krproject.env \
+            etc/krcoordi.cfg \
+            etc/krserver.cfg
 
