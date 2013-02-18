@@ -1,4 +1,5 @@
 #include "kr_dynamicmem.h"
+#include "kr_group.h"
 #include "kr_rule.h"
 #include "kr_aid.h"
 #include "kr_sdi.h"
@@ -34,9 +35,9 @@ T_KRDynamicMem *kr_dynamicmem_init(T_KRContextEnv *ptEnv)
         return NULL;
     }
 
-    ptDyn->rulegroup = kr_rule_group_construct(&ptShm->stShmRule[nSecId], ptEnv->ruleModule);
-    if (ptDyn->rulegroup == NULL) {
-        KR_LOG(KR_LOGERROR, "kr_rule_group_construct Failed!");
+    ptDyn->grouplist = kr_group_list_construct(&ptShm->stShmGroup[nSecId], ptEnv->ruleModule);
+    if (ptDyn->grouplist == NULL) {
+        KR_LOG(KR_LOGERROR, "kr_group_list_construct Failed!");
         return NULL;
     }
     
@@ -50,7 +51,7 @@ void kr_dynamicmem_fini(T_KRDynamicMem *ptDyn)
         kr_sdi_table_destruct(ptDyn->sditable);
         kr_ddi_table_destruct(ptDyn->dditable);
         kr_hdi_table_destruct(ptDyn->hditable);
-        kr_rule_group_destruct(ptDyn->rulegroup);
+        kr_group_list_destruct(ptDyn->grouplist);
         kr_free(ptDyn);
     }
 }
@@ -63,7 +64,7 @@ int kr_dynamicmem_check(T_KRDynamicMem *ptDyn, T_KRContextEnv *ptEnv)
     T_KRShmSDI *ptShmSDI = &ptShm->stShmSDI[nShmSec];
     T_KRShmDDI *ptShmDDI = &ptShm->stShmDDI[nShmSec];
     T_KRShmHDI *ptShmHDI = &ptShm->stShmHDI[nShmSec];
-    T_KRShmRule *ptShmRule = &ptShm->stShmRule[nShmSec];
+    T_KRShmGroup *ptShmGroup = &ptShm->stShmGroup[nShmSec];
     
     /*check sdi table*/
     if (ptDyn->sditable->tConstructTime != ptShmSDI->tLastLoadTime) {
@@ -101,14 +102,14 @@ int kr_dynamicmem_check(T_KRDynamicMem *ptDyn, T_KRContextEnv *ptEnv)
         }
     }
     
-    /*check rule group*/
-    if (ptDyn->rulegroup->tConstructTime != ptShmRule->tLastLoadTime) {
-        T_KRRuleGroup *ptRuleGroup = kr_rule_group_construct(ptShmRule, ptEnv->ruleModule);
-        if (ptRuleGroup != NULL) {
-            kr_rule_group_destruct(ptDyn->rulegroup);
-            ptDyn->rulegroup = ptRuleGroup;
+    /*check group list*/
+    if (ptDyn->grouplist->tConstructTime != ptShmGroup->tLastLoadTime) {
+        T_KRGroupList *ptGroupList = kr_group_list_construct(ptShmGroup, ptEnv->ruleModule);
+        if (ptGroupList != NULL) {
+            kr_group_list_destruct(ptDyn->grouplist);
+            ptDyn->grouplist = ptGroupList;
         } else {
-            KR_LOG(KR_LOGERROR, "reload rule group error!");
+            KR_LOG(KR_LOGERROR, "reload group list error!");
             return -1;
         }
     }

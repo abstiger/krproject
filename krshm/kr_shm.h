@@ -8,6 +8,7 @@
 #include "kr_shm_ddi.h"
 #include "kr_shm_hdi.h"
 #include "kr_shm_rule.h"
+#include "kr_shm_group.h"
 
 #define N_MAX_SEC  2
 
@@ -15,12 +16,11 @@
 typedef struct _kr_sharemem_t
 {
     short            nSecId;                  /*current section indicator*/
-    short            nDetectMode;             /*'0'-just insert£¬'1'- insert and analyse*/
     time_t           tLastLoadTime;           /*share memory last loaded time*/
     T_KRShmSDI       stShmSDI[N_MAX_SEC];
     T_KRShmDDI       stShmDDI[N_MAX_SEC];
     T_KRShmHDI       stShmHDI[N_MAX_SEC];
-    T_KRShmRule      stShmRule[N_MAX_SEC];
+    T_KRShmGroup     stShmGroup[N_MAX_SEC];
 }T_KRShareMem;
 
 

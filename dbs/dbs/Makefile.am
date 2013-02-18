@@ -17,7 +17,8 @@ libdbsdbs_la_SOURCES     = t_dbs101_datasrc_def_cur.cfg \
                            t_dbs304_hdi_day_sel.cfg \
                            t_dbs305_hdi_mon_sel.cfg \
                            t_dbs306_hdi_flag_sel.cfg \
-                           t_dbs401_rule_cur.cfg
+                           t_dbs401_rule_cur.cfg \
+                           t_dbs402_group_cur.cfg
 
 .cfg.c:
 	@echo "rapodbc [$@] ..." 

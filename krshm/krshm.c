@@ -23,7 +23,7 @@ static int ViewMemory(void);
 static int ViewSDIMemory(char cInd);
 static int ViewDDIMemory(char cInd);
 static int ViewHDIMemory(char cInd);
-static int ViewRuleMemory(char cInd);
+static int ViewGroupMemory(char cInd);
 static void usage(void);
 static int kr_get_shmkey(void);
 
@@ -233,7 +233,7 @@ static int ViewMemory(void)
     printf("S--[S]DI memory block\n");
     printf("D--[D]DI memory block\n");
     printf("H--[H]DI memory block\n");
-    printf("R--[R]ule memory block\n");
+    printf("G--[G]roup memory block\n");
     printf("else to quit!\n");
 
     do
@@ -260,13 +260,13 @@ static int ViewMemory(void)
                 ind = getchar();
             }while(ind == '\0' || ind == '\n' || ind == '\t');
             ViewHDIMemory(ind);
-        } else if(ch == 'R' || ch == 'r') {
+        } else if(ch == 'G' || ch == 'g') {
             printf("Choose [A]ctive Or [S]tandby: \n");
             do
             {
                 ind = getchar();
             }while(ind == '\0' || ind == '\n' || ind == '\t');
-            ViewRuleMemory(ind);
+            ViewGroupMemory(ind);
         } else {
             printf("Quit:[%c]!\n", ch);
             break;
@@ -355,7 +355,7 @@ static int ViewHDIMemory(char cInd)
 }
 
 
-static int ViewRuleMemory(char cInd)
+static int ViewGroupMemory(char cInd)
 {
     short       nCurrSecId;
     short       nBackSecId;
@@ -368,10 +368,10 @@ static int ViewRuleMemory(char cInd)
 
     if (cInd == 'A' || cInd == 'a') {
         printf("[RULE] [Active] Memory Block:\n");
-        DumpShmRule(&gptShmBuf->stShmRule[nCurrSecId], stdout);
+        DumpShmGroup(&gptShmBuf->stShmGroup[nCurrSecId], stdout);
     } else if (cInd == 'S' || cInd == 's') {
         printf("[RULE] [Standby] Memory Block:\n");
-        DumpShmRule(&gptShmBuf->stShmRule[nBackSecId], stdout);
+        DumpShmGroup(&gptShmBuf->stShmGroup[nBackSecId], stdout);
     } else {
         printf("Unrecognized Choice:[%c]\n", cInd);
         return -1;

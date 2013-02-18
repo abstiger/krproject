@@ -180,7 +180,7 @@ int kr_rule_group_detect(T_KRContext *krcontext)
 
     /* if no rules to be detected, return asap */
     T_KRRuleGroup *ptRuleGroup = krcontext->ptDym->rulegroup;
-    if (ptRuleGroup->lRuleCnt == 0) {
+    if (ptRuleGroup == NULL || ptRuleGroup->lRuleCnt == 0) {
         KR_LOG(KR_LOGDEBUG, "no rules to be detected!");
         return 0;
     }

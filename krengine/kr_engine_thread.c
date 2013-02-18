@@ -53,7 +53,13 @@ int kr_engine_thread_worker(void *ctx, void *arg)
         return -1;
     }
 
-    /*rule detect*/
+    /* group route */
+    if (kr_group_list_route(krcontext) != 0) {
+        KR_LOG(KR_LOGERROR, "kr_group_list_route failed!\n");
+        return -1;
+    }
+
+    /* rule detect */
     if (kr_rule_group_detect(krcontext) != 0) {
         KR_LOG(KR_LOGERROR, "kr_rule_group_detect failed!\n");
         return -1;

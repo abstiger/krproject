@@ -129,9 +129,9 @@ short kr_shm_load(T_DbsEnv *dbsenv, T_KRShareMem *ptShmBuf)
         return -1;
     }
     
-    memset(&ptShmBuf->stShmRule[nBackSecId], 0, sizeof(T_KRShmRule));
-    if (LoadShmRule(dbsenv, &ptShmBuf->stShmRule[nBackSecId]) != 0) {
-        KR_LOG(KR_LOGERROR, "LoadShmRule failed!");
+    memset(&ptShmBuf->stShmGroup[nBackSecId], 0, sizeof(T_KRShmGroup));
+    if (LoadShmGroup(dbsenv, &ptShmBuf->stShmGroup[nBackSecId]) != 0) {
+        KR_LOG(KR_LOGERROR, "LoadShmGroup failed!");
         return -1;
     }
 
@@ -154,12 +154,12 @@ void kr_shm_dump(T_KRShareMem *ptShmBuf, FILE *fp)
     fprintf(fp, "\n******Dump Active******\n");
     DumpShmSDI(&ptShmBuf->stShmSDI[nCurrSecId], fp);
     DumpShmDDI(&ptShmBuf->stShmDDI[nCurrSecId], fp);
-    DumpShmRule(&ptShmBuf->stShmRule[nCurrSecId], fp);
+    DumpShmGroup(&ptShmBuf->stShmGroup[nCurrSecId], fp);
 
     fprintf(fp, "\n****Dump Standby******\n");
     DumpShmSDI(&ptShmBuf->stShmSDI[nBackSecId], fp);
     DumpShmDDI(&ptShmBuf->stShmDDI[nBackSecId], fp);
-    DumpShmRule(&ptShmBuf->stShmRule[nBackSecId], fp);
+    DumpShmGroup(&ptShmBuf->stShmGroup[nBackSecId], fp);
     
     fflush(fp);
 }

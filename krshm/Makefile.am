@@ -9,7 +9,9 @@ libkrshm_la_SOURCES  = \
      kr_shm_hdi.h    \
      kr_shm_hdi.c    \
      kr_shm_rule.h   \
-     kr_shm_rule.c
+     kr_shm_rule.c   \
+     kr_shm_group.h  \
+     kr_shm_group.c
      
 libkrshm_la_LIBADD    = $(top_srcdir)/krutils/libkrutils.la
 libkrshm_la_LIBADD   += $(top_srcdir)/dbs/dbs/libdbsdbs.la

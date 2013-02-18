@@ -3,7 +3,7 @@
 #include "dbs/dbs_basopr.h"
 #include "dbs/dbs/rule_cur.h"
 
-int LoadShmRule(T_DbsEnv *dbsenv, T_KRShmRule *ptShmRule)
+int LoadShmRule(T_DbsEnv *dbsenv, T_KRShmRule *ptShmRule, long lGroupId)
 {
     int nRet = 0;
     int iResult = 0;
@@ -11,7 +11,7 @@ int LoadShmRule(T_DbsEnv *dbsenv, T_KRShmRule *ptShmRule)
     T_RuleCur stRuleCur = {0};
     T_KRShmRuleDef *ptShmRuleDef = &ptShmRule->stShmRuleDef[0];
     
-    stRuleCur.lInGroupId=1;//TODO:replace this with real group id
+    stRuleCur.lInGroupId = lGroupId;
     iResult = dbsRuleCur(dbsenv, KR_DBCUROPEN, &stRuleCur);
     if (iResult != KR_DBOK) {
         KR_LOG(KR_LOGERROR, "dbsRuleCur Open Error!");
