@@ -18,15 +18,30 @@ int kr_server_config_parse(char *configfile, T_KRServer *server)
     }
     if (strlen(buf) != 0) server->serverid = kr_strdup(buf);
 printf("server->serverid=[%s]\n", server->serverid);
-    
 
     memset(buf, 0x00, sizeof(buf));
-    if (kr_config_getstring("SYSTEM", "DBMODULEFILE", buf) != 0) {
-        printf("kr_config_getstring DBMODULEFILE failure!");
+    if (kr_config_getstring("SYSTEM", "KRDBMODULE", buf) != 0) {
+        printf("kr_config_getstring KRDBMODULE failure!");
         return -1;
     }
-    if (strlen(buf) != 0) server->dbmodulefile = kr_strdup(buf);
-printf("server->dbmodulefile=[%s]\n", server->dbmodulefile);
+    if (strlen(buf) != 0) server->krdbmodule = kr_strdup(buf);
+printf("server->krdbmodule=[%s]\n", server->krdbmodule);
+
+    memset(buf, 0x00, sizeof(buf));
+    if (kr_config_getstring("SYSTEM", "DATAMODULE", buf) != 0) {
+        printf("kr_config_getstring DATAMODULE failure!");
+        return -1;
+    }
+    if (strlen(buf) != 0) server->datamodule = kr_strdup(buf);
+printf("server->datamodule=[%s]\n", server->datamodule);
+
+    memset(buf, 0x00, sizeof(buf));
+    if (kr_config_getstring("SYSTEM", "RULEMODULE", buf) != 0) {
+        printf("kr_config_getstring RULEMODULE failure!");
+        return -1;
+    }
+    if (strlen(buf) != 0) server->rulemodule = kr_strdup(buf);
+printf("server->rulemodule=[%s]\n", server->rulemodule);
 
     if (kr_config_getint("SYSTEM", "DAEMONIZE", &server->daemonize) != 0) {
         printf("kr_config_getint DAEMONIZE failure!");
@@ -78,11 +93,18 @@ printf("server->dbmodulefile=[%s]\n", server->dbmodulefile);
     }
 printf("server->threadcnt=[%d]\n", server->threadcnt);
 
+    if (kr_config_getint("SYSTEM", "HIGHWATERMARK", &server->hwm) != 0) {
+        printf("kr_config_getint HIGHWATERMARK failure!");
+        return -1;
+    }
+printf("server->hwm=[%d]\n", server->hwm);
+
     if (kr_config_getint("SYSTEM", "HDICACHESIZE", &server->hdicachesize) != 0) {
         printf("kr_config_getint HDICACHESIZE failure!");
         return -1;
     }
 printf("server->hdicachesize=[%d]\n", server->hdicachesize);
+
     memset(buf, 0x00, sizeof(buf));
     if (kr_config_getstring("SYSTEM", "DBNAME", buf) != 0) {
         printf("kr_config_getstring DBNAME failure!");
@@ -120,18 +142,6 @@ printf("server->dbpass=[%s]\n", server->dbpass);
     if (strlen(buf) != 0) server->tcpbindaddr = kr_strdup(buf);
 printf("server->tcpbindaddr=[%s]\n", server->tcpbindaddr);
     
-    memset(buf, 0x00, sizeof(buf));
-    if (kr_config_getstring("NETWORK", "UNIXDOMAIN", buf) != 0) {
-        printf("kr_config_getstring UNIXDOMAIN failure!");
-        return -1;
-    }
-    if (strlen(buf) != 0) server->unixdomain = kr_strdup(buf);
-    
-    if (kr_config_getint("NETWORK", "UNIXDOMAINPERM", &server->unixdomainperm) != 0) {
-        printf("kr_config_getint UNIXDOMAINPERM failure!");
-        return -1;
-    }
-
     if (kr_config_getint("NETWORK", "CLUSTERMODE", &server->clustermode) != 0) {
         printf("kr_config_getint CLUSTERMODE failure!");
         return -1;
@@ -147,13 +157,6 @@ printf("server->tcpbindaddr=[%s]\n", server->tcpbindaddr);
         return -1;
     }
         
-    memset(buf, 0x00, sizeof(buf));
-    if (kr_config_getstring("NETWORK", "COORDDOMAIN", buf) != 0) {
-        printf("kr_config_getstring COORDDOMAIN failure!");
-        return -1;
-    }
-    if (strlen(buf) != 0) server->coorddomain = kr_strdup(buf);
-    
     if (kr_config_getint("NETWORK", "COORDPORT", &server->coordport) != 0) {
         printf("kr_config_getint COORDPORT failure!");
         return -1;
@@ -187,12 +190,14 @@ void kr_server_config_dump(T_KRServer *server, FILE *fp)
         server->configfile, server->serverid, server->daemonize, server->pidfile);
     fprintf(fp, "shmkey[%d]\n detectmode[%d]\n loglevel[%d]\n logpath[%s]", \
         server->shmkey, server->detectmode, server->loglevel, server->logpath);
-    fprintf(fp, "threadcnt[%d]\n maxevents[%d]\n shutdown[%d]\n ", \
-        server->threadcnt, server->maxevents, server->shutdown);
-    fprintf(fp, "tcpport[%d]\n tcpbindaddr[%s]\n unixdomain[%s]\n unixdomainperm[%d]\n ", \
-        server->tcpport, server->tcpbindaddr, server->unixdomain, server->unixdomainperm);    
-    fprintf(fp, "clustermode[%d]\n weights[%d]\n coorddomain[%s]\n coordport[%d]\n coordip[%s]", \
-        server->clustermode, server->weights, server->coorddomain, server->coordport, server->coordip);
+    fprintf(fp, "krdbmodule[%s]\n datamodule[%s]\n rulemodule[%s]\n", \
+        server->krdbmodule, server->datamodule, server->rulemodule);
+    fprintf(fp, "threadcnt[%d]\n hwm[%d]\n maxevents[%d]\n shutdown[%d]\n ", \
+        server->threadcnt, server->hwm, server->maxevents, server->shutdown);
+    fprintf(fp, "tcpport[%d]\n tcpbindaddr[%s]\n ", \
+        server->tcpport, server->tcpbindaddr);    
+    fprintf(fp, "clustermode[%d]\n weights[%d]\n coordport[%d]\n coordip[%s]", \
+        server->clustermode, server->weights, server->coordport, server->coordip);
 }
 
 
@@ -200,14 +205,14 @@ void kr_server_config_free(T_KRServer *server)
 {
     if (server->configfile) kr_free(server->configfile);
     if (server->serverid) kr_free(server->serverid);
-    if (server->dbmodulefile) kr_free(server->dbmodulefile);
+    if (server->krdbmodule) kr_free(server->krdbmodule);
+    if (server->datamodule) kr_free(server->datamodule);
+    if (server->rulemodule) kr_free(server->rulemodule);
     if (server->pidfile) kr_free(server->pidfile);
     if (server->logpath) kr_free(server->logpath);
     if (server->dbname) kr_free(server->dbname);
     if (server->dbuser) kr_free(server->dbuser);
     if (server->dbpass) kr_free(server->dbpass);
     if (server->tcpbindaddr) kr_free(server->tcpbindaddr);
-    if (server->unixdomain) kr_free(server->unixdomain);
-    if (server->coorddomain) kr_free(server->coorddomain);
     if (server->coordip) kr_free(server->coordip);
 }

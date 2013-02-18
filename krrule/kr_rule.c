@@ -50,44 +50,54 @@ void *kr_rule_get_value(char *id, void *param)
     iIdValue = atoi(caIdValue);
     
     T_KRContext *ptContext = (T_KRContext *)param;
-    switch(id[0]) {
-    case 'A':
-        return kr_aid_get_value(ptContext->ptEnv->ptDbs, iIdValue);
-        break;
-    case 'C':
-        return kr_get_field_value(ptContext->ptCurrRec, iIdValue);
-        break;
-    case 'F':
-        return kr_get_field_value(ptContext->ptRecord, iIdValue);
-        break;
-    case 'S':
-        return kr_sdi_get_value(iIdValue, ptContext);
-        break;
-    case 'D': 
-        return kr_ddi_get_value(iIdValue, ptContext);
-        break;
-    case 'H': 
-        return kr_hdi_get_value(iIdValue, ptContext);
-        break;
-    default:
-        return NULL;
+    switch(id[0]) 
+    {
+        case 'A':
+            return kr_aid_get_value(ptContext->ptEnv->ptDbs, iIdValue);
+            break;
+        case 'C':
+            return kr_get_field_value(ptContext->ptCurrRec, iIdValue);
+            break;
+        case 'F':
+            return kr_get_field_value(ptContext->ptRecord, iIdValue);
+            break;
+        case 'S':
+            return kr_sdi_get_value(iIdValue, ptContext);
+            break;
+        case 'D': 
+            return kr_ddi_get_value(iIdValue, ptContext);
+            break;
+        case 'H': 
+            return kr_hdi_get_value(iIdValue, ptContext);
+            break;
+        default:
+            return NULL;
     }
 }
 
 
 /*rules*/
-T_KRRule *kr_rule_construct(T_KRShmRuleDef *rule_def)
+T_KRRule *kr_rule_construct(T_KRShmRuleDef *rule_def, T_KRModule *rulemodule)
 {
     T_KRRule *krrule = kr_calloc(sizeof(T_KRRule));
     if (krrule == NULL) {
         KR_LOG(KR_LOGERROR, "kr_calloc krrule failed!");
-		return NULL;
+        return NULL;
     }
     krrule->ptShmRuleDef = rule_def;
     krrule->lRuleId = rule_def->lRuleId;
     krrule->ptRuleCalc = kr_calc_construct(KR_CALCBEHOOF_RULE, \
         rule_def->caRuleString, kr_rule_get_type, kr_rule_get_value);
-    
+    krrule->RuleFunc = (KRRuleFunc )kr_rule_func;
+    if (rule_def->caRuleFunc[0] != '\0') {
+        krrule->RuleFunc = (KRRuleFunc )kr_module_symbol(rulemodule, 
+                rule_def->caRuleFunc);
+        if (krrule->RuleFunc == NULL) {
+            KR_LOG(KR_LOGERROR, "kr_module_symbol [%s] error!", \
+                    rule_def->caRuleFunc);
+            return NULL;
+        }
+    }
     krrule->bViolated = FALSE;
     return krrule;
 }
@@ -97,40 +107,20 @@ int kr_rule_detect(T_KRRule *krrule, void *krcontext)
 {
     krrule->bViolated = FALSE;
 
+    /*calculate rule string*/
     if (kr_calc_eval(krrule->ptRuleCalc, krcontext) != 0) {
         KR_LOG(KR_LOGERROR, "kr_calc_eval rule[%ld] failed!", krrule->lRuleId);
-		return -1;
+        return -1;
     }
     
-    if (krrule->ptRuleCalc->result_ind != KR_VALUE_SETED) {
-        printf("***result_type:[%c] result_value:[%s]***\n", 
-          krrule->ptRuleCalc->result_type, "KR_VALUE_UNSET"); 
-        return 0;
+    /*handle detect result and write reponse*/
+    if (krrule->RuleFunc != NULL) {
+        if (krrule->RuleFunc(krrule, krcontext) != 0) {
+            KR_LOG(KR_LOGERROR, "run RuleFunc[%ld] failed!", krrule->lRuleId);
+            return -1;
+        }
     }
-    
-    switch(krrule->ptRuleCalc->result_type) {
-    case KR_CALCTYPE_BOOLEAN:   
-        printf("***result_type:[%c] result_value:[%d]***\n", 
-          krrule->ptRuleCalc->result_type, krrule->ptRuleCalc->result_value.b); 
-        break;
-    case KR_CALCTYPE_INTEGER:   
-        printf("***result_type:[%c] result_value:[%d]***\n", 
-          krrule->ptRuleCalc->result_type, krrule->ptRuleCalc->result_value.i); 
-        break;
-    case KR_CALCTYPE_DOUBLE:   
-        printf("***result_type:[%c] result_value:[%lf]***\n", 
-          krrule->ptRuleCalc->result_type, krrule->ptRuleCalc->result_value.d); 
-        break;
-    case KR_CALCTYPE_STRING:   
-        printf("***result_type:[%c] result_value:[%s]***\n", 
-          krrule->ptRuleCalc->result_type, krrule->ptRuleCalc->result_value.s); 
-        break; 
-    default:
-        printf("***result_type:[%c] unknown!***\n", 
-          krrule->ptRuleCalc->result_type);   
-        break; 
-    }
-    
+
     return 0;
 }
 
@@ -143,33 +133,33 @@ void kr_rule_destruct(void *rule)
 }
 
 
-T_KRRuleGroup *kr_rule_group_construct(T_KRShmRule *shm_rule)
+T_KRRuleGroup *kr_rule_group_construct(T_KRShmRule *shm_rule, T_KRModule *rulemodule)
 {
     int i = 0;
     T_KRRule *krrule = NULL;
     if (shm_rule->lRuleDefCnt <= 0) {
-	    KR_LOG(KR_LOGERROR, "rulegroup count [%ld] not valid!", \
-	           shm_rule->lRuleDefCnt);
-	    return NULL;
-	}
-	
+        KR_LOG(KR_LOGERROR, "rulegroup count [%ld] not valid!", \
+               shm_rule->lRuleDefCnt);
+        return NULL;
+    }
+    
     T_KRRuleGroup *krrulegroup = kr_calloc(sizeof(T_KRRuleGroup));
     if (krrulegroup == NULL) {
-	    KR_LOG(KR_LOGERROR, "kr_calloc krrulegroup failed!");
-		return NULL;
+        KR_LOG(KR_LOGERROR, "kr_calloc krrulegroup failed!");
+        return NULL;
     }
-	krrulegroup->ptShmRules = shm_rule;
-	krrulegroup->lRuleCnt = shm_rule->lRuleDefCnt;
-	krrulegroup->ptRuleList = kr_list_new();
-	kr_list_set_free(krrulegroup->ptRuleList, kr_rule_destruct);
-	
+    krrulegroup->ptShmRules = shm_rule;
+    krrulegroup->lRuleCnt = shm_rule->lRuleDefCnt;
+    krrulegroup->ptRuleList = kr_list_new();
+    kr_list_set_free(krrulegroup->ptRuleList, kr_rule_destruct);
+    
     for (i=0; i<krrulegroup->lRuleCnt; ++i) {
-        krrule = kr_rule_construct(&shm_rule->stShmRuleDef[i]);
+        krrule = kr_rule_construct(&shm_rule->stShmRuleDef[i], rulemodule);
         if (krrule == NULL) {
             KR_LOG(KR_LOGERROR, "kr_rule_construct [%d] failed!", i);
             kr_list_destroy(krrulegroup->ptRuleList);
             kr_free(krrulegroup);
-	        return NULL;
+            return NULL;
         }
         kr_list_add_tail(krrulegroup->ptRuleList, krrule);
     }

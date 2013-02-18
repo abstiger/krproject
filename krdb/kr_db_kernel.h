@@ -67,7 +67,6 @@ typedef struct _kr_table_t
 typedef struct _kr_db_t
 {
     char            caDBName[30+1];       /* name of this db */
-    char            caModuleFile[1024];   /* module file name for db*/
     T_KRModule      *ptModule;            /* module for this db */
     T_KRList        *pTableList;          /* tables in this db */
     T_KRList        *pIndexList;          /* indexes of this db */
@@ -110,7 +109,7 @@ T_KRIndex*    kr_get_table_index(T_KRTable *krtable, int id);
 T_KRIndex*    kr_get_db_index(T_KRDB *krdb, int id);
 T_KRList*     kr_get_record_list(T_KRIndex *krindex, void *key);
 
-T_KRDB*       kr_create_db(char *db_name, char *module_file);
+T_KRDB*       kr_create_db(char *db_name, T_KRModule *krdbmodule);
 void          kr_drop_db_index(T_KRIndex *krindex, T_KRDB *krdb);
 void          kr_drop_db(T_KRDB *krdb);
 

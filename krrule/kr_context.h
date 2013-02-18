@@ -10,13 +10,16 @@
 
 
 /* static environment, set while init */
-typedef struct _kr_context_env_t
+struct _kr_context_env_t
 {
+    T_KRModule       *krdbModule; /* module for krdb */
+    T_KRModule       *dataModule; /* module for data */
+    T_KRModule       *ruleModule; /* module for rule */
     T_DbsEnv         *ptDbs;      /* db connection, one per thread */
     T_KRShareMem     *ptShm;      /* share memory, read only in thread */
     T_KRDB           *ptKRDB;     /* krdb, read only in thread */
     T_KRCache        *ptHDICache; /* hdi cache, need lock while mutli thread */
-}T_KRContextEnv;
+};
 
 typedef struct _kr_context_t
 {

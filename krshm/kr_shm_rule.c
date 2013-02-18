@@ -11,6 +11,7 @@ int LoadShmRule(T_DbsEnv *dbsenv, T_KRShmRule *ptShmRule)
     T_RuleCur stRuleCur = {0};
     T_KRShmRuleDef *ptShmRuleDef = &ptShmRule->stShmRuleDef[0];
     
+    stRuleCur.lInGroupId=1;//TODO:replace this with real group id
     iResult = dbsRuleCur(dbsenv, KR_DBCUROPEN, &stRuleCur);
     if (iResult != KR_DBOK) {
         KR_LOG(KR_LOGERROR, "dbsRuleCur Open Error!");
@@ -49,6 +50,9 @@ int LoadShmRule(T_DbsEnv *dbsenv, T_KRShmRule *ptShmRule)
         strncpy(ptShmRuleDef->caRuleType, \
                 kr_string_rtrim(stRuleCur.caOutRuleType), \
                 sizeof(ptShmRuleDef->caRuleType));        
+        strncpy(ptShmRuleDef->caRuleFunc, \
+                kr_string_rtrim(stRuleCur.caOutRuleFunc), \
+                sizeof(ptShmRuleDef->caRuleFunc));        
         ptShmRuleDef->lRuleWeight = stRuleCur.lOutRuleWeight;
         ptShmRuleDef->dRiskAdvcThresh = stRuleCur.dOutRiskAdvcThresh;
         ptShmRuleDef->dRiskNotifThresh = stRuleCur.dOutRiskNotifThresh;
@@ -85,14 +89,15 @@ int DumpShmRule(T_KRShmRule *ptShmRule, FILE *fp)
     fprintf(fp, "Dumping Rule...\n");
     fprintf(fp, "Last Load Time[%s]\n", caTimeString);
     for (l=0; l<ptShmRule->lRuleDefCnt; l++) {
-        fprintf(fp, "  lRuleId=[%ld], caRuleName=[%s], caRuleDesc=[%s], caRuleType=[%s] \n", 
-                ptShmRuleDef->lRuleId, ptShmRuleDef->caRuleName, ptShmRuleDef->caRuleDesc, ptShmRuleDef->caRuleType);
-        fprintf(fp, "  lRuleWeight=[%ld], caThreshIsConfig=[%s] \n", 
+        fprintf(fp, "  lRuleId=[%ld], caRuleName=[%s], caRuleDesc=[%s], ", 
+                ptShmRuleDef->lRuleId, ptShmRuleDef->caRuleName, ptShmRuleDef->caRuleDesc);
+        fprintf(fp, "  caRuleString=[%s], caRuleType=[%s], caRuleFunc=[%s], ",
+                ptShmRuleDef->caRuleString, ptShmRuleDef->caRuleType, ptShmRuleDef->caRuleFunc);
+        fprintf(fp, "  lRuleWeight=[%ld] \n caThreshIsConfig=[%s], ", 
                 ptShmRuleDef->lRuleWeight, ptShmRuleDef->caThreshIsConfig);
         fprintf(fp, "  dRiskAdvcThresh=[%lf], dRiskNotifThresh=[%lf], dRiskAlertThresh=[%lf], dRiskWarnThresh=[%lf] \n", 
                 ptShmRuleDef->dRiskAdvcThresh, ptShmRuleDef->dRiskNotifThresh, 
                 ptShmRuleDef->dRiskAlertThresh, ptShmRuleDef->dRiskWarnThresh);
-        fprintf(fp, "  caRuleString=[%s] \n", ptShmRuleDef->caRuleString);
         ptShmRuleDef++;
     }
     

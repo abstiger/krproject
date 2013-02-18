@@ -31,8 +31,6 @@ int kr_queue_push(kr_queue_t *q, void *data)
         return -1;
     }
 
-printf("push data[%s][%p]\n", (char *)data, data);
-    
     /*add this node to queue's tail*/
     kr_list_add_tail(q->list, data);
         
@@ -46,7 +44,6 @@ void *kr_queue_pop(kr_queue_t *q)
     
     /*check queue's length*/
     if (kr_list_length(q->list) <= 0) {
-        fprintf(stderr, "queue is empty!\n");
         return NULL;
     }
     
@@ -54,12 +51,9 @@ void *kr_queue_pop(kr_queue_t *q)
     T_KRListNode *node = NULL;
     node = kr_list_first(q->list);
     if (node == NULL) {
-        fprintf(stderr, "pop queue head error!\n");
         return NULL;
     }
     
-printf("pop data[%s][%p]\n", (char *)node->value, node->value);
-
     /*free node*/
     void *value = node->value;
     kr_list_delete(q->list, node);

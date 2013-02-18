@@ -59,8 +59,6 @@ int kr_engine_thread_worker(void *ctx, void *arg)
         return -1;
     }
     
-    /*TODO: handle detect result and write reponse*/
-    
     return 0;
 }
 

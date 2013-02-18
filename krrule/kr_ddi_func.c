@@ -4,7 +4,6 @@
 int kr_ddi_aggr_func(T_KRDDI *krddi, T_KRContext *krcontext)
 {
     int iResult = -1;
-    
     int iAbsLoc = -1;
     int iRelLoc = -1;
     
@@ -22,41 +21,36 @@ int kr_ddi_aggr_func(T_KRDDI *krddi, T_KRContext *krcontext)
         if ((krddi->ptShmDDIDef->caStatisticsType[0] == \
                                KR_DDI_STATISTICS_EXCLUDE) && 
             (krcontext->ptRecord == krcontext->ptCurrRec)) {
-            KR_LOG(KR_LOGDEBUG, "Current Record is exclude");
-            node = node->prev;continue;
+            node = node->prev;
+            continue;
         }
         
         /*统计数据源校验*/
         if (((T_KRTable *)krcontext->ptRecord->ptTable)->iTableId != \
             krddi->ptShmDDIDef->lStatisticsDatasrc) {
-            KR_LOG(KR_LOGDEBUG, "current table[%d] doesn't match[%ld]!", \
-                   ((T_KRTable *)krcontext->ptRecord->ptTable)->iTableId, 
-                   krddi->ptShmDDIDef->lStatisticsDatasrc);
-            node = node->prev;continue;
+            node = node->prev;
+            continue;
         }
         
         /*时间窗口校验*/
         tRecTransTime = kr_get_transtime(krcontext->ptRecord);
         if ((tCurrTransTime - tRecTransTime) > krddi->ptShmDDIDef->lStatisticsValue ) {
-            KR_LOG(KR_LOGDEBUG, "Time Window [%ld] not match[%ld] [%ld]", 
-                   krddi->ptShmDDIDef->lStatisticsValue, tCurrTransTime, tRecTransTime);
-            node = node->prev;continue;
+            node = node->prev;
+            continue;
         }
         
         /*过滤器校验*/
         iResult = kr_calc_eval(krddi->ptDDICalc, krcontext);
         if (iResult != 0) {
             KR_LOG(KR_LOGERROR, "kr_calc_eval[%ld] failed!", krddi->lDDIId);
-	    	return -1;
+            return -1;
         } else if (krddi->ptDDICalc->result_type != KR_CALCTYPE_BOOLEAN) {
             KR_LOG(KR_LOGERROR, "result_type of ddi_calc must be boolean!");
-	    	return -1;
+            return -1;
         } else if (krddi->ptDDICalc->result_ind != KR_VALUE_SETED ||
                    !krddi->ptDDICalc->result_value.b) {
-            KR_LOG(KR_LOGDEBUG, "DDICalc [%c] [%d] Not Match", \
-                    krddi->ptDDICalc->result_ind, 
-                    krddi->ptDDICalc->result_value.b);
-            node = node->prev;continue;
+            node = node->prev;
+            continue;
         }
     
         iRelLoc++; /*相对位置加一*/

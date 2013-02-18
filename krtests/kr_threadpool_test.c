@@ -21,7 +21,7 @@ int main(void)
 {
     int rc = 0;
     
-    T_KRThreadPool *tpool = kr_threadpool_create(5, NULL, \
+    T_KRThreadPool *tpool = kr_threadpool_create(5, 100, NULL, \
         NULL, (KRThdWorkerFunc )worker, NULL);
     assert(tpool != NULL);
     

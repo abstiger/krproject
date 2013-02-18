@@ -32,7 +32,7 @@ typedef struct _kr_threadpool_t
 
 
 /*create a threadpool with <n> threads and <func> thread process function*/
-T_KRThreadPool *kr_threadpool_create(unsigned int n, void *env, 
+T_KRThreadPool *kr_threadpool_create(unsigned int nthreads, unsigned int hwm, void *env, 
     KRThdInitFunc init_func, KRThdWorkerFunc worker_func, KRThdFiniFunc fini_func);
 
 /*run all of the threads*/

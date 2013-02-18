@@ -152,7 +152,7 @@ kr_coordi_send_to_server(T_KRActualNode *ptActualNode, T_KRMessage *ptMessage)
     /* sent to the specified server or a replica server */
     if (ptServer->replica || !strcmp(ptServer->id, ptMessage->serverid)) {
         int nLen = kr_message_write(ptServer->neterr, ptServer->fd, ptMessage);
-	    if (nLen <= 0) {/* write message failure */	    
+        if (nLen <= 0) {/* write message failure */        
             KR_LOG(KR_LOGERROR, "write message error[%s]!", ptServer->neterr);
             ++ptServer->errnum;
         }
@@ -236,7 +236,7 @@ int kr_coordi_handle_reply(T_KREventLoop *el, int fd, T_KRMessage *ptMessage)
     
     /*send reply to client*/
     int writeLen = kr_message_write(krcoordi.neterr, ptClient->fd, ptMessage);
-	if (writeLen <= 0) {/* write message failure */	    
+    if (writeLen <= 0) {/* write message failure */        
         KR_LOG(KR_LOGERROR, "write message error[%s]!", krcoordi.neterr);
         strcpy(ptClient->neterr, krcoordi.neterr);
         ++ptClient->errnum;
@@ -258,21 +258,21 @@ printf("kr_coordi_handle_message:msgtype[%d], serverid[%s], clientid[%s], msglen
         ptMessage->msglen, (char *)ptMessage->msgbuf);
     
     switch(ptMessage->msgtype)
-	{
-	    case KR_MSGTYPE_SVRON:
-	        ret = kr_coordi_handle_svron(el, fd, ptMessage);
-	        break;
-	    case KR_MSGTYPE_SVROFF:
-	        ret = kr_coordi_handle_svroff(el, fd, ptMessage);
-	        break;
-	    case KR_MSGTYPE_CLION:
-	        ret = kr_coordi_handle_clion(el, fd, ptMessage);
-	        break;
-	    case KR_MSGTYPE_CLIOFF:
-	        ret = kr_coordi_handle_clioff(el, fd, ptMessage);
-	        break;
-	    case KR_MSGTYPE_APPLY:
-	        ret = kr_coordi_handle_apply(el, fd, ptMessage);
+    {
+        case KR_MSGTYPE_SVRON:
+            ret = kr_coordi_handle_svron(el, fd, ptMessage);
+            break;
+        case KR_MSGTYPE_SVROFF:
+            ret = kr_coordi_handle_svroff(el, fd, ptMessage);
+            break;
+        case KR_MSGTYPE_CLION:
+            ret = kr_coordi_handle_clion(el, fd, ptMessage);
+            break;
+        case KR_MSGTYPE_CLIOFF:
+            ret = kr_coordi_handle_clioff(el, fd, ptMessage);
+            break;
+        case KR_MSGTYPE_APPLY:
+            ret = kr_coordi_handle_apply(el, fd, ptMessage);
             break;
         case KR_MSGTYPE_REPLY:
             ret = kr_coordi_handle_reply(el, fd, ptMessage);
@@ -281,9 +281,9 @@ printf("kr_coordi_handle_message:msgtype[%d], serverid[%s], clientid[%s], msglen
             KR_LOG(KR_LOGERROR, "unsupported message type[%d]!", \
                 ptMessage->msgtype);
             break;
-	}
-	
-	return ret;
+    }
+    
+    return ret;
 }
 
 
@@ -294,10 +294,10 @@ kr_coordi_read_handler(T_KREventLoop *el, int fd, void *priv, int mask)
     int readLen = 0;
     T_KRMessage stMessage = {0};
 
-	/** read message */
-	readLen = kr_message_read(krcoordi.neterr, fd, &stMessage);
-	if (readLen <= 0) {
-	    /* read message failure */
+    /** read message */
+    readLen = kr_message_read(krcoordi.neterr, fd, &stMessage);
+    if (readLen <= 0) {
+        /* read message failure */
         KR_LOG(KR_LOGERROR, "read message error[%s]!", krcoordi.neterr);
         T_KRCoordiConnector *ptConn = NULL;
         
@@ -319,9 +319,9 @@ kr_coordi_read_handler(T_KREventLoop *el, int fd, void *priv, int mask)
         }
     }
             
-	/** handle message */
-	ret = kr_coordi_handle_message(el, fd, &stMessage);
-	if (ret != 0) {/* handle message failure */
+    /** handle message */
+    ret = kr_coordi_handle_message(el, fd, &stMessage);
+    if (ret != 0) {/* handle message failure */
         KR_LOG(KR_LOGERROR, "handle message [%d], [%s]error!", \
                stMessage.msgtype, stMessage.msgbuf);
         return;
@@ -365,21 +365,4 @@ kr_coordi_tcp_accept_handler(T_KREventLoop *el, int fd, void *priv, int mask)
     KR_LOG(KR_LOGDEBUG, "Accepted tcp/ip connection %s:%d", cip, cport);
     kr_coordi_common_accept_handler(cfd);
 }
-
-
-void 
-kr_coordi_unix_accept_handler(T_KREventLoop *el, int fd, void *priv, int mask) 
-{
-    int cfd;
-
-    cfd = kr_net_unix_accept(krcoordi.neterr, fd);
-    if (cfd == KR_NET_ERR) {
-        KR_LOG(KR_LOGERROR, "Accepting client connection: %s", krcoordi.neterr);
-        return;
-    }
-    KR_LOG(KR_LOGDEBUG, "Accepted domain connection %s", krcoordi.unixdomain);
-    kr_coordi_common_accept_handler(cfd);
-}
-
-
 

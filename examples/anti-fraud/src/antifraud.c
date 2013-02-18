@@ -118,31 +118,31 @@ void map_func_1(void *fldval, int fldno, int fldlen, void *data)
             break;
         }
         case 2:
-            printf("custno=[%s]\n", ptFlow->caOutCustNo);
+//            printf("custno=[%s]\n", ptFlow->caOutCustNo);
             memcpy(fldval, ptFlow->caOutCustNo, fldlen);
             break;
         case 3:
-            printf("txndate=[%s]\n", ptFlow->caOutTransDate);
+//            printf("txndate=[%s]\n", ptFlow->caOutTransDate);
             memcpy(fldval, ptFlow->caOutTransDate, fldlen);
             break;    
         case 4:
-            printf("txntime=[%s]\n", ptFlow->caOutTransTime);
+//            printf("txntime=[%s]\n", ptFlow->caOutTransTime);
             memcpy(fldval, ptFlow->caOutTransTime, fldlen);
             break;
         case 5:
-            printf("flowno=[%s]\n", ptFlow->caOutFlowNo);
+//            printf("flowno=[%s]\n", ptFlow->caOutFlowNo);
             memcpy(fldval, ptFlow->caOutFlowNo, fldlen);
             break;
         case 6:
-            printf("txntype=[%s]\n", ptFlow->caOutTransType);
+//            printf("txntype=[%s]\n", ptFlow->caOutTransType);
             memcpy(fldval, ptFlow->caOutTransType, fldlen);
             break;
         case 7:
-            printf("txnamt=[%lf]\n", ptFlow->dOutTransAmt);
+//            printf("txnamt=[%lf]\n", ptFlow->dOutTransAmt);
             *(double *)fldval = ptFlow->dOutTransAmt;
             break;
         case 8:
-            printf("txnloc=[%s]\n", ptFlow->caOutTransLoc);
+//            printf("txnloc=[%s]\n", ptFlow->caOutTransLoc);
             memcpy(fldval, ptFlow->caOutTransLoc, fldlen);
             break;
         default:

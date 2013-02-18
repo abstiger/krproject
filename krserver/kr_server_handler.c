@@ -18,7 +18,7 @@ int kr_server_handle_svron(void)
     stMessage.msgbuf = &stMsgSvrOn;
     
     int writeLen = kr_message_write(krserver.neterr, krserver.cofd, &stMessage);
-	if (writeLen <= 0) {/* write message failure */	    
+    if (writeLen <= 0) {/* write message failure */        
         KR_LOG(KR_LOGERROR, "write message error[%s]!", krserver.neterr);
         return -1;
     }
@@ -31,8 +31,8 @@ int kr_server_handle_apply(T_KRMessage *ptMessage)
     int iResult = 0;
     E_KROprCode eOprCode = KR_OPRCODE_DETECT;
     
-	/* judge whether this server detecting this message */
-	if (strcmp(ptMessage->serverid, krserver.serverid) != 0) {
+    /* judge whether this server detecting this message */
+    if (strcmp(ptMessage->serverid, krserver.serverid) != 0) {
         KR_LOG(KR_LOGDEBUG, "message:[%s] server[%s] not match!", \
             ptMessage->serverid, krserver.serverid);
         eOprCode = KR_OPRCODE_INSERT;
@@ -47,28 +47,38 @@ int kr_server_handle_apply(T_KRMessage *ptMessage)
         return -1; 
     }
 
-KR_LOG(KR_LOGDEBUG, "kr_server_handle_apply [%d] Passed!", ptMessage->datasrc);
-	
     return 0;
 }
 
 
 static int kr_server_handle_message(T_KRMessage *ptMessage)
 {
-    int ret = -1;
+    int ret = 0;
     
     switch(ptMessage->msgtype)
-	{
-	    case KR_MSGTYPE_APPLY:
-	        ret = kr_server_handle_apply(ptMessage);
+    {
+        case KR_MSGTYPE_APPLY:
+            KR_LOG(KR_LOGDEBUG, "Client [%s] Apply Server [%s] with [%s]!", 
+                    ptMessage->clientid, ptMessage->serverid, 
+                    ptMessage->objectkey);
+            ret = kr_server_handle_apply(ptMessage);
+            break;
+        case KR_MSGTYPE_CLION:
+            KR_LOG(KR_LOGDEBUG, "Client [%s] connected!", 
+                    ptMessage->clientid);
+            break;
+        case KR_MSGTYPE_CLIOFF:
+            KR_LOG(KR_LOGDEBUG, "Client [%s] disconnected!", 
+                    ptMessage->clientid);
             break;
         default:
             KR_LOG(KR_LOGERROR, "unsupported message type[%d]!", \
                 ptMessage->msgtype);
+            ret = -1;
             break;
-	}
-	
-	return ret;
+    }
+    
+    return ret;
 }
 
 void kr_server_message_read_handler(T_KREventLoop *el, int fd, void *privdata, int mask) 
@@ -77,9 +87,9 @@ void kr_server_message_read_handler(T_KREventLoop *el, int fd, void *privdata, i
     int readLen = 0;
     T_KRMessage stMessage = {0};
 
-	/** read message */
-	readLen = kr_message_read(krserver.neterr, fd, &stMessage);
-	if (readLen <= 0) {/* read message failure */
+    /** read message */
+    readLen = kr_message_read(krserver.neterr, fd, &stMessage);
+    if (readLen <= 0) {/* read message failure */
         KR_LOG(KR_LOGERROR, "read message error[%s]!", krserver.neterr);
         kr_event_file_delete(el, fd, KR_EVENT_READABLE);
         close(fd);
@@ -93,12 +103,9 @@ void kr_server_message_read_handler(T_KREventLoop *el, int fd, void *privdata, i
         return;
     }
     
-printf("Read message:msgtype[%d], serverid[%s], clientid[%s], msglen[%d], msgbuf:[%s]\n", \
-        stMessage.msgtype, stMessage.serverid, stMessage.clientid, stMessage.msglen, (char *)stMessage.msgbuf);
-        
-	/** handle message */
-	ret = kr_server_handle_message(&stMessage);
-	if (ret != 0) {/* handle message failure */
+    /** handle message */
+    ret = kr_server_handle_message(&stMessage);
+    if (ret != 0) {/* handle message failure */
         KR_LOG(KR_LOGERROR, "handle message [%d], [%s]error!", \
                stMessage.msgtype, stMessage.msgbuf);
         return;
@@ -142,20 +149,4 @@ void kr_server_tcp_accept_handler(T_KREventLoop *el, int fd, void *privdata, int
     KR_LOG(KR_LOGDEBUG, "Accepted %s:%d", cip, cport);
     kr_server_common_accept_handler(cfd);
 }
-
-
-void kr_server_unix_accept_handler(T_KREventLoop *el, int fd, void *privdata, int mask) 
-{
-    int cfd;
-
-    cfd = kr_net_unix_accept(krserver.neterr, fd);
-    if (cfd == KR_NET_ERR) {
-        KR_LOG(KR_LOGERROR, "Accepting client connection: %s", krserver.neterr);
-        return;
-    }
-    KR_LOG(KR_LOGDEBUG, "Accepted connection to %s", krserver.unixdomain);
-    kr_server_common_accept_handler(cfd);
-}
-
-
 

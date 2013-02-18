@@ -9,13 +9,19 @@ pykrengine_startup(PyObject *self, PyObject *args)
     char *dsn, *user, *pass;
     char *logpath, *logname;
     int loglevel;
-    char *krdbname, *dbmodulename;
-    int shmkey, hdicachesize, threadcnt;
+    char *krdbname;
+    char *krdbmodule, *datamodule, *rulemodule;
+    int shmkey, hdicachesize, threadcnt, hwm;
 
-    if (!PyArg_ParseTuple(args, "sssssiissii", &dsn, &user, &pass, &logpath, &logname, &loglevel, &shmkey, &krdbname, &dbmodulename, &hdicachesize, &threadcnt))
+    if (!PyArg_ParseTuple(args, "sssssiissssiii", &dsn, &user, &pass, 
+                &logpath, &logname, &loglevel, &shmkey, &krdbname, 
+                &krdbmodule, &datamodule, &rulemodule,
+                &hdicachesize, &threadcnt, &hwm))
         return NULL;
-    krengine = kr_engine_startup(dsn, user, pass, logpath, logname, loglevel, 
-            shmkey, krdbname, dbmodulename, hdicachesize, threadcnt);
+    krengine = kr_engine_startup(dsn, user, pass, 
+            logpath, logname, loglevel, shmkey, krdbname, 
+            krdbmodule, datamodule, rulemodule, 
+            hdicachesize, threadcnt, hwm);
     return Py_BuildValue("l", krengine);
 }
 

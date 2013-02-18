@@ -41,10 +41,7 @@ typedef struct _kr_coordi_t
     /* Networking */
     int tcpport;                  /* TCP listening port */
     char *tcpbindaddr;            /* Bind address or NULL */
-    char *unixdomain;             /* UNIX domain path */
-    mode_t unixdomainperm;        /* UNIX domain permission */
     int ipfd;                     /* TCP socket file descriptor */
-    int sofd;                     /* Unix socket file descriptor */
     char neterr[KR_NET_ERR_LEN];  /* Error buffer for kr_net.c */
         
     /**/

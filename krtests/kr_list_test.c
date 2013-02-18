@@ -28,31 +28,31 @@ static inline void print_record(void *value, void *user_data)
 int main(int argc,char *argv[])
 {
     int i = 0;
-	T_KRList *ptList = kr_list_new();
-	kr_list_set_compare(ptList, (KRCompareDataFunc )record_compare);
-	
-	srandom((unsigned int)time(NULL));
-	
-	for (i=0; i<10; i++) {
-	    gstRecord[i].i=random()%9;
-	    gstRecord[i].d = i;
-	    snprintf(gstRecord[i].s, 20, "record_%d", i);
+    T_KRList *ptList = kr_list_new();
+    kr_list_set_compare(ptList, (KRCompareDataFunc )record_compare);
+    
+    srandom((unsigned int)time(NULL));
+    
+    for (i=0; i<10; i++) {
+        gstRecord[i].i=random()%9;
+        gstRecord[i].d = i;
+        snprintf(gstRecord[i].s, 20, "record_%d", i);
 
-printf("kr_list_add_sorted[%d] [%d]\n", i, gstRecord[i].i);	  
+printf("kr_list_add_sorted[%d] [%d]\n", i, gstRecord[i].i);      
         //kr_list_add_tail(ptList, &gstRecord[i]);
-	    kr_list_add_sorted(ptList, &gstRecord[i], NULL);
-	}
-	
-	kr_list_foreach(ptList, print_record, NULL);
-	
-	T_KRListNode *ptNode = kr_list_search(ptList, &gstRecord[7]);
-	if (ptNode != NULL) {
-	    print_record(kr_list_value(ptNode), NULL);
-	}
+        kr_list_add_sorted(ptList, &gstRecord[i], NULL);
+    }
+    
+    kr_list_foreach(ptList, print_record, NULL);
+    
+    T_KRListNode *ptNode = kr_list_search(ptList, &gstRecord[7]);
+    if (ptNode != NULL) {
+        print_record(kr_list_value(ptNode), NULL);
+    }
         
     kr_list_destroy(ptList);
 
-	return 0;
+    return 0;
 }
 
 

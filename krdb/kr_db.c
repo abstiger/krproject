@@ -142,7 +142,7 @@ static int _kr_db_build_index(T_DbsEnv *dbsenv, T_KRDB *ptKRDB, T_KRTable *ptTab
     return iFlag;
 }
 
-T_KRDB* kr_db_startup(T_DbsEnv *dbsenv, char *dbname, char *modulefile)
+T_KRDB* kr_db_startup(T_DbsEnv *dbsenv, char *dbname, T_KRModule *krdbmodule)
 {
     int iFlag = 0;
     int iResult = 0;
@@ -153,9 +153,9 @@ T_KRDB* kr_db_startup(T_DbsEnv *dbsenv, char *dbname, char *modulefile)
     T_DatasrcFieldCntSel stDatasrcFieldCntSel = {0};
     
     /*create db first*/
-    ptKRDB = kr_create_db(dbname, modulefile);
+    ptKRDB = kr_create_db(dbname, krdbmodule);
     if (ptKRDB == NULL) {
-        KR_LOG(KR_LOGERROR, "kr_create_db %s %s error!", dbname, modulefile);
+        KR_LOG(KR_LOGERROR, "kr_create_db %s error!", dbname);
         return NULL;
     }
     

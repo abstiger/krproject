@@ -1,6 +1,6 @@
 CC=gcc
-CFLAGS= -Wall -g -O2 
-LDFLAGS= -fPIC -DPIC -shared -O2
+CFLAGS= -Wall -fPIC -DPIC -g -O2
+LDFLAGS= -shared 
 
 all:antifraud.so
 
@@ -8,7 +8,7 @@ all:antifraud.so
 	$(CC) $(CFLAGS) -c $<
 
 antifraud.so: antifraud.o parson.o
-	$(CC) $(LDFLAGS) $^ -o $@
+	$(CC) $(CFLAGS) $(LDFLAGS) $^ -o $@
 
 clean:
 	rm -f antifraud.so antifraud.o parson.o

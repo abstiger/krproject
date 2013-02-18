@@ -198,16 +198,34 @@ create table KR_TBL_HDI_DEF
    constraint P_PK_DDI_ID primary key (HDI_ID)
 );
 
+/*==============================================================*/
+/* Table: KR_TBL_GROUP                                          */
+/*==============================================================*/
+create table KR_TBL_GROUP
+(
+   GROUP_ID             int not null,
+   GROUP_NAME           varchar(30) not null,
+   GROUP_DESC           varchar(100) not null,
+   GROUP_STRING         varchar(500) not null,
+   GROUP_STATUS         char(1) not null,
+   REC_CRET_DTTM        char(17) not null,
+   LST_UPD_DTTM         char(17) not null,
+   LST_UPD_USER_ID      varchar(15) not null,
+   constraint P_PK_GROUP_ID primary key (GROUP_ID)
+);
+
 --==============================================================
 -- Table: KR_TBL_RULE
 --==============================================================
 create table KR_TBL_RULE
 (
+   GROUP_ID             INTEGER                not null,
    RULE_ID              INTEGER                not null,
    RULE_NAME            VARCHAR(30)            not null,
    RULE_DESC            VARCHAR(100)           not null,
    RULE_STRING          VARCHAR(500)           not null,
    RULE_TYPE            CHAR(1)                not null,
+   RULE_FUNC            VARCHAR(50)           not null,
    RULE_WEIGHT          INTEGER                not null,
    RISK_ADVC_THRESH     NUMERIC(20,4)          not null,
    RISK_NOTIF_THRESH    NUMERIC(20,4)          not null,
@@ -218,7 +236,7 @@ create table KR_TBL_RULE
    REC_CRET_DTTM        CHAR(17)               not null,
    LST_UPD_DTTM         CHAR(17)               not null,
    LST_UPD_USER_ID      VARCHAR(15)            not null,
-   constraint "P_Key_1" primary key (RULE_ID)
+   constraint P_PK_RULE_ID primary key (RULE_ID)
 );
 
 --==============================================================

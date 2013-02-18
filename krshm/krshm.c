@@ -77,8 +77,8 @@ int main(int argc,char* argv[])
     
     /** create share memory */
     if (N_SHM_CREATE&iInputFlag) { 
-		printf("N_SHM_CREATE\n");
-		gptShmBuf=kr_shm_create(iShmKey);
+        printf("N_SHM_CREATE\n");
+        gptShmBuf=kr_shm_create(iShmKey);
         if (gptShmBuf == NULL) {
             printf("Initial Share Memory failed!\n");
             return -1;
@@ -112,7 +112,7 @@ int main(int argc,char* argv[])
     
     /** view share memory */
     if (N_SHM_VIEW&iInputFlag) {
-		printf("N_SHM_VIEW\n");
+        printf("N_SHM_VIEW\n");
         gptShmBuf=kr_shm_attach(iShmKey);
         if (gptShmBuf == NULL) {
             printf("Attach Share Memory failed!\n");
@@ -129,7 +129,7 @@ int main(int argc,char* argv[])
 
     /** delete share memory */
     if (N_SHM_REMOVE&iInputFlag) {
-		printf("N_SHM_REMOVE\n");
+        printf("N_SHM_REMOVE\n");
         printf("Are you sure to remove cum share memory?(Y/N)\n");
         ch=getchar();
         if(ch != 'Y' && ch != 'y') {

@@ -29,11 +29,11 @@ struct _kr_ddi_table_t
 
 
 /*dynamic dataitem*/
-T_KRDDI *kr_ddi_construct(T_KRShmDDIDef *ddi_def);
+T_KRDDI *kr_ddi_construct(T_KRShmDDIDef *ddi_def, T_KRModule *datamodule);
 int kr_ddi_compute(T_KRDDI *krddi, void *param);
 void kr_ddi_destruct(T_KRDDI *krddi);
 
-T_KRDDITable *kr_ddi_table_construct(T_KRShmDDI *shm_ddi);
+T_KRDDITable *kr_ddi_table_construct(T_KRShmDDI *shm_ddi, T_KRModule *datamodule);
 void kr_ddi_table_destruct(T_KRDDITable *krdditable);
 
 E_KRFieldType kr_ddi_get_type(int did, T_KRContext *krcontext);

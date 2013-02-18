@@ -16,30 +16,30 @@ typedef enum {
 /* actual node structure */
 typedef struct _kr_actual_node_t
 {
-	unsigned int    hash;        /*node hash, hash(id)*/
-	char            id[100];     /*node identifier, should be unique!*/
-	unsigned int    weights;     /*node weights, the replicas of this node*/
-	unsigned int    kicks;       /*node kicks, the kick times of this node*/
-	T_KRVirtualNode *vnodes;     /*vitual nodes of this actual node*/
-	void            *priv;       /*private data of this node*/
-	E_KRNodeStatus  status;      /*node status*/
+    unsigned int    hash;        /*node hash, hash(id)*/
+    char            id[100];     /*node identifier, should be unique!*/
+    unsigned int    weights;     /*node weights, the replicas of this node*/
+    unsigned int    kicks;       /*node kicks, the kick times of this node*/
+    T_KRVirtualNode *vnodes;     /*vitual nodes of this actual node*/
+    void            *priv;       /*private data of this node*/
+    E_KRNodeStatus  status;      /*node status*/
 }T_KRActualNode;
 
 /* virtual node structure */
 struct _kr_virtual_node_t
 {
-	unsigned int    hash;        /* vnode hash, hash(vid)*/
-	char            vid[128];    /* vnode identifier, come from nodeid!*/
-	T_KRActualNode *node;        /* pointer to the actual node */
+    unsigned int    hash;        /* vnode hash, hash(vid)*/
+    char            vid[128];    /* vnode identifier, come from nodeid!*/
+    T_KRActualNode *node;        /* pointer to the actual node */
 };
 
 /* consistent hashing */
 typedef struct _kr_conhash_t
 {
-	KRHashFunc      hash_func;   /* hash function */
-	KRFreeFunc      free_func;   /* free function for private data */
-	T_KRSkipList   *vnode_list;  /* skiplist of virtual nodes */
-	T_KRSkipList   *node_list;   /* skiplist of actual nodes */
+    KRHashFunc      hash_func;   /* hash function */
+    KRFreeFunc      free_func;   /* free function for private data */
+    T_KRSkipList   *vnode_list;  /* skiplist of virtual nodes */
+    T_KRSkipList   *node_list;   /* skiplist of actual nodes */
 }T_KRConHash;
 
 

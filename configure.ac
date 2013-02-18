@@ -48,5 +48,7 @@ krcoordi/Makefile
 krserver/Makefile
 krclient/Makefile
 krtests/Makefile
+etc/Makefile 
+doc/Makefile 
 ])
 AC_OUTPUT

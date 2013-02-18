@@ -6,20 +6,20 @@
 T_KRDB *gptKRDB = NULL;
 
 typedef struct _kr_tradflow_t{
-	char     caOutCustNo[20+1];
-	char     caOutTransDate[8+1];
-	char     caOutTransTime[6+1];
-	char     caOutFlowNo[15+1];
-	char     caOutTransType[2+1];
-	double   dOutTransAmt;
-	char     caOutTransLoc[100+1];
+    char     caOutCustNo[20+1];
+    char     caOutTransDate[8+1];
+    char     caOutTransTime[6+1];
+    char     caOutFlowNo[15+1];
+    char     caOutTransType[2+1];
+    double   dOutTransAmt;
+    char     caOutTransLoc[100+1];
 } T_KRTradFlow_1;
 
 static int MyPrintRecord(T_KRRecord *ptRecord, void *user_data);
 
 int main(int argc,char *argv[])
 {
-/*	
+/*    
     int i = 0;
     int iResult = 0;
     char caTmpBuff[200] = {0};
@@ -27,23 +27,23 @@ int main(int argc,char *argv[])
     
     T_KRRecord *ptRecord = NULL;
     
-	time_t	lTime;
-	struct tm	*tTmLocal;
-	char	sLogTime[128];
-	iResult = dbsDbConnect();
-	if (iResult != 0)
-	{
-	    KR_LOG(KR_LOGERROR, "dbsDbConnect Failed!");
+    time_t    lTime;
+    struct tm    *tTmLocal;
+    char    sLogTime[128];
+    iResult = dbsDbConnect();
+    if (iResult != 0)
+    {
+        KR_LOG(KR_LOGERROR, "dbsDbConnect Failed!");
         return -1;
-	}
-	
-	//Step 1:kr_db_startup
-	gptKRDB = kr_db_startup("AFD KRDB", "/home/tiger/krproject/lib/antifraud.so");
-	if (gptKRDB == NULL)
-	{
-	    KR_LOG(KR_LOGERROR, "kr_db_startup Failed!");
+    }
+    
+    //Step 1:kr_db_startup
+    gptKRDB = kr_db_startup("AFD KRDB", "/home/tiger/krproject/lib/antifraud.so");
+    if (gptKRDB == NULL)
+    {
+        KR_LOG(KR_LOGERROR, "kr_db_startup Failed!");
         return -1;
-	}
+    }
 
     kr_db_load(gptKRDB);
     
@@ -80,23 +80,23 @@ int main(int argc,char *argv[])
         
         if (i%10000 == 0)
         {
-        	// get current time 
-	        memset (sLogTime, 0x00, sizeof(sLogTime));
-	        lTime = time (NULL);
-	        tTmLocal = localtime (&lTime);
-	        strftime (sLogTime, sizeof(sLogTime), "%Y-%m-%d %H:%M:%S", tTmLocal);
+            // get current time 
+            memset (sLogTime, 0x00, sizeof(sLogTime));
+            lTime = time (NULL);
+            tTmLocal = localtime (&lTime);
+            strftime (sLogTime, sizeof(sLogTime), "%Y-%m-%d %H:%M:%S", tTmLocal);
             printf("Inserting Record :[%d][%s]\n", i, sLogTime);
         }
         
         //Step 2.1:InsertIntoKRDB
         ptRecord = kr_db_insert(gptKRDB, 1, &stTradFlow1);
-	    if (ptRecord == NULL)
-	    {
-	        KR_LOG(KR_LOGERROR, "kr_db_insert [%s] Failed!", stTradFlow1.caOutFlowNo);
+        if (ptRecord == NULL)
+        {
+            KR_LOG(KR_LOGERROR, "kr_db_insert [%s] Failed!", stTradFlow1.caOutFlowNo);
             return -1;
-	    }
-	    
-	    //sleep(1);
+        }
+        
+        //sleep(1);
     }
 
     FILE *fpDump;
@@ -110,23 +110,23 @@ int main(int argc,char *argv[])
     kr_db_dump_field_def(stdout, gptKRDB, 1);
     kr_db_dump(stdout, gptKRDB, 0);
     //kr_db_dump(stdout, gptKRDB, 1);
-    	printf("gptKRDB->ptCurrTable=[%p][%d][%s]\n", 
-	        gptKRDB->ptCurrTable, gptKRDB->ptCurrTable->iRecordSize, 
-	        gptKRDB->ptCurrTable->caMMapFile);
-	kr_db_mmap_file_handle(gptKRDB->ptCurrTable->caMMapFile, MyPrintRecord, NULL);
+        printf("gptKRDB->ptCurrTable=[%p][%d][%s]\n", 
+            gptKRDB->ptCurrTable, gptKRDB->ptCurrTable->iRecordSize, 
+            gptKRDB->ptCurrTable->caMMapFile);
+    kr_db_mmap_file_handle(gptKRDB->ptCurrTable->caMMapFile, MyPrintRecord, NULL);
     
     //Step 3:kr_db_shutdown
     iResult = kr_db_shutdown(gptKRDB);
-	if (iResult != 0)
-	{
-	    KR_LOG(KR_LOGERROR, "kr_db_shutdown Failed!");
+    if (iResult != 0)
+    {
+        KR_LOG(KR_LOGERROR, "kr_db_shutdown Failed!");
         return -1;
-	}
-	
-	dbsDbDisconnect();
+    }
+    
+    dbsDbDisconnect();
 
 */
-	return 0;
+    return 0;
 }
 
 static int MyPrintRecord(T_KRRecord *ptRecord, void *user_data)

@@ -12,14 +12,14 @@ T_KRShareMem *gptShmBuf = NULL;
 int ERMInitial(void)
 {
     //Step 1:kr_db_startup
-	gstContext.ptKRDB = kr_db_startup("ERM_KRDB");
-	if (gstContext.ptKRDB == NULL)
-	{
+    gstContext.ptKRDB = kr_db_startup("ERM_KRDB");
+    if (gstContext.ptKRDB == NULL)
+    {
         KR_LOG(KR_LOGERROR, "kr_db_startup Failed!");
         return -1;
-	}
+    }
 
-	//kr_db_load(gptKRDB);
+    //kr_db_load(gptKRDB);
     //Step 3: kr_shm_attach 
     gstContext.ptShm = kr_shm_attach(74561);
     if (gstContext.ptShm == NULL) {
@@ -34,7 +34,7 @@ int ERMInitial(void)
         return -1;
     }
 
-   	return 0;
+       return 0;
 }
 
 
@@ -47,12 +47,12 @@ int ERMFinish(void)
     /* kr_shm_detach */
     kr_shm_detach(gstContext.ptShm);
     
-	/* kr_db_dump */
-	FILE *fpKRDBDump = NULL;
-	char caDateTime[14+1] = {0};
-	char caKRDBDumpFileName[1024]= {0};
-	snprintf(caKRDBDumpFileName, sizeof(caKRDBDumpFileName), \
-	         "KRDB.%s.Dump", kr_time_system(caDateTime));
+    /* kr_db_dump */
+    FILE *fpKRDBDump = NULL;
+    char caDateTime[14+1] = {0};
+    char caKRDBDumpFileName[1024]= {0};
+    snprintf(caKRDBDumpFileName, sizeof(caKRDBDumpFileName), \
+             "KRDB.%s.Dump", kr_time_system(caDateTime));
     if ((fpKRDBDump = fopen(caKRDBDumpFileName, "w")) != NULL) 
     {
         kr_db_dump(fpKRDBDump, gstContext.ptKRDB, 0);
@@ -61,12 +61,12 @@ int ERMFinish(void)
     
     // kr_db_shutdown
     iResult = kr_db_shutdown(gstContext.ptKRDB);
-	if (iResult != 0)
-	{
-	    KR_LOG(KR_LOGERROR, "kr_db_shutdown Failed!");
+    if (iResult != 0)
+    {
+        KR_LOG(KR_LOGERROR, "kr_db_shutdown Failed!");
         return -1;
-	}
-	return 0;
+    }
+    return 0;
 }
 
 
@@ -76,25 +76,25 @@ int ERMHandle(int iDataSrc, void *ptReqDef)
     
     /* 插入KRDB内存数据库 */
     gstContext.ptCurrRec = kr_db_insert(gstContext.ptKRDB, iDataSrc, ptReqDef);
-	if (gstContext.ptCurrRec == NULL)
-	{
-	    KR_LOG(KR_LOGERROR, "kr_db_insert Failed!");
+    if (gstContext.ptCurrRec == NULL)
+    {
+        KR_LOG(KR_LOGERROR, "kr_db_insert Failed!");
         return -1;
-	}
+    }
 KR_LOG(KR_LOGDEBUG, "0.kr_db_insert [%d] Passed!", iDataSrc);
 
     /* 规则侦测 */
     iResult = kr_rule_group_detect(ptDynMem, &gstContext);
     if (iResult != 0)
-	{
-	    KR_LOG(KR_LOGERROR, "kr_rule_group_detect Failed!");
+    {
+        KR_LOG(KR_LOGERROR, "kr_rule_group_detect Failed!");
         return -1;
-	}
+    }
 KR_LOG(KR_LOGDEBUG, "1.kr_rule_group_detect [%d] Passed!", iDataSrc);
     
     /*DumpDataVal(stdout, &gptDataVal);*/
     
-	return 0;
+    return 0;
 }
 
 
@@ -104,17 +104,17 @@ int main(int argc,char *argv[])
     int iResult = 0;
     char caTmpBuff[200] = {0};
     T_KRTradFlow_1 stTradFlow1 = {0};
-	time_t	lTime;
-	struct tm	*tTmLocal;
-	char	sLogTime[128];
+    time_t    lTime;
+    struct tm    *tTmLocal;
+    char    sLogTime[128];
     
     iResult = dbsDbConnect();
-	if (iResult != 0)
-	{
-	    KR_LOG(KR_LOGERROR, "dbsDbConnect Failed!");
+    if (iResult != 0)
+    {
+        KR_LOG(KR_LOGERROR, "dbsDbConnect Failed!");
         return -1;
-	}
-	
+    }
+    
     ERMInitial();
         
     //Step 2:FraudDetect
@@ -150,37 +150,37 @@ int main(int argc,char *argv[])
         
         if (i%10000 == 0)
         {
-        	/* get current time */
-	        memset (sLogTime, 0x00, sizeof(sLogTime));
-	        lTime = time (NULL);
-	        tTmLocal = localtime (&lTime);
-	        strftime (sLogTime, sizeof(sLogTime), "%Y-%m-%d %H:%M:%S", tTmLocal);
+            /* get current time */
+            memset (sLogTime, 0x00, sizeof(sLogTime));
+            lTime = time (NULL);
+            tTmLocal = localtime (&lTime);
+            strftime (sLogTime, sizeof(sLogTime), "%Y-%m-%d %H:%M:%S", tTmLocal);
             printf("Inserting Record :[%d][%s]\n", i, sLogTime);
         }
         
         //Step 2.1:InsertIntoKRDB
         iResult = ERMHandle(1, &stTradFlow1);
-	    if (iResult != 0)
-	    {
-	        KR_LOG(KR_LOGERROR, "ERMHandle [%s] Failed!", stTradFlow1.caOutFlowNo);
+        if (iResult != 0)
+        {
+            KR_LOG(KR_LOGERROR, "ERMHandle [%s] Failed!", stTradFlow1.caOutFlowNo);
             return -1;
-	    }
-	    
-	    //sleep(1);
+        }
+        
+        //sleep(1);
     }
     
     //Step 3:kr_db_shutdown
     iResult = ERMFinish( );
-	if (iResult != 0)
-	{
-	    KR_LOG(KR_LOGERROR, "ERMFinish Failed!");
+    if (iResult != 0)
+    {
+        KR_LOG(KR_LOGERROR, "ERMFinish Failed!");
         return -1;
-	}
-	
-	dbsDbDisconnect();
-	
+    }
+    
+    dbsDbDisconnect();
+    
 
-	return 0;
+    return 0;
 }
 #else
 int main(void)

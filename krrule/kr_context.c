@@ -11,7 +11,7 @@ T_KRContext *kr_context_init(T_KRContextEnv *ptEnv)
 
     ptContext->ptEnv = ptEnv;
 
-    ptContext->ptDym = kr_dynamicmem_init(ptEnv->ptShm);
+    ptContext->ptDym = kr_dynamicmem_init(ptEnv);
     if (ptContext->ptDym == NULL) {
         KR_LOG(KR_LOGERROR, "kr_dynamicmem_init failed!");
         kr_free(ptContext);
@@ -25,7 +25,7 @@ T_KRContext *kr_context_init(T_KRContextEnv *ptEnv)
 int kr_context_set(T_KRContext *ptContext, T_KRRecord *ptCurrRec)
 {
     /* check dynamic memory, reload if needed */
-    if (kr_dynamicmem_check(ptContext->ptDym, ptContext->ptEnv->ptShm) != 0) {
+    if (kr_dynamicmem_check(ptContext->ptDym, ptContext->ptEnv) != 0) {
         KR_LOG(KR_LOGERROR, "kr_dynamicmem_check failed");
         return -1;
     }

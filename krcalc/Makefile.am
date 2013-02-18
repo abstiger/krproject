@@ -11,3 +11,5 @@ libkrcalc_la_SOURCES  = \
 libkrcalc_la_LIBADD    = $(top_srcdir)/krutils/libkrutils.la
 libkrcalc_la_LDFLAGS   =
 libkrcalc_la_CPPFLAGS  =
+
+EXTRA_DIST = parser

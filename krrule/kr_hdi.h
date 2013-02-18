@@ -27,11 +27,11 @@ struct _kr_hdi_table_t
 
 
 /*dynamic dataitem*/
-T_KRHDI *kr_hdi_construct(T_KRShmHDIDef *hdi_def);
+T_KRHDI *kr_hdi_construct(T_KRShmHDIDef *hdi_def, T_KRModule *datamodule);
 int kr_hdi_compute(T_KRHDI *krhdi, void *param);
 void kr_hdi_destruct(T_KRHDI *krhdi);
 
-T_KRHDITable *kr_hdi_table_construct(T_KRShmHDI *shm_hdi);
+T_KRHDITable *kr_hdi_table_construct(T_KRShmHDI *shm_hdi, T_KRModule *datamodule);
 void kr_hdi_table_destruct(T_KRHDITable *krhditable);
 
 E_KRFieldType kr_hdi_get_type(int hid, T_KRContext *krcontext);

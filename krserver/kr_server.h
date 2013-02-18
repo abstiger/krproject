@@ -16,7 +16,9 @@ typedef struct _kr_server_t
     /* General */
     char *configfile;             /* krserver's configure file */
     char *serverid;               /* server identifier */
-    char *dbmodulefile;           /* krdb's module file */
+    char *krdbmodule;             /* krdb's module file */
+    char *datamodule;             /* data's module file */
+    char *rulemodule;             /* rule's module file */
     int  daemonize;               /* True if running as a daemon */
     char *pidfile;                /* PID file path */
     int  maxevents;               /* the max event number supported */
@@ -29,6 +31,7 @@ typedef struct _kr_server_t
     char *logpath;                /* Path of log file */
     
     int threadcnt;                /* Thread pool size, 0: no threads*/
+    int hwm;                      /* Thread pool high water mark*/
     int shutdown;                 /* Shutdown flag */
     char *dbname;                 /* data source name */
     char *dbuser;                 /* database user */
@@ -37,12 +40,9 @@ typedef struct _kr_server_t
     /* Networking */
     int tcpport;                  /* TCP listening port */
     char *tcpbindaddr;            /* Bind address or NULL */
-    char *unixdomain;             /* UNIX domain path */
-    mode_t unixdomainperm;        /* UNIX domain permission */
     int  clustermode;             /* Server in cluder:1 or not:0 */
     int  weights;                 /* weights for this server in cluster mode */
     int  replica;                 /* a replication server:1 or not:0*/
-    char *coorddomain;            /* Coordinator domain path */
     int coordport;                /* Coordinator port */
     char *coordip;                /* Coordinator ip */
     int ipfd;                     /* TCP socket file descriptor */

@@ -20,6 +20,8 @@ libkrrule_la_SOURCES  = \
 	 kr_hdi_cache.c \
      kr_rule.h \
      kr_rule.c \
+     kr_rule_func.h \
+     kr_rule_func.c \
      kr_dynamicmem.h \
      kr_dynamicmem.c 
 

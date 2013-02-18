@@ -28,11 +28,11 @@ struct _kr_sdi_table_t
 };
 
 /*static dataitem*/
-T_KRSDI *kr_sdi_construct(T_KRShmSDIDef *sdi_def);
+T_KRSDI *kr_sdi_construct(T_KRShmSDIDef *sdi_def, T_KRModule *datamodule);
 int kr_sdi_compute(T_KRSDI *krsdi, void *param);
 void kr_sdi_destruct(T_KRSDI *krsdi);
 
-T_KRSDITable *kr_sdi_table_construct(T_KRShmSDI *shm_sdi);
+T_KRSDITable *kr_sdi_table_construct(T_KRShmSDI *shm_sdi, T_KRModule *datamodule);
 void kr_sdi_table_destruct(T_KRSDITable *krsditable);
 
 E_KRFieldType kr_sdi_get_type(int sid, T_KRContext *krcontext);

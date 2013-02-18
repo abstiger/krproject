@@ -10,7 +10,13 @@ int kr_db_mmap_sync(T_KRTable *krtable)
     T_KRTable *ptTable = (T_KRTable *)krtable->pMMapAddr;
     ptTable->uiRecordNum = krtable->uiRecordNum;
     ptTable->uiRecordLoc = krtable->uiRecordLoc;
-    msync(krtable->pMMapAddr, krtable->uiMMapSize, MS_SYNC);
+    /*synchronize header*/
+    msync(ptTable, sizeof(T_KRTable), MS_SYNC);
+    /*TODO:synchronize record*/
+    /*
+       msync(ptTable+sizeof(T_KRTable)+ptTable->iFieldCnt*sizeof(T_KRFieldDef)+ 
+       (ptTable->uiRecordLoc<=0?ptTable->lSizeKeepValue:ptTable->uiRecordLoc-1)*ptTable->iRecordSize, ptTable->iRecordSize, MS_SYNC);
+     */
     return 0;
 }
 

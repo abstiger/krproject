@@ -6,7 +6,6 @@
 T_KRCoordi krcoordi = {0};
 
 extern void kr_coordi_tcp_accept_handler(T_KREventLoop *el, int fd, void *priv, int mask);
-extern void kr_coordi_unix_accept_handler(T_KREventLoop *el, int fd, void *priv, int mask);
 
 extern int kr_coordi_config_parse(char *configfile, T_KRCoordi *coordi);
 extern void kr_coordi_config_dump(T_KRCoordi *coordi, FILE *fp);
@@ -129,9 +128,9 @@ int kr_coordi_initialize(void)
     krcoordi.servers = kr_conhash_construct(NULL, NULL);
     krcoordi.clients = kr_list_new();
     kr_list_set_match(krcoordi.clients, (KRCompareFunc )kr_coordi_client_match);
-    	
-	/* Create event loop */
-	krcoordi.el = kr_event_loop_create(krcoordi.maxevents);
+        
+    /* Create event loop */
+    krcoordi.el = kr_event_loop_create(krcoordi.maxevents);
 
     /* Register coordi cron time event */
     kr_event_time_create(krcoordi.el, 1, kr_coordi_cron, NULL, NULL);
@@ -145,18 +144,8 @@ int kr_coordi_initialize(void)
             return -1;
         }
     }
-    if (krcoordi.unixdomain != NULL) {
-        unlink(krcoordi.unixdomain); /* don't care if this fails */
-        krcoordi.sofd = kr_net_unix_server(krcoordi.neterr, \
-            krcoordi.unixdomain, krcoordi.unixdomainperm);
-        if (krcoordi.sofd == KR_NET_ERR) {
-            KR_LOG(KR_LOGERROR, "kr_net_unix_coordi[%s] failed[%s]!", 
-                krcoordi.unixdomain, krcoordi.neterr);
-            return -1;
-        }
-    }
-    if (krcoordi.ipfd < 0 && krcoordi.sofd < 0) {
-        KR_LOG(KR_LOGERROR, "Configured to not listen anywhere, exiting.");
+    if (krcoordi.ipfd < 0) {
+        KR_LOG(KR_LOGERROR, "tcpport [%d] uncorrect!", krcoordi.tcpport);
         return -1;
     }
     
@@ -169,15 +158,6 @@ int kr_coordi_initialize(void)
         return -1;
     }
     
-    /* Register unix accept file event */
-    if (krcoordi.sofd > 0 && 
-        kr_event_file_create(krcoordi.el, krcoordi.sofd, KR_EVENT_READABLE, \
-            kr_coordi_unix_accept_handler, NULL) == KR_NET_ERR) 
-    {
-        KR_LOG(KR_LOGERROR, "kr_event_file_create unix error");
-        return -1;
-    }
-
     return 0;
 }
 
@@ -187,19 +167,19 @@ int kr_coordi_finalize()
     /* event loop delete */
     kr_event_loop_delete(krcoordi.el);
 
-	/* destroy fd's hashtable */
-	kr_hashtable_destroy(krcoordi.fdtable);
+    /* destroy fd's hashtable */
+    kr_hashtable_destroy(krcoordi.fdtable);
     
     /* destruct server's consistent hash */
-	kr_conhash_destruct(krcoordi.servers);
-	
-	/* destroy client's list*/
-	kr_list_destroy(krcoordi.clients);
-	
-	/* Coordi config reset */
-	kr_coordi_config_reset(&krcoordi);
-	
-	return 0;
+    kr_conhash_destruct(krcoordi.servers);
+    
+    /* destroy client's list*/
+    kr_list_destroy(krcoordi.clients);
+    
+    /* Coordi config reset */
+    kr_coordi_config_reset(&krcoordi);
+    
+    return 0;
 }
 
 

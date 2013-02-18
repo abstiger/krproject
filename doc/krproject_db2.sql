@@ -276,6 +276,7 @@ create table KR_TBL_RULE
    RULE_DESC            VARCHAR(100)           not null,
    RULE_STRING          VARCHAR(500)           not null,
    RULE_TYPE            CHAR(1)                not null,
+   RULE_FUNC            VARCHAR(50)           not null,
    RULE_WEIGHT          INTEGER                not null,
    RISK_ADVC_THRESH     DECIMAL(20,4)          not null,
    RISK_NOTIF_THRESH    DECIMAL(20,4)          not null,

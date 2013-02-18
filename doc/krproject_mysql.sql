@@ -1,13 +1,13 @@
 /*==============================================================*/
 /* Database name:  KRDB                                         */
 /* DBMS name:      MySQL 5.0                                    */
-/* Created on:     2012/11/14 13:48:27                          */
+/* Created on:     2013/2/4 16:44:37                            */
 /*==============================================================*/
 
-drop database if exists krdb;
-create database krdb DEFAULT CHARACTER SET gbk COLLATE gbk_chinese_ci;
-GRANT ALL PRIVILEGES ON krdb.* TO 'tiger'@'localhost' IDENTIFIED BY 'haha';
-use krdb;
+
+drop database if exists KRDB;
+
+use KRDB;
 
 /*==============================================================*/
 /* Table: KR_TBL_DATADIC_CFG                                    */
@@ -152,6 +152,28 @@ create table KR_TBL_DYNDATA_MON
 );
 
 /*==============================================================*/
+/* Table: KR_TBL_GROUP                                          */
+/*==============================================================*/
+create table KR_TBL_GROUP
+(
+   GROUP_ID             int not null,
+   GROUP_NAME           varchar(30) not null,
+   GROUP_DESC           varchar(100) not null,
+   GROUP_STRING         varchar(500) not null,
+   GROUP_STATUS         char(1) not null comment '1-ÒÑÆôÓÃ
+            2-ÔÝÍ£
+            3-´ý¸´ºË
+            4-ÒÑ¸´ºË
+            5-¸´ºË¾Ü¾ø
+            6-ÒÑÉ¾³ý
+            ',
+   REC_CRET_DTTM        char(17) not null,
+   LST_UPD_DTTM         char(17) not null,
+   LST_UPD_USER_ID      varchar(15) not null,
+   primary key (GROUP_ID)
+);
+
+/*==============================================================*/
 /* Table: KR_TBL_HDI_DEF                                        */
 /*==============================================================*/
 create table KR_TBL_HDI_DEF
@@ -183,11 +205,13 @@ create table KR_TBL_HDI_DEF
 /*==============================================================*/
 create table KR_TBL_RULE
 (
+   GROUP_ID             int not null,
    RULE_ID              int not null,
    RULE_NAME            varchar(30) not null,
    RULE_DESC            varchar(100) not null,
    RULE_STRING          varchar(500) not null,
    RULE_TYPE            char(1) not null,
+   RULE_FUNC            varchar(50) not null,
    RULE_WEIGHT          int not null,
    RISK_ADVC_THRESH     decimal(20,4) not null,
    RISK_NOTIF_THRESH    decimal(20,4) not null,
@@ -204,7 +228,7 @@ create table KR_TBL_RULE
    REC_CRET_DTTM        char(17) not null,
    LST_UPD_DTTM         char(17) not null,
    LST_UPD_USER_ID      varchar(15) not null,
-   primary key (RULE_ID)
+   primary key (GROUP_ID, RULE_ID)
 );
 
 /*==============================================================*/

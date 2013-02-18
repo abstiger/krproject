@@ -807,7 +807,7 @@ kr_hashtable_steal_all (T_KRHashTable *hash_table)
  */
 static unsigned int
 kr_hashtable_foreach_remove_or_steal (T_KRHashTable *hash_table,
-                                      KRHRFunc	   func,
+                                      KRHRFunc       func,
                                       void        *user_data,
                                       boolean      notify)
 {

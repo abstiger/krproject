@@ -14,6 +14,7 @@ typedef struct _kr_shm_rule_def_t
     char        caRuleDesc[100+1];
     char        caRuleString[500+1];
     char        caRuleType[1+1];
+    char        caRuleFunc[50+1];
     long        lRuleWeight;
     double      dRiskAdvcThresh;
     double      dRiskNotifThresh;

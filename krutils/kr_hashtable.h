@@ -9,45 +9,45 @@ typedef struct _kr_hashtable_t  T_KRHashTable;
 
 /* Hash table operating functions */
 T_KRHashTable* kr_hashtable_new (KRHashFunc hash_func, KREqualFunc key_equal_func);
-T_KRHashTable* kr_hashtable_new_full (KRHashFunc	     hash_func,
-					                KREqualFunc	     key_equal_func,
-					                KRDestroyNotify  key_destroy_func,
-					                KRDestroyNotify  value_destroy_func);
-void	     kr_hashtable_destroy (T_KRHashTable	   *hash_table);
-void	     kr_hashtable_insert (T_KRHashTable   *hash_table, 
+T_KRHashTable* kr_hashtable_new_full (KRHashFunc         hash_func,
+                                    KREqualFunc         key_equal_func,
+                                    KRDestroyNotify  key_destroy_func,
+                                    KRDestroyNotify  value_destroy_func);
+void         kr_hashtable_destroy (T_KRHashTable       *hash_table);
+void         kr_hashtable_insert (T_KRHashTable   *hash_table, 
                                   void          *key, 
                                   void          *value);
 void         kr_hashtable_replace (T_KRHashTable    *hash_table,
-			 		              void           *key, 
-			 		              void           *value);
-boolean      kr_hashtable_remove (T_KRHashTable	   *hash_table,
-			 		             const void        *key);
+                                   void           *key, 
+                                   void           *value);
+boolean      kr_hashtable_remove (T_KRHashTable       *hash_table,
+                                  const void        *key);
 void         kr_hashtable_remove_all (T_KRHashTable  *hash_table);
 boolean      kr_hashtable_steal (T_KRHashTable     *hash_table,
-			 		            const void      *key);
+                                 const void      *key);
 void         kr_hashtable_steal_all (T_KRHashTable    *hash_table);
 void*        kr_hashtable_lookup (T_KRHashTable      *hash_table,
-			 		             const void       *key);
+                                  const void       *key);
 boolean      kr_hashtable_lookup_extended (T_KRHashTable *hash_table,
-			 		                      const void  *lookup_key,
-			 		                      void       **orig_key,
-			 		                      void       **value);
-unsigned int kr_hashtable_size (T_KRHashTable	   *hash_table);
+                                           const void  *lookup_key,
+                                           void       **orig_key,
+                                           void       **value);
+unsigned int kr_hashtable_size (T_KRHashTable       *hash_table);
 
-			 		                      
+                                           
 /*WARN: functions below should not be used, Because they are very slow!*/
-void	     kr_hashtable_foreach (T_KRHashTable  *hash_table,
-			 		              KRHFunc	    func,
-			 		              void          *user_data);
+void         kr_hashtable_foreach (T_KRHashTable  *hash_table,
+                                   KRHFunc        func,
+                                   void          *user_data);
 void*        kr_hashtable_find (T_KRHashTable    *hash_table,
-					           KRHRFunc	       predicate,
-					           void           *user_data);
+                               KRHRFunc           predicate,
+                               void           *user_data);
 unsigned int kr_hashtable_foreach_remove (T_KRHashTable *hash_table,
-			                              KRHRFunc	   func,
-			                              void        *user_data);
-unsigned int kr_hashtable_foreach_steal (T_KRHashTable	  *hash_table,
-			                             KRHRFunc	   func,
-			                             void          *user_data);
+                                          KRHRFunc       func,
+                                          void        *user_data);
+unsigned int kr_hashtable_foreach_steal (T_KRHashTable      *hash_table,
+                                         KRHRFunc       func,
+                                         void          *user_data);
 
 
 /* Various kinds of Hash Functions */

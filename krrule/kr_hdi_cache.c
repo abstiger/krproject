@@ -7,7 +7,7 @@ static T_KRHDICacheValue *kr_hdi_cache_value_new(long hid)
         (T_KRHDICacheValue *)kr_malloc(sizeof(T_KRHDICacheValue));
     if (cache_value == NULL) {
         KR_LOG(KR_LOGERROR, "kr_calloc cache_value Failed!");
-	    return NULL;
+        return NULL;
     }
     cache_value->lHDIId = hid;
     cache_value->eValueType = KR_FIELDTYPE_UNKNOWN;
@@ -65,16 +65,16 @@ T_KRCache *kr_hdi_cache_create(unsigned int cache_size)
 {
     T_KRCache *cache = kr_cache_new(cache_size, 
                                     kr_string_hash, kr_string_equal,
-					                (KRDupFunc )kr_strdup, kr_free,
-	                                NULL, (KRFreeFunc )kr_hashtable_destroy,
-	                                (KRFunc )kr_hdi_cache_node_dump);
-	if (cache == NULL) {
-	    KR_LOG(KR_LOGERROR, "kr_cache_new [%u] Failed!", cache_size);
-	    return NULL;
-	}
-	
-	KR_LOG(KR_LOGDEBUG, "HDI Cache [%u] has been created!", cache_size);
-	return cache;
+                                    (KRDupFunc )kr_strdup, kr_free,
+                                    NULL, (KRFreeFunc )kr_hashtable_destroy,
+                                    (KRFunc )kr_hdi_cache_node_dump);
+    if (cache == NULL) {
+        KR_LOG(KR_LOGERROR, "kr_cache_new [%u] Failed!", cache_size);
+        return NULL;
+    }
+    
+    KR_LOG(KR_LOGDEBUG, "HDI Cache [%u] has been created!", cache_size);
+    return cache;
 }
 
 
@@ -98,7 +98,7 @@ T_KRHDICacheValue *kr_hdi_cache_get(T_KRCache *cache, void *key, long hid)
         hdi_cache_val = kr_hashtable_lookup(node, &hid);
     } else {
         node = kr_hashtable_new_full(kr_long_hash, kr_long_equal, \
-	                        NULL, (KRDestroyNotify )kr_hdi_cache_value_free);
+                            NULL, (KRDestroyNotify )kr_hdi_cache_value_free);
         kr_cache_set(cache, key, node);
     }
     

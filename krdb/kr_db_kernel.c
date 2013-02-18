@@ -205,7 +205,7 @@ int kr_insert_record(T_KRRecord *krrecord, T_KRTable *krtable)
 {    
     /*first:rebuild all hash-indexes insert*/
     kr_list_foreach(krtable->pIndexList, \
-	                (KRForEachFunc )kr_rebuild_index_ins, krrecord);
+                    (KRForEachFunc )kr_rebuild_index_ins, krrecord);
     
     /*secord:increase table records number*/
     if (++krtable->uiRecordNum > krtable->lSizeKeepValue) {
@@ -224,7 +224,7 @@ void kr_delete_record(T_KRRecord *krrecord, T_KRTable *krtable)
 {
     /*first:rebuild all hash-indexes delete*/
     kr_list_foreach(krtable->pIndexList, \
-	                (KRForEachFunc )kr_rebuild_index_del, krrecord);
+                    (KRForEachFunc )kr_rebuild_index_del, krrecord);
         
     /*secord:decrease table records number*/
     if (--krtable->uiRecordNum < 0) {
@@ -368,7 +368,7 @@ void kr_drop_table(T_KRTable *krtable, T_KRDB *krdb)
 
     kr_list_remove(krdb->pTableList, krtable);
     kr_list_foreach(krtable->pIndexList, \
-	                (KRForEachFunc )kr_drop_table_index, krtable);
+                    (KRForEachFunc )kr_drop_table_index, krtable);
     kr_list_destroy(krtable->pIndexList);
 
     kr_free(krtable->ptFieldDef);
@@ -376,7 +376,7 @@ void kr_drop_table(T_KRTable *krtable, T_KRDB *krdb)
 }
 
 
-T_KRDB* kr_create_db(char *db_name, char *module_file)
+T_KRDB* kr_create_db(char *db_name, T_KRModule *krdbmodule)
 {
     T_KRDB *ptDB = (T_KRDB *)kr_calloc(sizeof(T_KRDB));
     if (ptDB == NULL) {
@@ -384,13 +384,7 @@ T_KRDB* kr_create_db(char *db_name, char *module_file)
         return NULL;
     }
     strncpy(ptDB->caDBName, db_name, sizeof(ptDB->caDBName));
-    strncpy(ptDB->caModuleFile, module_file, sizeof(ptDB->caModuleFile));
-    ptDB->ptModule = kr_module_open(module_file, RTLD_LAZY);
-    if (ptDB->ptModule == NULL) {
-        fprintf(stderr, "kr_module_open %s failed!\n", module_file);
-        kr_free(ptDB);
-        return NULL;
-    }
+    ptDB->ptModule = krdbmodule;
     
     ptDB->pTableList = kr_list_new();
     kr_list_set_match(ptDB->pTableList, (KRCompareFunc )kr_tableid_match);
@@ -409,7 +403,6 @@ void kr_drop_db(T_KRDB *krdb)
     kr_list_foreach(krdb->pIndexList, (KRForEachFunc)kr_drop_db_index, krdb);
     kr_list_destroy(krdb->pIndexList);
 
-	kr_module_close(krdb->ptModule);
     kr_free(krdb);
 }
 

@@ -29,29 +29,29 @@
 
 typedef int   boolean;
 
-#ifndef	FALSE
-#define	FALSE	(0)
+#ifndef    FALSE
+#define    FALSE    (0)
 #endif
 
-#ifndef	TRUE
-#define	TRUE	(!FALSE)
+#ifndef    TRUE
+#define    TRUE    (!FALSE)
 #endif
 
-#undef	MAX
+#undef    MAX
 #define MAX(a, b)  (((a) > (b)) ? (a) : (b))
 
-#undef	MIN
+#undef    MIN
 #define MIN(a, b)  (((a) < (b)) ? (a) : (b))
 
-#undef	ABS
-#define ABS(a)	   (((a) < 0) ? -(a) : (a))
+#undef    ABS
+#define ABS(a)       (((a) < 0) ? -(a) : (a))
 
 
-#undef	SUCCESS
-#define	SUCCESS	0
+#undef    SUCCESS
+#define    SUCCESS    0
 
-#undef	FAILURE
-#define	FAILURE	-1
+#undef    FAILURE
+#define    FAILURE    -1
 
 /*macros for character handling*/
 #define ISSPACE(c)              ((c) == ' ' || (c) == '\f' || (c) == '\n' || \

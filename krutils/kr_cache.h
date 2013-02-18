@@ -9,14 +9,14 @@
 
 typedef struct _kr_cache_t
 {
-	unsigned int    max_size;
-	T_KRList       *list;
-	T_KRHashTable  *hash_table;
-	KRDupFunc       key_dup_func;
-	KRFreeFunc      key_free_func;
-	KRDupFunc       value_dup_func;
-	KRFreeFunc      value_free_func;
-	KRFunc          value_print_func;
+    unsigned int    max_size;
+    T_KRList       *list;
+    T_KRHashTable  *hash_table;
+    KRDupFunc       key_dup_func;
+    KRFreeFunc      key_free_func;
+    KRDupFunc       value_dup_func;
+    KRFreeFunc      value_free_func;
+    KRFunc          value_print_func;
 }T_KRCache;
 
 

@@ -23,9 +23,9 @@ int kr_message_read(char *err, int fd, T_KRMessage *ptMessage)
     int readLen = 0;
     char caMsgHeader[KR_MSGHEADER_LEN+1] = {0};
 
-	/* read message header */
-	readLen = kr_net_read(fd, caMsgHeader, KR_MSGHEADER_LEN);
-	if( readLen < 0) {
+    /* read message header */
+    readLen = kr_net_read(fd, caMsgHeader, KR_MSGHEADER_LEN);
+    if( readLen < 0) {
         kr_message_set_error(err, "read msgheader error[%s]!", strerror(errno));
         return -1;
     } else if( readLen == 0) {
@@ -68,10 +68,10 @@ int kr_message_write(char *err, int fd, T_KRMessage *ptMessage)
         ptMessage->msgtype, ptMessage->serverid, ptMessage->clientid, \
         ptMessage->datasrc, ptMessage->objectkey, ptMessage->msglen);
         
-	/* write message header */
-	writeLen = kr_net_write(fd, caMsgHeader, KR_MSGHEADER_LEN);
-	if( writeLen < 0) {
-	    kr_message_set_error(err, "write msgheader error[%s]!", strerror(errno));
+    /* write message header */
+    writeLen = kr_net_write(fd, caMsgHeader, KR_MSGHEADER_LEN);
+    if( writeLen < 0) {
+        kr_message_set_error(err, "write msgheader error[%s]!", strerror(errno));
         return -1;
     } else if( writeLen == 0) {
         kr_message_set_error(err, "Connection Closed!");

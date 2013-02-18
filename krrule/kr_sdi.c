@@ -1,19 +1,28 @@
 #include "kr_sdi.h"
 
 /*static dataitem*/
-T_KRSDI *kr_sdi_construct(T_KRShmSDIDef *sdi_def)
+T_KRSDI *kr_sdi_construct(T_KRShmSDIDef *sdi_def, T_KRModule *datamodule)
 {
     T_KRSDI *krsdi = kr_calloc(sizeof(T_KRSDI));
     if (krsdi == NULL) {
         KR_LOG(KR_LOGERROR, "kr_calloc krsdi failed!");
-		return NULL;
+        return NULL;
     }
     krsdi->ptShmSDIDef = sdi_def;
     krsdi->lSDIId = sdi_def->lSdiId;
     krsdi->ptSDICalc = kr_calc_construct(KR_CALCBEHOOF_DATA, \
-        sdi_def->caSdiFilterString, kr_rule_get_type, kr_rule_get_value);
+            sdi_def->caSdiFilterString, kr_rule_get_type, kr_rule_get_value);
     krsdi->eValueType = sdi_def->caSdiValueType[0];
     krsdi->SDIAggrFunc = (KRSDIAggrFunc )kr_sdi_aggr_func;
+    if (sdi_def->caSdiAggrFunc[0] != '\0') {
+        krsdi->SDIAggrFunc = (KRSDIAggrFunc )kr_module_symbol(datamodule, 
+                sdi_def->caSdiAggrFunc);
+        if (krsdi->SDIAggrFunc == NULL) {
+            KR_LOG(KR_LOGERROR, "kr_module_symbol [%s] error!", \
+                    sdi_def->caSdiAggrFunc);
+            return NULL;
+        }
+    }
     krsdi->eValueInd = KR_VALUE_UNSET;
     
     return krsdi;
@@ -54,28 +63,28 @@ void kr_sdi_destruct(T_KRSDI *krsdi)
     kr_free(krsdi);
 }
 
-T_KRSDITable *kr_sdi_table_construct(T_KRShmSDI *shm_sdi)
+T_KRSDITable *kr_sdi_table_construct(T_KRShmSDI *shm_sdi, T_KRModule *datamodule)
 {
     T_KRSDITable *krsditable = kr_calloc(sizeof(T_KRSDITable));
     if (krsditable == NULL) {
-	    KR_LOG(KR_LOGERROR, "kr_calloc krsditable failed!");
-		return NULL;
+        KR_LOG(KR_LOGERROR, "kr_calloc krsditable failed!");
+        return NULL;
     }
-	krsditable->ptShmSDIs = shm_sdi;
-	krsditable->lSDICnt = shm_sdi->lSDIDefCnt;
-	krsditable->ptSDITable = \
-	  kr_hashtable_new_full(kr_long_hash, kr_long_equal, \
-	                        NULL, (KRDestroyNotify )kr_sdi_destruct);
-	
+    krsditable->ptShmSDIs = shm_sdi;
+    krsditable->lSDICnt = shm_sdi->lSDIDefCnt;
+    krsditable->ptSDITable = \
+      kr_hashtable_new_full(kr_long_hash, kr_long_equal, \
+                            NULL, (KRDestroyNotify )kr_sdi_destruct);
+    
     int i = 0;
     T_KRSDI *krsdi = NULL;
     for (i=0; i<shm_sdi->lSDIDefCnt; ++i) {
-        krsdi = kr_sdi_construct(&shm_sdi->stShmSDIDef[i]);
+        krsdi = kr_sdi_construct(&shm_sdi->stShmSDIDef[i], datamodule);
         if (krsdi == NULL) {
             KR_LOG(KR_LOGERROR, "kr_sdi_construct [%d] failed!", i);
             kr_hashtable_destroy(krsditable->ptSDITable);
             kr_free(krsditable);
-	        return NULL;
+            return NULL;
         }
         kr_hashtable_insert(krsditable->ptSDITable, &krsdi->lSDIId, krsdi);
     }
@@ -116,7 +125,7 @@ void *kr_sdi_get_value(int sid, T_KRContext *krcontext)
     if (krsdi->ptCurrRec != krcontext->ptCurrRec) {
         kr_sdi_compute(krsdi, krcontext);
         if (krsdi->eValueInd != KR_VALUE_SETED) {
-            KR_LOG(KR_LOGERROR, "kr_sdi_compute failed!");
+            KR_LOG(KR_LOGERROR, "kr_sdi_compute [%d] failed!", sid);
             return NULL;
         }
         krsdi->ptCurrRec = krcontext->ptCurrRec;

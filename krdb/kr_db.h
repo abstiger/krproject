@@ -5,7 +5,7 @@
 #include "dbs/dbs_basopr.h"
 #include "krdb/kr_db_kernel.h"
 
-extern T_KRDB* kr_db_startup(T_DbsEnv *dbsenv, char *dbname, char *modulefile);
+extern T_KRDB* kr_db_startup(T_DbsEnv *dbsenv, char *dbname, T_KRModule *krdbmodule);
 extern int kr_db_shutdown(T_KRDB *ptKRDB);
 extern int kr_db_load(T_KRDB *ptKRDB);
 extern T_KRRecord *kr_db_insert(T_KRDB *ptKRDB, int iTableId, void *ptReqData);

@@ -6,7 +6,6 @@
 T_KRServer krserver = {0};
 
 extern void kr_server_tcp_accept_handler(T_KREventLoop *el, int fd, void *privdata, int mask);
-extern void kr_server_unix_accept_handler(T_KREventLoop *el, int fd, void *privdata, int mask);
 extern void kr_server_message_read_handler(T_KREventLoop *el, int fd, void *privdata, int mask);
 
 extern int kr_server_config_parse(char *configfile, T_KRServer *server);
@@ -98,15 +97,7 @@ int kr_server_cron(T_KREventLoop *el, long long id, void *data)
 
 static int kr_server_try_connect_to_cluster(void)
 {
-    if (krserver.coorddomain != NULL) {
-        krserver.cofd = kr_net_unix_connect(krserver.neterr, \
-            krserver.coorddomain);
-        if (krserver.cofd == KR_NET_ERR) {
-            KR_LOG(KR_LOGERROR, "kr_net_unix_connect[%s] failed[%s]",
-                krserver.coorddomain, krserver.neterr);
-            return -1;
-        }
-    } else if (krserver.coordport != 0) {
+    if (krserver.coordport != 0) {
         krserver.cofd = kr_net_tcp_connect(krserver.neterr, \
             krserver.coordip, krserver.coordport);
         if (krserver.cofd == KR_NET_ERR) {
@@ -174,15 +165,16 @@ int kr_server_initialize(void)
     krserver.krengine = kr_engine_startup(
             krserver.dbname, krserver.dbuser, krserver.dbpass,
             krserver.logpath, krserver.serverid, krserver.loglevel,
-            krserver.shmkey, krserver.serverid, krserver.dbmodulefile,
-            krserver.hdicachesize, krserver.threadcnt);
+            krserver.shmkey, krserver.serverid, 
+            krserver.krdbmodule, krserver.datamodule, krserver.rulemodule,
+            krserver.hdicachesize, krserver.threadcnt, krserver.hwm);
     if (krserver.krengine == NULL) {
-	    KR_LOG(KR_LOGERROR, "kr_engine_startup failed!\n");
+        KR_LOG(KR_LOGERROR, "kr_engine_startup failed!\n");
         return -1;
     }
-    	
-	/* Create event loop */
-	krserver.krel = kr_event_loop_create(krserver.maxevents);
+        
+    /* Create event loop */
+    krserver.krel = kr_event_loop_create(krserver.maxevents);
 
     /* Register server cron time event */
     kr_event_time_create(krserver.krel, 1, kr_server_cron, NULL, NULL);
@@ -197,36 +189,16 @@ int kr_server_initialize(void)
             return -1;
         }
     }
-    if (krserver.unixdomain != NULL) {
-        unlink(krserver.unixdomain); /* don't care if this fails */
-        krserver.sofd = kr_net_unix_server(krserver.neterr, \
-            krserver.unixdomain, krserver.unixdomainperm);
-        if (krserver.sofd == KR_NET_ERR) {
-            KR_LOG(KR_LOGERROR, "kr_net_unix_server[%s] failed[%s]!", 
-                krserver.unixdomain, krserver.neterr);
-            return -1;
-        }
-    }
-    if (krserver.ipfd < 0 && krserver.sofd < 0) {
-        KR_LOG(KR_LOGERROR, "Configured to not listen anywhere, exiting.");
+    if (krserver.ipfd < 0) {
+        KR_LOG(KR_LOGERROR, "tcpport [%d] uncorrect!", krserver.tcpport);
         return -1;
     }
     
     /* Register tcp accept file event */
-    if (krserver.ipfd > 0 && 
-        kr_event_file_create(krserver.krel, krserver.ipfd, KR_EVENT_READABLE, \
-            kr_server_tcp_accept_handler, NULL) == KR_NET_ERR) 
-    {
+    ret = kr_event_file_create(krserver.krel, krserver.ipfd, 
+            KR_EVENT_READABLE,  kr_server_tcp_accept_handler, NULL);
+    if (ret == KR_NET_ERR) {
         KR_LOG(KR_LOGERROR, "kr_event_file_create tcp error");
-        return -1;
-    }
-    
-    /* Register unix accept file event */
-    if (krserver.sofd > 0 && 
-        kr_event_file_create(krserver.krel, krserver.sofd, KR_EVENT_READABLE, \
-            kr_server_unix_accept_handler, NULL) == KR_NET_ERR) 
-    {
-        KR_LOG(KR_LOGERROR, "kr_event_file_create unix error");
         return -1;
     }
     
@@ -247,13 +219,13 @@ int kr_server_finalize()
     /* event loop stop */
     kr_event_loop_stop(krserver.krel);
 
-	/* kr_db_dump */
+    /* kr_db_dump */
     /*
-	FILE *fpKRDBDump = NULL;
-	char caDateTime[14+1] = {0};
-	char caKRDBDumpFileName[1024]= {0};
-	snprintf(caKRDBDumpFileName, sizeof(caKRDBDumpFileName), \
-	         "KRDB.%s.Dump", kr_time_system(caDateTime));
+    FILE *fpKRDBDump = NULL;
+    char caDateTime[14+1] = {0};
+    char caKRDBDumpFileName[1024]= {0};
+    snprintf(caKRDBDumpFileName, sizeof(caKRDBDumpFileName), \
+             "KRDB.%s.Dump", kr_time_system(caDateTime));
     if ((fpKRDBDump = fopen(caKRDBDumpFileName, "w")) != NULL) {
         kr_db_dump(fpKRDBDump, krserver.krdb, 0);
         fclose(fpKRDBDump);
@@ -263,11 +235,11 @@ int kr_server_finalize()
     /* Shutdown krengine */
     kr_engine_shutdown(krserver.krengine);
 
-	/* Server config free */
-	kr_server_config_dump(&krserver, stdout);
-	kr_server_config_free(&krserver);
-	
-	return 0;
+    /* Server config free */
+    kr_server_config_dump(&krserver, stdout);
+    kr_server_config_free(&krserver);
+    
+    return 0;
 }
 
 

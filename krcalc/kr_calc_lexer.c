@@ -1015,7 +1015,6 @@ YY_RULE_SETUP
 			      (*yylval)->name = (char *)kr_strdup(yytext);
 			      E_KRFieldType ele_type = yyextra->get_type_cb((*yylval)->name, yyextra->data);
 			      (*yylval)->type = kr_fieldtype_to_calctype(ele_type);
-printf("set [%s] field_type=[%c] calc_type=[%c]\n", (*yylval)->name, ele_type, (*yylval)->type);
 			      (*yylval)->attr.set = yyextra->get_value_cb((*yylval)->name, yyextra->data);
 			      (*yylval)->ind = KR_VALUE_SETED;
 			      return SET;
@@ -1029,7 +1028,6 @@ YY_RULE_SETUP
 			      (*yylval)->type = KR_CALCTYPE_INTEGER;
 			      (*yylval)->attr.set = kr_make_set_from_multi((*yylval)->name, (*yylval)->type);
 			      (*yylval)->ind = KR_VALUE_SETED;
-printf("multi number [%s] calc_type=[%c]\n", (*yylval)->name, (*yylval)->type);
 			      return MUTLI;
                 }
 	YY_BREAK
@@ -1041,7 +1039,6 @@ YY_RULE_SETUP
 			      (*yylval)->type = KR_CALCTYPE_DOUBLE;
 			      (*yylval)->attr.set = kr_make_set_from_multi((*yylval)->name, (*yylval)->type);
 			      (*yylval)->ind = KR_VALUE_SETED;
-printf("multi fnumber [%s] calc_type=[%c]\n", (*yylval)->name, (*yylval)->type);
 			      return MUTLI;
                 }
 	YY_BREAK
@@ -1054,7 +1051,6 @@ YY_RULE_SETUP
 			      (*yylval)->type = KR_CALCTYPE_STRING;
 			      (*yylval)->attr.set = kr_make_set_from_multi((*yylval)->name, (*yylval)->type);
 			      (*yylval)->ind = KR_VALUE_SETED;
-printf("multi string [%s] calc_type=[%c]\n", (*yylval)->name, (*yylval)->type);
 			      return MUTLI;
                 }
 	YY_BREAK
@@ -2232,27 +2228,23 @@ T_KRSet *kr_make_set_from_multi(char *multi_name, E_KRCalcType calc_type)
     char *p = strtok_r(multi_str, ",", &save_str);
     while(p)
     {
-printf("p=[%s]", p);        
         switch(krset->type) 
         {
             case KR_FIELDTYPE_INT:
             {
                 int i=atoi(p); 
-printf("add i ele:[%d]\n", i);
                 kr_set_add(krset, &i);
                 break;
             }
             case KR_FIELDTYPE_LONG:
             {
                 long l=atol(p);
-printf("add l ele:[%ld]\n", l);
                 kr_set_add(krset, &l);
                 break;
             }
             case KR_FIELDTYPE_DOUBLE:
             {
                 double d=atof(p);
-printf("add d ele:[%lf]\n", d);
                 kr_set_add(krset, &d);
                 break;    
             }
@@ -2260,7 +2252,6 @@ printf("add d ele:[%lf]\n", d);
             {
                 char *str=kr_strdup(p+1); 
                 str[strlen(str)-1]='\0';
-printf("add str ele:[%s]\n", str);
                 kr_set_add(krset, str);
                 kr_free(str);
                 break;
@@ -2273,3 +2264,4 @@ printf("add str ele:[%s]\n", str);
     
     return krset;
 }
+

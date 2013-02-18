@@ -34,10 +34,11 @@ static void *thread_func(void *arg)
 }
 
 
-T_KRThreadPool *kr_threadpool_create(unsigned int nthreads, void *env, 
+T_KRThreadPool *kr_threadpool_create(unsigned int nthreads, unsigned int hwm, void *env, 
     KRThdInitFunc init_func, KRThdWorkerFunc worker_func, KRThdFiniFunc fini_func)
 {
     assert(nthreads>0);
+    assert(hwm>0);
     
     T_KRThreadPool *tp = NULL;
     tp = (T_KRThreadPool *)kr_calloc(sizeof(T_KRThreadPool));
@@ -47,7 +48,7 @@ T_KRThreadPool *kr_threadpool_create(unsigned int nthreads, void *env,
     }
     
     /*initialize task queue of this thread pool*/
-    if(kr_queue_init(&tp->queue, 1000) != 0) {
+    if(kr_queue_init(&tp->queue, hwm) != 0) {
         fprintf(stderr, "kr_queue_init tp->queue error!\n");    
         return NULL;
     }
@@ -108,19 +109,22 @@ int kr_threadpool_run(T_KRThreadPool *tp)
 
 int kr_threadpool_add_task(T_KRThreadPool *tp, void *task) 
 {
+    /*queue is busy, wait util the tide goes out*/
+    while (kr_queue_length(tp->queue) >= tp->queue->hwm) {
+       /*do nothing but wait*/ 
+    }
+
     pthread_mutex_lock(&tp->mutex);
-    
+
     /*push a task to the queue of this threadpool*/
-    if (kr_queue_push(tp->queue, task) != 0)
-    {
-        fprintf(stderr, "kr_queue_push task failed!\n");
+    if (kr_queue_push(tp->queue, task) != 0) {
         pthread_mutex_unlock(&tp->mutex);
         return -1;
     }
     
     /*signal a workerthread to pop data*/
     pthread_cond_signal(&tp->cond);
-    
+
     pthread_mutex_unlock(&tp->mutex);
     return 0;
 }
@@ -137,7 +141,6 @@ void *kr_threadpool_get_task(T_KRThreadPool *tp)
     /*get a task from the queue of this threadpool*/
     void *task = kr_queue_pop(tp->queue);
     if (task == NULL) {
-        fprintf(stderr, "kr_queue_pop task failed!\n");
         pthread_mutex_unlock(&tp->mutex);
         return NULL;
     }

@@ -140,32 +140,32 @@ static int _tIsThisEntry(const char *vspLine, const char *vspEntry)
 
 static char *_vReplaceEnv(const char *input, char *output)
 {
-	char caEnv[1024] = {0};
-	char *pInput = input;
-	char *pOutput = output;
-	char *pEnv = caEnv;
+    char caEnv[1024] = {0};
+    char *pInput = input;
+    char *pOutput = output;
+    char *pEnv = caEnv;
 
-	while(*pInput)
-	{
-		if (*pInput == '$') {
-			memset(caEnv, 0, sizeof(caEnv));
-			if (*(++pInput) == '{') {
-				while(*(++pInput) != '}') {
-					*pEnv++ = *pInput;
-				}
-				++pInput;
-			}
+    while(*pInput)
+    {
+        if (*pInput == '$') {
+            memset(caEnv, 0, sizeof(caEnv));
+            if (*(++pInput) == '{') {
+                while(*(++pInput) != '}') {
+                    *pEnv++ = *pInput;
+                }
+                ++pInput;
+            }
 
-			if (getenv(caEnv) != NULL) {
-				memcpy(pOutput, getenv(caEnv), strlen(getenv(caEnv)));
-				pOutput += strlen(getenv(caEnv));
-			}
-		} else {
-			*pOutput++ = *pInput++;
-		}
-	}
+            if (getenv(caEnv) != NULL) {
+                memcpy(pOutput, getenv(caEnv), strlen(getenv(caEnv)));
+                pOutput += strlen(getenv(caEnv));
+            }
+        } else {
+            *pOutput++ = *pInput++;
+        }
+    }
 
-	return output;
+    return output;
 }
 
 /*
@@ -242,7 +242,7 @@ int kr_config_getstring(const char *vspSection, const char *vspEntry, char *vspV
     int     cbNum = FALSE;
     int     tInSection = FALSE;
     FILE    *fp;
-    char    saLine[KR_MAXINPUT_LEN+1];
+    char    saLine[KR_MAXINPUT_LEN+1] = {0};
 
     if ((fp = fopen(gcaConfigFileName, "r")) == NULL) {
         return -1;
@@ -294,7 +294,7 @@ int kr_config_getstring(const char *vspSection, const char *vspEntry, char *vspV
 
 int kr_config_getint(const char *vspSection, const char *vspEntry, int *vtpValue)
 {
-    char buf[KR_MAXINPUT_LEN];
+    char buf[KR_MAXINPUT_LEN] = {0};
 
     if (kr_config_getstring(vspSection, vspEntry, buf) != 0) {
         *vtpValue = 0;
@@ -325,7 +325,7 @@ int kr_config_getint(const char *vspSection, const char *vspEntry, int *vtpValue
 
 int kr_config_getshort(const char *vspSection, const char *vspEntry, short *vnpValue)
 {
-    char buf[KR_MAXINPUT_LEN];
+    char buf[KR_MAXINPUT_LEN] = {0};
 
     if (kr_config_getstring(vspSection, vspEntry, buf) != 0) {
         *vnpValue = 0;
@@ -355,7 +355,7 @@ int kr_config_getshort(const char *vspSection, const char *vspEntry, short *vnpV
  */
 int kr_config_getlong(const char *vspSection, const char *vspEntry, long *vlpValue)
 {
-    char buf[KR_MAXINPUT_LEN];
+    char buf[KR_MAXINPUT_LEN] = {0};
 
     if (kr_config_getstring(vspSection, vspEntry, buf) != 0) {
         *vlpValue = 0L;
@@ -385,7 +385,7 @@ int kr_config_getlong(const char *vspSection, const char *vspEntry, long *vlpVal
  */
 int kr_config_getdouble(const char *vspSection, const char *vspEntry, double *vdpValue)
 {
-    char buf[KR_MAXINPUT_LEN];
+    char buf[KR_MAXINPUT_LEN] = {0};
 
     if (kr_config_getstring(vspSection, vspEntry, buf) != 0) {
         *vdpValue = 0L;

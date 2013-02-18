@@ -45,6 +45,7 @@ printf("coordi->coordiid=[%s]\n", coordi->coordiid);
         printf("kr_config_getint TCPPORT failure!");
         return -1;
     }
+printf("coordi->tcpport=[%d]\n", coordi->tcpport);
     
     memset(buf, 0x00, sizeof(buf));
     if (kr_config_getstring("NETWORK", "TCPBINDADDR", buf) != 0) {
@@ -54,18 +55,6 @@ printf("coordi->coordiid=[%s]\n", coordi->coordiid);
     if (strlen(buf) != 0) coordi->tcpbindaddr = kr_strdup(buf);
 printf("coordi->tcpbindaddr=[%s]\n", coordi->tcpbindaddr);
     
-    memset(buf, 0x00, sizeof(buf));
-    if (kr_config_getstring("NETWORK", "UNIXDOMAIN", buf) != 0) {
-        printf("kr_config_getstring UNIXDOMAIN failure!");
-        return -1;
-    }
-    if (strlen(buf) != 0) coordi->unixdomain = kr_strdup(buf);
-    
-    if (kr_config_getint("NETWORK", "UNIXDOMAINPERM", &coordi->unixdomainperm) != 0) {
-        printf("kr_config_getint UNIXDOMAINPERM failure!");
-        return -1;
-    }
-
     return 0;
 }
 
@@ -79,8 +68,8 @@ void kr_coordi_config_dump(T_KRCoordi *coordi, FILE *fp)
         coordi->loglevel, coordi->logpath);
     fprintf(fp, "maxevents[%d]\n shutdown[%d]\n ", \
         coordi->maxevents, coordi->shutdown);    
-    fprintf(fp, "tcpport[%d]\n tcpbindaddr[%s]\n unixdomain[%s]\n unixdomainperm[%d]", \
-        coordi->tcpport, coordi->tcpbindaddr, coordi->unixdomain, coordi->unixdomainperm);    
+    fprintf(fp, "tcpport[%d]\n tcpbindaddr[%s]\n ", \
+        coordi->tcpport, coordi->tcpbindaddr);    
 }
 
 
@@ -90,5 +79,4 @@ void kr_coordi_config_reset(T_KRCoordi *coordi)
     if (coordi->coordiid) kr_free(coordi->coordiid);
     if (coordi->logpath) kr_free(coordi->logpath);
     if (coordi->tcpbindaddr) kr_free(coordi->tcpbindaddr);
-    if (coordi->unixdomain) kr_free(coordi->unixdomain);
 }
