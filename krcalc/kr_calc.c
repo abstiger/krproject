@@ -18,6 +18,7 @@ T_KRCalc *kr_calc_construct(E_KRCalcBehoof behoof, char *calcstr,
         fprintf(stderr, "kr_calc_parse failed[%s]!\n", krcalc->err_msg);
         return NULL;
     }
+    kr_calc_dump(krcalc, stdout);
     
     return krcalc;
 }
@@ -46,7 +47,7 @@ int kr_calc_eval(T_KRCalc *krcalc, void *param)
     T_KRCalcTree *t=krcalc->calc_tree;
     krcalc->data = param;
     if (kr_calctree_eval(t, krcalc) != 0) {
-        fprintf(stderr, "kr_calctree_eval failed\n");
+        fprintf(stderr, "kr_calctree_eval %s failed\n", krcalc->calc_string);
         return -1;
     }
     

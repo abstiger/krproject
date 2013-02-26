@@ -1,5 +1,5 @@
 #include "kr_group.h"
-#include "kr_group.h"
+#include "kr_rule.h"
 #include "kr_aid.h"
 #include "kr_sdi.h"
 #include "kr_ddi.h"
@@ -21,6 +21,16 @@ T_KRGroup *kr_group_construct(T_KRShmGroupDef *group_def, T_KRModule *groupmodul
         KR_LOG(KR_LOGERROR, "kr_calc_construct [%s] Failed!", \
                 group_def->caGroupString);
         return NULL;
+    }
+    krgroup->GroupFunc = (KRGroupFunc )kr_group_func;
+    if (group_def->caGroupFunc[0] != '\0') {
+        krgroup->GroupFunc = (KRGroupFunc )kr_module_symbol(groupmodule,
+                group_def->caGroupFunc);
+        if (krgroup->GroupFunc == NULL) {
+            KR_LOG(KR_LOGERROR, "kr_module_symbol [%s] error!", \
+                    group_def->caGroupFunc);
+            return NULL;
+        }
     }
     krgroup->ptRuleGroup = \
         kr_rule_group_construct(&group_def->stShmRule, groupmodule);
@@ -97,7 +107,7 @@ T_KRGroupList *kr_group_list_construct(T_KRShmGroup *shm_group, T_KRModule *grou
 }
 
 
-int kr_group_list_route(T_KRContext *krcontext)
+int kr_group_list_detect(T_KRContext *krcontext)
 {
     int ret = 0;
     /* detecting context check*/
@@ -130,6 +140,27 @@ int kr_group_list_route(T_KRContext *krcontext)
             return -1;
         }
         node = node->next;
+    }
+
+    /* if no group routed, return asap */
+    if (krcontext->ptDym->rulegroup == NULL) {
+        KR_LOG(KR_LOGDEBUG, "no group routed!");
+        return 0;
+    }
+
+    /*run rule group detect*/
+    if (kr_rule_group_detect(krcontext) != 0) {
+        KR_LOG(KR_LOGERROR, "kr_rule_group_detect failed!\n");
+        return -1;
+    }
+
+    /*run the group func*/
+    if (krgroup->GroupFunc != NULL) {
+        if (krgroup->GroupFunc(krgroup, krcontext) != 0) {
+            KR_LOG(KR_LOGERROR, "run Group[%ld] Func[%s] failed!", 
+                    krgroup->lGroupId, krgroup->ptShmGroupDef->caGroupFunc);
+            return -1;
+        }
     }
     
     return 0;

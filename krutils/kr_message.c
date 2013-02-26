@@ -18,34 +18,36 @@ static void kr_message_set_error(char *err, const char *fmt, ...)
 }
 
 
-int kr_message_read(char *err, int fd, T_KRMessage *ptMessage)
+int kr_message_read(char *err, int fd, T_KRMessage *krmsg)
 {
     int readLen = 0;
-    char caMsgHeader[KR_MSGHEADER_LEN+1] = {0};
+    char msghead[KR_MSGHEADER_LEN+1] = {0};
 
     /* read message header */
-    readLen = kr_net_read(fd, caMsgHeader, KR_MSGHEADER_LEN);
+    readLen = kr_net_read(fd, msghead, KR_MSGHEADER_LEN);
     if( readLen < 0) {
-        kr_message_set_error(err, "read msgheader error[%s]!", strerror(errno));
+        kr_message_set_error(err, "read head error[%s]!", strerror(errno));
         return -1;
     } else if( readLen == 0) {
         kr_message_set_error(err, "Connection Closed!");
         return 0;
     }
     
-    sscanf(caMsgHeader, KR_MSGHEADER_FMT, \
-        &ptMessage->msgtype, ptMessage->serverid, ptMessage->clientid, \
-        &ptMessage->datasrc, ptMessage->objectkey, &ptMessage->msglen);
+    krmsg->fd = fd;
+    sscanf(msghead, KR_MSGHEADER_FMT, \
+        &krmsg->msgtype, krmsg->msgid, krmsg->serverid, krmsg->clientid, \
+        &krmsg->datasrc, krmsg->objectkey, &krmsg->msglen);
 
-    if (ptMessage->serverid[0] == '-') ptMessage->serverid[0] = '\0';
-    if (ptMessage->clientid[0] == '-') ptMessage->clientid[0] = '\0';
-    if (ptMessage->objectkey[0] == '-') ptMessage->objectkey[0] = '\0';
+    if (krmsg->msgid[0] == '-') krmsg->msgid[0] = '\0';
+    if (krmsg->serverid[0] == '-') krmsg->serverid[0] = '\0';
+    if (krmsg->clientid[0] == '-') krmsg->clientid[0] = '\0';
+    if (krmsg->objectkey[0] == '-') krmsg->objectkey[0] = '\0';
         
     /* read message body */
-    if (readLen == KR_MSGHEADER_LEN && ptMessage->msglen > 0) {
-        ptMessage->msgbuf = kr_calloc(ptMessage->msglen);
-        readLen = kr_net_read(fd, ptMessage->msgbuf, ptMessage->msglen);
-        if( readLen != ptMessage->msglen) {
+    if (readLen == KR_MSGHEADER_LEN && krmsg->msglen > 0) {
+        krmsg->msgbuf = kr_calloc(krmsg->msglen);
+        readLen = kr_net_read(fd, krmsg->msgbuf, krmsg->msglen);
+        if( readLen != krmsg->msglen) {
             kr_message_set_error(err, "read body error[%s]!", strerror(errno));
             return readLen;
         }
@@ -55,32 +57,33 @@ int kr_message_read(char *err, int fd, T_KRMessage *ptMessage)
 }
 
 
-int kr_message_write(char *err, int fd, T_KRMessage *ptMessage)
+int kr_message_write(char *err, int fd, T_KRMessage *krmsg)
 {
     int writeLen = 0;
-    char caMsgHeader[KR_MSGHEADER_LEN+1] = {0};
+    char msghead[KR_MSGHEADER_LEN+1] = {0};
 
-    if (ptMessage->serverid[0] == '\0') ptMessage->serverid[0] = '-';
-    if (ptMessage->clientid[0] == '\0') ptMessage->clientid[0] = '-';
-    if (ptMessage->objectkey[0] == '\0') ptMessage->objectkey[0] = '-';
+    if (krmsg->msgid[0] == '\0') krmsg->msgid[0] = '-';
+    if (krmsg->serverid[0] == '\0') krmsg->serverid[0] = '-';
+    if (krmsg->clientid[0] == '\0') krmsg->clientid[0] = '-';
+    if (krmsg->objectkey[0] == '\0') krmsg->objectkey[0] = '-';
     
-    snprintf(caMsgHeader, sizeof(caMsgHeader), KR_MSGHEADER_FMT, \
-        ptMessage->msgtype, ptMessage->serverid, ptMessage->clientid, \
-        ptMessage->datasrc, ptMessage->objectkey, ptMessage->msglen);
+    snprintf(msghead, sizeof(msghead), KR_MSGHEADER_FMT, \
+        krmsg->msgtype, krmsg->msgid, krmsg->serverid, krmsg->clientid, \
+        krmsg->datasrc, krmsg->objectkey, krmsg->msglen);
         
     /* write message header */
-    writeLen = kr_net_write(fd, caMsgHeader, KR_MSGHEADER_LEN);
+    writeLen = kr_net_write(fd, msghead, KR_MSGHEADER_LEN);
     if( writeLen < 0) {
-        kr_message_set_error(err, "write msgheader error[%s]!", strerror(errno));
+        kr_message_set_error(err, "write head error[%s]!", strerror(errno));
         return -1;
     } else if( writeLen == 0) {
         kr_message_set_error(err, "Connection Closed!");
         return 0;
     }
 
-    if (writeLen == KR_MSGHEADER_LEN && ptMessage->msglen > 0) {
-        writeLen = kr_net_write(fd, ptMessage->msgbuf, ptMessage->msglen);
-        if( writeLen != ptMessage->msglen) {
+    if (writeLen == KR_MSGHEADER_LEN && krmsg->msglen > 0) {
+        writeLen = kr_net_write(fd, krmsg->msgbuf, krmsg->msglen);
+        if( writeLen != krmsg->msglen) {
             kr_message_set_error(err, "write body error[%s]!", strerror(errno));
             return writeLen;
         }
@@ -90,11 +93,10 @@ int kr_message_write(char *err, int fd, T_KRMessage *ptMessage)
 }
 
 
-void kr_message_free(T_KRMessage *ptMessage)
+void kr_message_free(T_KRMessage *krmsg)
 {
-    if (ptMessage) {
-        if (ptMessage->msgbuf) 
-            kr_free(ptMessage->msgbuf);
-        kr_free(ptMessage);
+    if (krmsg) {
+        if (krmsg->msgbuf) 
+            kr_free(krmsg->msgbuf);
     }
 }

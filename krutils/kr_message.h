@@ -2,19 +2,20 @@
 #define __KR_MESSAGE_H__
 
 /* The message format for krproject communication:
- * |msgtype(4bytes)|serverid(26bytes)|clientid(26bytes)|datasrcid(4bytes)|objectkey(64bytes)|msglen(4bytes)|message(msglen bytes)|
+ * |msgtype(4bytes)|msgid(10bytes)|serverid(26bytes)|clientid(26bytes)|datasrcid(4bytes)|objectkey(64bytes)|msglen(4bytes)|message(msglen bytes)|
  */
 
 
 #define KR_MSGTYPE_LEN 4
+#define KR_MSGID_LEN 16
 #define KR_SERVERID_LEN 26
 #define KR_CLIENTID_LEN 26
-#define KR_OBJECTKEY_LEN 64
+#define KR_OBJECTKEY_LEN 48
 #define KR_DATASRCID_LEN 4
 #define KR_MSGLEN_LEN 4
 
 #define KR_MSGHEADER_LEN 128
-#define KR_MSGHEADER_FMT "%4d%26s%26s%4d%64s%4d"
+#define KR_MSGHEADER_FMT "%4d%16s%26s%26s%4d%48s%4d"
 
 typedef enum {
     KR_LISTENMODE_DOMAIN = '0',
@@ -42,7 +43,9 @@ typedef struct _kr_msg_svron_t
 
 typedef struct _kr_message_t
 {
+    int         fd;
     int         msgtype;
+    char        msgid[KR_MSGID_LEN+1];
     char        serverid[KR_SERVERID_LEN+1];
     char        clientid[KR_CLIENTID_LEN+1];
     int         datasrc;

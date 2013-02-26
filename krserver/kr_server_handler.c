@@ -11,13 +11,13 @@ int kr_server_handle_svron(void)
     stMsgSvrOn.weights = krserver.weights;
     stMsgSvrOn.replica = krserver.replica;
     
-    T_KRMessage stMessage = {0};
-    stMessage.msgtype = KR_MSGTYPE_SVRON;
-    strcpy(stMessage.serverid, krserver.serverid);
-    stMessage.msglen = sizeof(T_KRMsgSvrOn);
-    stMessage.msgbuf = &stMsgSvrOn;
+    T_KRMessage stMsg = {0};
+    stMsg.msgtype = KR_MSGTYPE_SVRON;
+    strcpy(stMsg.serverid, krserver.serverid);
+    stMsg.msglen = sizeof(T_KRMsgSvrOn);
+    stMsg.msgbuf = &stMsgSvrOn;
     
-    int writeLen = kr_message_write(krserver.neterr, krserver.cofd, &stMessage);
+    int writeLen = kr_message_write(krserver.neterr, krserver.cofd, &stMsg);
     if (writeLen <= 0) {/* write message failure */        
         KR_LOG(KR_LOGERROR, "write message error[%s]!", krserver.neterr);
         return -1;
@@ -26,24 +26,24 @@ int kr_server_handle_svron(void)
     return 0;
 }
 
-int kr_server_handle_apply(T_KRMessage *ptMessage)
+int kr_server_handle_apply(T_KRMessage *krmsg)
 {
-    int iResult = 0;
+    int ret = 0;
     E_KROprCode eOprCode = KR_OPRCODE_DETECT;
     
     /* judge whether this server detecting this message */
-    if (strcmp(ptMessage->serverid, krserver.serverid) != 0) {
+    if (strcmp(krmsg->serverid, krserver.serverid) != 0) {
         KR_LOG(KR_LOGDEBUG, "message:[%s] server[%s] not match!", \
-            ptMessage->serverid, krserver.serverid);
+            krmsg->serverid, krserver.serverid);
         eOprCode = KR_OPRCODE_INSERT;
     }
 
-    /* run rule detecting */
-    iResult = kr_engine_run(krserver.krengine, eOprCode, \
-            ptMessage->datasrc, ptMessage->msgbuf);
-    if (iResult != 0) {
+    /* run engine */
+    ret = kr_engine_run(krserver.krengine, krmsg->fd, \
+            eOprCode, krmsg->datasrc, krmsg->msgbuf);
+    if (ret != 0) {
         KR_LOG(KR_LOGERROR, "kr_engine_run:[%d] [%d] [%s] failed!", \
-            eOprCode, ptMessage->datasrc, ptMessage->msgbuf);
+            eOprCode, krmsg->datasrc, krmsg->msgid);
         return -1; 
     }
 
@@ -51,29 +51,25 @@ int kr_server_handle_apply(T_KRMessage *ptMessage)
 }
 
 
-static int kr_server_handle_message(T_KRMessage *ptMessage)
+static int kr_server_handle_message(T_KRMessage *krmsg)
 {
     int ret = 0;
     
-    switch(ptMessage->msgtype)
+    switch(krmsg->msgtype)
     {
         case KR_MSGTYPE_APPLY:
-            KR_LOG(KR_LOGDEBUG, "Client [%s] Apply Server [%s] with [%s]!", 
-                    ptMessage->clientid, ptMessage->serverid, 
-                    ptMessage->objectkey);
-            ret = kr_server_handle_apply(ptMessage);
+            KR_LOG(KR_LOGDEBUG, "Client[%s] Server[%s] msgid[%s]!", 
+                    krmsg->clientid, krmsg->serverid, krmsg->msgid);
+            ret = kr_server_handle_apply(krmsg);
             break;
         case KR_MSGTYPE_CLION:
-            KR_LOG(KR_LOGDEBUG, "Client [%s] connected!", 
-                    ptMessage->clientid);
+            KR_LOG(KR_LOGDEBUG, "Client[%s] connected!", krmsg->clientid);
             break;
         case KR_MSGTYPE_CLIOFF:
-            KR_LOG(KR_LOGDEBUG, "Client [%s] disconnected!", 
-                    ptMessage->clientid);
+            KR_LOG(KR_LOGDEBUG, "Client[%s] disconnected!", krmsg->clientid);
             break;
         default:
-            KR_LOG(KR_LOGERROR, "unsupported message type[%d]!", \
-                ptMessage->msgtype);
+            KR_LOG(KR_LOGERROR, "unsupported msgtype[%d]!", krmsg->msgtype);
             ret = -1;
             break;
     }
@@ -85,10 +81,10 @@ void kr_server_message_read_handler(T_KREventLoop *el, int fd, void *privdata, i
 {
     int ret = 0;
     int readLen = 0;
-    T_KRMessage stMessage = {0};
+    T_KRMessage stMsg = {0};
 
     /** read message */
-    readLen = kr_message_read(krserver.neterr, fd, &stMessage);
+    readLen = kr_message_read(krserver.neterr, fd, &stMsg);
     if (readLen <= 0) {/* read message failure */
         KR_LOG(KR_LOGERROR, "read message error[%s]!", krserver.neterr);
         kr_event_file_delete(el, fd, KR_EVENT_READABLE);
@@ -104,10 +100,10 @@ void kr_server_message_read_handler(T_KREventLoop *el, int fd, void *privdata, i
     }
     
     /** handle message */
-    ret = kr_server_handle_message(&stMessage);
+    ret = kr_server_handle_message(&stMsg);
     if (ret != 0) {/* handle message failure */
         KR_LOG(KR_LOGERROR, "handle message [%d], [%s]error!", \
-               stMessage.msgtype, stMessage.msgbuf);
+               stMsg.msgid, stMsg.msgbuf);
         return;
     }
 }
@@ -143,7 +139,7 @@ void kr_server_tcp_accept_handler(T_KREventLoop *el, int fd, void *privdata, int
 
     cfd = kr_net_tcp_accept(krserver.neterr, fd, cip, &cport);
     if (cfd == KR_NET_ERR) {
-        KR_LOG(KR_LOGERROR, "Accepting client connection: %s", krserver.neterr);
+        KR_LOG(KR_LOGERROR, "Accepting client failed:%s", krserver.neterr);
         return;
     }
     KR_LOG(KR_LOGDEBUG, "Accepted %s:%d", cip, cport);

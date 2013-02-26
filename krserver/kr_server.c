@@ -161,24 +161,25 @@ int kr_server_initialize(void)
         kr_server_daemonize();
     }
     
-    /* Start up krengine */
-    krserver.krengine = kr_engine_startup(
-            krserver.dbname, krserver.dbuser, krserver.dbpass,
-            krserver.logpath, krserver.serverid, krserver.loglevel,
-            krserver.shmkey, krserver.serverid, 
-            krserver.krdbmodule, krserver.datamodule, krserver.rulemodule,
-            krserver.hdicachesize, krserver.threadcnt, krserver.hwm);
-    if (krserver.krengine == NULL) {
-        KR_LOG(KR_LOGERROR, "kr_engine_startup failed!\n");
-        return -1;
-    }
-        
     /* Create event loop */
     krserver.krel = kr_event_loop_create(krserver.maxevents);
 
     /* Register server cron time event */
     kr_event_time_create(krserver.krel, 1, kr_server_cron, NULL, NULL);
     
+    /* Start up krengine */
+    krserver.krengine = kr_engine_startup(
+            krserver.dbname, krserver.dbuser, krserver.dbpass,
+            krserver.logpath, krserver.serverid, krserver.loglevel,
+            krserver.shmkey, krserver.serverid, 
+            krserver.krdbmodule, krserver.datamodule, krserver.rulemodule,
+            krserver.hdicachesize, krserver.threadcnt, krserver.hwm,
+            krserver.krel);
+    if (krserver.krengine == NULL) {
+        KR_LOG(KR_LOGERROR, "kr_engine_startup failed!\n");
+        return -1;
+    }
+        
     /* Becoming a server */
     if (krserver.tcpport != 0) {
         krserver.ipfd = kr_net_tcp_server(krserver.neterr, \

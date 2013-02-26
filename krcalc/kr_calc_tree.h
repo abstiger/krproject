@@ -12,9 +12,9 @@
 struct _kr_calc_tree_t
 { 
     struct _kr_calc_tree_t *child[MAXCHILDREN];
+    E_KRCalcOp              op;
     E_KRCalcKind            kind;
-    char                   *name;
-    KRLexerToken            token;
+    int                     id;
     E_KRValueInd            ind;
     union { 
         U_KRCalcValue      val;

@@ -11,9 +11,17 @@ T_KRContext *kr_context_init(T_KRContextEnv *ptEnv)
 
     ptContext->ptEnv = ptEnv;
 
+    ptContext->ptArg = kr_calloc(sizeof(T_KRContextArg));
+    if (ptContext == NULL) {
+        KR_LOG(KR_LOGERROR, "kr_calloc ptContext->ptArg failed!");
+        kr_free(ptContext);
+        return NULL;
+    }
+
     ptContext->ptDym = kr_dynamicmem_init(ptEnv);
     if (ptContext->ptDym == NULL) {
         KR_LOG(KR_LOGERROR, "kr_dynamicmem_init failed!");
+        kr_free(ptContext->ptArg);
         kr_free(ptContext);
         return NULL;
     }
@@ -22,7 +30,7 @@ T_KRContext *kr_context_init(T_KRContextEnv *ptEnv)
 }
 
 
-int kr_context_set(T_KRContext *ptContext, T_KRRecord *ptCurrRec)
+int kr_context_set(T_KRContext *ptContext, T_KRContextArg *ptContextArg)
 {
     /* check dynamic memory, reload if needed */
     if (kr_dynamicmem_check(ptContext->ptDym, ptContext->ptEnv) != 0) {
@@ -30,8 +38,11 @@ int kr_context_set(T_KRContext *ptContext, T_KRRecord *ptCurrRec)
         return -1;
     }
 
-    /* record comes from kr_db_insert() */
-    ptContext->ptCurrRec = ptCurrRec;
+    /* deep copy arguments */
+    memcpy(ptContext->ptArg, ptContextArg, sizeof(T_KRContextArg));
+
+    /* set current record */
+    ptContext->ptCurrRec = ptContextArg->ptCurrRec;
 
     return 0;
 }
@@ -41,6 +52,7 @@ void kr_context_fini(T_KRContext *ptContext)
 {
     if (ptContext) {
         kr_dynamicmem_fini(ptContext->ptDym);
+        if (ptContext->ptArg) kr_free(ptContext->ptArg);
         kr_free(ptContext);
     }
 }

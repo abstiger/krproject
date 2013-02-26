@@ -151,6 +151,9 @@ T_KRDB* kr_db_startup(T_DbsEnv *dbsenv, char *dbname, T_KRModule *krdbmodule)
     T_KRTable *ptTable = NULL;
     T_DatasrcDefCur stDatasrcCur = {0};
     T_DatasrcFieldCntSel stDatasrcFieldCntSel = {0};
+    KRMapFuncPre MapFuncPre = NULL;
+    KRMapFunc MapFunc = NULL;
+    KRMapFuncPost MapFuncPost = NULL;
     
     /*create db first*/
     ptKRDB = kr_create_db(dbname, krdbmodule);
@@ -186,39 +189,71 @@ T_KRDB* kr_db_startup(T_DbsEnv *dbsenv, char *dbname, T_KRModule *krdbmodule)
         }
 
         KR_LOG(KR_LOGDEBUG, "Datasrc:Id[%ld], Name[%s], Desc[%s], Usage[%s],"
-                "MmapFileName[%s], MapFunc[%s], SizeKeepMode[%s], "
+                "MmapFileName[%s], MapFuncPre[%s], MapFunc[%s], "
+                "MapFuncPost[%s], SizeKeepMode[%s], "
                 "SizeKeepValue[%ld] FieldCnt[%ld]\n",\
                 stDatasrcCur.lOutDatasrcId, \
                 stDatasrcCur.caOutDatasrcName, \
                 stDatasrcCur.caOutDatasrcDesc, \
                 stDatasrcCur.caOutDatasrcUsage, \
                 stDatasrcCur.caOutMmapFileName, \
-                stDatasrcCur.caOutDatasrcMapFunc, \
+                stDatasrcCur.caOutMapFuncPre, \
+                stDatasrcCur.caOutMapFunc, \
+                stDatasrcCur.caOutMapFuncPost, \
                 stDatasrcCur.caOutSizeKeepMode, \
                 stDatasrcCur.lOutSizeKeepValue, \
-                stDatasrcFieldCntSel.lOutFieldCnt);        
+                //TODO:sqlite3 let lOutFieldCnt->caOutFieldCnt
+                atoi(stDatasrcFieldCntSel.caOutFieldCnt));        
 
         kr_string_rtrim(stDatasrcCur.caOutDatasrcName);
-        kr_string_rtrim(stDatasrcCur.caOutDatasrcMapFunc);
+        kr_string_rtrim(stDatasrcCur.caOutMapFuncPre);
+        kr_string_rtrim(stDatasrcCur.caOutMapFunc);
+        kr_string_rtrim(stDatasrcCur.caOutMapFuncPost);
         kr_string_rtrim(stDatasrcCur.caOutMmapFileName);
-        KRMapFunc MapFunc = (KRMapFunc )kr_module_symbol(
-                ptKRDB->ptModule, stDatasrcCur.caOutDatasrcMapFunc);
-        if (MapFunc == NULL) {
-            KR_LOG(KR_LOGERROR, "kr_module_symbol [%s] error!", \
-                    stDatasrcCur.caOutDatasrcMapFunc);
+        if (stDatasrcCur.caOutMapFuncPre[0] != '\0') {
+            MapFuncPre = (KRMapFuncPre )kr_module_symbol(
+                    ptKRDB->ptModule, stDatasrcCur.caOutMapFuncPre);
+            if (MapFuncPre == NULL) {
+                KR_LOG(KR_LOGERROR, "kr_module_symbol [%s] error!", \
+                        stDatasrcCur.caOutMapFuncPre);
+                return NULL;
+            }
+        }
+        if (stDatasrcCur.caOutMapFuncPost[0] != '\0') {
+            MapFuncPost = (KRMapFuncPost )kr_module_symbol(
+                    ptKRDB->ptModule, stDatasrcCur.caOutMapFuncPost);
+            if (MapFuncPost == NULL) {
+                KR_LOG(KR_LOGERROR, "kr_module_symbol [%s] error!", \
+                        stDatasrcCur.caOutMapFuncPost);
+                return NULL;
+            }
+        }
+        if (stDatasrcCur.caOutMapFunc[0] != '\0') {
+            MapFunc = (KRMapFunc )kr_module_symbol(
+                    ptKRDB->ptModule, stDatasrcCur.caOutMapFunc);
+            if (MapFunc == NULL) {
+                KR_LOG(KR_LOGERROR, "kr_module_symbol [%s] error!", \
+                        stDatasrcCur.caOutMapFunc);
+                return NULL;
+            }
+        } else {
+            KR_LOG(KR_LOGERROR, "datasrc[%ld] map_func should be specified!", \
+                    stDatasrcCur.lOutDatasrcId);
             return NULL;
         }
 
         ptTable = kr_create_table(ptKRDB, 
                 stDatasrcCur.lOutDatasrcId, \
                 stDatasrcCur.caOutDatasrcName, \
-                stDatasrcCur.caOutDatasrcMapFunc, \
                 stDatasrcCur.caOutMmapFileName, \
                 stDatasrcCur.caOutSizeKeepMode[0], \
                 stDatasrcCur.lOutSizeKeepValue, \
-                stDatasrcFieldCntSel.lOutFieldCnt, \
+                //TODO:sqlite3 let lOutFieldCnt->caOutFieldCnt
+                atoi(stDatasrcFieldCntSel.caOutFieldCnt), \
                 (KRLoadDefFunc)_kr_db_load_field_def, \
+                (KRMapFuncPre)MapFuncPre,
                 (KRMapFunc)MapFunc,
+                (KRMapFuncPost)MapFuncPost,
                 dbsenv);
         if (ptTable == NULL) {
             KR_LOG(KR_LOGERROR, "kr_create_table [%ld] Error!", \

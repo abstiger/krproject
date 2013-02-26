@@ -7,7 +7,7 @@ T_KRRegex *kr_regex_compile(const char *pattern)
     int nRet = 0;
     T_KRRegex *krregex = (T_KRRegex *)kr_calloc(sizeof(T_KRRegex));
     if (krregex == NULL) {
-        fprintf(stderr, "zmalloc T_KRRegex failed!\n");
+        fprintf(stderr, "kr_malloc T_KRRegex failed!\n");
         return NULL;
     }
     

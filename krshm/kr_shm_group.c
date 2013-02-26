@@ -46,6 +46,9 @@ int LoadShmGroup(T_DbsEnv *dbsenv, T_KRShmGroup *ptShmGroup)
         strncpy(ptShmGroupDef->caGroupString, \
                 kr_string_rtrim(stGroupCur.caOutGroupString), \
                 sizeof(ptShmGroupDef->caGroupString));
+        strncpy(ptShmGroupDef->caGroupFunc, \
+                kr_string_rtrim(stGroupCur.caOutGroupFunc), \
+                sizeof(ptShmGroupDef->caGroupFunc));
         /*load rules of this group*/
         if (LoadShmRule(dbsenv, &ptShmGroupDef->stShmRule, \
                     ptShmGroupDef->lGroupId) != 0) {
@@ -82,10 +85,11 @@ int DumpShmGroup(T_KRShmGroup *ptShmGroup, FILE *fp)
     fprintf(fp, "Dumping Group...\n");
     fprintf(fp, "Last Load Time[%s]\n", caTimeString);
     for (l=0; l<ptShmGroup->lGroupDefCnt; l++) {
-        fprintf(fp, "  lGroupId=[%ld], caGroupName=[%s], ", 
-                ptShmGroupDef->lGroupId, ptShmGroupDef->caGroupName);
-        fprintf(fp, "caGroupDesc=[%s], caGroupString=[%s] \n", 
-                ptShmGroupDef->caGroupDesc, ptShmGroupDef->caGroupString);
+        fprintf(fp, "  lGroupId=[%ld], caGroupName=[%s], caGroupDesc=[%s],", 
+                ptShmGroupDef->lGroupId, ptShmGroupDef->caGroupName, 
+                ptShmGroupDef->caGroupDesc);
+        fprintf(fp, " caGroupString=[%s], caGroupFunc=[%s] \n", 
+                 ptShmGroupDef->caGroupString, ptShmGroupDef->caGroupFunc);
         /*dump rules of this group*/
         DumpShmRule(&ptShmGroupDef->stShmRule, fp);
         ptShmGroupDef++;

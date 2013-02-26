@@ -20,6 +20,8 @@ libkrutils_la_SOURCES = \
     kr_set.c \
     kr_regex.h \
     kr_regex.c \
+    kr_json.h \
+    kr_json.c \
     kr_module.h \
     kr_module.c \
     kr_skiplist.h \
@@ -46,5 +48,5 @@ EXTRA_DIST = \
 	kr_event_select.c 
 
 libkrutils_la_LIBADD    = 
-libkrutils_la_LDFLAGS   = -lpthread -ldl
+libkrutils_la_LDFLAGS   = -lpthread -ldl -lm
 libkrutils_la_CPPFLAGS  = 

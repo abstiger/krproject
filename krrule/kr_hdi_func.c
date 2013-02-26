@@ -87,6 +87,8 @@ int kr_hdi_aggr_day(T_KRHDI *krhdi, T_KRContext *krcontext, char *object)
         return -1;
     }
     
+    //TODO:sqlite3 let sum,cnt->char(255)
+    /*
     switch(krhdi->ptShmHDIDef->caStatisticsMethod[0])
     {
         case KR_HDI_METHOD_SUM:
@@ -106,6 +108,7 @@ int kr_hdi_aggr_day(T_KRHDI *krhdi, T_KRContext *krcontext, char *object)
                 krhdi->ptShmHDIDef->caStatisticsMethod);
             return -1;
     }
+    */
     
     switch(krhdi->eValueType)
     {
@@ -153,6 +156,8 @@ int kr_hdi_aggr_mon(T_KRHDI *krhdi, T_KRContext *krcontext, char *object)
         return -1;
     }
     
+    //TODO:sqlite3 let sum,cnt->char(255)
+    /*
     switch(krhdi->ptShmHDIDef->caStatisticsMethod[0])
     {
         case KR_HDI_METHOD_SUM:
@@ -172,6 +177,7 @@ int kr_hdi_aggr_mon(T_KRHDI *krhdi, T_KRContext *krcontext, char *object)
                 krhdi->ptShmHDIDef->caStatisticsMethod);
             return -1;
     }
+    */
     
     switch(krhdi->eValueType)
     {

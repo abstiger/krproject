@@ -36,11 +36,22 @@ static time_t kr_time_to_ttime(char *pcaTime)
 	return mktime(&tTime);
 }
 
-void map_func_2(void *fldval, int fldno, int fldlen, void *data)
+void *weibo_map_func_pre(void *msg)
 {
-    JSON_Value *jsonval = json_parse_string((char *)data);
-    JSON_Object *jsonobj = json_value_get_object(jsonval);
+    JSON_Value *jsonval = json_parse_string((char *)msg);
+    return jsonval;
+}
 
+
+void weibo_map_func_post(void *data)
+{
+    json_value_free(data);
+}
+
+
+void weibo_map_func(void *fldval, int fldno, int fldlen, void *data)
+{
+    JSON_Object *jsonobj = json_value_get_object(data);
     memset(fldval, 0x00, fldlen);
     switch(fldno)
     {
@@ -88,66 +99,4 @@ void map_func_2(void *fldval, int fldno, int fldlen, void *data)
             break;
     }
 }
-
-void map_func_1(void *fldval, int fldno, int fldlen, void *data)
-{
-	typedef struct _kr_tradflow_t{
-		char     caOutCustNo[20+1];
-		char     caOutTransDate[8+1];
-		char     caOutTransTime[6+1];
-		char     caOutFlowNo[15+1];
-		char     caOutTransType[2+1];
-		double   dOutTransAmt;
-		char     caOutTransLoc[100+1];
-	} T_KRTradFlow_1;
-	T_KRTradFlow_1 *ptFlow=(T_KRTradFlow_1 *)data;
-
-    memset(fldval, 0x00, fldlen);
-    switch(fldno)
-    {
-        case 0:
-            *(long *)fldval = (long )time(NULL);
-            break;
-        case 1:
-        {
-            char caDateTime[14+1] = {0};
-            snprintf(caDateTime, 15, "%8s%6s", \
-			        ptFlow->caOutTransDate,
-			        ptFlow->caOutTransTime);
-            *(long *)fldval = kr_time_to_ttime(caDateTime);
-            break;
-        }
-        case 2:
-//            printf("custno=[%s]\n", ptFlow->caOutCustNo);
-            memcpy(fldval, ptFlow->caOutCustNo, fldlen);
-            break;
-        case 3:
-//            printf("txndate=[%s]\n", ptFlow->caOutTransDate);
-            memcpy(fldval, ptFlow->caOutTransDate, fldlen);
-            break;    
-        case 4:
-//            printf("txntime=[%s]\n", ptFlow->caOutTransTime);
-            memcpy(fldval, ptFlow->caOutTransTime, fldlen);
-            break;
-        case 5:
-//            printf("flowno=[%s]\n", ptFlow->caOutFlowNo);
-            memcpy(fldval, ptFlow->caOutFlowNo, fldlen);
-            break;
-        case 6:
-//            printf("txntype=[%s]\n", ptFlow->caOutTransType);
-            memcpy(fldval, ptFlow->caOutTransType, fldlen);
-            break;
-        case 7:
-//            printf("txnamt=[%lf]\n", ptFlow->dOutTransAmt);
-            *(double *)fldval = ptFlow->dOutTransAmt;
-            break;
-        case 8:
-//            printf("txnloc=[%s]\n", ptFlow->caOutTransLoc);
-            memcpy(fldval, ptFlow->caOutTransLoc, fldlen);
-            break;
-        default:
-            break;
-    }
-}
-
 

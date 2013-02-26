@@ -1,8 +1,10 @@
 #include "kr_rule.h"
 #include "kr_rule_func.h"
+#include "krutils/kr_json.h"
 
 int kr_rule_func(T_KRRule *krrule, T_KRContext *krcontext)
 {
+    cJSON *rule=NULL, *root=NULL;
     if (krrule->ptRuleCalc->result_ind != KR_VALUE_SETED) {
         printf("***rule:[%ld] result_type:[%c] result_value:[%s]***\n", 
                 krrule->lRuleId,
@@ -10,6 +12,17 @@ int kr_rule_func(T_KRRule *krrule, T_KRContext *krcontext)
         return 0;
     }
 
+    /*set context's extra data with json format*/
+    if (krcontext->ptExtra == NULL) {
+        krcontext->ptExtra = cJSON_CreateArray();
+    }
+    root = (cJSON *)krcontext->ptExtra;
+    cJSON_AddItemToArray(root, rule=cJSON_CreateObject());
+    cJSON_AddNumberToObject(rule, "id", krrule->lRuleId);
+    cJSON_AddStringToObject(rule, "name", krrule->ptShmRuleDef->caRuleName);
+    cJSON_AddNumberToObject(rule, "result", krrule->ptRuleCalc->result_value.b);
+
+    /*
     switch(krrule->ptRuleCalc->result_type) 
     {
         case KR_CALCTYPE_BOOLEAN:   
@@ -43,6 +56,7 @@ int kr_rule_func(T_KRRule *krrule, T_KRContext *krcontext)
             return -1;
             break; 
     }
+    */
     
     return 0;
 }

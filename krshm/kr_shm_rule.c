@@ -44,6 +44,7 @@ int LoadShmRule(T_DbsEnv *dbsenv, T_KRShmRule *ptShmRule, long lGroupId)
         strncpy(ptShmRuleDef->caRuleDesc, \
                 kr_string_rtrim(stRuleCur.caOutRuleDesc), \
                 sizeof(ptShmRuleDef->caRuleDesc));
+        ptShmRuleDef->lRuleDatasrc = stRuleCur.lOutRuleDatasrc;
         strncpy(ptShmRuleDef->caRuleString, \
                 kr_string_rtrim(stRuleCur.caOutRuleString), \
                 sizeof(ptShmRuleDef->caRuleString));
@@ -89,13 +90,17 @@ int DumpShmRule(T_KRShmRule *ptShmRule, FILE *fp)
     fprintf(fp, "Dumping Rule...\n");
     fprintf(fp, "Last Load Time[%s]\n", caTimeString);
     for (l=0; l<ptShmRule->lRuleDefCnt; l++) {
-        fprintf(fp, "  lRuleId=[%ld], caRuleName=[%s], caRuleDesc=[%s], ", 
-                ptShmRuleDef->lRuleId, ptShmRuleDef->caRuleName, ptShmRuleDef->caRuleDesc);
-        fprintf(fp, "  caRuleString=[%s], caRuleType=[%s], caRuleFunc=[%s], ",
-                ptShmRuleDef->caRuleString, ptShmRuleDef->caRuleType, ptShmRuleDef->caRuleFunc);
-        fprintf(fp, "  lRuleWeight=[%ld] \n caThreshIsConfig=[%s], ", 
+        fprintf(fp, "  lRuleId=[%ld], caRuleName=[%s], caRuleDesc=[%s],", 
+                ptShmRuleDef->lRuleId, ptShmRuleDef->caRuleName, 
+                ptShmRuleDef->caRuleDesc);
+        fprintf(fp, " lRuleDatasrc=[%ld], caRuleString=[%s],",
+                ptShmRuleDef->lRuleDatasrc, ptShmRuleDef->caRuleString);
+        fprintf(fp, " caRuleType=[%s], caRuleFunc=[%s],",
+                ptShmRuleDef->caRuleType, ptShmRuleDef->caRuleFunc);
+        fprintf(fp, " lRuleWeight=[%ld] \n caThreshIsConfig=[%s],", 
                 ptShmRuleDef->lRuleWeight, ptShmRuleDef->caThreshIsConfig);
-        fprintf(fp, "  dRiskAdvcThresh=[%lf], dRiskNotifThresh=[%lf], dRiskAlertThresh=[%lf], dRiskWarnThresh=[%lf] \n", 
+        fprintf(fp, " dRiskAdvcThresh=[%lf], dRiskNotifThresh=[%lf],"
+                    " dRiskAlertThresh=[%lf], dRiskWarnThresh=[%lf] \n", 
                 ptShmRuleDef->dRiskAdvcThresh, ptShmRuleDef->dRiskNotifThresh, 
                 ptShmRuleDef->dRiskAlertThresh, ptShmRuleDef->dRiskWarnThresh);
         ptShmRuleDef++;

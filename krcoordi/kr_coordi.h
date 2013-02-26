@@ -5,6 +5,7 @@
 #include "krutils/kr_skiplist.h"
 #include "krutils/kr_conhash.h"
 #include "krutils/kr_message.h"
+#include "krutils/kr_json.h"
 
 typedef enum {
     KR_COORDI_SERVER = 'S',

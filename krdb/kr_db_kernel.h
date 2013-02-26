@@ -4,7 +4,9 @@
 #include "krutils/kr_utils.h"
 
 typedef void (*KRLoadDefFunc)(void *dbsenv, void *def, void *tableid);
+typedef void *(*KRMapFuncPre)(void *msg);
 typedef void (*KRMapFunc)(void *fldval, int fldno, int fldlen, void *data);
+typedef void (*KRMapFuncPost)(void *data);
 
 /*the two public fieldno of krdb'field definition*/
 typedef enum {
@@ -48,8 +50,9 @@ typedef struct _kr_table_t
 {
     int              iTableId;
     char             caTableName[30+1];
-    char             caMapFunc[50+1];
-    KRMapFunc        pMapFunc;          /* function to assign field value */
+    KRMapFuncPre     pMapFuncPre;       /* pre handle message */
+    KRMapFunc        pMapFunc;          /* assign field value */
+    KRMapFuncPost    pMapFuncPost;      /* post handle message */
     char             caMMapFile[100+1];
     unsigned int     uiMMapSize;
     void             *pMMapAddr;
@@ -98,9 +101,12 @@ T_KRIndex*    kr_create_index(T_KRDB *krdb, T_KRTable *krtable, int index_id,
 void          kr_drop_table_index(T_KRIndex *krindex, T_KRTable *krtable);
 
 T_KRTable*    kr_create_table(T_KRDB *krdb, int table_id, 
-                char *table_name, char *map_func_name, char *mmap_file, 
+                char *table_name, char *mmap_file, 
                 E_KRSizeKeepMode keep_mode, long keep_value, int field_cnt, 
-                KRLoadDefFunc load_field_def_func, KRMapFunc map_func,
+                KRLoadDefFunc load_field_def_func, 
+                KRMapFuncPre map_func_pre,
+                KRMapFunc map_func,
+                KRMapFuncPost map_func_post,
                 void *param);
 void          kr_drop_table(T_KRTable *krtable, T_KRDB *krdb);
 

@@ -2,34 +2,57 @@
 #define __KR_CALC_H__
 
 #include "krutils/kr_utils.h"
+#include "kr_calc_parser.h"
 
 /* callback function definition*/
-typedef E_KRFieldType (*KRGetTypeFunc)(char *id, void *param);
-typedef void *(*KRGetValueFunc)(char *id, void *param);
+typedef E_KRFieldType (*KRGetTypeFunc)(char kind, int id, void *param);
+typedef void *(*KRGetValueFunc)(char kind, int id, void *param);
 
 /*T_KRCalcTree forward declaration*/
 typedef struct _kr_calc_tree_t T_KRCalcTree;
 
-/* lexer token */
-typedef int KRLexerToken;
+/* operation code */
+typedef enum {
+    /* arithmetic operation code */
+    KR_CALCOP_PLUS   = 1,
+    KR_CALCOP_SUB    = 2, 
+    KR_CALCOP_MUT    = 3,
+    KR_CALCOP_DIV    = 4,
+    KR_CALCOP_MOD    = 5,
+    /* logic operation code */
+    KR_CALCOP_NOT    = 6, 
+    KR_CALCOP_LT     = 7, 
+    KR_CALCOP_LE     = 8, 
+    KR_CALCOP_GT     = 9, 
+    KR_CALCOP_GE     = 10, 
+    KR_CALCOP_EQ     = 11, 
+    KR_CALCOP_NEQ    = 12, 
+    KR_CALCOP_AND    = 13,
+    KR_CALCOP_OR     = 14, 
+    KR_CALCOP_BL     = 15, 
+    KR_CALCOP_NBL    = 16, 
+    KR_CALCOP_MATCH  = 17
+}E_KRCalcOp;
 
 /* exp kind is used for node describing */
 typedef enum {
-    KR_CALCKIND_ARITH,     /*arithmetic operator*/
-    KR_CALCKIND_LOGIC,     /*logical operator*/
+    KR_CALCKIND_ARITH   = 1,   /*arithmetic expression*/
+    KR_CALCKIND_LOGIC   = 2,   /*logical expression*/
     
-    KR_CALCKIND_INT,       /*integer constant*/
-    KR_CALCKIND_FLOAT,     /*float constant*/
-    KR_CALCKIND_STRING,    /*string constant*/
+    KR_CALCKIND_INT     = 3,   /*integer constant*/
+    KR_CALCKIND_FLOAT   = 4,   /*float constant*/
+    KR_CALCKIND_STRING  = 5,   /*string constant*/
     
-    KR_CALCKIND_CID,       /*current field identifier*/
-    KR_CALCKIND_FID,       /*field identifier*/
-    KR_CALCKIND_SID,       /*static identifier*/
-    KR_CALCKIND_DID,       /*dynamic identifier*/
-    KR_CALCKIND_HID,       /*history identifier*/
-    KR_CALCKIND_SET,       /*set identifier*/
-    KR_CALCKIND_MULTI,     /*multiple value*/
-    KR_CALCKIND_REGEX      /*regex expression*/
+    KR_CALCKIND_CID     = 6,   /*current field identifier*/
+    KR_CALCKIND_FID     = 7,   /*field identifier*/
+    KR_CALCKIND_SID     = 8,   /*static identifier*/
+    KR_CALCKIND_DID     = 9,   /*dynamic identifier*/
+    KR_CALCKIND_HID     = 10,  /*history identifier*/
+    KR_CALCKIND_SET     = 11,  /*set identifier*/
+    KR_CALCKIND_MINT    = 12,  /*multiple value*/
+    KR_CALCKIND_MFLOAT  = 13,  /*multiple value*/
+    KR_CALCKIND_MSTRING = 14,  /*multiple value*/
+    KR_CALCKIND_REGEX   = 15   /*regex expression*/
 }E_KRCalcKind;
 
 /* Type is used for type checking */

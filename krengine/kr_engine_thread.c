@@ -42,33 +42,6 @@ void *kr_engine_thread_init(void *env)
 }
 
 
-int kr_engine_thread_worker(void *ctx, void *arg)
-{
-    T_KRContext *krcontext = (T_KRContext *)ctx;
-    T_KRRecord *krcurrrec = (T_KRRecord *)arg;
-    
-    /* set context with arg */
-    if (kr_context_set(krcontext, krcurrrec) != 0) {
-        KR_LOG(KR_LOGERROR, "kr_context_set failed!\n");
-        return -1;
-    }
-
-    /* group route */
-    if (kr_group_list_route(krcontext) != 0) {
-        KR_LOG(KR_LOGERROR, "kr_group_list_route failed!\n");
-        return -1;
-    }
-
-    /* rule detect */
-    if (kr_rule_group_detect(krcontext) != 0) {
-        KR_LOG(KR_LOGERROR, "kr_rule_group_detect failed!\n");
-        return -1;
-    }
-    
-    return 0;
-}
-
-
 void kr_engine_thread_fini(void *ctx)
 {
     /* finalize rule detecting context */

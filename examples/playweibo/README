@@ -1,0 +1,23 @@
+An Play-Weibo Example
+============================================================
+This example is a funny application with krengine.
+
+Dependences
+============================================================
+* krengine and it's python interface installed
+* krweb started
+
+Steps
+============================================================
+step 1. cd dat & initall.sh mysql 
+* initialize example data for this example.
+
+step 2. cd src & make
+* build krengine's dbmodule source file.
+* it parses message(JSON format) to make krdb comfortable...
+
+step 3. cde & krserver -c krserver.cfg
+* loop to get transaction messages from weibo daemon
+
+step 4. cd bin & python playweibo.py
+* send weibo to krserver.

@@ -1,36 +1,14 @@
 #include "krcalc/kr_calc.h"
 #include <assert.h>
 
-E_KRFieldType MyGetTypeFunc(char *id, void *param)
+E_KRFieldType MyGetTypeFunc(char kind, int id, void *param)
 {
-    switch(id[0]) {
-    case 'A':
-    case 'F':
-    case 'S':
-    case 'D': 
-    default:    
-        return KR_FIELDTYPE_STRING;
-    }
-    
+    return KR_FIELDTYPE_INT;
 }
 
-void *MyGetValueFunc(char *id, void *param)
+void *MyGetValueFunc(char kind, int id, void *param)
 {
-    switch(id[0]) {
-    case 'A':
-    {
-        T_KRSet *set = kr_set_create(id, KR_FIELDTYPE_STRING);
-        kr_set_add(set, id);
-        kr_set_add(set, "D_1");
-        kr_set_add(set, "D_2");
-        return (void *)set;
-    }
-    case 'F':
-    case 'S':
-    case 'D': 
-    default:
-        return id;
-    }
+    return &id;
 }
 
 int main(int argc, char *argv[])
@@ -38,9 +16,10 @@ int main(int argc, char *argv[])
     char calcstr[1024] = {0};
     T_KRCalc *mycalc = NULL;
     
-    if (argv[1] == NULL)
-        strcpy(calcstr, "((4%3+4*27/(10-2)) > 12.99)&&(F_1 !@ {'shanghai','beijing','guangzhou',})&&(S_3 ## [^S_*])||(D_1 @@ A_1);");
+    if (argc == 1)
+        //strcpy(calcstr, "((4%3+4*27/(10-2)) > 12.99)&&(F_1 !@ {'shanghai','beijing','guangzhou',})&&(S_3 ## [^S_*])||(D_1 @@ A_1);");
 //        strcpy(calcstr, "(F_1 !@ {'shanghai','beijing','guangzhou',});");
+        strcpy(calcstr, "{\"op\":1,\"child0\":{\"kind\":3,\"value\":3}, \"child1\":{\"kind\":3,\"value\":5}}");
     else
         strcpy(calcstr, argv[1]);
     

@@ -42,7 +42,9 @@ create table KR_TBL_DATASRC_DEF
    DATASRC_ID           int not null,
    DATASRC_NAME         varchar(30) not null,
    DATASRC_DESC         varchar(100) not null,
-   DATASRC_MAP_FUNC     varchar(50) not null,
+   MAP_FUNC_PRE         varchar(50) not null,
+   MAP_FUNC             varchar(50) not null,
+   MAP_FUNC_POST        varchar(50) not null,
    DATASRC_USAGE        char(1) not null comment '‘0’-批量数据源，‘1’-准实时数据源',
    MMAP_FILE_NAME       varchar(100) not null,
    SIZE_KEEP_MODE       char(1) not null,
@@ -160,6 +162,7 @@ create table KR_TBL_GROUP
    GROUP_NAME           varchar(30) not null,
    GROUP_DESC           varchar(100) not null,
    GROUP_STRING         varchar(500) not null,
+   GROUP_FUNC           varchar(50) not null,
    GROUP_STATUS         char(1) not null comment '1-已启用
             2-暂停
             3-待复核
@@ -209,6 +212,7 @@ create table KR_TBL_RULE
    RULE_ID              int not null,
    RULE_NAME            varchar(30) not null,
    RULE_DESC            varchar(100) not null,
+   RULE_DATASRC         int not null,
    RULE_STRING          varchar(500) not null,
    RULE_TYPE            char(1) not null,
    RULE_FUNC            varchar(50) not null,

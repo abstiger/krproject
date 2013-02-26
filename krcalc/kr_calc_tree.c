@@ -26,7 +26,6 @@ T_KRCalcTree *kr_calctree_node_new(E_KRCalcKind kind)
         return NULL;
     }
     t->kind = kind;
-    t->name = NULL;
     t->ind  = KR_VALUE_UNSET;
     t->type = KR_CALCTYPE_UNKNOWN;
     for (i=0; i<MAXCHILDREN; i++) {
@@ -82,66 +81,79 @@ static int check_treenode(T_KRCalcTree * t, char *errmsg)
     switch (t->kind)
     { 
         case KR_CALCKIND_ARITH:
-            switch(t->token) 
+            switch(t->op) 
             {
-                case PLUS: case SUB: case MUT: case DIV: case MOD:
+                case KR_CALCOP_PLUS: case KR_CALCOP_SUB: 
+                case KR_CALCOP_MUT: case KR_CALCOP_DIV: 
+                case KR_CALCOP_MOD:
                     if ((t->child[0]->type != KR_CALCTYPE_INTEGER && 
                                 t->child[0]->type != KR_CALCTYPE_DOUBLE) ||
                             (t->child[1]->type != KR_CALCTYPE_INTEGER && 
                              t->child[1]->type != KR_CALCTYPE_DOUBLE)) {
                         sprintf(errmsg, "Arithmetic Op[%d] Type Error[%c][%c].",
-                                t->token, t->child[0]->type, t->child[1]->type);
+                                t->op, t->child[0]->type, t->child[1]->type);
                         return -1;
                     }
                     break;
                 default:
-                    sprintf(errmsg, "[%d] not an Arithmetic Op.\n", t->token);
+                    sprintf(errmsg, "[%d] not an Arithmetic Op.\n", t->op);
                     return -1;
             }
             break;
         case KR_CALCKIND_LOGIC:
-            switch(t->token) {
-                case LT: case LE: case GT: case GE: case EQ: case NEQ:
+            switch(t->op) {
+                case KR_CALCOP_LT: case KR_CALCOP_LE: 
+                case KR_CALCOP_GT: case KR_CALCOP_GE: 
+                case KR_CALCOP_EQ: case KR_CALCOP_NEQ:
                     if ((t->child[0]->type == KR_CALCTYPE_STRING && 
                                 t->child[1]->type != KR_CALCTYPE_STRING) ||
                             (t->child[1]->type == KR_CALCTYPE_STRING && 
                              t->child[0]->type != KR_CALCTYPE_STRING)) {
                         sprintf(errmsg, "Logic Op[%d] Type Error[%c][%c].", \
-                                t->token, t->child[0]->type, t->child[1]->type);
+                                t->op, t->child[0]->type, t->child[1]->type);
                         return -1;
                     }
                     break;
-                case AND: case OR: case NOT:
+                case KR_CALCOP_AND: case KR_CALCOP_OR: 
                     if ((t->child[0]->type != KR_CALCTYPE_INTEGER && 
                                 t->child[0]->type != KR_CALCTYPE_BOOLEAN) ||
                             (t->child[1]->type != KR_CALCTYPE_INTEGER && 
                              t->child[1]->type != KR_CALCTYPE_BOOLEAN)) {
                         sprintf(errmsg, "Logic Op[%d] Type Error[%c][%c].", \
-                                t->token, t->child[0]->type, t->child[1]->type);
+                                t->op, t->child[0]->type, t->child[1]->type);
                         return -1;
                     }
                     break;
-                case BL: case NBL:
-                    if ((t->child[1]->kind != KR_CALCKIND_MULTI && 
+                case KR_CALCOP_NOT:
+                    if (t->child[0]->type != KR_CALCTYPE_INTEGER && 
+                            t->child[0]->type != KR_CALCTYPE_BOOLEAN) {
+                        sprintf(errmsg, "Logic Op[%d] Type Error[%c].", \
+                                t->op, t->child[0]->type);
+                        return -1;
+                    }
+                case KR_CALCOP_BL: case KR_CALCOP_NBL:
+                    if ((t->child[1]->kind != KR_CALCKIND_MINT && 
+                                t->child[1]->kind != KR_CALCKIND_MFLOAT && 
+                                t->child[1]->kind != KR_CALCKIND_MSTRING && 
                                 t->child[1]->kind != KR_CALCKIND_SET) ||
                             t->child[0]->type != t->child[1]->type) {
                         sprintf(errmsg, "Logic Op[%d] Type Error[%c][%c][%d].",
-                                t->token, t->child[0]->type, t->child[1]->type, 
+                                t->op, t->child[0]->type, t->child[1]->type, 
                                 t->child[1]->kind);
                         return -1;        
                     }
                     break;
-                case MATCH:
+                case KR_CALCOP_MATCH:
                     if (t->child[0]->type != KR_CALCTYPE_STRING ||
                             t->child[1]->kind != KR_CALCKIND_REGEX) {
                         sprintf(errmsg, "Logic Op[%d] Type Error[%c][%c][%d].",
-                                t->token, t->child[0]->type, t->child[1]->type,
+                                t->op, t->child[0]->type, t->child[1]->type,
                                 t->child[1]->kind);
                         return -1;
                     }
                     break;
                 default:
-                    sprintf(errmsg, "[%d] is not an Logical Op.\n", t->token);
+                    sprintf(errmsg, "[%d] is not an Logical Op.\n", t->op);
                     return -1;
             }
             break;
@@ -192,13 +204,13 @@ static int _kr_evaluate_arith(T_KRCalcTree *t)
     }
     
     /*do the arithmetic operation*/
-    switch(t->token) 
+    switch(t->op) 
     {
-        case PLUS: d = d0 + d1; break;
-        case SUB:  d = d0 - d1; break;
-        case MUT:  d = d0 * d1; break;
-        case DIV:  d = d0 / d1; break;
-        case MOD:  d = (int )d0 % (int )d1; break;
+        case KR_CALCOP_PLUS: d = d0 + d1; break;
+        case KR_CALCOP_SUB:  d = d0 - d1; break;
+        case KR_CALCOP_MUT:  d = d0 * d1; break;
+        case KR_CALCOP_DIV:  d = d0 / d1; break;
+        case KR_CALCOP_MOD:  d = (int )d0 % (int )d1; break;
         default: return -1;      
     }
     
@@ -228,37 +240,41 @@ static int _kr_evaluate_logic(T_KRCalcTree *t)
     double d1=0.0;
     
     /*promote left value to double*/
-    switch(t->child[0]->type) 
-    {
-        case KR_CALCTYPE_BOOLEAN:
-            d0 = (double )t->child[0]->attr.val.b; 
-            break;
-        case KR_CALCTYPE_INTEGER: 
-            d0 = (double )t->child[0]->attr.val.i; 
-            break;
-        case KR_CALCTYPE_DOUBLE: 
-            d0 = (double )t->child[0]->attr.val.d; 
-            break;
+    if (t->child[0]) {
+        switch(t->child[0]->type) 
+        {
+            case KR_CALCTYPE_BOOLEAN:
+                d0 = (double )t->child[0]->attr.val.b; 
+                break;
+            case KR_CALCTYPE_INTEGER: 
+                d0 = (double )t->child[0]->attr.val.i; 
+                break;
+            case KR_CALCTYPE_DOUBLE: 
+                d0 = (double )t->child[0]->attr.val.d; 
+                break;
+        }
     }
     
     /*promote right value to double*/
-    switch(t->child[1]->type) 
-    {
-        case KR_CALCTYPE_BOOLEAN:
-            d1 = (double )t->child[1]->attr.val.b; 
-            break;
-        case KR_CALCTYPE_INTEGER: 
-            d1 = (double )t->child[1]->attr.val.i; 
-            break;
-        case KR_CALCTYPE_DOUBLE: 
-            d1 = (double )t->child[1]->attr.val.d; 
-            break;
+    if (t->child[1]) {
+        switch(t->child[1]->type) 
+        {
+            case KR_CALCTYPE_BOOLEAN:
+                d1 = (double )t->child[1]->attr.val.b; 
+                break;
+            case KR_CALCTYPE_INTEGER: 
+                d1 = (double )t->child[1]->attr.val.i; 
+                break;
+            case KR_CALCTYPE_DOUBLE: 
+                d1 = (double )t->child[1]->attr.val.d; 
+                break;
+        }
     }
 
     /*do the logic operation*/
-    switch(t->token) 
+    switch(t->op) 
     {
-        case LT:
+        case KR_CALCOP_LT:
             if (t->child[0]->type == KR_CALCTYPE_STRING && 
                     t->child[1]->type == KR_CALCTYPE_STRING) {
                 b = (strcmp(t->child[0]->attr.val.s, 
@@ -270,7 +286,7 @@ static int _kr_evaluate_logic(T_KRCalcTree *t)
                 return -1;
             }
             break;
-        case LE:
+        case KR_CALCOP_LE:
             if (t->child[0]->type == KR_CALCTYPE_STRING && 
                     t->child[1]->type == KR_CALCTYPE_STRING) {
                 b = (strcmp(t->child[0]->attr.val.s, 
@@ -282,7 +298,7 @@ static int _kr_evaluate_logic(T_KRCalcTree *t)
                 return -1;
             }
             break;
-        case GT:
+        case KR_CALCOP_GT:
             if (t->child[0]->type == KR_CALCTYPE_STRING && 
                     t->child[1]->type == KR_CALCTYPE_STRING) {
                 b = (strcmp(t->child[0]->attr.val.s, 
@@ -294,7 +310,7 @@ static int _kr_evaluate_logic(T_KRCalcTree *t)
                 return -1;
             }
             break;
-        case GE:
+        case KR_CALCOP_GE:
             if (t->child[0]->type == KR_CALCTYPE_STRING && 
                     t->child[1]->type == KR_CALCTYPE_STRING) {
                 b = (strcmp(t->child[0]->attr.val.s, 
@@ -306,7 +322,7 @@ static int _kr_evaluate_logic(T_KRCalcTree *t)
                 return -1;
             }
             break;
-        case EQ: 
+        case KR_CALCOP_EQ: 
             if (t->child[0]->type == KR_CALCTYPE_STRING && 
                     t->child[1]->type == KR_CALCTYPE_STRING) {
                 b = (strcmp(t->child[0]->attr.val.s, 
@@ -318,7 +334,7 @@ static int _kr_evaluate_logic(T_KRCalcTree *t)
                 return -1;
             }
             break;
-        case NEQ:
+        case KR_CALCOP_NEQ:
             if (t->child[0]->type == KR_CALCTYPE_STRING && 
                     t->child[1]->type == KR_CALCTYPE_STRING) {
                 b = strcmp(t->child[0]->attr.val.s, t->child[1]->attr.val.s);
@@ -329,7 +345,7 @@ static int _kr_evaluate_logic(T_KRCalcTree *t)
                 return -1;
             }
             break;
-        case AND: 
+        case KR_CALCOP_AND: 
             if ((t->child[0]->type == KR_CALCTYPE_INTEGER || 
                         t->child[0]->type == KR_CALCTYPE_BOOLEAN) &&
                     (t->child[1]->type == KR_CALCTYPE_INTEGER || 
@@ -339,7 +355,7 @@ static int _kr_evaluate_logic(T_KRCalcTree *t)
                 return -1;
             }
             break;
-        case OR:  
+        case KR_CALCOP_OR:  
             if ((t->child[0]->type == KR_CALCTYPE_INTEGER || 
                         t->child[0]->type == KR_CALCTYPE_BOOLEAN) &&
                     (t->child[1]->type == KR_CALCTYPE_INTEGER || 
@@ -349,15 +365,18 @@ static int _kr_evaluate_logic(T_KRCalcTree *t)
                 return -1;
             }
             break;
-        case NOT: 
-            if (t->child[0]->type == KR_CALCTYPE_BOOLEAN) {
+        case KR_CALCOP_NOT: 
+            if (t->child[0]->type == KR_CALCTYPE_BOOLEAN ||
+                    t->child[0]->type == KR_CALCTYPE_INTEGER) {
                 b = (!(int )d0 );
             } else {
                 return -1;
             }
             break;
-        case BL:
-            if (t->child[1]->kind == KR_CALCKIND_MULTI || 
+        case KR_CALCOP_BL:
+            if (t->child[1]->kind == KR_CALCKIND_MINT || 
+                    t->child[1]->kind == KR_CALCKIND_MFLOAT || 
+                    t->child[1]->kind == KR_CALCKIND_MSTRING || 
                     t->child[1]->kind == KR_CALCKIND_SET) {
                 if (t->child[0]->type == KR_CALCTYPE_STRING &&
                         t->child[1]->type == KR_CALCTYPE_STRING) {
@@ -373,8 +392,10 @@ static int _kr_evaluate_logic(T_KRCalcTree *t)
                 return -1;
             }
             break;
-        case NBL:
-            if (t->child[1]->kind == KR_CALCKIND_MULTI || 
+        case KR_CALCOP_NBL:
+            if (t->child[1]->kind == KR_CALCKIND_MINT || 
+                    t->child[1]->kind == KR_CALCKIND_MFLOAT || 
+                    t->child[1]->kind == KR_CALCKIND_MSTRING || 
                     t->child[1]->kind == KR_CALCKIND_SET) {
                 if (t->child[0]->type == KR_CALCTYPE_STRING &&
                         t->child[1]->type == KR_CALCTYPE_STRING) {
@@ -390,7 +411,7 @@ static int _kr_evaluate_logic(T_KRCalcTree *t)
                 return -1;
             }
             break;    
-        case MATCH:
+        case KR_CALCOP_MATCH:
             if (t->child[0]->type == KR_CALCTYPE_STRING &&
                     t->child[1]->kind == KR_CALCKIND_REGEX) {
                 b = kr_regex_execute(t->child[1]->attr.regex, \
@@ -414,40 +435,40 @@ static int _kr_evaluate_extern(T_KRCalcTree *t, T_KRCalc *krcalc)
     t->ind = KR_VALUE_UNSET;
     /*type only set once for optimization*/
     if (t->type == KR_CALCTYPE_UNKNOWN) {
-        E_KRFieldType ele_type = krcalc->get_type_cb(t->name, krcalc->data);
+        E_KRFieldType ele_type = 
+            krcalc->get_type_cb(t->kind, t->id, krcalc->data);
         t->type = kr_fieldtype_to_calctype(ele_type);
         if (t->type == KR_CALCTYPE_UNKNOWN) {
             return -1;
         }
     }
     
-    void *val = krcalc->get_value_cb(t->name, krcalc->data);
+    void *val = krcalc->get_value_cb(t->kind, t->id, krcalc->data);
     if (val != NULL) {
         switch(t->type) 
         {
             case KR_CALCTYPE_BOOLEAN:
                 t->attr.val.b = *(boolean *)val;
-                KR_LOG(KR_LOGDEBUG, "name[%s] type[%c] value[%d]", \
-                        t->name, t->type, t->attr.val.b);
+                KR_LOG(KR_LOGDEBUG, "type[%c] value[%d]", \
+                        t->type, t->attr.val.b);
                 break;
             case KR_CALCTYPE_INTEGER:
                 t->attr.val.i = *(int *)val;
-                KR_LOG(KR_LOGDEBUG, "name[%s] type[%c] value[%d]", \
-                        t->name, t->type, t->attr.val.i);
+                KR_LOG(KR_LOGDEBUG, "type[%c] value[%d]", \
+                        t->type, t->attr.val.i);
                 break;
             case KR_CALCTYPE_DOUBLE:
                 t->attr.val.d = *(double *)val;
-                KR_LOG(KR_LOGDEBUG, "name[%s] type[%c] value[%lf]", \
-                        t->name, t->type, t->attr.val.d);
+                KR_LOG(KR_LOGDEBUG, "type[%c] value[%lf]", \
+                        t->type, t->attr.val.d);
                 break;
             case KR_CALCTYPE_STRING:
                 t->attr.val.s = (char *)val;
-                KR_LOG(KR_LOGDEBUG, "name[%s] type[%c] value[%s]", \
-                        t->name, t->type, t->attr.val.s);
+                KR_LOG(KR_LOGDEBUG, "type[%c] value[%s]", \
+                        t->type, t->attr.val.s);
                 break;
             default:
-                KR_LOG(KR_LOGERROR, "name[%s] unsupported type[%c]", \
-                        t->name, t->type);
+                KR_LOG(KR_LOGERROR, "unsupported type[%c]", t->type);
                 return -1;
         }
         t->ind = KR_VALUE_SETED;
@@ -489,13 +510,13 @@ int kr_calctree_eval(T_KRCalcTree *t, void *param)
                 return -1;
             } else if (t->child[i]->ind != KR_VALUE_SETED) {
                 return 0;
-            } else if ((t->token == AND) && 
+            } else if ((t->op == KR_CALCOP_AND) && 
                        (t->child[i]->type == KR_CALCTYPE_BOOLEAN) && 
                        (!t->child[i]->attr.val.b)) {
                 t->attr.val.b = FALSE;
                 t->ind = KR_VALUE_SETED;
                 return 0;
-            } else if ((t->token == OR) && 
+            } else if ((t->op == KR_CALCOP_OR) && 
                        (t->child[i]->type == KR_CALCTYPE_BOOLEAN) && 
                        (t->child[i]->attr.val.b)) {
                 t->attr.val.b = TRUE;
@@ -512,40 +533,31 @@ int kr_calctree_eval(T_KRCalcTree *t, void *param)
 }
 
 
-/* print operator token, refer to the lexer file's definition
+/* print operator op, refer to the lexer file's definition
  */
-static void print_operator(FILE *printer, KRLexerToken token)
+static void print_operator(FILE *printer, E_KRCalcOp op)
 { 
-    switch (token)
+    switch (op)
     {
-        case PLUS: fprintf(printer,"+\n"); break;
-        case SUB: fprintf(printer,"-\n"); break;
-        case MUT: fprintf(printer,"*\n"); break;
-        case DIV: fprintf(printer,"/\n"); break;
-        case MOD: fprintf(printer,"%%\n"); break;
-        case LT: fprintf(printer,"<\n"); break;
-        case LE: fprintf(printer,"<=\n"); break;
-        case GT: fprintf(printer,">\n"); break;
-        case GE: fprintf(printer,">=\n"); break;
-        case EQ: fprintf(printer,"==\n"); break;
-        case NEQ: fprintf(printer,"!=\n"); break;
-        case BL: fprintf(printer,"@@\n"); break;
-        case NBL: fprintf(printer,"!@\n"); break;
-        case AND: fprintf(printer,"&&\n"); break;
-        case OR: fprintf(printer,"||\n"); break;
-        case NOT: fprintf(printer,"!\n"); break;
-        case ASSIGN: fprintf(printer,"=\n"); break;
-        case SEMI: fprintf(printer,";\n"); break;
-        case COMMA: fprintf(printer,",\n"); break;
-        case LP: fprintf(printer,"(\n"); break;
-        case RP: fprintf(printer,")\n"); break;
-        case LSP: fprintf(printer,"[\n"); break;
-        case RSP: fprintf(printer,"]\n"); break;
-        case LFP: fprintf(printer,"{\n"); break;
-        case RFP: fprintf(printer,"}\n"); break;
-        case MATCH: fprintf(printer,"##\n"); break;
+        case KR_CALCOP_PLUS: fprintf(printer,"+\n"); break;
+        case KR_CALCOP_SUB: fprintf(printer,"-\n"); break;
+        case KR_CALCOP_MUT: fprintf(printer,"*\n"); break;
+        case KR_CALCOP_DIV: fprintf(printer,"/\n"); break;
+        case KR_CALCOP_MOD: fprintf(printer,"%%\n"); break;
+        case KR_CALCOP_LT: fprintf(printer,"<\n"); break;
+        case KR_CALCOP_LE: fprintf(printer,"<=\n"); break;
+        case KR_CALCOP_GT: fprintf(printer,">\n"); break;
+        case KR_CALCOP_GE: fprintf(printer,">=\n"); break;
+        case KR_CALCOP_EQ: fprintf(printer,"==\n"); break;
+        case KR_CALCOP_NEQ: fprintf(printer,"!=\n"); break;
+        case KR_CALCOP_BL: fprintf(printer,"@@\n"); break;
+        case KR_CALCOP_NBL: fprintf(printer,"!@\n"); break;
+        case KR_CALCOP_AND: fprintf(printer,"&&\n"); break;
+        case KR_CALCOP_OR: fprintf(printer,"||\n"); break;
+        case KR_CALCOP_NOT: fprintf(printer,"!\n"); break;
+        case KR_CALCOP_MATCH: fprintf(printer,"##\n"); break;
         default: /* should never happen */
-            fprintf(printer,"Unknown token: %d\n",token);
+            fprintf(printer, "Unknown op: %d\n", op);
     }
 }
 
@@ -562,11 +574,11 @@ static int print_treenode_pre(T_KRCalcTree *node, void *data)
     switch(node->kind){
         case KR_CALCKIND_ARITH:
             fprintf(printer,"Arith Op: ");
-            print_operator(printer, node->token);
+            print_operator(printer, node->op);
             break;
         case KR_CALCKIND_LOGIC:    
             fprintf(printer,"Logic Op: ");
-            print_operator(printer, node->token);
+            print_operator(printer, node->op);
             break;
         case KR_CALCKIND_INT:
             fprintf(printer,"Num_Const: %d\n",node->attr.val.i);
@@ -578,28 +590,30 @@ static int print_treenode_pre(T_KRCalcTree *node, void *data)
             fprintf(printer,"Char_Const: %s\n",node->attr.val.s);
             break;
         case KR_CALCKIND_CID:
-            fprintf(printer,"Cid: %s\n",node->name);
+            fprintf(printer,"Cid: %d\n",node->id);
             break;
         case KR_CALCKIND_FID:
-            fprintf(printer,"Fid: %s\n",node->name);
+            fprintf(printer,"Fid: %d\n",node->id);
             break;
         case KR_CALCKIND_SID:
-            fprintf(printer,"Sid: %s\n",node->name);
+            fprintf(printer,"Sid: %d\n",node->id);
             break;
         case KR_CALCKIND_DID:
-            fprintf(printer,"Did: %s\n",node->name);
+            fprintf(printer,"Did: %d\n",node->id);
             break;    
         case KR_CALCKIND_HID:
-            fprintf(printer,"Hid: %s\n",node->name);
+            fprintf(printer,"Hid: %d\n",node->id);
             break;    
         case KR_CALCKIND_SET:
-            fprintf(printer,"Set: %s\n",node->name);
+            fprintf(printer,"Set: %d\n",node->id);
             break;
-        case KR_CALCKIND_MULTI:    
-            fprintf(printer,"Multi: %s\n",node->name);
+        case KR_CALCKIND_MINT:    
+        case KR_CALCKIND_MFLOAT:    
+        case KR_CALCKIND_MSTRING:    
+            fprintf(printer,"Multi: %s\n",node->attr.set->name);
             break;
         case KR_CALCKIND_REGEX:
-            fprintf(printer,"Regex: %s\n",node->name);
+            fprintf(printer,"Regex: %s\n",node->attr.regex->pattern);
             break;    
         default:
             fprintf(printer,"Unknown kind: %d\n",node->kind);
@@ -629,13 +643,14 @@ void kr_calctree_dump(T_KRCalcTree *root, FILE *fp)
 static int kr_calctree_node_free(T_KRCalcTree *node, void *data)
 { 
     if (node != NULL) {
-        if (node->name) kr_free(node->name);
         switch (node->kind) {
             case KR_CALCKIND_STRING:
                 kr_free(node->attr.val.s); 
                 break;
             case KR_CALCKIND_SET:
-            case KR_CALCKIND_MULTI:
+            case KR_CALCKIND_MINT:
+            case KR_CALCKIND_MFLOAT:
+            case KR_CALCKIND_MSTRING:
                 kr_set_destroy(node->attr.set); 
                 break;
             case KR_CALCKIND_REGEX:

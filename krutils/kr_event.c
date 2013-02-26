@@ -1,3 +1,35 @@
+/* A simple event-driven programming library. Originally I wrote this code
+ * for the Jim's event-loop (Jim is a Tcl interpreter) but later translated
+ * it in form of a library for easy reuse.
+ *
+ * Copyright (c) 2006-2010, Salvatore Sanfilippo <antirez at gmail dot com>
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ *   * Redistributions of source code must retain the above copyright notice,
+ *     this list of conditions and the following disclaimer.
+ *   * Redistributions in binary form must reproduce the above copyright
+ *     notice, this list of conditions and the following disclaimer in the
+ *     documentation and/or other materials provided with the distribution.
+ *   * Neither the name of Redis nor the names of its contributors may be used
+ *     to endorse or promote products derived from this software without
+ *     specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
+ */
+
 #include <stdio.h>
 #include <sys/time.h>
 #include <sys/types.h>
@@ -5,14 +37,16 @@
 #include <stdlib.h>
 #include <poll.h>
 #include <string.h>
+#include <time.h>
+#include <errno.h>
 
-#include "kr_config.h"
 #include "kr_event.h"
 #include "kr_alloc.h"
+#include "kr_config.h"
 
 /* Include the best multiplexing layer supported by this system.
  * The following should be ordered by performances, descending. */
-#ifdef HAVE_EPOLL_CTL
+#ifdef HAVE_EPOLL
 #include "kr_event_epoll.c"
 #else
     #ifdef HAVE_KQUEUE
@@ -22,25 +56,26 @@
     #endif
 #endif
 
-T_KREventLoop *kr_event_loop_create(int setsize) {
-    T_KREventLoop *eventLoop;
+aeEventLoop *aeCreateEventLoop(int setsize) {
+    aeEventLoop *eventLoop;
     int i;
 
     if ((eventLoop = kr_malloc(sizeof(*eventLoop))) == NULL) goto err;
-    eventLoop->events = kr_malloc(sizeof(T_KRFileEvent)*setsize);
-    eventLoop->fired = kr_malloc(sizeof(T_KRFiredEvent)*setsize);
+    eventLoop->events = kr_malloc(sizeof(aeFileEvent)*setsize);
+    eventLoop->fired = kr_malloc(sizeof(aeFiredEvent)*setsize);
     if (eventLoop->events == NULL || eventLoop->fired == NULL) goto err;
     eventLoop->setsize = setsize;
+    eventLoop->lastTime = time(NULL);
     eventLoop->timeEventHead = NULL;
     eventLoop->timeEventNextId = 0;
     eventLoop->stop = 0;
     eventLoop->maxfd = -1;
     eventLoop->beforesleep = NULL;
-    if (kr_event_api_create(eventLoop) == -1) goto err;
-    /* Events with mask == KR_EVENT_NONE are not set. So let's initialize the
+    if (aeApiCreate(eventLoop) == -1) goto err;
+    /* Events with mask == AE_NONE are not set. So let's initialize the
      * vector with it. */
     for (i = 0; i < setsize; i++)
-        eventLoop->events[i].mask = KR_EVENT_NONE;
+        eventLoop->events[i].mask = AE_NONE;
     return eventLoop;
 
 err:
@@ -52,55 +87,58 @@ err:
     return NULL;
 }
 
-void kr_event_loop_delete(T_KREventLoop *eventLoop) {
-    kr_event_api_free(eventLoop);
+void aeDeleteEventLoop(aeEventLoop *eventLoop) {
+    aeApiFree(eventLoop);
     kr_free(eventLoop->events);
     kr_free(eventLoop->fired);
     kr_free(eventLoop);
 }
 
-void kr_event_loop_stop(T_KREventLoop *eventLoop) {
+void aeStop(aeEventLoop *eventLoop) {
     eventLoop->stop = 1;
 }
 
-int kr_event_file_create(T_KREventLoop *eventLoop, int fd, int mask,
-        KREventFileFunc *proc, void *clientData)
+int aeCreateFileEvent(aeEventLoop *eventLoop, int fd, int mask,
+        aeFileProc *proc, void *clientData)
 {
-    if (fd >= eventLoop->setsize) return KR_EVENT_ERR;
-    T_KRFileEvent *fe = &eventLoop->events[fd];
+    if (fd >= eventLoop->setsize) {
+        errno = ERANGE;
+        return AE_ERR;
+    }
+    aeFileEvent *fe = &eventLoop->events[fd];
 
-    if (kr_event_api_add(eventLoop, fd, mask) == -1)
-        return KR_EVENT_ERR;
+    if (aeApiAddEvent(eventLoop, fd, mask) == -1)
+        return AE_ERR;
     fe->mask |= mask;
-    if (mask & KR_EVENT_READABLE) fe->rfileProc = proc;
-    if (mask & KR_EVENT_WRITABLE) fe->wfileProc = proc;
+    if (mask & AE_READABLE) fe->rfileProc = proc;
+    if (mask & AE_WRITABLE) fe->wfileProc = proc;
     fe->clientData = clientData;
     if (fd > eventLoop->maxfd)
         eventLoop->maxfd = fd;
-    return KR_EVENT_OK;
+    return AE_OK;
 }
 
-void kr_event_file_delete(T_KREventLoop *eventLoop, int fd, int mask)
+void aeDeleteFileEvent(aeEventLoop *eventLoop, int fd, int mask)
 {
     if (fd >= eventLoop->setsize) return;
-    T_KRFileEvent *fe = &eventLoop->events[fd];
+    aeFileEvent *fe = &eventLoop->events[fd];
 
-    if (fe->mask == KR_EVENT_NONE) return;
+    if (fe->mask == AE_NONE) return;
     fe->mask = fe->mask & (~mask);
-    if (fd == eventLoop->maxfd && fe->mask == KR_EVENT_NONE) {
+    if (fd == eventLoop->maxfd && fe->mask == AE_NONE) {
         /* Update the max fd */
         int j;
 
         for (j = eventLoop->maxfd-1; j >= 0; j--)
-            if (eventLoop->events[j].mask != KR_EVENT_NONE) break;
+            if (eventLoop->events[j].mask != AE_NONE) break;
         eventLoop->maxfd = j;
     }
-    kr_event_api_del(eventLoop, fd, mask);
+    aeApiDelEvent(eventLoop, fd, mask);
 }
 
-int kr_event_file_get(T_KREventLoop *eventLoop, int fd) {
+int aeGetFileEvents(aeEventLoop *eventLoop, int fd) {
     if (fd >= eventLoop->setsize) return 0;
-    T_KRFileEvent *fe = &eventLoop->events[fd];
+    aeFileEvent *fe = &eventLoop->events[fd];
 
     return fe->mask;
 }
@@ -128,15 +166,15 @@ static void aeAddMillisecondsToNow(long long milliseconds, long *sec, long *ms) 
     *ms = when_ms;
 }
 
-long long kr_event_time_create(T_KREventLoop *eventLoop, long long milliseconds,
-        KREventTimeFunc *proc, void *clientData,
-        KREventFinalizerFunc *finalizerProc)
+long long aeCreateTimeEvent(aeEventLoop *eventLoop, long long milliseconds,
+        aeTimeProc *proc, void *clientData,
+        aeEventFinalizerProc *finalizerProc)
 {
     long long id = eventLoop->timeEventNextId++;
-    T_KRTimeEvent *te;
+    aeTimeEvent *te;
 
     te = kr_malloc(sizeof(*te));
-    if (te == NULL) return KR_EVENT_ERR;
+    if (te == NULL) return AE_ERR;
     te->id = id;
     aeAddMillisecondsToNow(milliseconds,&te->when_sec,&te->when_ms);
     te->timeProc = proc;
@@ -147,9 +185,9 @@ long long kr_event_time_create(T_KREventLoop *eventLoop, long long milliseconds,
     return id;
 }
 
-int kr_event_time_delete(T_KREventLoop *eventLoop, long long id)
+int aeDeleteTimeEvent(aeEventLoop *eventLoop, long long id)
 {
-    T_KRTimeEvent *te, *prev = NULL;
+    aeTimeEvent *te, *prev = NULL;
 
     te = eventLoop->timeEventHead;
     while(te) {
@@ -161,12 +199,12 @@ int kr_event_time_delete(T_KREventLoop *eventLoop, long long id)
             if (te->finalizerProc)
                 te->finalizerProc(eventLoop, te->clientData);
             kr_free(te);
-            return KR_EVENT_OK;
+            return AE_OK;
         }
         prev = te;
         te = te->next;
     }
-    return KR_EVENT_ERR; /* NO event with the specified ID found */
+    return AE_ERR; /* NO event with the specified ID found */
 }
 
 /* Search the first timer to fire.
@@ -180,10 +218,10 @@ int kr_event_time_delete(T_KREventLoop *eventLoop, long long id)
  *    Much better but still insertion or deletion of timers is O(N).
  * 2) Use a skiplist to have this operation as O(1) and insertion as O(log(N)).
  */
-static T_KRTimeEvent *aeSearchNearestTimer(T_KREventLoop *eventLoop)
+static aeTimeEvent *aeSearchNearestTimer(aeEventLoop *eventLoop)
 {
-    T_KRTimeEvent *te = eventLoop->timeEventHead;
-    T_KRTimeEvent *nearest = NULL;
+    aeTimeEvent *te = eventLoop->timeEventHead;
+    aeTimeEvent *nearest = NULL;
 
     while(te) {
         if (!nearest || te->when_sec < nearest->when_sec ||
@@ -196,10 +234,28 @@ static T_KRTimeEvent *aeSearchNearestTimer(T_KREventLoop *eventLoop)
 }
 
 /* Process time events */
-static int processTimeEvents(T_KREventLoop *eventLoop) {
+static int processTimeEvents(aeEventLoop *eventLoop) {
     int processed = 0;
-    T_KRTimeEvent *te;
+    aeTimeEvent *te;
     long long maxId;
+    time_t now = time(NULL);
+
+    /* If the system clock is moved to the future, and then set back to the
+     * right value, time events may be delayed in a random way. Often this
+     * means that scheduled operations will not be performed soon enough.
+     *
+     * Here we try to detect system clock skews, and force all the time
+     * events to be processed ASAP when this happens: the idea is that
+     * processing events earlier is less dangerous than delaying them
+     * indefinitely, and practice suggests it is. */
+    if (now < eventLoop->lastTime) {
+        te = eventLoop->timeEventHead;
+        while(te) {
+            te->when_sec = 0;
+            te = te->next;
+        }
+    }
+    eventLoop->lastTime = now;
 
     te = eventLoop->timeEventHead;
     maxId = eventLoop->timeEventNextId-1;
@@ -233,10 +289,10 @@ static int processTimeEvents(T_KREventLoop *eventLoop) {
              * to flag deleted elements in a special way for later
              * deletion (putting references to the nodes to delete into
              * another linked list). */
-            if (retval != KR_EVENT_NOMORE) {
+            if (retval != AE_NOMORE) {
                 aeAddMillisecondsToNow(retval,&te->when_sec,&te->when_ms);
             } else {
-                kr_event_time_delete(eventLoop, id);
+                aeDeleteTimeEvent(eventLoop, id);
             }
             te = eventLoop->timeEventHead;
         } else {
@@ -249,34 +305,34 @@ static int processTimeEvents(T_KREventLoop *eventLoop) {
 /* Process every pending time event, then every pending file event
  * (that may be registered by time event callbacks just processed).
  * Without special flags the function sleeps until some file event
- * fires, or when the next time event occurrs (if any).
+ * fires, or when the next time event occurs (if any).
  *
  * If flags is 0, the function does nothing and returns.
- * if flags has KR_EVENT_ALL_EVENTS set, all the kind of events are processed.
- * if flags has KR_EVENT_FILE_EVENTS set, file events are processed.
- * if flags has KR_EVENT_TIME_EVENTS set, time events are processed.
- * if flags has KR_EVENT_DONT_WAIT set the function returns ASAP until all
+ * if flags has AE_ALL_EVENTS set, all the kind of events are processed.
+ * if flags has AE_FILE_EVENTS set, file events are processed.
+ * if flags has AE_TIME_EVENTS set, time events are processed.
+ * if flags has AE_DONT_WAIT set the function returns ASAP until all
  * the events that's possible to process without to wait are processed.
  *
  * The function returns the number of events processed. */
-int kr_event_process(T_KREventLoop *eventLoop, int flags)
+int aeProcessEvents(aeEventLoop *eventLoop, int flags)
 {
     int processed = 0, numevents;
 
     /* Nothing to do? return ASAP */
-    if (!(flags & KR_EVENT_TIME_EVENTS) && !(flags & KR_EVENT_FILE_EVENTS)) return 0;
+    if (!(flags & AE_TIME_EVENTS) && !(flags & AE_FILE_EVENTS)) return 0;
 
     /* Note that we want call select() even if there are no
      * file events to process as long as we want to process time
      * events, in order to sleep until the next time event is ready
      * to fire. */
     if (eventLoop->maxfd != -1 ||
-        ((flags & KR_EVENT_TIME_EVENTS) && !(flags & KR_EVENT_DONT_WAIT))) {
+        ((flags & AE_TIME_EVENTS) && !(flags & AE_DONT_WAIT))) {
         int j;
-        T_KRTimeEvent *shortest = NULL;
+        aeTimeEvent *shortest = NULL;
         struct timeval tv, *tvp;
 
-        if (flags & KR_EVENT_TIME_EVENTS && !(flags & KR_EVENT_DONT_WAIT))
+        if (flags & AE_TIME_EVENTS && !(flags & AE_DONT_WAIT))
             shortest = aeSearchNearestTimer(eventLoop);
         if (shortest) {
             long now_sec, now_ms;
@@ -296,9 +352,9 @@ int kr_event_process(T_KREventLoop *eventLoop, int flags)
             if (tvp->tv_usec < 0) tvp->tv_usec = 0;
         } else {
             /* If we have to check for events but need to return
-             * ASAP because of KR_EVENT_DONT_WAIT we need to se the timeout
+             * ASAP because of AE_DONT_WAIT we need to set the timeout
              * to zero */
-            if (flags & KR_EVENT_DONT_WAIT) {
+            if (flags & AE_DONT_WAIT) {
                 tv.tv_sec = tv.tv_usec = 0;
                 tvp = &tv;
             } else {
@@ -307,21 +363,21 @@ int kr_event_process(T_KREventLoop *eventLoop, int flags)
             }
         }
 
-        numevents = kr_event_api_poll(eventLoop, tvp);
+        numevents = aeApiPoll(eventLoop, tvp);
         for (j = 0; j < numevents; j++) {
-            T_KRFileEvent *fe = &eventLoop->events[eventLoop->fired[j].fd];
+            aeFileEvent *fe = &eventLoop->events[eventLoop->fired[j].fd];
             int mask = eventLoop->fired[j].mask;
             int fd = eventLoop->fired[j].fd;
             int rfired = 0;
 
-        /* note the fe->mask & mask & ... code: maybe an already processed
+	    /* note the fe->mask & mask & ... code: maybe an already processed
              * event removed an element that fired and we still didn't
              * processed, so we check if the event is still valid. */
-            if (fe->mask & mask & KR_EVENT_READABLE) {
+            if (fe->mask & mask & AE_READABLE) {
                 rfired = 1;
                 fe->rfileProc(eventLoop,fd,fe->clientData,mask);
             }
-            if (fe->mask & mask & KR_EVENT_WRITABLE) {
+            if (fe->mask & mask & AE_WRITABLE) {
                 if (!rfired || fe->wfileProc != fe->rfileProc)
                     fe->wfileProc(eventLoop,fd,fe->clientData,mask);
             }
@@ -329,45 +385,47 @@ int kr_event_process(T_KREventLoop *eventLoop, int flags)
         }
     }
     /* Check time events */
-    if (flags & KR_EVENT_TIME_EVENTS)
+    if (flags & AE_TIME_EVENTS)
         processed += processTimeEvents(eventLoop);
 
     return processed; /* return the number of processed file/time events */
 }
 
-/* Wait for millseconds until the given file descriptor becomes
+/* Wait for milliseconds until the given file descriptor becomes
  * writable/readable/exception */
-int kr_event_wait(int fd, int mask, long long milliseconds) {
+int aeWait(int fd, int mask, long long milliseconds) {
     struct pollfd pfd;
     int retmask = 0, retval;
 
     memset(&pfd, 0, sizeof(pfd));
     pfd.fd = fd;
-    if (mask & KR_EVENT_READABLE) pfd.events |= POLLIN;
-    if (mask & KR_EVENT_WRITABLE) pfd.events |= POLLOUT;
+    if (mask & AE_READABLE) pfd.events |= POLLIN;
+    if (mask & AE_WRITABLE) pfd.events |= POLLOUT;
 
     if ((retval = poll(&pfd, 1, milliseconds))== 1) {
-        if (pfd.revents & POLLIN) retmask |= KR_EVENT_READABLE;
-        if (pfd.revents & POLLOUT) retmask |= KR_EVENT_WRITABLE;
+        if (pfd.revents & POLLIN) retmask |= AE_READABLE;
+        if (pfd.revents & POLLOUT) retmask |= AE_WRITABLE;
+	if (pfd.revents & POLLERR) retmask |= AE_WRITABLE;
+        if (pfd.revents & POLLHUP) retmask |= AE_WRITABLE;
         return retmask;
     } else {
         return retval;
     }
 }
 
-void kr_event_loop_run(T_KREventLoop *eventLoop) {
+void aeMain(aeEventLoop *eventLoop) {
     eventLoop->stop = 0;
     while (!eventLoop->stop) {
         if (eventLoop->beforesleep != NULL)
             eventLoop->beforesleep(eventLoop);
-        kr_event_process(eventLoop, KR_EVENT_ALL_EVENTS);
+        aeProcessEvents(eventLoop, AE_ALL_EVENTS);
     }
 }
 
-char *kr_event_get_api_name(void) {
-    return kr_event_api_name();
+char *aeGetApiName(void) {
+    return aeApiName();
 }
 
-void kr_event_set_before_sleep_proc(T_KREventLoop *eventLoop, KREventBeforeSleepFunc *beforesleep) {
+void aeSetBeforeSleepProc(aeEventLoop *eventLoop, aeBeforeSleepProc *beforesleep) {
     eventLoop->beforesleep = beforesleep;
 }

@@ -1,14 +1,45 @@
+/* Select()-based ae.c module.
+ *
+ * Copyright (c) 2009-2012, Salvatore Sanfilippo <antirez at gmail dot com>
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ *   * Redistributions of source code must retain the above copyright notice,
+ *     this list of conditions and the following disclaimer.
+ *   * Redistributions in binary form must reproduce the above copyright
+ *     notice, this list of conditions and the following disclaimer in the
+ *     documentation and/or other materials provided with the distribution.
+ *   * Neither the name of Redis nor the names of its contributors may be used
+ *     to endorse or promote products derived from this software without
+ *     specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
+ */
+
+
 #include <string.h>
 
-typedef struct _kr_event_api_state_t {
+typedef struct aeApiState {
     fd_set rfds, wfds;
     /* We need to have a copy of the fd sets as it's not safe to reuse
      * FD sets after select(). */
     fd_set _rfds, _wfds;
-} T_KREventApiState;
+} aeApiState;
 
-static int kr_event_api_create(T_KREventLoop *eventLoop) {
-    T_KREventApiState *state = kr_malloc(sizeof(T_KREventApiState));
+static int aeApiCreate(aeEventLoop *eventLoop) {
+    aeApiState *state = kr_malloc(sizeof(aeApiState));
 
     if (!state) return -1;
     FD_ZERO(&state->rfds);
@@ -17,27 +48,27 @@ static int kr_event_api_create(T_KREventLoop *eventLoop) {
     return 0;
 }
 
-static void kr_event_api_free(T_KREventLoop *eventLoop) {
+static void aeApiFree(aeEventLoop *eventLoop) {
     kr_free(eventLoop->apidata);
 }
 
-static int kr_event_api_add(T_KREventLoop *eventLoop, int fd, int mask) {
-    T_KREventApiState *state = eventLoop->apidata;
+static int aeApiAddEvent(aeEventLoop *eventLoop, int fd, int mask) {
+    aeApiState *state = eventLoop->apidata;
 
-    if (mask & KR_EVENT_READABLE) FD_SET(fd,&state->rfds);
-    if (mask & KR_EVENT_WRITABLE) FD_SET(fd,&state->wfds);
+    if (mask & AE_READABLE) FD_SET(fd,&state->rfds);
+    if (mask & AE_WRITABLE) FD_SET(fd,&state->wfds);
     return 0;
 }
 
-static void kr_event_api_del(T_KREventLoop *eventLoop, int fd, int mask) {
-    T_KREventApiState *state = eventLoop->apidata;
+static void aeApiDelEvent(aeEventLoop *eventLoop, int fd, int mask) {
+    aeApiState *state = eventLoop->apidata;
 
-    if (mask & KR_EVENT_READABLE) FD_CLR(fd,&state->rfds);
-    if (mask & KR_EVENT_WRITABLE) FD_CLR(fd,&state->wfds);
+    if (mask & AE_READABLE) FD_CLR(fd,&state->rfds);
+    if (mask & AE_WRITABLE) FD_CLR(fd,&state->wfds);
 }
 
-static int kr_event_api_poll(T_KREventLoop *eventLoop, struct timeval *tvp) {
-    T_KREventApiState *state = eventLoop->apidata;
+static int aeApiPoll(aeEventLoop *eventLoop, struct timeval *tvp) {
+    aeApiState *state = eventLoop->apidata;
     int retval, j, numevents = 0;
 
     memcpy(&state->_rfds,&state->rfds,sizeof(fd_set));
@@ -48,13 +79,13 @@ static int kr_event_api_poll(T_KREventLoop *eventLoop, struct timeval *tvp) {
     if (retval > 0) {
         for (j = 0; j <= eventLoop->maxfd; j++) {
             int mask = 0;
-            T_KRFileEvent *fe = &eventLoop->events[j];
+            aeFileEvent *fe = &eventLoop->events[j];
 
-            if (fe->mask == KR_EVENT_NONE) continue;
-            if (fe->mask & KR_EVENT_READABLE && FD_ISSET(j,&state->_rfds))
-                mask |= KR_EVENT_READABLE;
-            if (fe->mask & KR_EVENT_WRITABLE && FD_ISSET(j,&state->_wfds))
-                mask |= KR_EVENT_WRITABLE;
+            if (fe->mask == AE_NONE) continue;
+            if (fe->mask & AE_READABLE && FD_ISSET(j,&state->_rfds))
+                mask |= AE_READABLE;
+            if (fe->mask & AE_WRITABLE && FD_ISSET(j,&state->_wfds))
+                mask |= AE_WRITABLE;
             eventLoop->fired[numevents].fd = j;
             eventLoop->fired[numevents].mask = mask;
             numevents++;
@@ -63,6 +94,6 @@ static int kr_event_api_poll(T_KREventLoop *eventLoop, struct timeval *tvp) {
     return numevents;
 }
 
-static char *kr_event_api_name(void) {
+static char *aeApiName(void) {
     return "select";
 }

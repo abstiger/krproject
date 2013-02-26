@@ -1,119 +1,228 @@
 #include "krutils/kr_utils.h"
 #include "krutils/kr_message.h"
+#include "krutils/kr_json.h"
+#include <time.h>
 #include <errno.h>
 #include <signal.h>
 
-typedef struct _kr_tradflow_t{
-    char     caOutCustNo[20+1];
-    char     caOutTransDate[8+1];
-    char     caOutTransTime[6+1];
-    char     caOutFlowNo[15+1];
-    char     caOutTransType[2+1];
-    double   dOutTransAmt;
-    char     caOutTransLoc[100+1];
-} T_KRTradFlow_1;
-
 #define TCP_IP "127.0.0.1"
 #define TCP_PORT 7251
+#define CLIENT_ID "krclient1"
+#define SERVER_ID "krserver1"
 
 char caNetErr[KR_NET_ERR_LEN] = {0};
 
+int kr_client_on(int fd)
+{
+    T_KRMessage stCliOn = {0};
+    stCliOn.msgtype = KR_MSGTYPE_CLION;
+    strcpy(stCliOn.msgid, CLIENT_ID);
+    strcpy(stCliOn.clientid, CLIENT_ID);
+
+    if (kr_message_write(caNetErr, fd, &stCliOn) <= 0) {
+        fprintf(stderr, "kr_message_write clion error[%s]!\n", caNetErr);
+        return -1;
+    }
+
+    return 0;
+}
+
+int kr_client_apply_struct(T_KRMessage *krmsg, int fd, int i)
+{
+    char buf[1024] = {0};
+    typedef struct _kr_tradflow_t{
+        char     caOutCustNo[20+1];
+        char     caOutTransDate[8+1];
+        char     caOutTransTime[6+1];
+        char     caOutFlowNo[15+1];
+        char     caOutTransType[2+1];
+        double   dOutTransAmt;
+        char     caOutTransLoc[100+1];
+    } T_KRTradFlow;
+
+    srandom((unsigned int)(time(NULL)+i));
+
+    T_KRTradFlow *msgbody = kr_calloc(sizeof(T_KRTradFlow));
+    memset(buf, 0x00, sizeof(buf));
+    sprintf(buf, "%s%04d", "6223000000000000", (int )(random()%10));
+    strcpy(krmsg->objectkey, buf); //set krmsg objectkey
+    memcpy(msgbody->caOutCustNo, buf, sizeof(msgbody->caOutCustNo));
+
+    memset(buf, 0x00, sizeof(buf));
+    sprintf(buf, "20130219");
+    memcpy(msgbody->caOutTransDate, buf, sizeof(msgbody->caOutTransDate));
+
+    memset(buf, 0x00, sizeof(buf));
+    sprintf(buf, "0919%02d", i%60);
+    memcpy(msgbody->caOutTransTime, buf, sizeof(msgbody->caOutTransTime));
+
+    memset(buf, 0x00, sizeof(buf));
+    sprintf(buf, "%015d", i);
+    strcpy(krmsg->msgid, buf); //set krmsg msgid
+    memcpy(msgbody->caOutFlowNo, buf, sizeof(msgbody->caOutFlowNo));
+
+    memset(buf, 0x00, sizeof(buf));
+    sprintf(buf, "%02d", i%2);
+    memcpy(msgbody->caOutTransType, buf, sizeof(msgbody->caOutTransType));
+
+    msgbody->dOutTransAmt = random()%10000;
+
+    memset(buf, 0x00, sizeof(buf));
+    sprintf(buf, "TRANS_LOCATION:%02d", i);
+    memcpy(msgbody->caOutTransLoc, buf, sizeof(msgbody->caOutTransLoc));
+
+    krmsg->msgbuf = msgbody;
+    krmsg->msglen = sizeof(*msgbody);
+    if (kr_message_write(caNetErr, fd, krmsg) != krmsg->msglen) {
+        fprintf(stderr, "kr_message_write apply error[%s]!\n", caNetErr);
+        kr_free(krmsg->msgbuf);
+        return -1;
+    }
+
+    kr_free(krmsg->msgbuf);
+    return 0;
+}
+
+
+int kr_client_apply_json(T_KRMessage *krmsg, int fd, int i)
+{
+    char buf[1024] = {0};
+
+    srandom((unsigned int)(time(NULL)+i));
+    /*Write Apply message */
+    cJSON *msgbody =cJSON_CreateObject();
+    memset(buf, 0x00, sizeof(buf));
+    sprintf(buf, "%s%04d", "6223000000000000", (int )(random()%10));
+    strcpy(krmsg->objectkey, buf); //set krmsg objectkey
+    cJSON_AddStringToObject(msgbody, "custno", buf);
+    memset(buf, 0x00, sizeof(buf));
+    sprintf(buf, "20130219");
+    cJSON_AddStringToObject(msgbody, "txndate", buf);
+    memset(buf, 0x00, sizeof(buf));
+    sprintf(buf, "0919%02d", i%60);
+    cJSON_AddStringToObject(msgbody, "txntime", buf);
+    memset(buf, 0x00, sizeof(buf));
+    sprintf(buf, "%015d", i);
+    strcpy(krmsg->msgid, buf); //set krmsg msgid
+    cJSON_AddStringToObject(msgbody, "flowno", buf);
+    memset(buf, 0x00, sizeof(buf));
+    sprintf(buf, "%02d", i%2);
+    cJSON_AddStringToObject(msgbody, "txntype", buf);
+    cJSON_AddNumberToObject(msgbody, "txnamt", i*9.8);
+    memset(buf, 0x00, sizeof(buf));
+    sprintf(buf, "TRANS_LOCATION:%02d", i);
+    cJSON_AddStringToObject(msgbody, "txnloc", buf);
+
+    krmsg->msgbuf = cJSON_PrintUnformatted(msgbody);
+    krmsg->msglen = strlen(krmsg->msgbuf);
+    cJSON_Delete(msgbody);
+    if (kr_message_write(caNetErr, fd, krmsg) != krmsg->msglen) {
+        fprintf(stderr, "kr_message_write apply error[%s]!\n", caNetErr);
+        kr_free(krmsg->msgbuf);
+        return -1;
+    }
+
+    kr_free(krmsg->msgbuf);
+    return 0;
+}
+
+
+int kr_client_apply(int fd, char fmt)
+{
+    int ret = 0;
+    int i = 0;
+    char readbuf[1024] = {0};
+    size_t readlen = 0;
+    T_KRMessage stApply = {0};
+    stApply.msgtype = KR_MSGTYPE_APPLY;
+    strcpy(stApply.serverid, SERVER_ID);
+    strcpy(stApply.clientid, CLIENT_ID);
+    stApply.datasrc = 1;
+    for (i=0; i<22; ++i) {
+        if (fmt == 'J') {
+            kr_client_apply_json(&stApply, fd, i);
+        } else {
+            kr_client_apply_struct(&stApply, fd, i);
+        }
+
+printf("Send:fd:[%d], msgid[%s], msgtype[%d], serverid[%s], clientid[%s], "
+                "datasrc[%d], objectkey[%s], msglen[%d]\n", \
+            fd, stApply.msgid, stApply.msgtype, 
+            stApply.serverid, stApply.clientid, 
+            stApply.datasrc, stApply.objectkey, stApply.msglen);
+        
+        readlen = read(fd, &readbuf, sizeof(readbuf));
+        if( readlen < 0) {
+            fprintf(stderr, "read fd failed[%s]!\n", strerror(errno));
+            return -1;
+        }
+        printf("read jsonstr:[%s]\n", readbuf);
+
+        if(i%1000 == 0) {
+            time_t tTime = time(NULL);
+            struct tm *ptmNow = localtime(&tTime);
+            char caTimeString[80] = {0};
+            strftime(caTimeString, sizeof(caTimeString), "%c", ptmNow);
+            printf("client sending [%d] records at [%s]!\n", i, caTimeString);
+        }
+    }
+
+    return 0;
+}
+
+
 int main(int argc, char *argv[])
 {  
-    int ret = 0;
-    int tcpfd = 0;
-    int i = 0;
-    int iResult = 0;
-    char caTmpBuff[200] = {0};
-    T_KRTradFlow_1 stTradFlow1 = {0};
-    time_t    lTime;
-    struct tm    *tTmLocal;
-    char    sLogTime[128];
-    T_KRMessage stMsg = {0};
-    int iWriteLen = 0;
-    stMsg.msgtype = KR_MSGTYPE_APPLY;
-    strcpy(stMsg.serverid, "krserver1");
-    strcpy(stMsg.clientid, "krclient1");
-    stMsg.datasrc = 1;
-    stMsg.msglen = sizeof(T_KRTradFlow_1);
-    stMsg.msgbuf = kr_malloc(stMsg.msglen);
-    
+    int ch;
+    char ip[32];
+    int port;
+    int tcpfd;
+    char caNetErr[1024];
+    char msgfmt;
+
     signal(SIGHUP, SIG_IGN);
     signal(SIGPIPE, SIG_IGN);
+
+    msgfmt = 'C';
+    strcpy(ip, TCP_IP);
+    port = TCP_PORT;
+    while ((ch = getopt(argc, argv, "i:p:f:")) != -1)
+    {
+        switch (ch)
+        {
+            case 'i':
+                strcpy(ip, optarg);
+                break;
+            case 'p':
+                port = atoi(optarg);
+                break;
+            case 'f':
+                msgfmt = optarg[0];
+                break;
+            default:
+                break;
+        }
+    }
     
-    tcpfd = kr_net_tcp_connect(caNetErr, TCP_IP, TCP_PORT);
+    /*connect to coordi/server*/
+    tcpfd = kr_net_tcp_connect(caNetErr, ip, port);
     if (tcpfd <= 0) {
-        printf("kr_net_tcp_connect [%s] [%d]failed [%s]\n", TCP_IP, TCP_PORT, caNetErr);
+        fprintf(stderr, "kr_net_tcp_connect [%s]:[%d] failed[%s]\n", 
+                TCP_IP, TCP_PORT, caNetErr);
         return -1;
     }
     
     /*client on*/    
-    T_KRMessage stMessage = {0};
-    stMessage.msgtype = KR_MSGTYPE_CLION;
-    strcpy(stMessage.serverid, "krserver1");
-    strcpy(stMessage.clientid, "krclient1");
-    
-    if (kr_message_write(caNetErr, tcpfd, &stMessage) <= 0) {
-        while (errno == EAGAIN) {
-            kr_message_write(caNetErr, tcpfd, &stMessage);
-        }
-        printf("kr_message_write tcpfd failed[%s]!\n", caNetErr);
+    if (kr_client_on(tcpfd) !=0) {
         return -1;
     }
-    //sleep(2);
-    
-    //Step 2:FraudDetect
-    for (i=0; i<22; i++)
-    {
-        memset(&stTradFlow1, 0x00, sizeof(T_KRTradFlow_1));
-        
-        memset(caTmpBuff, 0x00, sizeof(caTmpBuff));
-        sprintf(caTmpBuff, "%s%04d", "6223000000000000", i%10);
-        memcpy(stTradFlow1.caOutCustNo, caTmpBuff, sizeof(stTradFlow1.caOutCustNo));
-                
-        memset(caTmpBuff, 0x00, sizeof(caTmpBuff));
-        sprintf(caTmpBuff, "201205%02d", i%7);
-        memcpy(stTradFlow1.caOutTransDate, caTmpBuff, sizeof(stTradFlow1.caOutTransDate));
-        
-        memset(caTmpBuff, 0x00, sizeof(caTmpBuff));
-        sprintf(caTmpBuff, "0919%02d", i%60);
-        memcpy(stTradFlow1.caOutTransTime, caTmpBuff, sizeof(stTradFlow1.caOutTransTime));
 
-        memset(caTmpBuff, 0x00, sizeof(caTmpBuff));
-        sprintf(caTmpBuff, "%015d", i);
-        memcpy(stTradFlow1.caOutFlowNo, caTmpBuff, sizeof(stTradFlow1.caOutFlowNo));
-        
-        memset(caTmpBuff, 0x00, sizeof(caTmpBuff));
-        sprintf(caTmpBuff, "%02d", i%2);
-        memcpy(stTradFlow1.caOutTransType, caTmpBuff, sizeof(stTradFlow1.caOutTransType));
-        
-        stTradFlow1.dOutTransAmt = i*9.9;
-        
-        memset(caTmpBuff, 0x00, sizeof(caTmpBuff));
-        sprintf(caTmpBuff, "TRANS_LOCATION:%02d", i);
-        memcpy(stTradFlow1.caOutTransLoc, caTmpBuff, sizeof(stTradFlow1.caOutTransLoc));
-
-
-        memcpy(stMsg.msgbuf, &stTradFlow1, sizeof(T_KRTradFlow_1));
-
-        strcpy(stMsg.objectkey, stTradFlow1.caOutCustNo);
-        printf("Write message:msgtype[%d], serverid[%s], clientid[%s], datasrc[%d], objectkey[%s], msglen[%d], msgbuf:[%s]\n", \
-                stMsg.msgtype, stMsg.serverid, stMsg.clientid, stMsg.datasrc, stMsg.objectkey, stMsg.msglen, (char *)stMsg.msgbuf);
-
-        if (kr_message_write(caNetErr, tcpfd, &stMsg) <= 0) {
-            while (errno == EAGAIN) {
-                kr_message_write(caNetErr, tcpfd, &stMsg);
-            }
-            printf("kr_message_write tcpfd failed[%s]!\n", caNetErr);
-            break;
-        }
-
+    /*client apply*/    
+    if (kr_client_apply(tcpfd, msgfmt) !=0) {
+        return -1;
     }
-
-    kr_free(stMsg.msgbuf);
-    //sleep(10);
-    close(tcpfd);
     
+    close(tcpfd);
     return 0;
-}  
+}
 

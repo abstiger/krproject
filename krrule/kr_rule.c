@@ -4,35 +4,28 @@
 #include "kr_ddi.h"
 #include "kr_hdi.h"
 
-E_KRFieldType kr_rule_get_type(char *id, void *param)
+E_KRFieldType kr_rule_get_type(char kind, int id, void *param)
 {
-    char cIdType;
-    char caIdValue[20] = {0};
-    int  iIdValue;
-    cIdType = id[0];
-    strncpy(caIdValue, &id[2], sizeof(caIdValue));
-    iIdValue = atoi(caIdValue);
-    
     T_KRContext *ptContext = (T_KRContext *)param;
-    switch(cIdType) 
+    switch(kind) 
     {
-        case 'A':
-            return kr_aid_get_type(ptContext->ptEnv->ptDbs, iIdValue);
+        case KR_CALCKIND_SET:
+            return kr_aid_get_type(ptContext->ptEnv->ptDbs, id);
             break;
-        case 'C':
-            return kr_get_field_type(ptContext->ptCurrRec, iIdValue);
+        case KR_CALCKIND_CID:
+            return kr_get_field_type(ptContext->ptCurrRec, id);
             break;
-        case 'F':
-            return kr_get_field_type(ptContext->ptRecord, iIdValue);
+        case KR_CALCKIND_FID:
+            return kr_get_field_type(ptContext->ptRecord, id);
             break;
-        case 'S':
-            return kr_sdi_get_type(iIdValue, ptContext);
+        case KR_CALCKIND_SID:
+            return kr_sdi_get_type(id, ptContext);
             break;
-        case 'D': 
-            return kr_ddi_get_type(iIdValue, ptContext);
+        case KR_CALCKIND_DID: 
+            return kr_ddi_get_type(id, ptContext);
             break;
-        case 'H': 
-            return kr_hdi_get_type(iIdValue, ptContext);
+        case KR_CALCKIND_HID: 
+            return kr_hdi_get_type(id, ptContext);
             break;
         default:
             return KR_FIELDTYPE_UNKNOWN;
@@ -40,35 +33,28 @@ E_KRFieldType kr_rule_get_type(char *id, void *param)
 }
 
 
-void *kr_rule_get_value(char *id, void *param)
+void *kr_rule_get_value(char kind, int id, void *param)
 {
-    char cIdType;
-    char caIdValue[20] = {0};
-    int  iIdValue;
-    cIdType = id[0];
-    strncpy(caIdValue, &id[2], sizeof(caIdValue));
-    iIdValue = atoi(caIdValue);
-    
     T_KRContext *ptContext = (T_KRContext *)param;
-    switch(id[0]) 
+    switch(kind) 
     {
-        case 'A':
-            return kr_aid_get_value(ptContext->ptEnv->ptDbs, iIdValue);
+        case KR_CALCKIND_SET:
+            return kr_aid_get_value(ptContext->ptEnv->ptDbs, id);
             break;
-        case 'C':
-            return kr_get_field_value(ptContext->ptCurrRec, iIdValue);
+        case KR_CALCKIND_CID:
+            return kr_get_field_value(ptContext->ptCurrRec, id);
             break;
-        case 'F':
-            return kr_get_field_value(ptContext->ptRecord, iIdValue);
+        case KR_CALCKIND_FID:
+            return kr_get_field_value(ptContext->ptRecord, id);
             break;
-        case 'S':
-            return kr_sdi_get_value(iIdValue, ptContext);
+        case KR_CALCKIND_SID:
+            return kr_sdi_get_value(id, ptContext);
             break;
-        case 'D': 
-            return kr_ddi_get_value(iIdValue, ptContext);
+        case KR_CALCKIND_DID: 
+            return kr_ddi_get_value(id, ptContext);
             break;
-        case 'H': 
-            return kr_hdi_get_value(iIdValue, ptContext);
+        case KR_CALCKIND_HID: 
+            return kr_hdi_get_value(id, ptContext);
             break;
         default:
             return NULL;
@@ -107,6 +93,15 @@ int kr_rule_detect(T_KRRule *krrule, void *krcontext)
 {
     krrule->bViolated = FALSE;
 
+    /*check datasrc first*/
+    T_KRTable *krtable = ((T_KRContext *)krcontext)->ptCurrRec->ptTable;
+    if (krrule->ptShmRuleDef->lRuleDatasrc > 0 &&
+            (krtable->iTableId != krrule->ptShmRuleDef->lRuleDatasrc)) {
+        KR_LOG(KR_LOGDEBUG, "inputdatasrc [%d] isn't ruledatasrc[%ld] !", 
+                krtable->iTableId, krrule->ptShmRuleDef->lRuleDatasrc);
+        return 0;
+    }
+
     /*calculate rule string*/
     if (kr_calc_eval(krrule->ptRuleCalc, krcontext) != 0) {
         KR_LOG(KR_LOGERROR, "kr_calc_eval rule[%ld] failed!", krrule->lRuleId);
@@ -116,7 +111,8 @@ int kr_rule_detect(T_KRRule *krrule, void *krcontext)
     /*handle detect result and write reponse*/
     if (krrule->RuleFunc != NULL) {
         if (krrule->RuleFunc(krrule, krcontext) != 0) {
-            KR_LOG(KR_LOGERROR, "run RuleFunc[%ld] failed!", krrule->lRuleId);
+            KR_LOG(KR_LOGERROR, "run Rule[%ld] Func[%s] failed!", 
+                    krrule->lRuleId, krrule->ptShmRuleDef->caRuleFunc);
             return -1;
         }
     }

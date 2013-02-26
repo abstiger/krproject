@@ -4,21 +4,21 @@
 
 extern T_KRCoordi krcoordi;
 
-int kr_coordi_handle_svron(T_KREventLoop *el, int fd, T_KRMessage *ptMessage)
+int kr_coordi_handle_svron(T_KREventLoop *el, int fd, T_KRMessage *krmsg)
 {
-    KR_LOG(KR_LOGDEBUG, "Server [%s] Online [%d]!", ptMessage->serverid, fd);
+    KR_LOG(KR_LOGDEBUG, "Server [%s] Online [%d]!", krmsg->serverid, fd);
     
     char ip[32];
     int port;
     kr_net_peer_to_string(fd, ip, &port);
     
-    T_KRMsgSvrOn *ptMsgSvrOn = (T_KRMsgSvrOn *)ptMessage->msgbuf;
+    T_KRMsgSvrOn *ptMsgSvrOn = (T_KRMsgSvrOn *)krmsg->msgbuf;
 
     /* Check this server whether exists */
     T_KRActualNode *node = \
-        kr_conhash_lookup(krcoordi.servers, ptMessage->serverid);
+        kr_conhash_lookup(krcoordi.servers, krmsg->serverid);
     if (node != NULL) {
-        KR_LOG(KR_LOGDEBUG, "Server %s already exists!", ptMessage->serverid);
+        KR_LOG(KR_LOGDEBUG, "Server %s already exists!", krmsg->serverid);
         return 0;
     }
     
@@ -30,7 +30,7 @@ int kr_coordi_handle_svron(T_KREventLoop *el, int fd, T_KRMessage *ptMessage)
     }
     ptServer->fd = fd;
     ptServer->role = KR_COORDI_SERVER;
-    strcpy(ptServer->id, ptMessage->serverid);
+    strcpy(ptServer->id, krmsg->serverid);
     strcpy(ptServer->ip, ip);
     ptServer->aplnum = 0;
     ptServer->rplnum = 0;
@@ -48,15 +48,15 @@ int kr_coordi_handle_svron(T_KREventLoop *el, int fd, T_KRMessage *ptMessage)
 }
 
 
-int kr_coordi_handle_svroff(T_KREventLoop *el, int fd, T_KRMessage *ptMessage)
+int kr_coordi_handle_svroff(T_KREventLoop *el, int fd, T_KRMessage *krmsg)
 {
-    KR_LOG(KR_LOGDEBUG, "Server [%s] Offline [%d]!", ptMessage->serverid, fd);
+    KR_LOG(KR_LOGDEBUG, "Server [%s] Offline [%d]!", krmsg->serverid, fd);
     
     /* Check this server whether exists */
     T_KRActualNode *node = \
-        kr_conhash_lookup(krcoordi.servers, ptMessage->serverid);
+        kr_conhash_lookup(krcoordi.servers, krmsg->serverid);
     if (node == NULL) {
-        KR_LOG(KR_LOGDEBUG, "Server %s not exists!", ptMessage->serverid);
+        KR_LOG(KR_LOGDEBUG, "Server %s not exists!", krmsg->serverid);
         return 0;
     }
     
@@ -77,18 +77,18 @@ int kr_coordi_handle_svroff(T_KREventLoop *el, int fd, T_KRMessage *ptMessage)
 }
 
 
-int kr_coordi_handle_clion(T_KREventLoop *el, int fd, T_KRMessage *ptMessage)
+int kr_coordi_handle_clion(T_KREventLoop *el, int fd, T_KRMessage *krmsg)
 {
-    KR_LOG(KR_LOGDEBUG, "Client [%s] Online [%d]!", ptMessage->clientid, fd);
+    KR_LOG(KR_LOGDEBUG, "Client [%s] Online [%d]!", krmsg->clientid, fd);
 
     char ip[32];
     int port;
     kr_net_peer_to_string(fd, ip, &port);
     
     /* Check this client whether exists */
-    T_KRListNode *node = kr_list_search(krcoordi.clients, ptMessage->clientid);
+    T_KRListNode *node = kr_list_search(krcoordi.clients, krmsg->clientid);
     if (node != NULL) {
-        KR_LOG(KR_LOGDEBUG, "Client %s already exists!", ptMessage->clientid);
+        KR_LOG(KR_LOGDEBUG, "Client %s already exists!", krmsg->clientid);
         return 0;
     }
 
@@ -100,7 +100,7 @@ int kr_coordi_handle_clion(T_KREventLoop *el, int fd, T_KRMessage *ptMessage)
     }
     ptClient->fd = fd;
     ptClient->role = KR_COORDI_CLIENT;
-    strcpy(ptClient->id, ptMessage->clientid);
+    strcpy(ptClient->id, krmsg->clientid);
     strcpy(ptClient->ip, ip);
     ptClient->aplnum = 0;
     ptClient->rplnum = 0;
@@ -116,14 +116,14 @@ int kr_coordi_handle_clion(T_KREventLoop *el, int fd, T_KRMessage *ptMessage)
 }
 
 
-int kr_coordi_handle_clioff(T_KREventLoop *el, int fd, T_KRMessage *ptMessage)
+int kr_coordi_handle_clioff(T_KREventLoop *el, int fd, T_KRMessage *krmsg)
 {
-    KR_LOG(KR_LOGDEBUG, "Client [%s] Offline [%d]!", ptMessage->clientid, fd);
+    KR_LOG(KR_LOGDEBUG, "Client [%s] Offline [%d]!", krmsg->clientid, fd);
 
     /* Check this client whether exists */
-    T_KRListNode *node = kr_list_search(krcoordi.clients, ptMessage->clientid);
+    T_KRListNode *node = kr_list_search(krcoordi.clients, krmsg->clientid);
     if (node == NULL) {
-        KR_LOG(KR_LOGDEBUG, "Client %s not exists!", ptMessage->clientid);
+        KR_LOG(KR_LOGDEBUG, "Client %s not exists!", krmsg->clientid);
         return 0;
     }
    
@@ -145,13 +145,13 @@ int kr_coordi_handle_clioff(T_KREventLoop *el, int fd, T_KRMessage *ptMessage)
 
 
 static void 
-kr_coordi_send_to_server(T_KRActualNode *ptActualNode, T_KRMessage *ptMessage)
+kr_coordi_send_to_server(T_KRActualNode *ptActualNode, T_KRMessage *krmsg)
 {
     T_KRCoordiConnector *ptServer = ptActualNode->priv;
 
     /* sent to the specified server or a replica server */
-    if (ptServer->replica || !strcmp(ptServer->id, ptMessage->serverid)) {
-        int nLen = kr_message_write(ptServer->neterr, ptServer->fd, ptMessage);
+    if (ptServer->replica || !strcmp(ptServer->id, krmsg->serverid)) {
+        int nLen = kr_message_write(ptServer->neterr, ptServer->fd, krmsg);
         if (nLen <= 0) {/* write message failure */        
             KR_LOG(KR_LOGERROR, "write message error[%s]!", ptServer->neterr);
             ++ptServer->errnum;
@@ -160,15 +160,15 @@ kr_coordi_send_to_server(T_KRActualNode *ptActualNode, T_KRMessage *ptMessage)
 }
 
 
-int kr_coordi_handle_apply(T_KREventLoop *el, int fd, T_KRMessage *ptMessage)
+int kr_coordi_handle_apply(T_KREventLoop *el, int fd, T_KRMessage *krmsg)
 {
-    KR_LOG(KR_LOGDEBUG, "Client [%s] Send Apply To Server [%s]!", \
-        ptMessage->clientid, ptMessage->serverid);
+    KR_LOG(KR_LOGDEBUG, "Client [%s] Send Apply[%s] To Server [%s]!", \
+        krmsg->clientid, krmsg->msgid, krmsg->serverid);
     
     /* Check this client whether allowed */
-    T_KRListNode *node = kr_list_search(krcoordi.clients, ptMessage->clientid);
+    T_KRListNode *node = kr_list_search(krcoordi.clients, krmsg->clientid);
     if (node == NULL) {
-        KR_LOG(KR_LOGERROR, "Client %s not allowed!", ptMessage->clientid);
+        KR_LOG(KR_LOGERROR, "Client %s not allowed!", krmsg->clientid);
         return -1;
     }
     T_KRCoordiConnector *ptClient = (T_KRCoordiConnector *)node->value;
@@ -176,66 +176,66 @@ int kr_coordi_handle_apply(T_KREventLoop *el, int fd, T_KRMessage *ptMessage)
 
     T_KRActualNode *server = NULL;
     /*if apply message specified the destination server*/
-    if (ptMessage->serverid[0] != '\0') {
+    if (krmsg->serverid[0] != '\0') {
         /* Check this server whether exists */
-        server = kr_conhash_lookup(krcoordi.servers, ptMessage->serverid);
+        server = kr_conhash_lookup(krcoordi.servers, krmsg->serverid);
         if (server == NULL) {
             KR_LOG(KR_LOGDEBUG, "Specified Server [%s] doesn't exists!", \
-                ptMessage->serverid);
+                krmsg->serverid);
         }
     }
     
     /*choose server according to the key*/
     if (server == NULL) {
-        server = kr_conhash_locate(krcoordi.servers, ptMessage->objectkey);
+        server = kr_conhash_locate(krcoordi.servers, krmsg->objectkey);
         if (server == NULL) {
             KR_LOG(KR_LOGERROR, "kr_conhash_locate %s failed!", \
-               ptMessage->objectkey);
+               krmsg->objectkey);
             return -1;   
         }
     }
     
     /* padding serverid field */
     T_KRCoordiConnector *ptServer = (T_KRCoordiConnector *)server->priv;
-    strcpy(ptMessage->serverid, ptServer->id);
+    strcpy(krmsg->serverid, ptServer->id);
     ++ptServer->aplnum;
     
     KR_LOG(KR_LOGDEBUG, "Located Server [%s] with Consistent hashing [%s]!", \
-                ptMessage->serverid, ptMessage->objectkey);
+                krmsg->serverid, krmsg->objectkey);
     
     /* send to the one who's the specified or need replication */
     kr_conhash_foreach_node(krcoordi.servers, \
-        (KRForEachFunc )kr_coordi_send_to_server, ptMessage);
+        (KRForEachFunc )kr_coordi_send_to_server, krmsg);
 
     return 0;
 }
 
 
-int kr_coordi_handle_reply(T_KREventLoop *el, int fd, T_KRMessage *ptMessage)
+int kr_coordi_handle_reply(T_KREventLoop *el, int fd, T_KRMessage *krmsg)
 {
-    KR_LOG(KR_LOGDEBUG, "Client [%s] Got Reply From Server [%s]!", \
-        ptMessage->clientid, ptMessage->serverid);
+    KR_LOG(KR_LOGDEBUG, "Client [%s] Got Reply[%s] From Server [%s]!", \
+        krmsg->clientid, krmsg->msgid, krmsg->serverid);
         
     /* Check this server whether allowed */
     T_KRActualNode *server = NULL;
-    server = kr_conhash_lookup(krcoordi.servers, ptMessage->serverid);
+    server = kr_conhash_lookup(krcoordi.servers, krmsg->serverid);
     if (server == NULL) {
-        KR_LOG(KR_LOGERROR, "Server %s not allowed!", ptMessage->serverid);
+        KR_LOG(KR_LOGERROR, "Server %s not allowed!", krmsg->serverid);
         return -1;
     }
     T_KRCoordiConnector *ptServer = (T_KRCoordiConnector *)server->priv;
     ++ptServer->rplnum;
         
     /* Check this client whether exists */
-    T_KRListNode *node = kr_list_search(krcoordi.clients, ptMessage->clientid);
+    T_KRListNode *node = kr_list_search(krcoordi.clients, krmsg->clientid);
     if (node == NULL) {
-        KR_LOG(KR_LOGERROR, "Client %s not exists!", ptMessage->clientid);
+        KR_LOG(KR_LOGERROR, "Client %s not exists!", krmsg->clientid);
         return -1;
     }
     T_KRCoordiConnector *ptClient = (T_KRCoordiConnector *)node->value;
     
     /*send reply to client*/
-    int writeLen = kr_message_write(krcoordi.neterr, ptClient->fd, ptMessage);
+    int writeLen = kr_message_write(krcoordi.neterr, ptClient->fd, krmsg);
     if (writeLen <= 0) {/* write message failure */        
         KR_LOG(KR_LOGERROR, "write message error[%s]!", krcoordi.neterr);
         strcpy(ptClient->neterr, krcoordi.neterr);
@@ -249,37 +249,35 @@ int kr_coordi_handle_reply(T_KREventLoop *el, int fd, T_KRMessage *ptMessage)
 
 
 static int 
-kr_coordi_handle_message(T_KREventLoop *el, int fd, T_KRMessage *ptMessage)
+kr_coordi_handle_message(T_KREventLoop *el, int fd, T_KRMessage *krmsg)
 {
     int ret = -1;
 
-printf("kr_coordi_handle_message:msgtype[%d], serverid[%s], clientid[%s], msglen[%d], msgbuf:[%s]\n", \
-        ptMessage->msgtype, ptMessage->serverid, ptMessage->clientid, \
-        ptMessage->msglen, (char *)ptMessage->msgbuf);
+printf("msgtype[%d], msgid[%s], serverid[%s], clientid[%s]", \
+        krmsg->msgtype, krmsg->msgid, krmsg->serverid, krmsg->clientid);
     
-    switch(ptMessage->msgtype)
+    switch(krmsg->msgtype)
     {
         case KR_MSGTYPE_SVRON:
-            ret = kr_coordi_handle_svron(el, fd, ptMessage);
+            ret = kr_coordi_handle_svron(el, fd, krmsg);
             break;
         case KR_MSGTYPE_SVROFF:
-            ret = kr_coordi_handle_svroff(el, fd, ptMessage);
+            ret = kr_coordi_handle_svroff(el, fd, krmsg);
             break;
         case KR_MSGTYPE_CLION:
-            ret = kr_coordi_handle_clion(el, fd, ptMessage);
+            ret = kr_coordi_handle_clion(el, fd, krmsg);
             break;
         case KR_MSGTYPE_CLIOFF:
-            ret = kr_coordi_handle_clioff(el, fd, ptMessage);
+            ret = kr_coordi_handle_clioff(el, fd, krmsg);
             break;
         case KR_MSGTYPE_APPLY:
-            ret = kr_coordi_handle_apply(el, fd, ptMessage);
+            ret = kr_coordi_handle_apply(el, fd, krmsg);
             break;
         case KR_MSGTYPE_REPLY:
-            ret = kr_coordi_handle_reply(el, fd, ptMessage);
+            ret = kr_coordi_handle_reply(el, fd, krmsg);
             break;
         default:
-            KR_LOG(KR_LOGERROR, "unsupported message type[%d]!", \
-                ptMessage->msgtype);
+            KR_LOG(KR_LOGERROR, "unsupported msgtype[%d]!", krmsg->msgtype);
             break;
     }
     
@@ -292,10 +290,10 @@ kr_coordi_read_handler(T_KREventLoop *el, int fd, void *priv, int mask)
 {
     int ret = 0;
     int readLen = 0;
-    T_KRMessage stMessage = {0};
+    T_KRMessage stMsg = {0};
 
     /** read message */
-    readLen = kr_message_read(krcoordi.neterr, fd, &stMessage);
+    readLen = kr_message_read(krcoordi.neterr, fd, &stMsg);
     if (readLen <= 0) {
         /* read message failure */
         KR_LOG(KR_LOGERROR, "read message error[%s]!", krcoordi.neterr);
@@ -311,19 +309,19 @@ kr_coordi_read_handler(T_KREventLoop *el, int fd, void *priv, int mask)
         
         /* handle it as connector offline */
         if (ptConn->role == KR_COORDI_SERVER) {
-            stMessage.msgtype = KR_MSGTYPE_SVROFF;
-            strcpy(stMessage.serverid, ptConn->id);
+            stMsg.msgtype = KR_MSGTYPE_SVROFF;
+            strcpy(stMsg.serverid, ptConn->id);
         } else {
-            stMessage.msgtype = KR_MSGTYPE_CLIOFF;
-            strcpy(stMessage.clientid, ptConn->id);
+            stMsg.msgtype = KR_MSGTYPE_CLIOFF;
+            strcpy(stMsg.clientid, ptConn->id);
         }
     }
             
     /** handle message */
-    ret = kr_coordi_handle_message(el, fd, &stMessage);
+    ret = kr_coordi_handle_message(el, fd, &stMsg);
     if (ret != 0) {/* handle message failure */
         KR_LOG(KR_LOGERROR, "handle message [%d], [%s]error!", \
-               stMessage.msgtype, stMessage.msgbuf);
+               stMsg.msgtype, stMsg.msgbuf);
         return;
     }
 }

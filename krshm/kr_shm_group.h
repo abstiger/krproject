@@ -14,6 +14,7 @@ typedef struct _kr_shm_group_def_t
     char        caGroupName[30+1];
     char        caGroupDesc[100+1];
     char        caGroupString[500+1];
+    char        caGroupFunc[50+1];
     T_KRShmRule stShmRule;
 }T_KRShmGroupDef;
 

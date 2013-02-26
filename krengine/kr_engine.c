@@ -1,5 +1,6 @@
 #include "kr_config.h"
 #include "krutils/kr_utils.h"
+#include "krutils/kr_json.h"
 #include "krutils/kr_threadpool.h"
 #include "krutils/kr_cache.h"
 #include "krshm/kr_shm.h"
@@ -9,8 +10,9 @@
 #include "kr_engine.h"
 
 extern void *kr_engine_thread_init(void *env);
-extern int kr_engine_thread_worker(void *ctx, void *arg);
 extern void kr_engine_thread_fini(void *ctx);
+
+static int kr_engine_worker(void *ctx, void *arg);
 
 struct _kr_engine_t
 {
@@ -25,6 +27,7 @@ struct _kr_engine_t
     int              hdicachesize;  /* hdi cache size */
     int              threadcnt;     /* thread pool size */
     int              hwm;           /* thread pool high water mark */
+    void             *eventloop;    /* event loop */
 
     T_KRContextEnv   *krctxenv;     /* environment of the context */
     T_KRContext      *krctx;        /* dynamic memory address */
@@ -36,12 +39,17 @@ T_KREngine *kr_engine_startup(
         char *logpath, char *logname, int loglevel,
         int shmkey, char *krdbname, char *krdbmodule, 
         char *datamodule, char *rulemodule, 
-        int hdicachesize, int threadcnt, int hwm)
+        int hdicachesize, int threadcnt, int hwm, 
+        void *eventloop)
 {
     /* Set log file and level */
     if (logpath) kr_log_set_path(logpath);
     if (logname) kr_log_set_name(logname);
     if (loglevel) kr_log_set_level(loglevel);
+
+    /* Init cJSON hooks */
+    cJSON_Hooks cjsonhooks = {kr_malloc, kr_free};
+    cJSON_InitHooks(&cjsonhooks);
 
     T_KREngine *krengine = kr_calloc(sizeof(T_KREngine));
     if (krengine == NULL) {
@@ -67,6 +75,7 @@ T_KREngine *kr_engine_startup(
         goto FAILED;
     }
     krengine->krctxenv = krctxenv;
+    krctxenv->krEventLoop = eventloop;
 
     /* load pludge-in modules */
     if (krdbmodule) {
@@ -167,7 +176,7 @@ T_KREngine *kr_engine_startup(
         krengine->krtp = kr_threadpool_create(
                 krengine->threadcnt, krengine->hwm, krengine->krctxenv, 
                 kr_engine_thread_init, 
-                kr_engine_thread_worker, 
+                kr_engine_worker, 
                 kr_engine_thread_fini);
         if (krengine->krtp == NULL) {
             KR_LOG(KR_LOGERROR, "kr_threadpool_create failed!");
@@ -219,18 +228,43 @@ void kr_engine_shutdown(T_KREngine *krengine)
 }
 
 
+int kr_engine_worker(void *ctx, void *arg)
+{
+    T_KRContext *krcontext = (T_KRContext *)ctx;
+    T_KRContextArg *krarg = (T_KRContextArg *)arg;
 
-int kr_engine_run(T_KREngine *krengine, E_KROprCode oprcode, int datasrc, char *msgbuf)
+    /* set context with arg */
+    if (kr_context_set(krcontext, krarg) != 0) {
+        KR_LOG(KR_LOGERROR, "kr_context_set failed!");
+        return -1;
+    }
+
+    /* group list route and rule group detect*/
+    if (kr_group_list_detect(krcontext) != 0) {
+        KR_LOG(KR_LOGERROR, "kr_group_list_detect failed!");
+        return -1;
+    }
+
+    /* clean arguments' user data*/
+    if (krarg->DataFreeFunc) krarg->DataFreeFunc(krarg->pData);
+
+    return 0;
+}
+
+
+int kr_engine_run(T_KREngine *krengine, int fd, E_KROprCode oprcode, int datasrc, char *msgbuf)
 {
     int iResult = 0;
+    /*msgbuf comes from kr_calloc(see kr_message_read), so we need kr_free it*/
+    T_KRContextArg stArg = {fd, NULL, msgbuf, kr_free};
     switch(oprcode) 
     {
         case KR_OPRCODE_INSERT:
         {
             /* insert krdb */
-            T_KRRecord *ptCurrRec = \
+            stArg.ptCurrRec = \
                 kr_db_insert(krengine->krctxenv->ptKRDB, datasrc, msgbuf);
-            if (ptCurrRec == NULL) {
+            if (stArg.ptCurrRec == NULL) {
                 KR_LOG(KR_LOGERROR, "kr_db_insert failed!");
                 return -1;
             }
@@ -239,22 +273,22 @@ int kr_engine_run(T_KREngine *krengine, E_KROprCode oprcode, int datasrc, char *
         case KR_OPRCODE_DETECT:
         {
             /* insert krdb */
-            T_KRRecord *ptCurrRec = \
+            stArg.ptCurrRec = \
                 kr_db_insert(krengine->krctxenv->ptKRDB, datasrc, msgbuf);
-            if (ptCurrRec == NULL) {
+            if (stArg.ptCurrRec == NULL) {
                 KR_LOG(KR_LOGERROR, "kr_db_insert failed!");
                 return -1;
             }
 
             /* rule detect */
             if (krengine->threadcnt <= 0) {
-                iResult = kr_engine_thread_worker(krengine->krctx, ptCurrRec);
+                iResult = kr_engine_worker(krengine->krctx, &stArg);
                 if (iResult != 0) {
                     KR_LOG(KR_LOGERROR, "kr_server_detect failed!");
                     return -1;
                 }
             } else {
-                iResult = kr_threadpool_add_task(krengine->krtp, ptCurrRec);
+                iResult = kr_threadpool_add_task(krengine->krtp, &stArg);
                 if (iResult != 0) {
                     KR_LOG(KR_LOGERROR, "kr_threadpool_add_task failed!");
                     return -1;

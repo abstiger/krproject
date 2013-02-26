@@ -15,8 +15,9 @@ T_KREngine *kr_engine_startup(
         char *logpath, char *logname, int loglevel,
         int shmkey, char *krdbname, char *krdbmodule,
         char *datamodule, char *rulemodule,
-        int hdicachesize, int threadcnt, int hwm);
-int kr_engine_run(T_KREngine *krengine, E_KROprCode oprcode, int datasrc, char *msgbuf);
+        int hdicachesize, int threadcnt, int hwm,
+        void *eventloop);
+int kr_engine_run(T_KREngine *krengine, int fd, E_KROprCode oprcode, int datasrc, char *msgbuf);
 void kr_engine_shutdown(T_KREngine *krengine);
 char *kr_engine_info(T_KREngine *krengine);
 
