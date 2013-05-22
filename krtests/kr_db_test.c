@@ -107,9 +107,9 @@ int main(int argc,char *argv[])
     }
     KRDBDumpDBToFile(gptKRDB, fpDump);
     fclose(fpDump);
-    kr_db_dump_field_def(stdout, gptKRDB, 1);
-    kr_db_dump(stdout, gptKRDB, 0);
-    //kr_db_dump(stdout, gptKRDB, 1);
+    kr_db_dump_field_def(gptKRDB, 1, stdout);
+    kr_db_dump(gptKRDB, 0, stdout);
+    //kr_db_dump(gptKRDB, 1, stdout);
         printf("gptKRDB->ptCurrTable=[%p][%d][%s]\n", 
             gptKRDB->ptCurrTable, gptKRDB->ptCurrTable->iRecordSize, 
             gptKRDB->ptCurrTable->caMMapFile);

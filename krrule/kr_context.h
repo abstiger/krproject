@@ -50,14 +50,6 @@ typedef enum {
     KR_RETRIEVE_SELFDEF     = '1'   /*retrieve by self-define function*/
 }E_KRRetrieveType;
 
-/*field value union*/
-typedef union {
-    int         i;
-    long        l;
-    double      d;
-    char        s[200];
-}T_KRDataValue;
-
 static inline time_t kr_get_transtime(T_KRRecord *ptRecord)
 {
     time_t tTransTime;

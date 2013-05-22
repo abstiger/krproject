@@ -28,9 +28,15 @@ T_KRSDI *kr_sdi_construct(T_KRShmSDIDef *sdi_def, T_KRModule *datamodule)
     return krsdi;
 }
 
+
 int kr_sdi_compute(T_KRSDI *krsdi, void *param)
 {
+    /*initialize first*/
     krsdi->eValueInd == KR_VALUE_UNSET;
+    /*string comes from kr_strdup, need kr_free*/
+    if (krsdi->eValueType == KR_FIELDTYPE_STRING) 
+        kr_free(krsdi->uValue.s);
+    memset(&krsdi->uValue, 0x00, sizeof(krsdi->uValue));
     
     T_KRShmSDIDef *ptSDIDef = krsdi->ptShmSDIDef;
     T_KRContext *ptContext = (T_KRContext *)param;
@@ -134,17 +140,7 @@ void *kr_sdi_get_value(int sid, T_KRContext *krcontext)
     }
     
     if (krsdi->eValueInd == KR_VALUE_SETED) {
-        switch(krsdi->eValueType)
-        {
-            case KR_FIELDTYPE_INT:
-                return &krsdi->eValue.i;
-            case KR_FIELDTYPE_LONG:
-                return &krsdi->eValue.l;
-            case KR_FIELDTYPE_DOUBLE:
-                return &krsdi->eValue.d;
-            case KR_FIELDTYPE_STRING:
-                return krsdi->eValue.s;
-        }
+        return kr_get_value(&krsdi->uValue, krsdi->eValueType);
     }
     return NULL;
 }

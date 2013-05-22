@@ -19,7 +19,7 @@ int main(int argc, char *argv[])
     if (argc == 1)
         //strcpy(calcstr, "((4%3+4*27/(10-2)) > 12.99)&&(F_1 !@ {'shanghai','beijing','guangzhou',})&&(S_3 ## [^S_*])||(D_1 @@ A_1);");
 //        strcpy(calcstr, "(F_1 !@ {'shanghai','beijing','guangzhou',});");
-        strcpy(calcstr, "{\"op\":1,\"child0\":{\"kind\":3,\"value\":3}, \"child1\":{\"kind\":3,\"value\":5}}");
+        strcpy(calcstr, "{\"op\":1,\"child\":[{\"kind\":3,\"value\":3}, {\"kind\":3,\"value\":5}]}");
     else
         strcpy(calcstr, argv[1]);
     

@@ -45,7 +45,7 @@ typedef struct _kr_coordi_t
     int ipfd;                     /* TCP socket file descriptor */
     char neterr[KR_NET_ERR_LEN];  /* Error buffer for kr_net.c */
         
-    /**/
+    /* inner information */
     T_KREventLoop    *el;         /* Event loop for krcoordi */
     T_KRConHash      *servers;    /* Consistent hash for server nodes */
     T_KRList         *clients;    /* list for client nodes */

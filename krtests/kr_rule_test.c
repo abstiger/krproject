@@ -55,7 +55,7 @@ int ERMFinish(void)
              "KRDB.%s.Dump", kr_time_system(caDateTime));
     if ((fpKRDBDump = fopen(caKRDBDumpFileName, "w")) != NULL) 
     {
-        kr_db_dump(fpKRDBDump, gstContext.ptKRDB, 0);
+        kr_db_dump(gstContext.ptKRDB, 0, fpKRDBDump);
         fclose(fpKRDBDump);
     }
     

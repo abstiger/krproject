@@ -113,13 +113,13 @@ int kr_hdi_aggr_day(T_KRHDI *krhdi, T_KRContext *krcontext, char *object)
     switch(krhdi->eValueType)
     {
         case KR_FIELDTYPE_INT:
-            krhdi->eValue.i = (int )dValue;
+            krhdi->uValue.i = (int )dValue;
             break;
         case KR_FIELDTYPE_LONG:
-            krhdi->eValue.l = (long )dValue;
+            krhdi->uValue.l = (long )dValue;
             break;
         case KR_FIELDTYPE_DOUBLE:
-            krhdi->eValue.d = (double )dValue;
+            krhdi->uValue.d = (double )dValue;
             break;
         default:
             KR_LOG(KR_LOGERROR, "unsupported ValueType [%s],[%c]!",\
@@ -182,13 +182,13 @@ int kr_hdi_aggr_mon(T_KRHDI *krhdi, T_KRContext *krcontext, char *object)
     switch(krhdi->eValueType)
     {
         case KR_FIELDTYPE_INT:
-            krhdi->eValue.i = (int )dValue;
+            krhdi->uValue.i = (int )dValue;
             break;
         case KR_FIELDTYPE_LONG:
-            krhdi->eValue.l = (long )dValue;
+            krhdi->uValue.l = (long )dValue;
             break;
         case KR_FIELDTYPE_DOUBLE:
-            krhdi->eValue.d = (double )dValue;
+            krhdi->uValue.d = (double )dValue;
             break;
         default:
             KR_LOG(KR_LOGERROR, "unsupported ValueType [%s],[%c]!",\
@@ -221,17 +221,16 @@ int kr_hdi_aggr_flag(T_KRHDI *krhdi, T_KRContext *krcontext, char *object)
     switch(krhdi->eValueType)
     {
         case KR_FIELDTYPE_INT:
-            krhdi->eValue.i = atoi(stHdiFlagSel.caOutDataFlag);
+            krhdi->uValue.i = atoi(stHdiFlagSel.caOutDataFlag);
             break;
         case KR_FIELDTYPE_LONG:
-            krhdi->eValue.l = atol(stHdiFlagSel.caOutDataFlag);
+            krhdi->uValue.l = atol(stHdiFlagSel.caOutDataFlag);
             break;
         case KR_FIELDTYPE_DOUBLE:
-            krhdi->eValue.d = atof(stHdiFlagSel.caOutDataFlag);
+            krhdi->uValue.d = atof(stHdiFlagSel.caOutDataFlag);
             break;
         case KR_FIELDTYPE_STRING:
-            strncpy(krhdi->eValue.s, stHdiFlagSel.caOutDataFlag, \
-                    sizeof(krhdi->eValue.s));
+            krhdi->uValue.s = kr_strdup(stHdiFlagSel.caOutDataFlag);
             break;
         default:
             KR_LOG(KR_LOGERROR, "unsupported ValueType [%s],[%c]!",\

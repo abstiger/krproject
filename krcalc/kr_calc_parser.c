@@ -43,17 +43,14 @@ T_KRSet *kr_make_set_from_multi(E_KRCalcKind kind, char *string)
         {
             case KR_FIELDTYPE_INT:
                 val.i=atoi(p); 
-                printf("kr_set_add val.i=[%d]\n", val.i);
                 kr_set_add(krset, &val.i);
                 break;
             case KR_FIELDTYPE_DOUBLE:
                 val.d=atof(p);
-                printf("kr_set_add val.d=[%lf]\n", val.d);
                 kr_set_add(krset, &val.d);
                 break;    
             case KR_FIELDTYPE_STRING:
                 val.s=p;
-                printf("kr_set_add val.s=[%s]\n", val.s);
                 kr_set_add(krset, val.s);
                 break;
         }
@@ -71,10 +68,6 @@ T_KRCalcTree *kr_calc_parse_ele(T_KRCalc *krcalc, int kind, cJSON *json)
     T_KRCalcTree *tree = NULL;
     switch(kind) 
     {
-        case KR_CALCKIND_ARITH:
-        case KR_CALCKIND_LOGIC:
-            tree = kr_calc_parse_json(krcalc, json);
-            break;
         case KR_CALCKIND_INT:
             tree = kr_calctree_node_new(kind);
             tree->type = KR_CALCTYPE_INTEGER;
@@ -217,12 +210,9 @@ T_KRCalcTree *kr_calc_parse_exp(T_KRCalc *krcalc, int op, cJSON *json)
     }
 
     int i = 0;
-    char childid[10+1] = {0};
-    cJSON *child=NULL;
+    cJSON *children = cJSON_GetObjectItem(json, "child");
     for (i=0; i<childnum; ++i) {
-        memset(childid, 0, sizeof(childid));
-        snprintf(childid, sizeof(childid), "child%d", i);
-        child = cJSON_GetObjectItem(json, childid);
+        cJSON *child = cJSON_GetArrayItem(children, i);
         tree->child[i] = kr_calc_parse_json(krcalc, child);
         if (tree->child[i] == NULL) {
             sprintf(krcalc->err_msg, "kr_calc_parse_json child%d failed!\n", i);
@@ -260,12 +250,13 @@ static T_KRCalcTree *kr_calc_parse_json(T_KRCalc *krcalc, cJSON *krjson)
 
 int kr_calc_parse(T_KRCalc *krcalc)
 {
+    printf("kr_calc_parse:%s\n", krcalc->calc_string);
+
     cJSON *krjson = cJSON_Parse(krcalc->calc_string);
     if (krjson == NULL) {
         sprintf(krcalc->err_msg, "cJSON_Parse %s failed", krcalc->calc_string);
         return -1;
     }
-
 
     krcalc->calc_tree = kr_calc_parse_json(krcalc, krjson);
     if (krcalc->calc_tree == NULL) {

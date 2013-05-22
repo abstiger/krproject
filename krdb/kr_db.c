@@ -11,11 +11,10 @@
 
 static void _kr_db_load_field_def(T_DbsEnv *dbsenv, T_KRFieldDef *ptFieldDef, int *piTableId);
 static int  _kr_db_build_index(T_DbsEnv *dbsenv, T_KRDB *ptKRDB, T_KRTable *ptTable);
-static void _dump_node(void *key, void *value, void *user_data);
-static void _dump_index(void *p1, void *p2);
-static void _dump_record(void *p1, void *p2);
-static void _dump_table_with_index (void *p1, void *p2);
-static void _dump_table_only_record (void *p1, void *p2);
+static void kr_db_dump_node(void *key, void *value, void *user_data);
+static void kr_db_dump_index(void *p1, void *p2);
+static void kr_db_dump_table_with_index (void *p1, void *p2);
+static void kr_db_dump_table_only_record (void *p1, void *p2);
 
 int kr_db_set_field_def(T_DbsEnv *dbsenv, T_KRFieldDef *ptFieldDef, int iTableId, int iFieldId)
 {
@@ -368,11 +367,9 @@ int kr_db_shutdown(T_KRDB *ptKRDB)
 }
 
 
-static void _dump_record(void *p1, void *p2)
+void kr_db_dump_record(T_KRRecord *ptRecord, FILE *fp)
 {
-    T_KRRecord *ptRecord=p1;
     T_KRTable  *ptTable = (T_KRTable *)ptRecord->ptTable;
-    FILE       *fp = p2;
     void *pFieldVal = NULL;
     int i = 0;
     fprintf(fp, "    Record: FieldCnt[%d] \n", ptTable->iFieldCnt);
@@ -383,27 +380,27 @@ static void _dump_record(void *p1, void *p2)
         {
             case KR_FIELDTYPE_INT:
                 fprintf(fp, "      Field:id[%3d], name[%30s], value[%d]\n", \
-                        ptTable->ptFieldDef[i].id, ptTable->ptFieldDef[i].name, \
+                        ptTable->ptFieldDef[i].id, ptTable->ptFieldDef[i].name, 
                         *(int *)pFieldVal);
                 break;
             case KR_FIELDTYPE_LONG:
                 fprintf(fp, "      Field:id[%3d], name[%30s], value[%ld]\n", \
-                        ptTable->ptFieldDef[i].id, ptTable->ptFieldDef[i].name, \
+                        ptTable->ptFieldDef[i].id, ptTable->ptFieldDef[i].name,
                         *(long *)pFieldVal);
                 break;    
             case KR_FIELDTYPE_DOUBLE:
                 fprintf(fp, "      Field:id[%3d], name[%30s], value[%f]\n", \
-                        ptTable->ptFieldDef[i].id, ptTable->ptFieldDef[i].name, \
+                        ptTable->ptFieldDef[i].id, ptTable->ptFieldDef[i].name, 
                         *(double *)pFieldVal);
                 break;
             case KR_FIELDTYPE_STRING:
                 fprintf(fp, "      Field:id[%3d], name[%30s], value[%s]\n", \
-                        ptTable->ptFieldDef[i].id, ptTable->ptFieldDef[i].name, \
+                        ptTable->ptFieldDef[i].id, ptTable->ptFieldDef[i].name, 
                         (char *)pFieldVal);
                 break;
             case KR_FIELDTYPE_POINTER:
                 fprintf(fp, "      Field:id[%3d], name[%30s], value[%p]\n", \
-                        ptTable->ptFieldDef[i].id, ptTable->ptFieldDef[i].name, \
+                        ptTable->ptFieldDef[i].id, ptTable->ptFieldDef[i].name, 
                         pFieldVal);
                 break;
             default:
@@ -413,17 +410,17 @@ static void _dump_record(void *p1, void *p2)
 }
 
 
-static void _dump_node(void *key, void *value, void *user_data)
+void kr_db_dump_node(void *key, void *value, void *user_data)
 {
     T_KRList       *pHashList=value;
     FILE        *fp = user_data;
     fprintf(fp, "  Node:key=[%s]\n", (char *)key);
     
-    kr_list_foreach(pHashList, _dump_record, fp);
+    kr_list_foreach(pHashList, (KRForEachFunc )kr_db_dump_record, fp);
 }
 
 
-static void _dump_index(void *p1, void *p2)
+static void kr_db_dump_index(void *p1, void *p2)
 {
     T_KRIndex     *ptIndex=p1;
     FILE          *fp = p2;
@@ -432,24 +429,24 @@ static void _dump_index(void *p1, void *p2)
             ptIndex->iIndexId, ptIndex->caIndexName, ptIndex->eIndexType, \
             ptIndex->iIndexFieldId, ptIndex->iSortFieldId);
     
-    kr_hashtable_foreach(ptIndex->pHashTable, _dump_node, fp);
+    kr_hashtable_foreach(ptIndex->pHashTable, kr_db_dump_node, fp);
 }
 
 
-static void _dump_table_with_index(void *p1, void *p2)
+static void kr_db_dump_table_with_index(void *p1, void *p2)
 {
     T_KRTable     *ptTable=p1;
     FILE          *fp = p2;
     fprintf(fp, "Dump Table [%d] With Index......\n", ptTable->iTableId);
     fprintf(fp, "Table: iTableId[%d], caTableName[%s], eSizeKeepMode[%c], lSizeKeepValue[%ld], iFieldCnt[%d], iRecordSize=[%d]\n", \
-                 ptTable->iTableId, ptTable->caTableName, ptTable->eSizeKeepMode, \
-                 ptTable->lSizeKeepValue, ptTable->iFieldCnt, ptTable->iRecordSize);
+            ptTable->iTableId, ptTable->caTableName, ptTable->eSizeKeepMode, \
+            ptTable->lSizeKeepValue, ptTable->iFieldCnt, ptTable->iRecordSize);
     
-    kr_list_foreach(ptTable->pIndexList, _dump_index, fp);
+    kr_list_foreach(ptTable->pIndexList, kr_db_dump_index, fp);
 }
 
 
-static void _dump_table_only_record(void *p1, void *p2)
+static void kr_db_dump_table_only_record(void *p1, void *p2)
 {
     int           i = 0;
     T_KRTable     *ptTable=p1;
@@ -457,27 +454,27 @@ static void _dump_table_only_record(void *p1, void *p2)
     T_KRRecord    *ptRecord = NULL;
     fprintf(fp, "Dump Table[%d] Only Record......\n", ptTable->iTableId);
     fprintf(fp, "Table:iTableId[%d], caTableName[%s], eSizeKeepMode[%c], lSizeKeepValue[%ld], iFieldCnt[%d], iRecordSize=[%d]\n", \
-                 ptTable->iTableId, ptTable->caTableName, ptTable->eSizeKeepMode, \
-                 ptTable->lSizeKeepValue, ptTable->iFieldCnt, ptTable->iRecordSize);
+            ptTable->iTableId, ptTable->caTableName, ptTable->eSizeKeepMode, \
+            ptTable->lSizeKeepValue, ptTable->iFieldCnt, ptTable->iRecordSize);
 
     for (i=0; i<ptTable->uiRecordNum; i++) {
-        ptRecord = (T_KRRecord *)&ptTable->pRecordBuff[i * ptTable->iRecordSize];
-        _dump_record(ptRecord, fp);
+        ptRecord = (T_KRRecord *)&ptTable->pRecordBuff[i*ptTable->iRecordSize];
+        kr_db_dump_record(ptRecord, fp);
     }
 }
 
 
-void kr_db_dump(FILE *fp, T_KRDB *ptKRDB, int iInd)
+void kr_db_dump(T_KRDB *ptKRDB, int iInd, FILE *fp)
 {
     fprintf(fp, "Dump KRDB[%s]......\n", ptKRDB->caDBName);
     if (iInd == 0)
-        kr_list_foreach(ptKRDB->pTableList, _dump_table_with_index, fp);
+        kr_list_foreach(ptKRDB->pTableList, kr_db_dump_table_with_index, fp);
     else
-        kr_list_foreach(ptKRDB->pTableList, _dump_table_only_record, fp);
+        kr_list_foreach(ptKRDB->pTableList, kr_db_dump_table_only_record, fp);
 }
 
 
-void kr_db_dump_field_def(FILE *fp, T_KRDB *ptKRDB, int iTableId)
+void kr_db_dump_field_def(T_KRDB *ptKRDB, int iTableId, FILE *fp)
 {
     int i = 0;
     T_KRTable *ptTable = NULL;

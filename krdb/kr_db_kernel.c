@@ -137,7 +137,7 @@ T_KRIndex* kr_create_index(T_KRDB *krdb, T_KRTable *krtable, int index_id,
 void kr_drop_table_index(T_KRIndex *krindex, T_KRTable *krtable)
 {
     /* here we just destroy the hashtable of table-index, 
-     * because the hashtable of db-index cross tables, 
+     * since the hashtable of db-index cross tables, 
      * we will destroy that in function kr_drop_db_index 
      */
     kr_list_remove(krtable->pIndexList, krindex); 

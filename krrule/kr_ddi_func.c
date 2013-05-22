@@ -84,16 +84,17 @@ int kr_ddi_aggr_func(T_KRDDI *krddi, T_KRContext *krcontext)
                 switch(krddi->eValueType)
                 {
                     case KR_FIELDTYPE_INT:
-                        krddi->eValue.i = krddi->eValue.i + stValue.i;
+                        krddi->uValue.i = krddi->uValue.i + stValue.i;
                         break;
                     case KR_FIELDTYPE_LONG:
-                        krddi->eValue.l = krddi->eValue.l + stValue.l;
+                        krddi->uValue.l = krddi->uValue.l + stValue.l;
                         break;
                     case KR_FIELDTYPE_DOUBLE:
-                        krddi->eValue.d = krddi->eValue.d + stValue.d;
+                        krddi->uValue.d = krddi->uValue.d + stValue.d;
                         break;
                     default:
-                        KR_LOG(KR_LOGERROR, "Bad FieldType [%c]!", krddi->eValueType);
+                        KR_LOG(KR_LOGERROR, "Bad FieldType [%c]!", 
+                                krddi->eValueType);
                         return -1;
                 }
                 break;
@@ -101,16 +102,17 @@ int kr_ddi_aggr_func(T_KRDDI *krddi, T_KRContext *krcontext)
                 switch(krddi->eValueType)
                 {
                     case KR_FIELDTYPE_INT:
-                        krddi->eValue.i = MIN(krddi->eValue.i, stValue.i);
+                        krddi->uValue.i = MIN(krddi->uValue.i, stValue.i);
                         break;
                     case KR_FIELDTYPE_LONG:
-                        krddi->eValue.l = MIN(krddi->eValue.l, stValue.l);
+                        krddi->uValue.l = MIN(krddi->uValue.l, stValue.l);
                         break;
                     case KR_FIELDTYPE_DOUBLE:
-                        krddi->eValue.d = MIN(krddi->eValue.d, stValue.d);
+                        krddi->uValue.d = MIN(krddi->uValue.d, stValue.d);
                         break;
                     default:
-                        KR_LOG(KR_LOGERROR, "Bad FieldType [%c]!", krddi->eValueType);
+                        KR_LOG(KR_LOGERROR, "Bad FieldType [%c]!", 
+                                krddi->eValueType);
                         return -1;
                 }
                 break;
@@ -118,16 +120,17 @@ int kr_ddi_aggr_func(T_KRDDI *krddi, T_KRContext *krcontext)
                 switch(krddi->eValueType)
                 {
                     case KR_FIELDTYPE_INT:
-                        krddi->eValue.i = MAX(krddi->eValue.i, stValue.i);
+                        krddi->uValue.i = MAX(krddi->uValue.i, stValue.i);
                         break;
                     case KR_FIELDTYPE_LONG:
-                        krddi->eValue.l = MAX(krddi->eValue.l, stValue.l);
+                        krddi->uValue.l = MAX(krddi->uValue.l, stValue.l);
                         break;
                     case KR_FIELDTYPE_DOUBLE:
-                        krddi->eValue.d = MAX(krddi->eValue.d, stValue.d);
+                        krddi->uValue.d = MAX(krddi->uValue.d, stValue.d);
                         break;
                     default:
-                        KR_LOG(KR_LOGERROR, "Bad FieldType [%c]!", krddi->eValueType);
+                        KR_LOG(KR_LOGERROR, "Bad FieldType [%c]!", 
+                                krddi->eValueType);
                         return -1;
                 }
                 break;
@@ -135,16 +138,17 @@ int kr_ddi_aggr_func(T_KRDDI *krddi, T_KRContext *krcontext)
                 switch(krddi->eValueType)
                 {
                     case KR_FIELDTYPE_INT:
-                        krddi->eValue.i = krddi->eValue.i + 1;
+                        krddi->uValue.i = krddi->uValue.i + 1;
                         break;
                     case KR_FIELDTYPE_LONG:
-                        krddi->eValue.l = krddi->eValue.l + 1;
+                        krddi->uValue.l = krddi->uValue.l + 1;
                         break;
                     case KR_FIELDTYPE_DOUBLE:
-                        krddi->eValue.d = krddi->eValue.d + 1;
+                        krddi->uValue.d = krddi->uValue.d + 1;
                         break;
                     default:
-                        KR_LOG(KR_LOGERROR, "Bad FieldType [%c]!", krddi->eValueType);
+                        KR_LOG(KR_LOGERROR, "Bad FieldType [%c]!", 
+                                krddi->eValueType);
                         return -1;
                 }
                 break;

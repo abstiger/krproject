@@ -54,8 +54,22 @@ typedef union {
     long          l;
     double        d;
     char         *s;
+    void         *p;
 }U_KRFieldVal;
 
+static inline void*
+kr_get_value(U_KRFieldVal *field_value, E_KRFieldType field_type)
+{
+    switch(field_type)
+    {
+        case KR_FIELDTYPE_INT: return &field_value->i;
+        case KR_FIELDTYPE_LONG: return &field_value->l;    
+        case KR_FIELDTYPE_DOUBLE: return &field_value->d;
+        case KR_FIELDTYPE_STRING: return field_value->s;
+        case KR_FIELDTYPE_POINTER: return field_value->p;
+        default: return NULL;
+    }
+}
 
 static inline void*
 kr_get_hash_func(E_KRFieldType field_type)

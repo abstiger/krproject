@@ -59,16 +59,16 @@ int kr_sdi_aggr_func(T_KRSDI *krsdi, T_KRContext *krcontext)
         switch(krsdi->eValueType)
         {
             case KR_FIELDTYPE_INT:
-                krsdi->eValue.i = *(int *)val;
+                krsdi->uValue.i = *(int *)val;
                 break;
             case KR_FIELDTYPE_LONG:
-                krsdi->eValue.l = *(long *)val;
+                krsdi->uValue.l = *(long *)val;
                 break;
             case KR_FIELDTYPE_DOUBLE:
-                krsdi->eValue.d = *(double *)val;
+                krsdi->uValue.d = *(double *)val;
                 break;
             case KR_FIELDTYPE_STRING:
-                strncpy(krsdi->eValue.s, (char *)val, sizeof(krsdi->eValue.s));
+                krsdi->uValue.s = kr_strdup(val);
                 break;
             default:
                 KR_LOG(KR_LOGERROR, "Bad FieldType [%c]!", krsdi->eValueType);

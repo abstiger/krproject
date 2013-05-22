@@ -30,6 +30,13 @@ T_KRHDI *kr_hdi_construct(T_KRShmHDIDef *hdi_def, T_KRModule *datamodule)
 
 int kr_hdi_compute(T_KRHDI *krhdi, void *param)
 {
+    /*initialize first*/
+    krhdi->eValueInd == KR_VALUE_UNSET;
+    /*string comes from kr_strdup, need kr_free*/
+    if (krhdi->eValueType == KR_FIELDTYPE_STRING)
+        kr_free(krhdi->uValue.s);
+    memset(&krhdi->uValue, 0x00, sizeof(krhdi->uValue));
+
     T_KRShmHDIDef *ptHDIDef = krhdi->ptShmHDIDef;
     T_KRContext *ptContext = (T_KRContext *)param;
     T_KRTable *ptTable = ptContext->ptCurrRec->ptTable;
@@ -125,13 +132,13 @@ static void kr_hdi_get_value_from_cache(T_KRHDI *krhdi, T_KRContext *krcontext)
         switch(krhdi->eValueType)
         {
             case KR_FIELDTYPE_INT:
-                krhdi->eValue.i = cache_value->uValue.i; break;
+                krhdi->uValue.i = cache_value->uValue.i; break;
             case KR_FIELDTYPE_LONG:
-                krhdi->eValue.l = cache_value->uValue.l; break;
+                krhdi->uValue.l = cache_value->uValue.l; break;
             case KR_FIELDTYPE_DOUBLE:
-                krhdi->eValue.d = cache_value->uValue.d; break;
+                krhdi->uValue.d = cache_value->uValue.d; break;
             case KR_FIELDTYPE_STRING:
-                strcpy(krhdi->eValue.s, cache_value->uValue.s);
+                krhdi->uValue.s = kr_strdup(cache_value->uValue.s);
                 break;
         }
         krhdi->eValueInd = KR_VALUE_SETED;
@@ -149,13 +156,13 @@ static void kr_hdi_get_value_from_cache(T_KRHDI *krhdi, T_KRContext *krcontext)
         switch(krhdi->eValueType)
         {
             case KR_FIELDTYPE_INT:
-                cache_value->uValue.i = krhdi->eValue.i; break;
+                cache_value->uValue.i = krhdi->uValue.i; break;
             case KR_FIELDTYPE_LONG:
-                cache_value->uValue.l = krhdi->eValue.l; break;
+                cache_value->uValue.l = krhdi->uValue.l; break;
             case KR_FIELDTYPE_DOUBLE:
-                cache_value->uValue.d = krhdi->eValue.d; break;
+                cache_value->uValue.d = krhdi->uValue.d; break;
             case KR_FIELDTYPE_STRING:
-                cache_value->uValue.s = kr_strdup(krhdi->eValue.s);
+                cache_value->uValue.s = kr_strdup(krhdi->uValue.s);
                 break;
         }
         cache_value->eValueInd = KR_VALUE_SETED;
@@ -186,17 +193,7 @@ void *kr_hdi_get_value(int hid, T_KRContext *krcontext)
     }
     
     if (krhdi->eValueInd == KR_VALUE_SETED) {
-        switch(krhdi->eValueType)
-        {
-            case KR_FIELDTYPE_INT:
-                return &krhdi->eValue.i;
-            case KR_FIELDTYPE_LONG:
-                return &krhdi->eValue.l;
-            case KR_FIELDTYPE_DOUBLE:
-                return &krhdi->eValue.d;
-            case KR_FIELDTYPE_STRING:
-                return krhdi->eValue.s;
-        }
+        return kr_get_value(&krhdi->uValue, krhdi->eValueType);
     }
     return NULL;
 }

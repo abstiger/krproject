@@ -14,7 +14,7 @@ typedef struct _kr_hdi_t
     
     T_KRRecord           *ptCurrRec;
     E_KRValueInd          eValueInd;
-    T_KRDataValue         eValue;
+    U_KRFieldVal          uValue;
 }T_KRHDI;
 
 struct _kr_hdi_table_t

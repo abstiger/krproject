@@ -1,4 +1,5 @@
 CC=gcc
+#CC=clang
 CFLAGS= -Wall -fPIC -DPIC -g -O2
 LDFLAGS= -shared 
 

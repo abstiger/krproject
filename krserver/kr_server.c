@@ -44,7 +44,6 @@ static int kr_server_argument_parse(int argc, char *argv[])
 }
 
 
-
 static void kr_server_daemonize(void) 
 {
     int fd;
@@ -62,11 +61,13 @@ static void kr_server_daemonize(void)
     umask(0);
 }
 
+
 static void kr_server_sigterm_action(int sig) 
 {
     KR_LOG(KR_LOGWARNING, "Received SIGTERM[%d], scheduling shutdown...", sig);
     krserver.shutdown = 1;
 }
+
 
 void kr_server_sigterm_setup(void) 
 {
@@ -228,7 +229,7 @@ int kr_server_finalize()
     snprintf(caKRDBDumpFileName, sizeof(caKRDBDumpFileName), \
              "KRDB.%s.Dump", kr_time_system(caDateTime));
     if ((fpKRDBDump = fopen(caKRDBDumpFileName, "w")) != NULL) {
-        kr_db_dump(fpKRDBDump, krserver.krdb, 0);
+        kr_db_dump(krserver.krdb, 0, fpKRDBDump);
         fclose(fpKRDBDump);
     }
     */

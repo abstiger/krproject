@@ -79,7 +79,7 @@ T_KREngine *kr_engine_startup(
 
     /* load pludge-in modules */
     if (krdbmodule) {
-        krengine->krdbmodule= kr_strdup(krdbmodule);
+        krengine->krdbmodule = kr_strdup(krdbmodule);
         krctxenv->krdbModule = kr_module_open(krdbmodule, RTLD_LAZY);
         if (krctxenv->krdbModule == NULL) {
             KR_LOG(KR_LOGERROR, "kr_module_open %s failed!\n", krdbmodule);
@@ -92,7 +92,7 @@ T_KREngine *kr_engine_startup(
 
 
     if (datamodule) {
-        krengine->datamodule= kr_strdup(datamodule);
+        krengine->datamodule = kr_strdup(datamodule);
         krctxenv->dataModule = kr_module_open(datamodule, RTLD_LAZY);
         if (krctxenv->dataModule == NULL) {
             KR_LOG(KR_LOGERROR, "kr_module_open %s failed!\n", datamodule);

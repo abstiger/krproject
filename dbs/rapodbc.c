@@ -187,11 +187,13 @@ static T_DbsEnv *ConnectDB(void)
         goto failure;
     }
 
+    /*
     rc = SQLSetConnectAttr(dbsenv->hdbc, SQL_ATTR_ODBC_CURSORS, (SQLPOINTER) SQL_CUR_USE_ODBC, 0);
     if (rc != SQL_SUCCESS) {
         fprintf(stderr, "SQLSetConnectAttr failed:[%d]!\n", rc);
         goto failure;
     }
+    */
 
     rc = SQLConnect(dbsenv->hdbc, (SQLCHAR *)hszDBName, SQL_NTS, (SQLCHAR *)hszDBUser, SQL_NTS, (SQLCHAR *)hszDBPass, SQL_NTS );
     if (rc != SQL_SUCCESS) {
