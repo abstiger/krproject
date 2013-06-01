@@ -1,0 +1,11 @@
+Python interface for krengine
+============================================================
+
+Install Requirements
+------------------------------------------------------------
+* install package `python-dev` if you use linux
+
+Install krengine library
+------------------------------------------------------------
+* $ make & make install
+

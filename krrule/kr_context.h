@@ -25,10 +25,9 @@ struct _kr_context_env_t
 
 typedef struct _kr_context_arg_t
 {
-    int              fd;          /* scoket fd of this connection */
-    T_KRRecord       *ptCurrRec;  /* pointer to current record */
-    void             *pData;      /* pointer to user's argument data */
-    KRFreeFunc       DataFreeFunc;/* free function of user's data */
+    T_KRRecord       *ptCurrRec;   /* pointer to current record */
+    void             *pExtra;      /* pointer to user's argument data */
+    KRFreeFunc       ExtraFreeFunc;/* free function of user's data */
 }T_KRContextArg;
 
 typedef struct _kr_context_t

@@ -36,8 +36,6 @@ libkrutils_la_SOURCES = \
     kr_net.c \
     kr_event.h \
     kr_event.c \
-    kr_message.h \
-    kr_message.c \
     kr_cache.h \
     kr_cache.c \
     kr_utils.h

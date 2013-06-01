@@ -245,18 +245,18 @@ int kr_engine_worker(void *ctx, void *arg)
         return -1;
     }
 
-    /* clean arguments' user data*/
-    if (krarg->DataFreeFunc) krarg->DataFreeFunc(krarg->pData);
+    /* clean arguments' user extra data*/
+    if (krarg->ExtraFreeFunc) krarg->ExtraFreeFunc(krarg->pExtra);
 
     return 0;
 }
 
 
-int kr_engine_run(T_KREngine *krengine, int fd, E_KROprCode oprcode, int datasrc, char *msgbuf)
+int kr_engine_run(T_KREngine *krengine, E_KROprCode oprcode, int datasrc, char *msgbuf, void *extra)
 {
     int iResult = 0;
-    /*msgbuf comes from kr_calloc(see kr_message_read), so we need kr_free it*/
-    T_KRContextArg stArg = {fd, NULL, msgbuf, kr_free};
+    T_KRContextArg stArg = {NULL, extra, NULL};
+
     switch(oprcode) 
     {
         case KR_OPRCODE_INSERT:

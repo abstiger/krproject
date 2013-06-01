@@ -217,11 +217,6 @@ create table KR_TBL_RULE
    RULE_TYPE            char(1) not null,
    RULE_FUNC            varchar(50) not null,
    RULE_WEIGHT          int not null,
-   RISK_ADVC_THRESH     decimal(20,4) not null,
-   RISK_NOTIF_THRESH    decimal(20,4) not null,
-   RISK_ALERT_THRESH    decimal(20,4) not null,
-   RISK_WARN_THRESH     decimal(20,4) not null,
-   THRESH_IS_CONFIG     char(4) not null,
    RULE_STATUS          char(1) not null comment '1-ÒÑÆôÓÃ
             2-ÔÝÍ£
             3-´ý¸´ºË

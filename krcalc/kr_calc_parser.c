@@ -250,8 +250,6 @@ static T_KRCalcTree *kr_calc_parse_json(T_KRCalc *krcalc, cJSON *krjson)
 
 int kr_calc_parse(T_KRCalc *krcalc)
 {
-    printf("kr_calc_parse:%s\n", krcalc->calc_string);
-
     cJSON *krjson = cJSON_Parse(krcalc->calc_string);
     if (krjson == NULL) {
         sprintf(krcalc->err_msg, "cJSON_Parse %s failed", krcalc->calc_string);

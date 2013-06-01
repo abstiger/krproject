@@ -1,6 +1,8 @@
 bin_PROGRAMS       = krserver
 krserver_SOURCES   = kr_server.h \
                      kr_server.c \
+                     kr_message.h \
+                     kr_message.c \
                      kr_server_handler.c \
                      kr_server_config.c 
      

@@ -15,7 +15,7 @@ int kr_server_handle_svron(void)
     stMsg.msgtype = KR_MSGTYPE_SVRON;
     strcpy(stMsg.serverid, krserver.serverid);
     stMsg.msglen = sizeof(T_KRMsgSvrOn);
-    stMsg.msgbuf = &stMsgSvrOn;
+    memcpy(stMsg.msgbuf, &stMsgSvrOn, stMsg.msglen);
     
     int writeLen = kr_message_write(krserver.neterr, krserver.cofd, &stMsg);
     if (writeLen <= 0) {/* write message failure */        
@@ -39,8 +39,8 @@ int kr_server_handle_apply(T_KRMessage *krmsg)
     }
 
     /* run engine */
-    ret = kr_engine_run(krserver.krengine, krmsg->fd, \
-            eOprCode, krmsg->datasrc, krmsg->msgbuf);
+    ret = kr_engine_run(krserver.krengine, eOprCode, \
+            krmsg->datasrc, krmsg->msgbuf, &krmsg->fd);
     if (ret != 0) {
         KR_LOG(KR_LOGERROR, "kr_engine_run:[%d] [%d] [%s] failed!", \
             eOprCode, krmsg->datasrc, krmsg->msgid);
@@ -58,8 +58,8 @@ static int kr_server_handle_message(T_KRMessage *krmsg)
     switch(krmsg->msgtype)
     {
         case KR_MSGTYPE_APPLY:
-            KR_LOG(KR_LOGDEBUG, "Client[%s] Server[%s] msgid[%s]!", 
-                    krmsg->clientid, krmsg->serverid, krmsg->msgid);
+            KR_LOG(KR_LOGDEBUG, "Client[%s] Server[%s] objectkey[%s] msglen[%d]!", 
+                    krmsg->clientid, krmsg->serverid, krmsg->objectkey, krmsg->msglen);
             ret = kr_server_handle_apply(krmsg);
             break;
         case KR_MSGTYPE_CLION:

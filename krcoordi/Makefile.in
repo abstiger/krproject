@@ -51,6 +51,7 @@ CONFIG_CLEAN_VPATH_FILES =
 am__installdirs = "$(DESTDIR)$(bindir)"
 PROGRAMS = $(bin_PROGRAMS)
 am_krcoordi_OBJECTS = krcoordi-kr_coordi.$(OBJEXT) \
+	krcoordi-kr_message.$(OBJEXT) \
 	krcoordi-kr_coordi_handler.$(OBJEXT) \
 	krcoordi-kr_coordi_config.$(OBJEXT)
 krcoordi_OBJECTS = $(am_krcoordi_OBJECTS)
@@ -191,6 +192,8 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 krcoordi_SOURCES = kr_coordi.h \
                      kr_coordi.c \
+                     ../krserver/kr_message.h \
+                     ../krserver/kr_message.c \
                      kr_coordi_handler.c \
                      kr_coordi_config.c 
 
@@ -287,6 +290,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/krcoordi-kr_coordi.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/krcoordi-kr_coordi_config.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/krcoordi-kr_coordi_handler.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/krcoordi-kr_message.Po@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
@@ -322,6 +326,20 @@ krcoordi-kr_coordi.obj: kr_coordi.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='kr_coordi.c' object='krcoordi-kr_coordi.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(krcoordi_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o krcoordi-kr_coordi.obj `if test -f 'kr_coordi.c'; then $(CYGPATH_W) 'kr_coordi.c'; else $(CYGPATH_W) '$(srcdir)/kr_coordi.c'; fi`
+
+krcoordi-kr_message.o: ../krserver/kr_message.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(krcoordi_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT krcoordi-kr_message.o -MD -MP -MF $(DEPDIR)/krcoordi-kr_message.Tpo -c -o krcoordi-kr_message.o `test -f '../krserver/kr_message.c' || echo '$(srcdir)/'`../krserver/kr_message.c
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/krcoordi-kr_message.Tpo $(DEPDIR)/krcoordi-kr_message.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='../krserver/kr_message.c' object='krcoordi-kr_message.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(krcoordi_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o krcoordi-kr_message.o `test -f '../krserver/kr_message.c' || echo '$(srcdir)/'`../krserver/kr_message.c
+
+krcoordi-kr_message.obj: ../krserver/kr_message.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(krcoordi_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT krcoordi-kr_message.obj -MD -MP -MF $(DEPDIR)/krcoordi-kr_message.Tpo -c -o krcoordi-kr_message.obj `if test -f '../krserver/kr_message.c'; then $(CYGPATH_W) '../krserver/kr_message.c'; else $(CYGPATH_W) '$(srcdir)/../krserver/kr_message.c'; fi`
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/krcoordi-kr_message.Tpo $(DEPDIR)/krcoordi-kr_message.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='../krserver/kr_message.c' object='krcoordi-kr_message.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(krcoordi_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o krcoordi-kr_message.obj `if test -f '../krserver/kr_message.c'; then $(CYGPATH_W) '../krserver/kr_message.c'; else $(CYGPATH_W) '$(srcdir)/../krserver/kr_message.c'; fi`
 
 krcoordi-kr_coordi_handler.o: kr_coordi_handler.c
 @am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(krcoordi_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT krcoordi-kr_coordi_handler.o -MD -MP -MF $(DEPDIR)/krcoordi-kr_coordi_handler.Tpo -c -o krcoordi-kr_coordi_handler.o `test -f 'kr_coordi_handler.c' || echo '$(srcdir)/'`kr_coordi_handler.c

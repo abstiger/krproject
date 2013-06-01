@@ -55,13 +55,6 @@ int LoadShmRule(T_DbsEnv *dbsenv, T_KRShmRule *ptShmRule, long lGroupId)
                 kr_string_rtrim(stRuleCur.caOutRuleFunc), \
                 sizeof(ptShmRuleDef->caRuleFunc));        
         ptShmRuleDef->lRuleWeight = stRuleCur.lOutRuleWeight;
-        ptShmRuleDef->dRiskAdvcThresh = stRuleCur.dOutRiskAdvcThresh;
-        ptShmRuleDef->dRiskNotifThresh = stRuleCur.dOutRiskNotifThresh;
-        ptShmRuleDef->dRiskAlertThresh = stRuleCur.dOutRiskAlertThresh;
-        ptShmRuleDef->dRiskWarnThresh = stRuleCur.dOutRiskWarnThresh;
-        strncpy(ptShmRuleDef->caThreshIsConfig, \
-                kr_string_rtrim(stRuleCur.caOutThreshIsConfig),
-                sizeof(ptShmRuleDef->caThreshIsConfig));
         
         ptShmRule->lRuleDefCnt++;
         ptShmRuleDef++;
@@ -97,12 +90,7 @@ int DumpShmRule(T_KRShmRule *ptShmRule, FILE *fp)
                 ptShmRuleDef->lRuleDatasrc, ptShmRuleDef->caRuleString);
         fprintf(fp, " caRuleType=[%s], caRuleFunc=[%s],",
                 ptShmRuleDef->caRuleType, ptShmRuleDef->caRuleFunc);
-        fprintf(fp, " lRuleWeight=[%ld] \n caThreshIsConfig=[%s],", 
-                ptShmRuleDef->lRuleWeight, ptShmRuleDef->caThreshIsConfig);
-        fprintf(fp, " dRiskAdvcThresh=[%lf], dRiskNotifThresh=[%lf],"
-                    " dRiskAlertThresh=[%lf], dRiskWarnThresh=[%lf] \n", 
-                ptShmRuleDef->dRiskAdvcThresh, ptShmRuleDef->dRiskNotifThresh, 
-                ptShmRuleDef->dRiskAlertThresh, ptShmRuleDef->dRiskWarnThresh);
+        fprintf(fp, " lRuleWeight=[%ld] \n ", ptShmRuleDef->lRuleWeight);
         ptShmRuleDef++;
     }
     

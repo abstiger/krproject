@@ -1,5 +1,7 @@
 bin_PROGRAMS       = krclient
-krclient_SOURCES   = kr_client.c
+krclient_SOURCES   = kr_client.c \
+                     ../krserver/kr_message.h \
+                     ../krserver/kr_message.c
      
 krclient_LDADD     = $(top_srcdir)/krutils/libkrutils.la
 krclient_LDFLAGS    = 
