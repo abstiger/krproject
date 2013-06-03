@@ -51,7 +51,7 @@ CONFIG_CLEAN_VPATH_FILES =
 am__installdirs = "$(DESTDIR)$(bindir)"
 PROGRAMS = $(bin_PROGRAMS)
 am_krclient_OBJECTS = krclient-kr_client.$(OBJEXT) \
-	krclient-kr_message.$(OBJEXT)
+	krclient-kr_server_message.$(OBJEXT)
 krclient_OBJECTS = $(am_krclient_OBJECTS)
 krclient_DEPENDENCIES = $(top_srcdir)/krutils/libkrutils.la
 krclient_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
@@ -189,8 +189,8 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 krclient_SOURCES = kr_client.c \
-                     ../krserver/kr_message.h \
-                     ../krserver/kr_message.c
+                     ../krserver/kr_server_message.h \
+                     ../krserver/kr_server_message.c
 
 krclient_LDADD = $(top_srcdir)/krutils/libkrutils.la
 krclient_LDFLAGS = 
@@ -283,7 +283,7 @@ distclean-compile:
 	-rm -f *.tab.c
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/krclient-kr_client.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/krclient-kr_message.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/krclient-kr_server_message.Po@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
@@ -320,19 +320,19 @@ krclient-kr_client.obj: kr_client.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(krclient_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o krclient-kr_client.obj `if test -f 'kr_client.c'; then $(CYGPATH_W) 'kr_client.c'; else $(CYGPATH_W) '$(srcdir)/kr_client.c'; fi`
 
-krclient-kr_message.o: ../krserver/kr_message.c
-@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(krclient_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT krclient-kr_message.o -MD -MP -MF $(DEPDIR)/krclient-kr_message.Tpo -c -o krclient-kr_message.o `test -f '../krserver/kr_message.c' || echo '$(srcdir)/'`../krserver/kr_message.c
-@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/krclient-kr_message.Tpo $(DEPDIR)/krclient-kr_message.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='../krserver/kr_message.c' object='krclient-kr_message.o' libtool=no @AMDEPBACKSLASH@
+krclient-kr_server_message.o: ../krserver/kr_server_message.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(krclient_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT krclient-kr_server_message.o -MD -MP -MF $(DEPDIR)/krclient-kr_server_message.Tpo -c -o krclient-kr_server_message.o `test -f '../krserver/kr_server_message.c' || echo '$(srcdir)/'`../krserver/kr_server_message.c
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/krclient-kr_server_message.Tpo $(DEPDIR)/krclient-kr_server_message.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='../krserver/kr_server_message.c' object='krclient-kr_server_message.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(krclient_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o krclient-kr_message.o `test -f '../krserver/kr_message.c' || echo '$(srcdir)/'`../krserver/kr_message.c
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(krclient_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o krclient-kr_server_message.o `test -f '../krserver/kr_server_message.c' || echo '$(srcdir)/'`../krserver/kr_server_message.c
 
-krclient-kr_message.obj: ../krserver/kr_message.c
-@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(krclient_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT krclient-kr_message.obj -MD -MP -MF $(DEPDIR)/krclient-kr_message.Tpo -c -o krclient-kr_message.obj `if test -f '../krserver/kr_message.c'; then $(CYGPATH_W) '../krserver/kr_message.c'; else $(CYGPATH_W) '$(srcdir)/../krserver/kr_message.c'; fi`
-@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/krclient-kr_message.Tpo $(DEPDIR)/krclient-kr_message.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='../krserver/kr_message.c' object='krclient-kr_message.obj' libtool=no @AMDEPBACKSLASH@
+krclient-kr_server_message.obj: ../krserver/kr_server_message.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(krclient_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT krclient-kr_server_message.obj -MD -MP -MF $(DEPDIR)/krclient-kr_server_message.Tpo -c -o krclient-kr_server_message.obj `if test -f '../krserver/kr_server_message.c'; then $(CYGPATH_W) '../krserver/kr_server_message.c'; else $(CYGPATH_W) '$(srcdir)/../krserver/kr_server_message.c'; fi`
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/krclient-kr_server_message.Tpo $(DEPDIR)/krclient-kr_server_message.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='../krserver/kr_server_message.c' object='krclient-kr_server_message.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(krclient_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o krclient-kr_message.obj `if test -f '../krserver/kr_message.c'; then $(CYGPATH_W) '../krserver/kr_message.c'; else $(CYGPATH_W) '$(srcdir)/../krserver/kr_message.c'; fi`
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(krclient_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o krclient-kr_server_message.obj `if test -f '../krserver/kr_server_message.c'; then $(CYGPATH_W) '../krserver/kr_server_message.c'; else $(CYGPATH_W) '$(srcdir)/../krserver/kr_server_message.c'; fi`
 
 mostlyclean-libtool:
 	-rm -f *.lo

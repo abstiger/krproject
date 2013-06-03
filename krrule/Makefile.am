@@ -36,4 +36,4 @@ libkrrule_la_LIBADD   += $(top_srcdir)/krshm/libkrshm.la
 libkrrule_la_LIBADD   += $(top_srcdir)/krcalc/libkrcalc.la
 libkrrule_la_LIBADD   += $(top_srcdir)/krdb/libkrdb.la
 libkrrule_la_LDFLAGS   = 
-libkrrule_la_CPPFLAGS  = -I/usr/include/python2.7  -lpython2.7
+libkrrule_la_CPPFLAGS  = 

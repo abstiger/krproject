@@ -6,6 +6,6 @@ AM_CPPFLAGS = -g -I$(includedir) -L$(libdir)
 
 include_HEADERS = kr_config.h
 
-EXTRA_DIST = interface \
+EXTRA_DIST = binding \
              examples 
 

@@ -258,7 +258,7 @@ SUBDIRS = krutils dbs krshm krcalc krdb krrule krengine \
 
 AM_CPPFLAGS = -g -I$(includedir) -L$(libdir)
 include_HEADERS = kr_config.h
-EXTRA_DIST = interface \
+EXTRA_DIST = binding \
              examples 
 
 all: kr_config.h

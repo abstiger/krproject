@@ -1,6 +1,6 @@
 #include "krutils/kr_utils.h"
 #include "krutils/kr_json.h"
-#include "krserver/kr_message.h"
+#include "krserver/kr_server_message.h"
 #include <time.h>
 #include <errno.h>
 #include <signal.h>

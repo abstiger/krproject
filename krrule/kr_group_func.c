@@ -1,39 +1,6 @@
-#include <Python.h>
-
 #include "kr_group.h"
 #include "kr_group_func.h"
 #include "krutils/kr_json.h"
-
-int weibo_post_status(void *data, char *text)
-{
-    PyObject *client;
-
-    client = Py_BuildValue("O", data);
-    PyObject_CallMethod(client, "post_status", "(s)", text);
-    Py_DECREF(client);
-    return 0;
-}
-
-int weibo_repost_status(void *data, double id, char *text)
-{
-    PyObject *client;
-
-    client = Py_BuildValue("O", data);
-    PyObject_CallMethod(client, "repost_status", "(Ls)", (long long )id, text);
-    Py_DECREF(client);
-    return 0;
-}
-
-int weibo_post_comment(void *data, double id, char *text)
-{
-    PyObject *client;
-
-    client = Py_BuildValue("O", data);
-    PyObject_CallMethod(client, "post_comment", "(Ls)", (long long )id, text);
-    Py_DECREF(client);
-    return 0;
-}
-
 
 void kr_group_write_handler(T_KREventLoop *el, int fd, void *privdata, int mask)
 {
@@ -67,12 +34,6 @@ int kr_group_func(T_KRGroup *krgroup, T_KRContext *krcontext)
 
     cJSON_AddNumberToObject(krcontext->ptExtra, "groupid", krgroup->lGroupId);
     char *jsonstr = cJSON_PrintUnformatted(krcontext->ptExtra);
-    double id = *(double *)kr_get_field_value(krcontext->ptArg->ptCurrRec, 13);
-    char repost[]="来自krproject:repost status test";
-    char comment[]="来自krproject:post comment test";
-    //weibo_post_status(krcontext->ptArg->pExtra, jsonstr);
-    weibo_post_comment(krcontext->ptArg->pExtra, id, comment);
-    //weibo_repost_status(krcontext->ptArg->pExtra, id, repost);
     printf("fired rules: %s\n", jsonstr);
     KR_LOG(KR_LOGDEBUG, "result json: %s ", jsonstr);
     kr_free(jsonstr);
