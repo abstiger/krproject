@@ -13911,7 +13911,7 @@ fi
 
 
 
-ac_config_files="$ac_config_files Makefile krutils/Makefile dbs/Makefile dbs/dbs/Makefile krshm/Makefile krcalc/Makefile krdb/Makefile krrule/Makefile krengine/Makefile krcoordi/Makefile krserver/Makefile krclient/Makefile krtests/Makefile binding/Makefile binding/python/Makefile binding/java/Makefile etc/Makefile doc/Makefile"
+ac_config_files="$ac_config_files Makefile krutils/Makefile dbs/Makefile dbs/dbs/Makefile krshm/Makefile krcalc/Makefile krdb/Makefile krrule/Makefile krengine/Makefile krcoordi/Makefile krserver/Makefile krclient/Makefile krtests/Makefile bindings/Makefile bindings/python/Makefile bindings/java/Makefile etc/Makefile doc/Makefile"
 
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
@@ -14947,9 +14947,9 @@ do
     "krserver/Makefile") CONFIG_FILES="$CONFIG_FILES krserver/Makefile" ;;
     "krclient/Makefile") CONFIG_FILES="$CONFIG_FILES krclient/Makefile" ;;
     "krtests/Makefile") CONFIG_FILES="$CONFIG_FILES krtests/Makefile" ;;
-    "binding/Makefile") CONFIG_FILES="$CONFIG_FILES binding/Makefile" ;;
-    "binding/python/Makefile") CONFIG_FILES="$CONFIG_FILES binding/python/Makefile" ;;
-    "binding/java/Makefile") CONFIG_FILES="$CONFIG_FILES binding/java/Makefile" ;;
+    "bindings/Makefile") CONFIG_FILES="$CONFIG_FILES bindings/Makefile" ;;
+    "bindings/python/Makefile") CONFIG_FILES="$CONFIG_FILES bindings/python/Makefile" ;;
+    "bindings/java/Makefile") CONFIG_FILES="$CONFIG_FILES bindings/java/Makefile" ;;
     "etc/Makefile") CONFIG_FILES="$CONFIG_FILES etc/Makefile" ;;
     "doc/Makefile") CONFIG_FILES="$CONFIG_FILES doc/Makefile" ;;
 

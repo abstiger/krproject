@@ -93,9 +93,9 @@ krcoordi/Makefile
 krserver/Makefile
 krclient/Makefile
 krtests/Makefile
-binding/Makefile
-binding/python/Makefile
-binding/java/Makefile
+bindings/Makefile
+bindings/python/Makefile
+bindings/java/Makefile
 etc/Makefile 
 doc/Makefile 
 ])
