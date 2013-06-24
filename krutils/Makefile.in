@@ -37,7 +37,13 @@ host_triplet = @host@
 subdir = krutils
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
-am__aclocal_m4_deps = $(top_srcdir)/m4/libtool.m4 \
+am__aclocal_m4_deps = $(top_srcdir)/m4/ax_jni_include_dir.m4 \
+	$(top_srcdir)/m4/ax_pkg_swig.m4 \
+	$(top_srcdir)/m4/ax_prog_jar.m4 \
+	$(top_srcdir)/m4/ax_prog_javac.m4 \
+	$(top_srcdir)/m4/ax_prog_javac_works.m4 \
+	$(top_srcdir)/m4/ax_python_devel.m4 \
+	$(top_srcdir)/m4/ax_swig_python.m4 $(top_srcdir)/m4/libtool.m4 \
 	$(top_srcdir)/m4/ltoptions.m4 $(top_srcdir)/m4/ltsugar.m4 \
 	$(top_srcdir)/m4/ltversion.m4 $(top_srcdir)/m4/lt~obsolete.m4 \
 	$(top_srcdir)/acinclude.m4 $(top_srcdir)/configure.ac
@@ -116,6 +122,8 @@ AUTOCONF = @AUTOCONF@
 AUTOHEADER = @AUTOHEADER@
 AUTOMAKE = @AUTOMAKE@
 AWK = @AWK@
+AX_SWIG_PYTHON_CPPFLAGS = @AX_SWIG_PYTHON_CPPFLAGS@
+AX_SWIG_PYTHON_OPT = @AX_SWIG_PYTHON_OPT@
 CC = @CC@
 CCDEPMODE = @CCDEPMODE@
 CFLAGS = @CFLAGS@
@@ -139,6 +147,9 @@ INSTALL_DATA = @INSTALL_DATA@
 INSTALL_PROGRAM = @INSTALL_PROGRAM@
 INSTALL_SCRIPT = @INSTALL_SCRIPT@
 INSTALL_STRIP_PROGRAM = @INSTALL_STRIP_PROGRAM@
+JAR = @JAR@
+JAVAC = @JAVAC@
+JNI_CPPFLAGS = @JNI_CPPFLAGS@
 LD = @LD@
 LDFLAGS = @LDFLAGS@
 LIBOBJS = @LIBOBJS@
@@ -164,12 +175,25 @@ PACKAGE_TARNAME = @PACKAGE_TARNAME@
 PACKAGE_URL = @PACKAGE_URL@
 PACKAGE_VERSION = @PACKAGE_VERSION@
 PATH_SEPARATOR = @PATH_SEPARATOR@
+PYTHON = @PYTHON@
+PYTHON_CPPFLAGS = @PYTHON_CPPFLAGS@
+PYTHON_EXEC_PREFIX = @PYTHON_EXEC_PREFIX@
+PYTHON_EXTRA_LDFLAGS = @PYTHON_EXTRA_LDFLAGS@
+PYTHON_EXTRA_LIBS = @PYTHON_EXTRA_LIBS@
+PYTHON_LDFLAGS = @PYTHON_LDFLAGS@
+PYTHON_PLATFORM = @PYTHON_PLATFORM@
+PYTHON_PREFIX = @PYTHON_PREFIX@
+PYTHON_SITE_PKG = @PYTHON_SITE_PKG@
+PYTHON_VERSION = @PYTHON_VERSION@
 RANLIB = @RANLIB@
 SED = @SED@
 SET_MAKE = @SET_MAKE@
 SHELL = @SHELL@
 STRIP = @STRIP@
+SWIG = @SWIG@
+SWIG_LIB = @SWIG_LIB@
 VERSION = @VERSION@
+_ACJNI_JAVAC = @_ACJNI_JAVAC@
 abs_builddir = @abs_builddir@
 abs_srcdir = @abs_srcdir@
 abs_top_builddir = @abs_top_builddir@
@@ -211,9 +235,13 @@ mandir = @mandir@
 mkdir_p = @mkdir_p@
 oldincludedir = @oldincludedir@
 pdfdir = @pdfdir@
+pkgpyexecdir = @pkgpyexecdir@
+pkgpythondir = @pkgpythondir@
 prefix = @prefix@
 program_transform_name = @program_transform_name@
 psdir = @psdir@
+pyexecdir = @pyexecdir@
+pythondir = @pythondir@
 sbindir = @sbindir@
 sharedstatedir = @sharedstatedir@
 srcdir = @srcdir@
@@ -224,50 +252,50 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 lib_LTLIBRARIES = libkrutils.la
 libkrutils_la_SOURCES = \
-    kr_macros.h \
-    kr_types.h \
-    kr_alloc.h \
-    kr_alloc.c \
-    kr_datetime.h \
-    kr_datetime.c \
-    kr_string.h \
-    kr_string.c \
-    kr_log.h \
-    kr_log.c \
-    kr_cfgparser.h \
-    kr_cfgparser.c \
-    kr_list.h \
-    kr_list.c \
-    kr_hashtable.h \
-    kr_hashtable.c \
-    kr_set.h \
-    kr_set.c \
-    kr_regex.h \
-    kr_regex.c \
-    kr_json.h \
-    kr_json.c \
-    kr_module.h \
-    kr_module.c \
-    kr_skiplist.h \
-    kr_skiplist.c \
-    kr_conhash.h \
-    kr_conhash.c \
-    kr_queue.h \
-    kr_queue.c \
-    kr_threadpool.h \
-    kr_threadpool.c \
-    kr_net.h \
-    kr_net.c \
-    kr_event.h \
-    kr_event.c \
-    kr_cache.h \
-    kr_cache.c \
-    kr_utils.h
+						  kr_macros.h \
+						  kr_types.h \
+						  kr_alloc.h \
+						  kr_alloc.c \
+						  kr_datetime.h \
+						  kr_datetime.c \
+						  kr_string.h \
+						  kr_string.c \
+						  kr_log.h \
+						  kr_log.c \
+						  kr_cfgparser.h \
+						  kr_cfgparser.c \
+						  kr_list.h \
+						  kr_list.c \
+						  kr_hashtable.h \
+						  kr_hashtable.c \
+						  kr_set.h \
+						  kr_set.c \
+						  kr_regex.h \
+						  kr_regex.c \
+						  kr_json.h \
+						  kr_json.c \
+						  kr_module.h \
+						  kr_module.c \
+						  kr_skiplist.h \
+						  kr_skiplist.c \
+						  kr_conhash.h \
+						  kr_conhash.c \
+						  kr_queue.h \
+						  kr_queue.c \
+						  kr_threadpool.h \
+						  kr_threadpool.c \
+						  kr_net.h \
+						  kr_net.c \
+						  kr_event.h \
+						  kr_event.c \
+						  kr_cache.h \
+						  kr_cache.c \
+						  kr_utils.h
 
 EXTRA_DIST = \
-	kr_event_epoll.c \
-	kr_event_kqueue.c \
-	kr_event_select.c 
+						  kr_event_epoll.c \
+						  kr_event_kqueue.c \
+						  kr_event_select.c 
 
 libkrutils_la_LIBADD = 
 libkrutils_la_LDFLAGS = -lpthread -ldl -lm

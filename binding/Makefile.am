@@ -1,0 +1,10 @@
+SUBDIRS = .
+
+if ENABLE_PYTHON_BINDING
+SUBDIRS += python
+endif
+
+if ENABLE_JAVA_BINDING
+SUBDIRS += java
+endif
+

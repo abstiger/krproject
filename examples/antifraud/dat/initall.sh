@@ -11,7 +11,7 @@ do
     table=`echo "$initfile" |sed "s/init_//g"| sed "s/\.sql//g"`;
 	echo "  initializing table $table ..."|tee -a $LOG_FILE;
 
-    isql $DBNAME $DBUSER $DBPASS < $initfile
+    isql -b $DBNAME $DBUSER $DBPASS < $initfile >> $LOG_FILE
 	if [ $? -ne 0 ];then
     	echo "  failed!"|tee -a $LOG_FILE 2>&1
     	exit 1;

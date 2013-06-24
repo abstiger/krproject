@@ -152,7 +152,7 @@ int kr_client_apply(int fd, char fmt)
     stApply.msgtype = KR_MSGTYPE_APPLY;
     strcpy(stApply.serverid, SERVER_ID);
     strcpy(stApply.clientid, CLIENT_ID);
-    stApply.datasrc = 1;
+    stApply.datasrc = 2;
     for (i=0; i<22; ++i) {
         if (fmt == 'J') {
             kr_client_apply_json(&stApply, fd, i);
@@ -167,13 +167,14 @@ printf("Send:fd:[%d], msgid[%s], msgtype[%d], serverid[%s], clientid[%s], "
             fd, stApply.msgid, stApply.msgtype, 
             stApply.serverid, stApply.clientid, 
             stApply.datasrc, stApply.objectkey, stApply.msglen);
-        
+/*        
         readlen = read(fd, &readbuf, sizeof(readbuf));
         if( readlen < 0) {
             fprintf(stderr, "read fd failed[%s]!\n", strerror(errno));
             return -1;
         }
         printf("read jsonstr:[%s]\n", readbuf);
+*/
 
         if(i%1000 == 0) {
             time_t tTime = time(NULL);

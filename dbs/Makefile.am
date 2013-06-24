@@ -1,11 +1,11 @@
 SUBDIRS  = . dbs
 
-noinst_PROGRAMS         = rapodbc
-rapodbc_SOURCES         = rapodbc.c
-rapodbc_CPPFLAGS        = 
-rapodbc_LDFLAGS         = -lodbc 
-#rapodbc_CPPFLAGS        = @ODBC_INCLUDE@
-#rapodbc_LDFLAGS         = -lodbc @ODBC_LDFLAGS@ @ODBC_LIBS@
+noinst_PROGRAMS        = rapodbc
+rapodbc_SOURCES        = rapodbc.c
+rapodbc_CPPFLAGS       = 
+rapodbc_LDFLAGS        = -lodbc 
+#rapodbc_CPPFLAGS       = @ODBC_INCLUDE@
+#rapodbc_LDFLAGS        = -lodbc @ODBC_LDFLAGS@ @ODBC_LIBS@
 
 
 lib_LTLIBRARIES        = libdbsbas.la 

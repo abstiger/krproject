@@ -4,5 +4,5 @@ krclient_SOURCES   = kr_client.c \
                      ../krserver/kr_server_message.c
      
 krclient_LDADD     = $(top_srcdir)/krutils/libkrutils.la
-krclient_LDFLAGS    = 
-krclient_CPPFLAGS   = 
+krclient_LDFLAGS   = 
+krclient_CPPFLAGS  = 

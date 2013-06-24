@@ -14,5 +14,5 @@ krserver_LDADD    += $(top_srcdir)/krcalc/libkrcalc.la
 krserver_LDADD    += $(top_srcdir)/krdb/libkrdb.la
 krserver_LDADD    += $(top_srcdir)/krrule/libkrrule.la
 krserver_LDADD    += $(top_srcdir)/krengine/libkrengine.la
-krserver_LDFLAGS    = 
-krserver_CPPFLAGS   = 
+krserver_LDFLAGS   = 
+krserver_CPPFLAGS  = 

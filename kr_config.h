@@ -19,6 +19,9 @@
 /* Define to 1 if you have the `poll' function. */
 #define HAVE_POLL 1
 
+/* If available, contains the Python version number currently in use. */
+#define HAVE_PYTHON "2.7"
+
 /* Define to 1 if you have the `select' function. */
 #define HAVE_SELECT 1
 

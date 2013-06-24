@@ -23,6 +23,8 @@ int kr_rule_func(T_KRRule *krrule, T_KRContext *krcontext)
         krcontext->ptExtra = cJSON_CreateObject();
         cJSON_AddItemToObject(krcontext->ptExtra, "fired", \
                               fired=cJSON_CreateArray());
+    } else {
+        fired = cJSON_GetObjectItem(krcontext->ptExtra, "fired");
     }
     root = (cJSON *)krcontext->ptExtra;
     cJSON_AddItemToArray(fired, rule=cJSON_CreateObject());

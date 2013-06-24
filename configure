@@ -616,6 +616,32 @@ ac_subst_vars='am__EXEEXT_FALSE
 am__EXEEXT_TRUE
 LTLIBOBJS
 LIBOBJS
+ENABLE_PYTHON_BINDING_FALSE
+ENABLE_PYTHON_BINDING_TRUE
+ENABLE_JAVA_BINDING_FALSE
+ENABLE_JAVA_BINDING_TRUE
+JNI_CPPFLAGS
+_ACJNI_JAVAC
+JAVAC
+JAR
+AX_SWIG_PYTHON_CPPFLAGS
+AX_SWIG_PYTHON_OPT
+PYTHON_EXTRA_LDFLAGS
+PYTHON_EXTRA_LIBS
+PYTHON_SITE_PKG
+PYTHON_LDFLAGS
+PYTHON_CPPFLAGS
+SWIG_LIB
+SWIG
+pkgpyexecdir
+pyexecdir
+pkgpythondir
+pythondir
+PYTHON_PLATFORM
+PYTHON_EXEC_PREFIX
+PYTHON_PREFIX
+PYTHON_VERSION
+PYTHON
 CPP
 OTOOL64
 OTOOL
@@ -735,6 +761,8 @@ enable_dependency_tracking
 with_gnu_ld
 with_sysroot
 enable_libtool_lock
+enable_python_binding
+enable_java_binding
 '
       ac_precious_vars='build_alias
 host_alias
@@ -744,7 +772,9 @@ CFLAGS
 LDFLAGS
 LIBS
 CPPFLAGS
-CPP'
+CPP
+PYTHON
+PYTHON_VERSION'
 
 
 # Initialize some variables set by options.
@@ -1372,6 +1402,8 @@ Optional Features:
   --disable-dependency-tracking  speeds up one-time build
   --enable-dependency-tracking   do not reject slow dependency extractors
   --disable-libtool-lock  avoid locking (might break parallel builds)
+  --enable-python-binding compile extensions for Python [default: no]
+  --enable-java-binding   compile extensions for Java [default: no]
 
 Optional Packages:
   --with-PACKAGE[=ARG]    use PACKAGE [ARG=yes]
@@ -1391,6 +1423,11 @@ Some influential environment variables:
   CPPFLAGS    (Objective) C/C++ preprocessor flags, e.g. -I<include dir> if
               you have headers in a nonstandard directory <include dir>
   CPP         C preprocessor
+  PYTHON      the Python interpreter
+  PYTHON_VERSION
+              The installed Python version to use, for example '2.3'. This
+              string will be appended to the Python interpreter canonical
+              name.
 
 Use these variables to override the choices made by `configure' or to help
 it to find libraries and programs with nonstandard names/locations.
@@ -11407,10 +11444,6 @@ CC="$lt_save_CC"
 
 
 
-# Check if we will compile with Oracle
-#AC_CHECK_ORACLE
-#AC_CHECK_DB2
-
 # Checks for programs.
 ac_ext=c
 ac_cpp='$CPP $CPPFLAGS'
@@ -12366,7 +12399,6 @@ _ACEOF
 
 
 
-
 # Checks for library functions.
 for ac_func in epoll_ctl kqueue poll select
 do :
@@ -12381,7 +12413,1505 @@ fi
 done
 
 
-ac_config_files="$ac_config_files Makefile krutils/Makefile dbs/Makefile dbs/dbs/Makefile krshm/Makefile krcalc/Makefile krdb/Makefile krrule/Makefile krengine/Makefile krcoordi/Makefile krserver/Makefile krclient/Makefile krtests/Makefile etc/Makefile doc/Makefile"
+# Check enables
+need_swig=no
+# Check whether --enable-python-binding was given.
+if test "${enable_python_binding+set}" = set; then :
+  enableval=$enable_python_binding; enable_python_binding=${enableval}
+else
+  enable_python_binding=no
+fi
+
+if test x"${enable_python_binding}" = xyes; then
+
+
+
+
+
+
+        # Find any Python interpreter.
+    if test -z "$PYTHON"; then
+      for ac_prog in python python2 python3 python3.2 python3.1 python3.0 python2.7  python2.6 python2.5 python2.4 python2.3 python2.2 python2.1 python2.0
+do
+  # Extract the first word of "$ac_prog", so it can be a program name with args.
+set dummy $ac_prog; ac_word=$2
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
+$as_echo_n "checking for $ac_word... " >&6; }
+if ${ac_cv_path_PYTHON+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  case $PYTHON in
+  [\\/]* | ?:[\\/]*)
+  ac_cv_path_PYTHON="$PYTHON" # Let the user override the test with a path.
+  ;;
+  *)
+  as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+    for ac_exec_ext in '' $ac_executable_extensions; do
+  if { test -f "$as_dir/$ac_word$ac_exec_ext" && $as_test_x "$as_dir/$ac_word$ac_exec_ext"; }; then
+    ac_cv_path_PYTHON="$as_dir/$ac_word$ac_exec_ext"
+    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+  done
+IFS=$as_save_IFS
+
+  ;;
+esac
+fi
+PYTHON=$ac_cv_path_PYTHON
+if test -n "$PYTHON"; then
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $PYTHON" >&5
+$as_echo "$PYTHON" >&6; }
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+fi
+
+
+  test -n "$PYTHON" && break
+done
+test -n "$PYTHON" || PYTHON=":"
+
+    fi
+    am_display_PYTHON=python
+
+
+  if test "$PYTHON" = :; then
+      as_fn_error $? "no suitable Python interpreter found" "$LINENO" 5
+  else
+
+
+  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for $am_display_PYTHON version" >&5
+$as_echo_n "checking for $am_display_PYTHON version... " >&6; }
+if ${am_cv_python_version+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  am_cv_python_version=`$PYTHON -c "import sys; sys.stdout.write(sys.version[:3])"`
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $am_cv_python_version" >&5
+$as_echo "$am_cv_python_version" >&6; }
+  PYTHON_VERSION=$am_cv_python_version
+
+
+
+  PYTHON_PREFIX='${prefix}'
+
+  PYTHON_EXEC_PREFIX='${exec_prefix}'
+
+
+
+  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for $am_display_PYTHON platform" >&5
+$as_echo_n "checking for $am_display_PYTHON platform... " >&6; }
+if ${am_cv_python_platform+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  am_cv_python_platform=`$PYTHON -c "import sys; sys.stdout.write(sys.platform)"`
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $am_cv_python_platform" >&5
+$as_echo "$am_cv_python_platform" >&6; }
+  PYTHON_PLATFORM=$am_cv_python_platform
+
+
+
+
+            { $as_echo "$as_me:${as_lineno-$LINENO}: checking for $am_display_PYTHON script directory" >&5
+$as_echo_n "checking for $am_display_PYTHON script directory... " >&6; }
+if ${am_cv_python_pythondir+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  if test "x$prefix" = xNONE
+     then
+       am_py_prefix=$ac_default_prefix
+     else
+       am_py_prefix=$prefix
+     fi
+     am_cv_python_pythondir=`$PYTHON -c "import sys; from distutils import sysconfig; sys.stdout.write(sysconfig.get_python_lib(0,0,prefix='$am_py_prefix'))" 2>/dev/null`
+     case $am_cv_python_pythondir in
+     $am_py_prefix*)
+       am__strip_prefix=`echo "$am_py_prefix" | sed 's|.|.|g'`
+       am_cv_python_pythondir=`echo "$am_cv_python_pythondir" | sed "s,^$am__strip_prefix,$PYTHON_PREFIX,"`
+       ;;
+     *)
+       case $am_py_prefix in
+         /usr|/System*) ;;
+         *)
+	  am_cv_python_pythondir=$PYTHON_PREFIX/lib/python$PYTHON_VERSION/site-packages
+	  ;;
+       esac
+       ;;
+     esac
+
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $am_cv_python_pythondir" >&5
+$as_echo "$am_cv_python_pythondir" >&6; }
+  pythondir=$am_cv_python_pythondir
+
+
+
+  pkgpythondir=\${pythondir}/$PACKAGE
+
+
+        { $as_echo "$as_me:${as_lineno-$LINENO}: checking for $am_display_PYTHON extension module directory" >&5
+$as_echo_n "checking for $am_display_PYTHON extension module directory... " >&6; }
+if ${am_cv_python_pyexecdir+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  if test "x$exec_prefix" = xNONE
+     then
+       am_py_exec_prefix=$am_py_prefix
+     else
+       am_py_exec_prefix=$exec_prefix
+     fi
+     am_cv_python_pyexecdir=`$PYTHON -c "import sys; from distutils import sysconfig; sys.stdout.write(sysconfig.get_python_lib(1,0,prefix='$am_py_exec_prefix'))" 2>/dev/null`
+     case $am_cv_python_pyexecdir in
+     $am_py_exec_prefix*)
+       am__strip_prefix=`echo "$am_py_exec_prefix" | sed 's|.|.|g'`
+       am_cv_python_pyexecdir=`echo "$am_cv_python_pyexecdir" | sed "s,^$am__strip_prefix,$PYTHON_EXEC_PREFIX,"`
+       ;;
+     *)
+       case $am_py_exec_prefix in
+         /usr|/System*) ;;
+         *)
+	   am_cv_python_pyexecdir=$PYTHON_EXEC_PREFIX/lib/python$PYTHON_VERSION/site-packages
+	   ;;
+       esac
+       ;;
+     esac
+
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $am_cv_python_pyexecdir" >&5
+$as_echo "$am_cv_python_pyexecdir" >&6; }
+  pyexecdir=$am_cv_python_pyexecdir
+
+
+
+  pkgpyexecdir=\${pyexecdir}/$PACKAGE
+
+
+
+  fi
+
+
+
+        # Ubuntu has swig 2.0 as /usr/bin/swig2.0
+        for ac_prog in swig swig2.0
+do
+  # Extract the first word of "$ac_prog", so it can be a program name with args.
+set dummy $ac_prog; ac_word=$2
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
+$as_echo_n "checking for $ac_word... " >&6; }
+if ${ac_cv_path_SWIG+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  case $SWIG in
+  [\\/]* | ?:[\\/]*)
+  ac_cv_path_SWIG="$SWIG" # Let the user override the test with a path.
+  ;;
+  *)
+  as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+    for ac_exec_ext in '' $ac_executable_extensions; do
+  if { test -f "$as_dir/$ac_word$ac_exec_ext" && $as_test_x "$as_dir/$ac_word$ac_exec_ext"; }; then
+    ac_cv_path_SWIG="$as_dir/$ac_word$ac_exec_ext"
+    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+  done
+IFS=$as_save_IFS
+
+  ;;
+esac
+fi
+SWIG=$ac_cv_path_SWIG
+if test -n "$SWIG"; then
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $SWIG" >&5
+$as_echo "$SWIG" >&6; }
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+fi
+
+
+  test -n "$SWIG" && break
+done
+
+        if test -z "$SWIG" ; then
+                :
+        elif test -n "" ; then
+                { $as_echo "$as_me:${as_lineno-$LINENO}: checking SWIG version" >&5
+$as_echo_n "checking SWIG version... " >&6; }
+                swig_version=`$SWIG -version 2>&1 | grep 'SWIG Version' | sed 's/.*\([0-9][0-9]*\.[0-9][0-9]*\.[0-9][0-9]*\).*/\1/g'`
+                { $as_echo "$as_me:${as_lineno-$LINENO}: result: $swig_version" >&5
+$as_echo "$swig_version" >&6; }
+                if test -n "$swig_version" ; then
+                        # Calculate the required version number components
+                        required=
+                        required_major=`echo $required | sed 's/[^0-9].*//'`
+                        if test -z "$required_major" ; then
+                                required_major=0
+                        fi
+                        required=`echo $required | sed 's/[0-9]*[^0-9]//'`
+                        required_minor=`echo $required | sed 's/[^0-9].*//'`
+                        if test -z "$required_minor" ; then
+                                required_minor=0
+                        fi
+                        required=`echo $required | sed 's/[0-9]*[^0-9]//'`
+                        required_patch=`echo $required | sed 's/[^0-9].*//'`
+                        if test -z "$required_patch" ; then
+                                required_patch=0
+                        fi
+                        # Calculate the available version number components
+                        available=$swig_version
+                        available_major=`echo $available | sed 's/[^0-9].*//'`
+                        if test -z "$available_major" ; then
+                                available_major=0
+                        fi
+                        available=`echo $available | sed 's/[0-9]*[^0-9]//'`
+                        available_minor=`echo $available | sed 's/[^0-9].*//'`
+                        if test -z "$available_minor" ; then
+                                available_minor=0
+                        fi
+                        available=`echo $available | sed 's/[0-9]*[^0-9]//'`
+                        available_patch=`echo $available | sed 's/[^0-9].*//'`
+                        if test -z "$available_patch" ; then
+                                available_patch=0
+                        fi
+                        # Convert the version tuple into a single number for easier comparison.
+                        # Using base 100 should be safe since SWIG internally uses BCD values
+                        # to encode its version number.
+                        required_swig_vernum=`expr $required_major \* 10000 \
+                            \+ $required_minor \* 100 \+ $required_patch`
+                        available_swig_vernum=`expr $available_major \* 10000 \
+                            \+ $available_minor \* 100 \+ $available_patch`
+
+                        if test $available_swig_vernum -lt $required_swig_vernum; then
+                                { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: SWIG version >=  is required.  You have $swig_version." >&5
+$as_echo "$as_me: WARNING: SWIG version >=  is required.  You have $swig_version." >&2;}
+                                SWIG=''
+
+                        else
+                                { $as_echo "$as_me:${as_lineno-$LINENO}: checking for SWIG library" >&5
+$as_echo_n "checking for SWIG library... " >&6; }
+                                SWIG_LIB=`$SWIG -swiglib`
+                                { $as_echo "$as_me:${as_lineno-$LINENO}: result: $SWIG_LIB" >&5
+$as_echo "$SWIG_LIB" >&6; }
+
+                        fi
+                else
+                        { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: cannot determine SWIG version" >&5
+$as_echo "$as_me: WARNING: cannot determine SWIG version" >&2;}
+                        SWIG=''
+
+                fi
+        fi
+
+
+
+	#
+	# Allow the use of a (user set) custom python version
+	#
+
+
+	# Extract the first word of "python[$PYTHON_VERSION]", so it can be a program name with args.
+set dummy python$PYTHON_VERSION; ac_word=$2
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
+$as_echo_n "checking for $ac_word... " >&6; }
+if ${ac_cv_path_PYTHON+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  case $PYTHON in
+  [\\/]* | ?:[\\/]*)
+  ac_cv_path_PYTHON="$PYTHON" # Let the user override the test with a path.
+  ;;
+  *)
+  as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+    for ac_exec_ext in '' $ac_executable_extensions; do
+  if { test -f "$as_dir/$ac_word$ac_exec_ext" && $as_test_x "$as_dir/$ac_word$ac_exec_ext"; }; then
+    ac_cv_path_PYTHON="$as_dir/$ac_word$ac_exec_ext"
+    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+  done
+IFS=$as_save_IFS
+
+  ;;
+esac
+fi
+PYTHON=$ac_cv_path_PYTHON
+if test -n "$PYTHON"; then
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $PYTHON" >&5
+$as_echo "$PYTHON" >&6; }
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+fi
+
+
+	if test -z "$PYTHON"; then
+	   as_fn_error $? "Cannot find python$PYTHON_VERSION in your system path" "$LINENO" 5
+	   PYTHON_VERSION=""
+	fi
+
+	#
+	# Check for a version of Python >= 2.1.0
+	#
+	{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for a version of Python >= '2.1.0'" >&5
+$as_echo_n "checking for a version of Python >= '2.1.0'... " >&6; }
+	ac_supports_python_ver=`$PYTHON -c "import sys; \
+		ver = sys.version.split ()[0]; \
+		print (ver >= '2.1.0')"`
+	if test "$ac_supports_python_ver" != "True"; then
+		if test -z "$PYTHON_NOVERSIONCHECK"; then
+			{ $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+			{ { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
+$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
+as_fn_error $? "
+This version of the AC_PYTHON_DEVEL macro
+doesn't work properly with versions of Python before
+2.1.0. You may need to re-run configure, setting the
+variables PYTHON_CPPFLAGS, PYTHON_LDFLAGS, PYTHON_SITE_PKG,
+PYTHON_EXTRA_LIBS and PYTHON_EXTRA_LDFLAGS by hand.
+Moreover, to disable this check, set PYTHON_NOVERSIONCHECK
+to something else than an empty string.
+
+See \`config.log' for more details" "$LINENO" 5; }
+		else
+			{ $as_echo "$as_me:${as_lineno-$LINENO}: result: skip at user request" >&5
+$as_echo "skip at user request" >&6; }
+		fi
+	else
+		{ $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+$as_echo "yes" >&6; }
+	fi
+
+	#
+	# if the macro parameter ``version'' is set, honour it
+	#
+	if test -n ""; then
+		{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for a version of Python " >&5
+$as_echo_n "checking for a version of Python ... " >&6; }
+		ac_supports_python_ver=`$PYTHON -c "import sys; \
+			ver = sys.version.split ()[0]; \
+			print (ver )"`
+		if test "$ac_supports_python_ver" = "True"; then
+		   { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+$as_echo "yes" >&6; }
+		else
+			{ $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+			as_fn_error $? "this package requires Python .
+If you have it installed, but it isn't the default Python
+interpreter in your system path, please pass the PYTHON_VERSION
+variable to configure. See \`\`configure --help'' for reference.
+" "$LINENO" 5
+			PYTHON_VERSION=""
+		fi
+	fi
+
+	#
+	# Check if you have distutils, else fail
+	#
+	{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for the distutils Python package" >&5
+$as_echo_n "checking for the distutils Python package... " >&6; }
+	ac_distutils_result=`$PYTHON -c "import distutils" 2>&1`
+	if test -z "$ac_distutils_result"; then
+		{ $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+$as_echo "yes" >&6; }
+	else
+		{ $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+		as_fn_error $? "cannot import Python module \"distutils\".
+Please check your Python installation. The error was:
+$ac_distutils_result" "$LINENO" 5
+		PYTHON_VERSION=""
+	fi
+
+	#
+	# Check for Python include path
+	#
+	{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for Python include path" >&5
+$as_echo_n "checking for Python include path... " >&6; }
+	if test -z "$PYTHON_CPPFLAGS"; then
+		python_path=`$PYTHON -c "import distutils.sysconfig; \
+			print (distutils.sysconfig.get_python_inc ());"`
+		plat_python_path=`$PYTHON -c "import distutils.sysconfig; \
+			print (distutils.sysconfig.get_python_inc (plat_specific=1));"`
+		if test -n "${python_path}"; then
+			if test "${plat_python_path}" != "${python_path}"; then
+				python_path="-I$python_path -I$plat_python_path"
+			else
+				python_path="-I$python_path"
+			fi
+		fi
+		PYTHON_CPPFLAGS=$python_path
+	fi
+	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $PYTHON_CPPFLAGS" >&5
+$as_echo "$PYTHON_CPPFLAGS" >&6; }
+
+
+	#
+	# Check for Python library path
+	#
+	{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for Python library path" >&5
+$as_echo_n "checking for Python library path... " >&6; }
+	if test -z "$PYTHON_LDFLAGS"; then
+		# (makes two attempts to ensure we've got a version number
+		# from the interpreter)
+		ac_python_version=`cat<<EOD | $PYTHON -
+
+# join all versioning strings, on some systems
+# major/minor numbers could be in different list elements
+from distutils.sysconfig import *
+e = get_config_var('VERSION')
+if e is not None:
+	print(e)
+EOD`
+
+		if test -z "$ac_python_version"; then
+			if test -n "$PYTHON_VERSION"; then
+				ac_python_version=$PYTHON_VERSION
+			else
+				ac_python_version=`$PYTHON -c "import sys; \
+					print (sys.version[:3])"`
+			fi
+		fi
+
+		# Make the versioning information available to the compiler
+
+cat >>confdefs.h <<_ACEOF
+#define HAVE_PYTHON "$ac_python_version"
+_ACEOF
+
+
+		# First, the library directory:
+		ac_python_libdir=`cat<<EOD | $PYTHON -
+
+# There should be only one
+import distutils.sysconfig
+e = distutils.sysconfig.get_config_var('LIBDIR')
+if e is not None:
+	print (e)
+EOD`
+
+		# Now, for the library:
+		ac_python_library=`cat<<EOD | $PYTHON -
+
+import distutils.sysconfig
+c = distutils.sysconfig.get_config_vars()
+if 'LDVERSION' in c:
+	print ('python'+c['LDVERSION'])
+else:
+	print ('python'+c['VERSION'])
+EOD`
+
+		# This small piece shamelessly adapted from PostgreSQL python macro;
+		# credits goes to momjian, I think. I'd like to put the right name
+		# in the credits, if someone can point me in the right direction... ?
+		#
+		if test -n "$ac_python_libdir" -a -n "$ac_python_library"
+		then
+			# use the official shared library
+			ac_python_library=`echo "$ac_python_library" | sed "s/^lib//"`
+			PYTHON_LDFLAGS="-L$ac_python_libdir -l$ac_python_library"
+		else
+			# old way: use libpython from python_configdir
+			ac_python_libdir=`$PYTHON -c \
+			  "from distutils.sysconfig import get_python_lib as f; \
+			  import os; \
+			  print (os.path.join(f(plat_specific=1, standard_lib=1), 'config'));"`
+			PYTHON_LDFLAGS="-L$ac_python_libdir -lpython$ac_python_version"
+		fi
+
+		if test -z "PYTHON_LDFLAGS"; then
+			as_fn_error $? "
+  Cannot determine location of your Python DSO. Please check it was installed with
+  dynamic libraries enabled, or try setting PYTHON_LDFLAGS by hand.
+			" "$LINENO" 5
+		fi
+	fi
+	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $PYTHON_LDFLAGS" >&5
+$as_echo "$PYTHON_LDFLAGS" >&6; }
+
+
+	#
+	# Check for site packages
+	#
+	{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for Python site-packages path" >&5
+$as_echo_n "checking for Python site-packages path... " >&6; }
+	if test -z "$PYTHON_SITE_PKG"; then
+		PYTHON_SITE_PKG=`$PYTHON -c "import distutils.sysconfig; \
+			print (distutils.sysconfig.get_python_lib(0,0));"`
+	fi
+	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $PYTHON_SITE_PKG" >&5
+$as_echo "$PYTHON_SITE_PKG" >&6; }
+
+
+	#
+	# libraries which must be linked in when embedding
+	#
+	{ $as_echo "$as_me:${as_lineno-$LINENO}: checking python extra libraries" >&5
+$as_echo_n "checking python extra libraries... " >&6; }
+	if test -z "$PYTHON_EXTRA_LIBS"; then
+	   PYTHON_EXTRA_LIBS=`$PYTHON -c "import distutils.sysconfig; \
+                conf = distutils.sysconfig.get_config_var; \
+                print (conf('LIBS'))"`
+	fi
+	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $PYTHON_EXTRA_LIBS" >&5
+$as_echo "$PYTHON_EXTRA_LIBS" >&6; }
+
+
+	#
+	# linking flags needed when embedding
+	#
+	{ $as_echo "$as_me:${as_lineno-$LINENO}: checking python extra linking flags" >&5
+$as_echo_n "checking python extra linking flags... " >&6; }
+	if test -z "$PYTHON_EXTRA_LDFLAGS"; then
+		PYTHON_EXTRA_LDFLAGS=`$PYTHON -c "import distutils.sysconfig; \
+			conf = distutils.sysconfig.get_config_var; \
+			print (conf('LINKFORSHARED'))"`
+	fi
+	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $PYTHON_EXTRA_LDFLAGS" >&5
+$as_echo "$PYTHON_EXTRA_LDFLAGS" >&6; }
+
+
+	#
+	# final check to see if everything compiles alright
+	#
+	{ $as_echo "$as_me:${as_lineno-$LINENO}: checking consistency of all components of python development environment" >&5
+$as_echo_n "checking consistency of all components of python development environment... " >&6; }
+	# save current global flags
+	ac_save_LIBS="$LIBS"
+	ac_save_CPPFLAGS="$CPPFLAGS"
+	LIBS="$ac_save_LIBS $PYTHON_LDFLAGS $PYTHON_EXTRA_LDFLAGS $PYTHON_EXTRA_LIBS"
+	CPPFLAGS="$ac_save_CPPFLAGS $PYTHON_CPPFLAGS"
+	ac_ext=c
+ac_cpp='$CPP $CPPFLAGS'
+ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
+ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
+ac_compiler_gnu=$ac_cv_c_compiler_gnu
+
+	cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+		#include <Python.h>
+int
+main ()
+{
+Py_Initialize();
+  ;
+  return 0;
+}
+
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  pythonexists=yes
+else
+  pythonexists=no
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+	ac_ext=c
+ac_cpp='$CPP $CPPFLAGS'
+ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
+ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
+ac_compiler_gnu=$ac_cv_c_compiler_gnu
+
+	# turn back to default flags
+	CPPFLAGS="$ac_save_CPPFLAGS"
+	LIBS="$ac_save_LIBS"
+
+	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $pythonexists" >&5
+$as_echo "$pythonexists" >&6; }
+
+        if test ! "x$pythonexists" = "xyes"; then
+	   { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
+$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
+as_fn_error $? "
+  Could not link test program to Python. Maybe the main Python library has been
+  installed in some non-standard library path. If so, pass it to configure,
+  via the LDFLAGS environment variable.
+  Example: ./configure LDFLAGS=\"-L/usr/non-standard-path/python/lib\"
+  ============================================================================
+   ERROR!
+   You probably have to install the development version of the Python package
+   for your distribution.  The exact name of this package varies among them.
+  ============================================================================
+
+See \`config.log' for more details" "$LINENO" 5; }
+	  PYTHON_VERSION=""
+	fi
+
+	#
+	# all done!
+	#
+
+
+
+
+        test "xyes" != "xno" || swig_shadow=" -noproxy"
+        AX_SWIG_PYTHON_OPT=-python$swig_shadow
+
+        AX_SWIG_PYTHON_CPPFLAGS=$PYTHON_CPPFLAGS
+
+
+
+	#
+	# Allow the use of a (user set) custom python version
+	#
+
+
+	# Extract the first word of "python[$PYTHON_VERSION]", so it can be a program name with args.
+set dummy python$PYTHON_VERSION; ac_word=$2
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
+$as_echo_n "checking for $ac_word... " >&6; }
+if ${ac_cv_path_PYTHON+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  case $PYTHON in
+  [\\/]* | ?:[\\/]*)
+  ac_cv_path_PYTHON="$PYTHON" # Let the user override the test with a path.
+  ;;
+  *)
+  as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+    for ac_exec_ext in '' $ac_executable_extensions; do
+  if { test -f "$as_dir/$ac_word$ac_exec_ext" && $as_test_x "$as_dir/$ac_word$ac_exec_ext"; }; then
+    ac_cv_path_PYTHON="$as_dir/$ac_word$ac_exec_ext"
+    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+  done
+IFS=$as_save_IFS
+
+  ;;
+esac
+fi
+PYTHON=$ac_cv_path_PYTHON
+if test -n "$PYTHON"; then
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $PYTHON" >&5
+$as_echo "$PYTHON" >&6; }
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+fi
+
+
+	if test -z "$PYTHON"; then
+	   as_fn_error $? "Cannot find python$PYTHON_VERSION in your system path" "$LINENO" 5
+	   PYTHON_VERSION=""
+	fi
+
+	#
+	# Check for a version of Python >= 2.1.0
+	#
+	{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for a version of Python >= '2.1.0'" >&5
+$as_echo_n "checking for a version of Python >= '2.1.0'... " >&6; }
+	ac_supports_python_ver=`$PYTHON -c "import sys; \
+		ver = sys.version.split ()[0]; \
+		print (ver >= '2.1.0')"`
+	if test "$ac_supports_python_ver" != "True"; then
+		if test -z "$PYTHON_NOVERSIONCHECK"; then
+			{ $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+			{ { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
+$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
+as_fn_error $? "
+This version of the AC_PYTHON_DEVEL macro
+doesn't work properly with versions of Python before
+2.1.0. You may need to re-run configure, setting the
+variables PYTHON_CPPFLAGS, PYTHON_LDFLAGS, PYTHON_SITE_PKG,
+PYTHON_EXTRA_LIBS and PYTHON_EXTRA_LDFLAGS by hand.
+Moreover, to disable this check, set PYTHON_NOVERSIONCHECK
+to something else than an empty string.
+
+See \`config.log' for more details" "$LINENO" 5; }
+		else
+			{ $as_echo "$as_me:${as_lineno-$LINENO}: result: skip at user request" >&5
+$as_echo "skip at user request" >&6; }
+		fi
+	else
+		{ $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+$as_echo "yes" >&6; }
+	fi
+
+	#
+	# if the macro parameter ``version'' is set, honour it
+	#
+	if test -n ">= '2.6'"; then
+		{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for a version of Python >= '2.6'" >&5
+$as_echo_n "checking for a version of Python >= '2.6'... " >&6; }
+		ac_supports_python_ver=`$PYTHON -c "import sys; \
+			ver = sys.version.split ()[0]; \
+			print (ver >= '2.6')"`
+		if test "$ac_supports_python_ver" = "True"; then
+		   { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+$as_echo "yes" >&6; }
+		else
+			{ $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+			as_fn_error $? "this package requires Python >= '2.6'.
+If you have it installed, but it isn't the default Python
+interpreter in your system path, please pass the PYTHON_VERSION
+variable to configure. See \`\`configure --help'' for reference.
+" "$LINENO" 5
+			PYTHON_VERSION=""
+		fi
+	fi
+
+	#
+	# Check if you have distutils, else fail
+	#
+	{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for the distutils Python package" >&5
+$as_echo_n "checking for the distutils Python package... " >&6; }
+	ac_distutils_result=`$PYTHON -c "import distutils" 2>&1`
+	if test -z "$ac_distutils_result"; then
+		{ $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+$as_echo "yes" >&6; }
+	else
+		{ $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+		as_fn_error $? "cannot import Python module \"distutils\".
+Please check your Python installation. The error was:
+$ac_distutils_result" "$LINENO" 5
+		PYTHON_VERSION=""
+	fi
+
+	#
+	# Check for Python include path
+	#
+	{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for Python include path" >&5
+$as_echo_n "checking for Python include path... " >&6; }
+	if test -z "$PYTHON_CPPFLAGS"; then
+		python_path=`$PYTHON -c "import distutils.sysconfig; \
+			print (distutils.sysconfig.get_python_inc ());"`
+		plat_python_path=`$PYTHON -c "import distutils.sysconfig; \
+			print (distutils.sysconfig.get_python_inc (plat_specific=1));"`
+		if test -n "${python_path}"; then
+			if test "${plat_python_path}" != "${python_path}"; then
+				python_path="-I$python_path -I$plat_python_path"
+			else
+				python_path="-I$python_path"
+			fi
+		fi
+		PYTHON_CPPFLAGS=$python_path
+	fi
+	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $PYTHON_CPPFLAGS" >&5
+$as_echo "$PYTHON_CPPFLAGS" >&6; }
+
+
+	#
+	# Check for Python library path
+	#
+	{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for Python library path" >&5
+$as_echo_n "checking for Python library path... " >&6; }
+	if test -z "$PYTHON_LDFLAGS"; then
+		# (makes two attempts to ensure we've got a version number
+		# from the interpreter)
+		ac_python_version=`cat<<EOD | $PYTHON -
+
+# join all versioning strings, on some systems
+# major/minor numbers could be in different list elements
+from distutils.sysconfig import *
+e = get_config_var('VERSION')
+if e is not None:
+	print(e)
+EOD`
+
+		if test -z "$ac_python_version"; then
+			if test -n "$PYTHON_VERSION"; then
+				ac_python_version=$PYTHON_VERSION
+			else
+				ac_python_version=`$PYTHON -c "import sys; \
+					print (sys.version[:3])"`
+			fi
+		fi
+
+		# Make the versioning information available to the compiler
+
+cat >>confdefs.h <<_ACEOF
+#define HAVE_PYTHON "$ac_python_version"
+_ACEOF
+
+
+		# First, the library directory:
+		ac_python_libdir=`cat<<EOD | $PYTHON -
+
+# There should be only one
+import distutils.sysconfig
+e = distutils.sysconfig.get_config_var('LIBDIR')
+if e is not None:
+	print (e)
+EOD`
+
+		# Now, for the library:
+		ac_python_library=`cat<<EOD | $PYTHON -
+
+import distutils.sysconfig
+c = distutils.sysconfig.get_config_vars()
+if 'LDVERSION' in c:
+	print ('python'+c['LDVERSION'])
+else:
+	print ('python'+c['VERSION'])
+EOD`
+
+		# This small piece shamelessly adapted from PostgreSQL python macro;
+		# credits goes to momjian, I think. I'd like to put the right name
+		# in the credits, if someone can point me in the right direction... ?
+		#
+		if test -n "$ac_python_libdir" -a -n "$ac_python_library"
+		then
+			# use the official shared library
+			ac_python_library=`echo "$ac_python_library" | sed "s/^lib//"`
+			PYTHON_LDFLAGS="-L$ac_python_libdir -l$ac_python_library"
+		else
+			# old way: use libpython from python_configdir
+			ac_python_libdir=`$PYTHON -c \
+			  "from distutils.sysconfig import get_python_lib as f; \
+			  import os; \
+			  print (os.path.join(f(plat_specific=1, standard_lib=1), 'config'));"`
+			PYTHON_LDFLAGS="-L$ac_python_libdir -lpython$ac_python_version"
+		fi
+
+		if test -z "PYTHON_LDFLAGS"; then
+			as_fn_error $? "
+  Cannot determine location of your Python DSO. Please check it was installed with
+  dynamic libraries enabled, or try setting PYTHON_LDFLAGS by hand.
+			" "$LINENO" 5
+		fi
+	fi
+	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $PYTHON_LDFLAGS" >&5
+$as_echo "$PYTHON_LDFLAGS" >&6; }
+
+
+	#
+	# Check for site packages
+	#
+	{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for Python site-packages path" >&5
+$as_echo_n "checking for Python site-packages path... " >&6; }
+	if test -z "$PYTHON_SITE_PKG"; then
+		PYTHON_SITE_PKG=`$PYTHON -c "import distutils.sysconfig; \
+			print (distutils.sysconfig.get_python_lib(0,0));"`
+	fi
+	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $PYTHON_SITE_PKG" >&5
+$as_echo "$PYTHON_SITE_PKG" >&6; }
+
+
+	#
+	# libraries which must be linked in when embedding
+	#
+	{ $as_echo "$as_me:${as_lineno-$LINENO}: checking python extra libraries" >&5
+$as_echo_n "checking python extra libraries... " >&6; }
+	if test -z "$PYTHON_EXTRA_LIBS"; then
+	   PYTHON_EXTRA_LIBS=`$PYTHON -c "import distutils.sysconfig; \
+                conf = distutils.sysconfig.get_config_var; \
+                print (conf('LIBS'))"`
+	fi
+	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $PYTHON_EXTRA_LIBS" >&5
+$as_echo "$PYTHON_EXTRA_LIBS" >&6; }
+
+
+	#
+	# linking flags needed when embedding
+	#
+	{ $as_echo "$as_me:${as_lineno-$LINENO}: checking python extra linking flags" >&5
+$as_echo_n "checking python extra linking flags... " >&6; }
+	if test -z "$PYTHON_EXTRA_LDFLAGS"; then
+		PYTHON_EXTRA_LDFLAGS=`$PYTHON -c "import distutils.sysconfig; \
+			conf = distutils.sysconfig.get_config_var; \
+			print (conf('LINKFORSHARED'))"`
+	fi
+	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $PYTHON_EXTRA_LDFLAGS" >&5
+$as_echo "$PYTHON_EXTRA_LDFLAGS" >&6; }
+
+
+	#
+	# final check to see if everything compiles alright
+	#
+	{ $as_echo "$as_me:${as_lineno-$LINENO}: checking consistency of all components of python development environment" >&5
+$as_echo_n "checking consistency of all components of python development environment... " >&6; }
+	# save current global flags
+	ac_save_LIBS="$LIBS"
+	ac_save_CPPFLAGS="$CPPFLAGS"
+	LIBS="$ac_save_LIBS $PYTHON_LDFLAGS $PYTHON_EXTRA_LDFLAGS $PYTHON_EXTRA_LIBS"
+	CPPFLAGS="$ac_save_CPPFLAGS $PYTHON_CPPFLAGS"
+	ac_ext=c
+ac_cpp='$CPP $CPPFLAGS'
+ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
+ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
+ac_compiler_gnu=$ac_cv_c_compiler_gnu
+
+	cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+		#include <Python.h>
+int
+main ()
+{
+Py_Initialize();
+  ;
+  return 0;
+}
+
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  pythonexists=yes
+else
+  pythonexists=no
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+	ac_ext=c
+ac_cpp='$CPP $CPPFLAGS'
+ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
+ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
+ac_compiler_gnu=$ac_cv_c_compiler_gnu
+
+	# turn back to default flags
+	CPPFLAGS="$ac_save_CPPFLAGS"
+	LIBS="$ac_save_LIBS"
+
+	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $pythonexists" >&5
+$as_echo "$pythonexists" >&6; }
+
+        if test ! "x$pythonexists" = "xyes"; then
+	   { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
+$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
+as_fn_error $? "
+  Could not link test program to Python. Maybe the main Python library has been
+  installed in some non-standard library path. If so, pass it to configure,
+  via the LDFLAGS environment variable.
+  Example: ./configure LDFLAGS=\"-L/usr/non-standard-path/python/lib\"
+  ============================================================================
+   ERROR!
+   You probably have to install the development version of the Python package
+   for your distribution.  The exact name of this package varies among them.
+  ============================================================================
+
+See \`config.log' for more details" "$LINENO" 5; }
+	  PYTHON_VERSION=""
+	fi
+
+	#
+	# all done!
+	#
+
+    need_swig=yes
+fi
+
+# Check to see if we need to build the Python modules
+# Check whether --enable-java-binding was given.
+if test "${enable_java_binding+set}" = set; then :
+  enableval=$enable_java_binding; enable_java_binding=${enableval}
+else
+  enable_java_binding=no
+fi
+
+JNI_CPPFLAGS=
+if test x"${enable_java_binding}" = xyes; then
+
+
+if test "x$JAVAPREFIX" = x; then
+        test "x$JAR" = x && for ac_prog in jar$EXEEXT
+do
+  # Extract the first word of "$ac_prog", so it can be a program name with args.
+set dummy $ac_prog; ac_word=$2
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
+$as_echo_n "checking for $ac_word... " >&6; }
+if ${ac_cv_prog_JAR+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  if test -n "$JAR"; then
+  ac_cv_prog_JAR="$JAR" # Let the user override the test.
+else
+as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+    for ac_exec_ext in '' $ac_executable_extensions; do
+  if { test -f "$as_dir/$ac_word$ac_exec_ext" && $as_test_x "$as_dir/$ac_word$ac_exec_ext"; }; then
+    ac_cv_prog_JAR="$ac_prog"
+    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+  done
+IFS=$as_save_IFS
+
+fi
+fi
+JAR=$ac_cv_prog_JAR
+if test -n "$JAR"; then
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $JAR" >&5
+$as_echo "$JAR" >&6; }
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+fi
+
+
+  test -n "$JAR" && break
+done
+
+else
+        test "x$JAR" = x && for ac_prog in jar
+do
+  # Extract the first word of "$ac_prog", so it can be a program name with args.
+set dummy $ac_prog; ac_word=$2
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
+$as_echo_n "checking for $ac_word... " >&6; }
+if ${ac_cv_prog_JAR+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  if test -n "$JAR"; then
+  ac_cv_prog_JAR="$JAR" # Let the user override the test.
+else
+as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+    for ac_exec_ext in '' $ac_executable_extensions; do
+  if { test -f "$as_dir/$ac_word$ac_exec_ext" && $as_test_x "$as_dir/$ac_word$ac_exec_ext"; }; then
+    ac_cv_prog_JAR="$ac_prog"
+    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+  done
+IFS=$as_save_IFS
+
+fi
+fi
+JAR=$ac_cv_prog_JAR
+if test -n "$JAR"; then
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $JAR" >&5
+$as_echo "$JAR" >&6; }
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+fi
+
+
+  test -n "$JAR" && break
+done
+test -n "$JAR" || JAR="$JAVAPREFIX"
+
+fi
+test "x$JAR" = x && as_fn_error $? "no acceptable jar program found in \$PATH" "$LINENO" 5
+
+
+if test "x$JAVAPREFIX" = x; then
+        test "x$JAVAC" = x && for ac_prog in "gcj -C" guavac jikes javac
+do
+  # Extract the first word of "$ac_prog", so it can be a program name with args.
+set dummy $ac_prog; ac_word=$2
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
+$as_echo_n "checking for $ac_word... " >&6; }
+if ${ac_cv_prog_JAVAC+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  if test -n "$JAVAC"; then
+  ac_cv_prog_JAVAC="$JAVAC" # Let the user override the test.
+else
+as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+    for ac_exec_ext in '' $ac_executable_extensions; do
+  if { test -f "$as_dir/$ac_word$ac_exec_ext" && $as_test_x "$as_dir/$ac_word$ac_exec_ext"; }; then
+    ac_cv_prog_JAVAC="$ac_prog"
+    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+  done
+IFS=$as_save_IFS
+
+fi
+fi
+JAVAC=$ac_cv_prog_JAVAC
+if test -n "$JAVAC"; then
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $JAVAC" >&5
+$as_echo "$JAVAC" >&6; }
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+fi
+
+
+  test -n "$JAVAC" && break
+done
+
+else
+        test "x$JAVAC" = x && for ac_prog in "gcj -C" guavac jikes javac
+do
+  # Extract the first word of "$ac_prog", so it can be a program name with args.
+set dummy $ac_prog; ac_word=$2
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
+$as_echo_n "checking for $ac_word... " >&6; }
+if ${ac_cv_prog_JAVAC+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  if test -n "$JAVAC"; then
+  ac_cv_prog_JAVAC="$JAVAC" # Let the user override the test.
+else
+as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+    for ac_exec_ext in '' $ac_executable_extensions; do
+  if { test -f "$as_dir/$ac_word$ac_exec_ext" && $as_test_x "$as_dir/$ac_word$ac_exec_ext"; }; then
+    ac_cv_prog_JAVAC="$ac_prog"
+    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+  done
+IFS=$as_save_IFS
+
+fi
+fi
+JAVAC=$ac_cv_prog_JAVAC
+if test -n "$JAVAC"; then
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $JAVAC" >&5
+$as_echo "$JAVAC" >&6; }
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+fi
+
+
+  test -n "$JAVAC" && break
+done
+test -n "$JAVAC" || JAVAC="$JAVAPREFIX"
+
+fi
+test "x$JAVAC" = x && as_fn_error $? "no acceptable Java compiler found in \$PATH" "$LINENO" 5
+
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking if $JAVAC works" >&5
+$as_echo_n "checking if $JAVAC works... " >&6; }
+if ${ac_cv_prog_javac_works+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+
+JAVA_TEST=Test.java
+CLASS_TEST=Test.class
+cat << \EOF > $JAVA_TEST
+/* #line 13622 "configure" */
+public class Test {
+}
+EOF
+if { ac_try='$JAVAC $JAVACFLAGS $JAVA_TEST'
+  { { eval echo "\"\$as_me\":${as_lineno-$LINENO}: \"$ac_try\""; } >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
+  test $ac_status = 0; }; } >/dev/null 2>&1; then
+  ac_cv_prog_javac_works=yes
+else
+  as_fn_error $? "The Java compiler $JAVAC failed (see config.log, check the CLASSPATH?)" "$LINENO" 5
+  echo "configure: failed program was:" >&5
+  cat $JAVA_TEST >&5
+fi
+rm -f $JAVA_TEST $CLASS_TEST
+
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_prog_javac_works" >&5
+$as_echo "$ac_cv_prog_javac_works" >&6; }
+
+
+
+
+JNI_INCLUDE_DIRS=""
+
+test "x$JAVAC" = x && as_fn_error $? "'\$JAVAC' undefined" "$LINENO" 5
+# Extract the first word of "$JAVAC", so it can be a program name with args.
+set dummy $JAVAC; ac_word=$2
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
+$as_echo_n "checking for $ac_word... " >&6; }
+if ${ac_cv_path__ACJNI_JAVAC+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  case $_ACJNI_JAVAC in
+  [\\/]* | ?:[\\/]*)
+  ac_cv_path__ACJNI_JAVAC="$_ACJNI_JAVAC" # Let the user override the test with a path.
+  ;;
+  *)
+  as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+    for ac_exec_ext in '' $ac_executable_extensions; do
+  if { test -f "$as_dir/$ac_word$ac_exec_ext" && $as_test_x "$as_dir/$ac_word$ac_exec_ext"; }; then
+    ac_cv_path__ACJNI_JAVAC="$as_dir/$ac_word$ac_exec_ext"
+    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+  done
+IFS=$as_save_IFS
+
+  test -z "$ac_cv_path__ACJNI_JAVAC" && ac_cv_path__ACJNI_JAVAC="no"
+  ;;
+esac
+fi
+_ACJNI_JAVAC=$ac_cv_path__ACJNI_JAVAC
+if test -n "$_ACJNI_JAVAC"; then
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $_ACJNI_JAVAC" >&5
+$as_echo "$_ACJNI_JAVAC" >&6; }
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+fi
+
+
+test "x$_ACJNI_JAVAC" = xno && as_fn_error $? "$JAVAC could not be found in path" "$LINENO" 5
+
+
+# find the include directory relative to the javac executable
+_cur=""$_ACJNI_JAVAC""
+while ls -ld "$_cur" 2>/dev/null | grep " -> " >/dev/null; do
+        { $as_echo "$as_me:${as_lineno-$LINENO}: checking symlink for $_cur" >&5
+$as_echo_n "checking symlink for $_cur... " >&6; }
+        _slink=`ls -ld "$_cur" | sed 's/.* -> //'`
+        case "$_slink" in
+        /*) _cur="$_slink";;
+        # 'X' avoids triggering unwanted echo options.
+        *) _cur=`echo "X$_cur" | sed -e 's/^X//' -e 's:[^/]*$::'`"$_slink";;
+        esac
+        { $as_echo "$as_me:${as_lineno-$LINENO}: result: $_cur" >&5
+$as_echo "$_cur" >&6; }
+done
+_ACJNI_FOLLOWED="$_cur"
+
+_JTOPDIR=`echo "$_ACJNI_FOLLOWED" | sed -e 's://*:/:g' -e 's:/[^/]*$::'`
+case "$host_os" in
+        darwin*)        _JTOPDIR=`echo "$_JTOPDIR" | sed -e 's:/[^/]*$::'`
+                        _JINC="$_JTOPDIR/Headers";;
+        *)              _JINC="$_JTOPDIR/include";;
+esac
+$as_echo "$as_me:${as_lineno-$LINENO}: _JTOPDIR=$_JTOPDIR" >&5
+$as_echo "$as_me:${as_lineno-$LINENO}: _JINC=$_JINC" >&5
+
+# On Mac OS X 10.6.4, jni.h is a symlink:
+# /System/Library/Frameworks/JavaVM.framework/Versions/Current/Headers/jni.h
+# -> ../../CurrentJDK/Headers/jni.h.
+if test -f "$_JINC/jni.h" || test -L "$_JINC/jni.h"; then
+        JNI_INCLUDE_DIRS="$JNI_INCLUDE_DIRS $_JINC"
+else
+        _JTOPDIR=`echo "$_JTOPDIR" | sed -e 's:/[^/]*$::'`
+        if test -f "$_JTOPDIR/include/jni.h"; then
+                JNI_INCLUDE_DIRS="$JNI_INCLUDE_DIRS $_JTOPDIR/include"
+        else
+                as_fn_error $? "cannot find java include files" "$LINENO" 5
+        fi
+fi
+
+# get the likely subdirectories for system specific java includes
+case "$host_os" in
+bsdi*)          _JNI_INC_SUBDIRS="bsdos";;
+freebsd*)       _JNI_INC_SUBDIRS="freebsd";;
+linux*)         _JNI_INC_SUBDIRS="linux genunix";;
+osf*)           _JNI_INC_SUBDIRS="alpha";;
+solaris*)       _JNI_INC_SUBDIRS="solaris";;
+mingw*)		_JNI_INC_SUBDIRS="win32";;
+cygwin*)	_JNI_INC_SUBDIRS="win32";;
+*)              _JNI_INC_SUBDIRS="genunix";;
+esac
+
+# add any subdirectories that are present
+for JINCSUBDIR in $_JNI_INC_SUBDIRS
+do
+    if test -d "$_JTOPDIR/include/$JINCSUBDIR"; then
+         JNI_INCLUDE_DIRS="$JNI_INCLUDE_DIRS $_JTOPDIR/include/$JINCSUBDIR"
+    fi
+done
+
+    need_swig=yes
+    found_jnidir=no
+    for jnidir in ${JNI_INCLUDE_DIRS}
+    do
+        if test x"${found_jnidir}" = xno; then
+            JNI_CPPFLAGS="-I${jnidir}"
+            found_jnidir=yes
+        fi
+    done
+    if test x"${found_jnidir}" = xno; then
+        as_fn_error $? "
+-------------------------------------------------
+Krproject relies upon the JNI for Java bindings.
+No JNI include dir could be found.
+Set JAVAC to point to your Java compiler.
+-------------------------------------------------" "$LINENO" 5
+    fi
+fi
+JNI_CPPFLAGS=${JNI_CPPFLAGS}
+
+
+# Check swig if needed
+if test x"${need_swig}" = xyes; then
+
+        # Ubuntu has swig 2.0 as /usr/bin/swig2.0
+        for ac_prog in swig swig2.0
+do
+  # Extract the first word of "$ac_prog", so it can be a program name with args.
+set dummy $ac_prog; ac_word=$2
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
+$as_echo_n "checking for $ac_word... " >&6; }
+if ${ac_cv_path_SWIG+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  case $SWIG in
+  [\\/]* | ?:[\\/]*)
+  ac_cv_path_SWIG="$SWIG" # Let the user override the test with a path.
+  ;;
+  *)
+  as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+    for ac_exec_ext in '' $ac_executable_extensions; do
+  if { test -f "$as_dir/$ac_word$ac_exec_ext" && $as_test_x "$as_dir/$ac_word$ac_exec_ext"; }; then
+    ac_cv_path_SWIG="$as_dir/$ac_word$ac_exec_ext"
+    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+  done
+IFS=$as_save_IFS
+
+  ;;
+esac
+fi
+SWIG=$ac_cv_path_SWIG
+if test -n "$SWIG"; then
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $SWIG" >&5
+$as_echo "$SWIG" >&6; }
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+fi
+
+
+  test -n "$SWIG" && break
+done
+
+        if test -z "$SWIG" ; then
+                SWIG2.0 is required to build bindings
+        elif test -n "2.0" ; then
+                { $as_echo "$as_me:${as_lineno-$LINENO}: checking SWIG version" >&5
+$as_echo_n "checking SWIG version... " >&6; }
+                swig_version=`$SWIG -version 2>&1 | grep 'SWIG Version' | sed 's/.*\([0-9][0-9]*\.[0-9][0-9]*\.[0-9][0-9]*\).*/\1/g'`
+                { $as_echo "$as_me:${as_lineno-$LINENO}: result: $swig_version" >&5
+$as_echo "$swig_version" >&6; }
+                if test -n "$swig_version" ; then
+                        # Calculate the required version number components
+                        required=2.0
+                        required_major=`echo $required | sed 's/[^0-9].*//'`
+                        if test -z "$required_major" ; then
+                                required_major=0
+                        fi
+                        required=`echo $required | sed 's/[0-9]*[^0-9]//'`
+                        required_minor=`echo $required | sed 's/[^0-9].*//'`
+                        if test -z "$required_minor" ; then
+                                required_minor=0
+                        fi
+                        required=`echo $required | sed 's/[0-9]*[^0-9]//'`
+                        required_patch=`echo $required | sed 's/[^0-9].*//'`
+                        if test -z "$required_patch" ; then
+                                required_patch=0
+                        fi
+                        # Calculate the available version number components
+                        available=$swig_version
+                        available_major=`echo $available | sed 's/[^0-9].*//'`
+                        if test -z "$available_major" ; then
+                                available_major=0
+                        fi
+                        available=`echo $available | sed 's/[0-9]*[^0-9]//'`
+                        available_minor=`echo $available | sed 's/[^0-9].*//'`
+                        if test -z "$available_minor" ; then
+                                available_minor=0
+                        fi
+                        available=`echo $available | sed 's/[0-9]*[^0-9]//'`
+                        available_patch=`echo $available | sed 's/[^0-9].*//'`
+                        if test -z "$available_patch" ; then
+                                available_patch=0
+                        fi
+                        # Convert the version tuple into a single number for easier comparison.
+                        # Using base 100 should be safe since SWIG internally uses BCD values
+                        # to encode its version number.
+                        required_swig_vernum=`expr $required_major \* 10000 \
+                            \+ $required_minor \* 100 \+ $required_patch`
+                        available_swig_vernum=`expr $available_major \* 10000 \
+                            \+ $available_minor \* 100 \+ $available_patch`
+
+                        if test $available_swig_vernum -lt $required_swig_vernum; then
+                                { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: SWIG version >= 2.0 is required.  You have $swig_version." >&5
+$as_echo "$as_me: WARNING: SWIG version >= 2.0 is required.  You have $swig_version." >&2;}
+                                SWIG=''
+                                SWIG2.0 is required to build bindings
+                        else
+                                { $as_echo "$as_me:${as_lineno-$LINENO}: checking for SWIG library" >&5
+$as_echo_n "checking for SWIG library... " >&6; }
+                                SWIG_LIB=`$SWIG -swiglib`
+                                { $as_echo "$as_me:${as_lineno-$LINENO}: result: $SWIG_LIB" >&5
+$as_echo "$SWIG_LIB" >&6; }
+                                have_swig=yes
+                        fi
+                else
+                        { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: cannot determine SWIG version" >&5
+$as_echo "$as_me: WARNING: cannot determine SWIG version" >&2;}
+                        SWIG=''
+                        SWIG2.0 is required to build bindings
+                fi
+        fi
+
+
+fi
+
+ if test x"${enable_java_binding}" = xyes; then
+  ENABLE_JAVA_BINDING_TRUE=
+  ENABLE_JAVA_BINDING_FALSE='#'
+else
+  ENABLE_JAVA_BINDING_TRUE='#'
+  ENABLE_JAVA_BINDING_FALSE=
+fi
+
+ if test x"${enable_python_binding}" = xyes; then
+  ENABLE_PYTHON_BINDING_TRUE=
+  ENABLE_PYTHON_BINDING_FALSE='#'
+else
+  ENABLE_PYTHON_BINDING_TRUE='#'
+  ENABLE_PYTHON_BINDING_FALSE=
+fi
+
+
+
+ac_config_files="$ac_config_files Makefile krutils/Makefile dbs/Makefile dbs/dbs/Makefile krshm/Makefile krcalc/Makefile krdb/Makefile krrule/Makefile krengine/Makefile krcoordi/Makefile krserver/Makefile krclient/Makefile krtests/Makefile binding/Makefile binding/python/Makefile binding/java/Makefile etc/Makefile doc/Makefile"
 
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
@@ -12510,6 +14040,14 @@ Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
 if test -z "${am__fastdepCC_TRUE}" && test -z "${am__fastdepCC_FALSE}"; then
   as_fn_error $? "conditional \"am__fastdepCC\" was never defined.
+Usually this means the macro was only invoked conditionally." "$LINENO" 5
+fi
+if test -z "${ENABLE_JAVA_BINDING_TRUE}" && test -z "${ENABLE_JAVA_BINDING_FALSE}"; then
+  as_fn_error $? "conditional \"ENABLE_JAVA_BINDING\" was never defined.
+Usually this means the macro was only invoked conditionally." "$LINENO" 5
+fi
+if test -z "${ENABLE_PYTHON_BINDING_TRUE}" && test -z "${ENABLE_PYTHON_BINDING_FALSE}"; then
+  as_fn_error $? "conditional \"ENABLE_PYTHON_BINDING\" was never defined.
 Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
 
@@ -13409,6 +14947,9 @@ do
     "krserver/Makefile") CONFIG_FILES="$CONFIG_FILES krserver/Makefile" ;;
     "krclient/Makefile") CONFIG_FILES="$CONFIG_FILES krclient/Makefile" ;;
     "krtests/Makefile") CONFIG_FILES="$CONFIG_FILES krtests/Makefile" ;;
+    "binding/Makefile") CONFIG_FILES="$CONFIG_FILES binding/Makefile" ;;
+    "binding/python/Makefile") CONFIG_FILES="$CONFIG_FILES binding/python/Makefile" ;;
+    "binding/java/Makefile") CONFIG_FILES="$CONFIG_FILES binding/java/Makefile" ;;
     "etc/Makefile") CONFIG_FILES="$CONFIG_FILES etc/Makefile" ;;
     "doc/Makefile") CONFIG_FILES="$CONFIG_FILES doc/Makefile" ;;
 

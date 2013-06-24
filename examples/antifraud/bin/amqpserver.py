@@ -4,17 +4,17 @@ Example of simple krengine server
 import os
 import sys
 import json
-import krengine
 
 # Detect if we're running in a git repo
 from os.path import exists, normpath
 if exists(normpath('../pika')):
     sys.path.insert(0, '..')
 
-krengine_libpath = '/home/tiger/krproject/lib'
+krengine_libpath = '/home/tiger/krproject/lib/python2.7/site-packages'
 if os.path.exists(krengine_libpath):
     sys.path.append(krengine_libpath)
 
+from krproject.krengine import *
 from pika.adapters import SelectConnection
 from pika.connection import ConnectionParameters
 
@@ -55,13 +55,27 @@ def handle_delivery(channel, method_frame, header_frame, body):
     channel.basic_ack(delivery_tag=method_frame.delivery_tag)
     # Call krengine to handle this message
     jsonmsg = json.loads(body);
-    engine.run(1, 1, body)
+    kr_engine_run(engine, 1, 1, body, None)
 
 
 if __name__ == '__main__':
     
     # Startup krengine
-    engine = krengine.KREngine(shmkey = 74561, threadcnt = 5)
+    engine = kr_engine_startup(os.environ.get('DBNAME'),  \
+                       os.environ.get('DBUSER'), \
+                       os.environ.get('DBPASS'), \
+                       '/home/tiger/krproject/log', \
+                       'antifraud', \
+                       5, \
+                       int(os.environ.get('KR_SHMKEY')), \
+                       'KRDB', \
+                       '/home/tiger/krproject/lib/antifraud.so', \
+                       '', \
+                       '', \
+                       0, \
+                       0, \
+                       1000, \
+                       None)
     
     # Connect to RabbitMQ
     host = (len(sys.argv) > 1) and sys.argv[1] or '127.0.0.1'
@@ -78,7 +92,7 @@ if __name__ == '__main__':
         connection.close()
          
         # Shutdown krengine
-        engine.shutdown()
+        kr_engine_shutdown(engine)
 
         # Loop until the conneciton is closed
         connection.ioloop.start()
