@@ -3,12 +3,12 @@
 
 extern int kr_calc_parse(T_KRCalc *krcalc);
 
-T_KRCalc *kr_calc_construct(E_KRCalcBehoof behoof, char *calcstr, 
+T_KRCalc *kr_calc_construct(E_KRCalcFormat format, char *calcstr, 
                           KRGetTypeFunc get_type_func, 
                           KRGetValueFunc get_value_func)
 {
     T_KRCalc *krcalc = (T_KRCalc *)kr_calloc(sizeof(T_KRCalc));
-    krcalc->calc_behoof = behoof;
+    krcalc->calc_format = format;
     krcalc->calc_string = kr_strdup(calcstr);
     
     krcalc->get_type_cb = get_type_func;
@@ -63,7 +63,7 @@ int kr_calc_eval(T_KRCalc *krcalc, void *param)
 void kr_calc_dump(T_KRCalc *krcalc, FILE *fp)
 {
     fprintf(fp, "Dumping Calc:[%c][%s]:\n    ", \
-            krcalc->calc_behoof, krcalc->calc_string);
+            krcalc->calc_format, krcalc->calc_string);
     fprintf(fp, "cid_cnt:[%d],", krcalc->cid_cnt);
     fprintf(fp, "fid_cnt:[%d],", krcalc->fid_cnt);
     fprintf(fp, "sid_cnt:[%d],", krcalc->sid_cnt);

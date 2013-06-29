@@ -73,18 +73,19 @@ typedef union {
     char   *s;
 }U_KRCalcValue;
 
-/* Behoof of this calculator */
+/* Format of this calculator */
 typedef enum {
-    KR_CALCBEHOOF_DATA = 'D',
-    KR_CALCBEHOOF_RULE = 'R'
-}E_KRCalcBehoof;
+    KR_CALCFORMAT_FLEX = 'F', /* the Intuitive And Simple expression */
+    KR_CALCFORMAT_JSON = 'J', /* json format expression */
+    KR_CALCFORMAT_GWT  = 'G'  /* smartgwt filter's json expression */
+}E_KRCalcFormat;
 
 
 /* calculator definition */
 typedef struct _kr_calc_t 
 {
     /* outer params */
-    E_KRCalcBehoof    calc_behoof;
+    E_KRCalcFormat    calc_format;
     char             *calc_string;
     KRGetTypeFunc     get_type_cb;
     KRGetValueFunc    get_value_cb;
@@ -137,12 +138,15 @@ static inline E_KRFieldType kr_calctype_to_fieldtype(E_KRCalcType calc_type)
 
 
 /* function declarations */
-extern T_KRCalc *kr_calc_construct(E_KRCalcBehoof behoof, char *calcstr, 
+extern T_KRCalc *kr_calc_construct(E_KRCalcFormat format, char *calcstr, 
                    KRGetTypeFunc get_type_func, KRGetValueFunc get_value_func);
 extern void kr_calc_destruct(T_KRCalc *krcalc);
 extern void kr_calc_dump(T_KRCalc *krcalc, FILE *printer);
 extern int kr_calc_check(T_KRCalc *krcalc);
 extern int kr_calc_eval(T_KRCalc *krcalc, void *param);
 
+
+extern T_KRSet *kr_make_set_from_multi(E_KRCalcKind kind, char *string);
+extern int kr_calc_parse(T_KRCalc *krcalc);
 
 #endif    /* __KR_CALC_H__ */

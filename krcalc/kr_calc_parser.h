@@ -2,4 +2,6 @@
 #define __KR_CALC_PARSER_H__
 
 
-#endif    /* __KR_CALC_PARSER_H__ */
+/* function declarations */
+
+#endif  /* __KR_CALC_PARSER_H__ */

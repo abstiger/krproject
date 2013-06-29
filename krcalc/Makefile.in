@@ -35,7 +35,8 @@ POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
 subdir = krcalc
-DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in
+DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in \
+	kr_calc_lexer_flex.c kr_calc_parser_flex.c
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/ax_jni_include_dir.m4 \
 	$(top_srcdir)/m4/ax_pkg_swig.m4 \
@@ -83,8 +84,12 @@ am__uninstall_files_from_dir = { \
 am__installdirs = "$(DESTDIR)$(libdir)"
 LTLIBRARIES = $(lib_LTLIBRARIES)
 libkrcalc_la_DEPENDENCIES = $(top_srcdir)/krutils/libkrutils.la
-am_libkrcalc_la_OBJECTS = libkrcalc_la-kr_calc_parser.lo \
-	libkrcalc_la-kr_calc_tree.lo libkrcalc_la-kr_calc.lo
+am_libkrcalc_la_OBJECTS = libkrcalc_la-kr_calc_parser_flex.lo \
+	libkrcalc_la-kr_calc_lexer_flex.lo \
+	libkrcalc_la-kr_calc_parser_json.lo \
+	libkrcalc_la-kr_calc_parser_gwt.lo \
+	libkrcalc_la-kr_calc_parser.lo libkrcalc_la-kr_calc_tree.lo \
+	libkrcalc_la-kr_calc.lo
 libkrcalc_la_OBJECTS = $(am_libkrcalc_la_OBJECTS)
 libkrcalc_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
@@ -102,6 +107,13 @@ CCLD = $(CC)
 LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
 	--mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) \
 	$(LDFLAGS) -o $@
+LEXCOMPILE = $(LEX) $(AM_LFLAGS) $(LFLAGS)
+LTLEXCOMPILE = $(LIBTOOL) $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
+	--mode=compile $(LEX) $(AM_LFLAGS) $(LFLAGS)
+YLWRAP = $(top_srcdir)/ylwrap
+YACCCOMPILE = $(YACC) $(AM_YFLAGS) $(YFLAGS)
+LTYACCCOMPILE = $(LIBTOOL) $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
+	--mode=compile $(YACC) $(AM_YFLAGS) $(YFLAGS)
 SOURCES = $(libkrcalc_la_SOURCES)
 DIST_SOURCES = $(libkrcalc_la_SOURCES)
 ETAGS = etags
@@ -144,6 +156,9 @@ JAVAC = @JAVAC@
 JNI_CPPFLAGS = @JNI_CPPFLAGS@
 LD = @LD@
 LDFLAGS = @LDFLAGS@
+LEX = @LEX@
+LEXLIB = @LEXLIB@
+LEX_OUTPUT_ROOT = @LEX_OUTPUT_ROOT@
 LIBOBJS = @LIBOBJS@
 LIBS = @LIBS@
 LIBTOOL = @LIBTOOL@
@@ -185,6 +200,8 @@ STRIP = @STRIP@
 SWIG = @SWIG@
 SWIG_LIB = @SWIG_LIB@
 VERSION = @VERSION@
+YACC = @YACC@
+YFLAGS = @YFLAGS@
 _ACJNI_JAVAC = @_ACJNI_JAVAC@
 abs_builddir = @abs_builddir@
 abs_srcdir = @abs_srcdir@
@@ -244,8 +261,14 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 lib_LTLIBRARIES = libkrcalc.la
 libkrcalc_la_SOURCES = \
-						 kr_calc_parser.c   \
-						 kr_calc_parser.h   \
+						 kr_calc_parser_flex.y   \
+						 kr_calc_lexer_flex.l   \
+						 kr_calc_parser_json.c   \
+						 kr_calc_parser_json.h   \
+						 kr_calc_parser_gwt.c   \
+						 kr_calc_parser_gwt.h   \
+						 kr_calc_parser.c \
+						 kr_calc_parser.h \
 						 kr_calc_tree.c \
 						 kr_calc_tree.h \
 						 kr_calc.c \
@@ -254,11 +277,10 @@ libkrcalc_la_SOURCES = \
 libkrcalc_la_LIBADD = $(top_srcdir)/krutils/libkrutils.la
 libkrcalc_la_LDFLAGS = 
 libkrcalc_la_CPPFLAGS = 
-EXTRA_DIST = parser
 all: all-am
 
 .SUFFIXES:
-.SUFFIXES: .c .lo .o .obj
+.SUFFIXES: .c .l .lo .o .obj .y
 $(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
 	@for dep in $?; do \
 	  case '$(am__configure_deps)' in \
@@ -330,7 +352,11 @@ distclean-compile:
 	-rm -f *.tab.c
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkrcalc_la-kr_calc.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkrcalc_la-kr_calc_lexer_flex.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkrcalc_la-kr_calc_parser.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkrcalc_la-kr_calc_parser_flex.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkrcalc_la-kr_calc_parser_gwt.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkrcalc_la-kr_calc_parser_json.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkrcalc_la-kr_calc_tree.Plo@am__quote@
 
 .c.o:
@@ -354,6 +380,34 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LTCOMPILE) -c -o $@ $<
 
+libkrcalc_la-kr_calc_parser_flex.lo: kr_calc_parser_flex.c
+@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libkrcalc_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libkrcalc_la-kr_calc_parser_flex.lo -MD -MP -MF $(DEPDIR)/libkrcalc_la-kr_calc_parser_flex.Tpo -c -o libkrcalc_la-kr_calc_parser_flex.lo `test -f 'kr_calc_parser_flex.c' || echo '$(srcdir)/'`kr_calc_parser_flex.c
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/libkrcalc_la-kr_calc_parser_flex.Tpo $(DEPDIR)/libkrcalc_la-kr_calc_parser_flex.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='kr_calc_parser_flex.c' object='libkrcalc_la-kr_calc_parser_flex.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libkrcalc_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libkrcalc_la-kr_calc_parser_flex.lo `test -f 'kr_calc_parser_flex.c' || echo '$(srcdir)/'`kr_calc_parser_flex.c
+
+libkrcalc_la-kr_calc_lexer_flex.lo: kr_calc_lexer_flex.c
+@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libkrcalc_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libkrcalc_la-kr_calc_lexer_flex.lo -MD -MP -MF $(DEPDIR)/libkrcalc_la-kr_calc_lexer_flex.Tpo -c -o libkrcalc_la-kr_calc_lexer_flex.lo `test -f 'kr_calc_lexer_flex.c' || echo '$(srcdir)/'`kr_calc_lexer_flex.c
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/libkrcalc_la-kr_calc_lexer_flex.Tpo $(DEPDIR)/libkrcalc_la-kr_calc_lexer_flex.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='kr_calc_lexer_flex.c' object='libkrcalc_la-kr_calc_lexer_flex.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libkrcalc_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libkrcalc_la-kr_calc_lexer_flex.lo `test -f 'kr_calc_lexer_flex.c' || echo '$(srcdir)/'`kr_calc_lexer_flex.c
+
+libkrcalc_la-kr_calc_parser_json.lo: kr_calc_parser_json.c
+@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libkrcalc_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libkrcalc_la-kr_calc_parser_json.lo -MD -MP -MF $(DEPDIR)/libkrcalc_la-kr_calc_parser_json.Tpo -c -o libkrcalc_la-kr_calc_parser_json.lo `test -f 'kr_calc_parser_json.c' || echo '$(srcdir)/'`kr_calc_parser_json.c
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/libkrcalc_la-kr_calc_parser_json.Tpo $(DEPDIR)/libkrcalc_la-kr_calc_parser_json.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='kr_calc_parser_json.c' object='libkrcalc_la-kr_calc_parser_json.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libkrcalc_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libkrcalc_la-kr_calc_parser_json.lo `test -f 'kr_calc_parser_json.c' || echo '$(srcdir)/'`kr_calc_parser_json.c
+
+libkrcalc_la-kr_calc_parser_gwt.lo: kr_calc_parser_gwt.c
+@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libkrcalc_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libkrcalc_la-kr_calc_parser_gwt.lo -MD -MP -MF $(DEPDIR)/libkrcalc_la-kr_calc_parser_gwt.Tpo -c -o libkrcalc_la-kr_calc_parser_gwt.lo `test -f 'kr_calc_parser_gwt.c' || echo '$(srcdir)/'`kr_calc_parser_gwt.c
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/libkrcalc_la-kr_calc_parser_gwt.Tpo $(DEPDIR)/libkrcalc_la-kr_calc_parser_gwt.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='kr_calc_parser_gwt.c' object='libkrcalc_la-kr_calc_parser_gwt.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libkrcalc_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libkrcalc_la-kr_calc_parser_gwt.lo `test -f 'kr_calc_parser_gwt.c' || echo '$(srcdir)/'`kr_calc_parser_gwt.c
+
 libkrcalc_la-kr_calc_parser.lo: kr_calc_parser.c
 @am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libkrcalc_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libkrcalc_la-kr_calc_parser.lo -MD -MP -MF $(DEPDIR)/libkrcalc_la-kr_calc_parser.Tpo -c -o libkrcalc_la-kr_calc_parser.lo `test -f 'kr_calc_parser.c' || echo '$(srcdir)/'`kr_calc_parser.c
 @am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/libkrcalc_la-kr_calc_parser.Tpo $(DEPDIR)/libkrcalc_la-kr_calc_parser.Plo
@@ -374,6 +428,12 @@ libkrcalc_la-kr_calc.lo: kr_calc.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='kr_calc.c' object='libkrcalc_la-kr_calc.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libkrcalc_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libkrcalc_la-kr_calc.lo `test -f 'kr_calc.c' || echo '$(srcdir)/'`kr_calc.c
+
+.l.c:
+	$(am__skiplex) $(SHELL) $(YLWRAP) $< $(LEX_OUTPUT_ROOT).c $@ -- $(LEXCOMPILE)
+
+.y.c:
+	$(am__skipyacc) $(SHELL) $(YLWRAP) $< y.tab.c $@ y.tab.h $*.h y.output $*.output -- $(YACCCOMPILE)
 
 mostlyclean-libtool:
 	-rm -f *.lo
@@ -500,9 +560,11 @@ distclean-generic:
 maintainer-clean-generic:
 	@echo "This command is intended for maintainers to use"
 	@echo "it deletes files that may require special tools to rebuild."
+	-rm -f kr_calc_lexer_flex.c
+	-rm -f kr_calc_parser_flex.c
 clean: clean-am
 
-clean-am: clean-generic clean-libLTLIBRARIES clean-libtool \
+clean-am: clean-generic clean-libLTLIBRARIES clean-libtool clean-local \
 	mostlyclean-am
 
 distclean: distclean-am
@@ -574,7 +636,7 @@ uninstall-am: uninstall-libLTLIBRARIES
 .MAKE: install-am install-strip
 
 .PHONY: CTAGS GTAGS all all-am check check-am clean clean-generic \
-	clean-libLTLIBRARIES clean-libtool ctags distclean \
+	clean-libLTLIBRARIES clean-libtool clean-local ctags distclean \
 	distclean-compile distclean-generic distclean-libtool \
 	distclean-tags distdir dvi dvi-am html html-am info info-am \
 	install install-am install-data install-data-am install-dvi \
@@ -587,6 +649,15 @@ uninstall-am: uninstall-libLTLIBRARIES
 	mostlyclean-generic mostlyclean-libtool pdf pdf-am ps ps-am \
 	tags uninstall uninstall-am uninstall-libLTLIBRARIES
 
+
+kr_calc_lexer_flex.c: kr_calc_lexer_flex.l kr_calc_parser_flex.c
+	lex --noline --outfile=$@ $<
+
+kr_calc_parser_flex.c: kr_calc_parser_flex.y
+	yacc -d --no-lines --output=$@ $< 
+
+clean-local:
+	-rm -f kr_calc_lexer_flex.c kr_calc_parser_flex.h kr_calc_parser_flex.c
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

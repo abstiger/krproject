@@ -70,13 +70,11 @@ if __name__ == '__main__':
                        '/home/tiger/krproject/log', \
                        'antifraud', \
                        5, \
-                       int(os.environ.get('KR_SHMKEY')), \
-                       'KRDB', \
                        '/home/tiger/krproject/lib/antifraud.so', \
                        '', \
                        '', \
                        0, \
-                       0, \
+                       2, \
                        1000, \
                        None)
     
