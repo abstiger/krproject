@@ -24,6 +24,7 @@ typedef struct _kr_shm_ddi_def_t
     long        lStatisticsValue;
     long        lStatisticsCount;
     char        caStatisticsMethod[1+1];
+    char        caDdiFilterFormat[1+1];
     char        caDdiFilterString[500+1];
 }T_KRShmDDIDef;
 

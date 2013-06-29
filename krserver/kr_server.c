@@ -172,7 +172,6 @@ int kr_server_initialize(void)
     krserver.krengine = kr_engine_startup(
             krserver.dbname, krserver.dbuser, krserver.dbpass,
             krserver.logpath, krserver.serverid, krserver.loglevel,
-            krserver.shmkey, krserver.serverid, 
             krserver.krdbmodule, krserver.datamodule, krserver.rulemodule,
             krserver.hdicachesize, krserver.threadcnt, krserver.hwm,
             krserver.krel);

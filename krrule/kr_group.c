@@ -15,11 +15,11 @@ T_KRGroup *kr_group_construct(T_KRShmGroupDef *group_def, T_KRModule *groupmodul
     }
     krgroup->ptShmGroupDef = group_def;
     krgroup->lGroupId = group_def->lGroupId;
-    krgroup->ptGroupCalc = kr_calc_construct(KR_CALCBEHOOF_RULE, \
-        group_def->caGroupString, kr_rule_get_type, kr_rule_get_value);
+    krgroup->ptGroupCalc = kr_calc_construct(group_def->caGroupCalcFormat[0], \
+        group_def->caGroupCalcString, kr_rule_get_type, kr_rule_get_value);
     if (krgroup->ptGroupCalc == NULL) {
         KR_LOG(KR_LOGERROR, "kr_calc_construct [%s] Failed!", \
-                group_def->caGroupString);
+                group_def->caGroupCalcString);
         return NULL;
     }
     krgroup->GroupFunc = (KRGroupFunc )kr_group_func;

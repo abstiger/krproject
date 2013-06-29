@@ -13,7 +13,8 @@ typedef struct _kr_shm_rule_def_t
     char        caRuleName[30+1];
     char        caRuleDesc[100+1];
     long        lRuleDatasrc;
-    char        caRuleString[500+1];
+    char        caRuleCalcFormat[1+1];
+    char        caRuleCalcString[500+1];
     char        caRuleType[1+1];
     char        caRuleFunc[50+1];
     long        lRuleWeight;

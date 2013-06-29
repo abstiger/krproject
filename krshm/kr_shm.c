@@ -1,88 +1,29 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <sys/types.h>
-#include <sys/ipc.h>
-#include <sys/shm.h>
-#include <errno.h>
-
 #include "krutils/kr_utils.h"
 #include "dbs/dbs_basopr.h"
 #include "kr_shm.h"
 
 
-#define SHM_PERM  0600
-
-
-T_KRShareMem *kr_shm_create(int shmkey)
+T_KRShareMem *kr_shm_create(T_DbsEnv *dbsenv)
 {
-    int iShmId;
-    key_t tShmKey = (key_t)shmkey;
-    T_KRShareMem *ptShmBuf = NULL;
-    
-    iShmId = shmget(tShmKey, sizeof(T_KRShareMem), SHM_PERM|IPC_EXCL|IPC_CREAT);
-    if (iShmId == -1) {
-        KR_LOG(KR_LOGERROR, "shmget ptShmBuf failed[%s]!", strerror(errno));
+    T_KRShareMem *ptShmBuf = kr_calloc(sizeof(T_KRShareMem));
+    if (ptShmBuf == NULL) {
+        KR_LOG(KR_LOGERROR, "kr_calloc ptShmBuf failed!");
         return NULL;
     }
-    
-    ptShmBuf = (T_KRShareMem *)shmat(iShmId, 0, 0);
-    if (((long)ptShmBuf) == -1L) {
-        KR_LOG(KR_LOGERROR, "shmat ptShmBuf failed[%s]!", strerror(errno));
+
+    /* load share memory */
+    if (kr_shm_load(dbsenv, ptShmBuf) < 0) {
+        KR_LOG(KR_LOGERROR, "kr_shm_load ptShmBuf failed!");
         return NULL;
     }
-    
-    ptShmBuf->nSecId = 0;
 
     return ptShmBuf;
 }
 
 
-T_KRShareMem *kr_shm_attach(int shmkey)
+void kr_shm_destroy(T_KRShareMem *ptShmBuf)
 {
-    int iShmId;
-    key_t tShmKey = (key_t )shmkey;
-    T_KRShareMem *ptShmBuf = NULL;
-
-    if ((iShmId = shmget(tShmKey, sizeof(T_KRShareMem), SHM_PERM)) == -1) {
-        KR_LOG(KR_LOGERROR, "shmget ptShmBuf failed[%s]!", strerror(errno));
-        return NULL;
-    }
-    
-    ptShmBuf = (T_KRShareMem *)shmat(iShmId, 0, 0);
-    if (((long)ptShmBuf) == -1L) {
-        KR_LOG(KR_LOGERROR, "shmat ptShmBuf failed[%s]!", strerror(errno));
-        return NULL;
-    }
-    
-    return ptShmBuf;
-}
-
-
-void kr_shm_detach(T_KRShareMem *ptShmBuf)
-{
-    shmdt((void*)ptShmBuf);
-    ptShmBuf = NULL;
-}
-
-
-int kr_shm_destroy(int shmkey)
-{
-    int     iShmId;
-    key_t   tShmKey = (key_t)shmkey;
-
-    iShmId = shmget(tShmKey, sizeof(T_KRShareMem), SHM_PERM| IPC_CREAT);
-    if (iShmId == -1) {
-        KR_LOG(KR_LOGERROR, "shmget ptShmBuf failed[%s]!", strerror(errno));
-        return -1;
-    }
-    
-    if (shmctl(iShmId, IPC_RMID, 0) < 0) {
-        KR_LOG(KR_LOGERROR, "shmat ptShmBuf failed[%s]!", strerror(errno));
-        return -1;
-    }
-    
-    return 0;
+    kr_free(ptShmBuf);
 }
 
 

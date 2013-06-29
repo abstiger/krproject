@@ -1,7 +1,7 @@
 --==============================================================
 -- Database name:  KRDB
--- DBMS name:      IBM DB2 UDB 9.x Common Server
--- Created on:     2013/3/29 9:33:51
+-- DBMS name:      IBM DB2 UDB 9.0 Common Server
+-- Created on:     2013/6/29 9:33:20
 --==============================================================
 
 
@@ -134,6 +134,7 @@ create table KR_TBL_DDI_DEF
    STATISTICS_TYPE      CHAR(1)                not null,
    STATISTICS_VALUE     INTEGER                not null,
    STATISTICS_COUNT     INTEGER                not null,
+   DDI_FILTER_FORMAT    CHAR(1)                not null,
    DDI_FILTER_STRING    VARCHAR(500)           not null,
    STATISTICS_METHOD    CHAR(1)                not null,
    DDI_STATUS           CHAR(1)                not null,
@@ -186,7 +187,8 @@ create table KR_TBL_GROUP
    GROUP_ID             INTEGER                not null,
    GROUP_NAME           VARCHAR(30)            not null,
    GROUP_DESC           VARCHAR(100)           not null,
-   GROUP_STRING         VARCHAR(500)           not null,
+   GROUP_CALC_FORMAT    CHAR(1)                not null,
+   GROUP_CALC_STRING    VARCHAR(500)           not null,
    GROUP_FUNC           VARCHAR(50)            not null,
    GROUP_STATUS         CHAR(1)                not null,
    REC_CRET_DTTM        CHAR(17)               not null,
@@ -229,7 +231,8 @@ create table KR_TBL_RULE
    RULE_NAME            VARCHAR(30)            not null,
    RULE_DESC            VARCHAR(100)           not null,
    RULE_DATASRC         INTEGER                not null,
-   RULE_STRING          VARCHAR(500)           not null,
+   RULE_CALC_FORMAT     CHAR(1)                not null,
+   RULE_CALC_STRING     VARCHAR(500)           not null,
    RULE_TYPE            CHAR(1)                not null,
    RULE_FUNC            VARCHAR(50)            not null,
    RULE_WEIGHT          INTEGER                not null,
@@ -257,6 +260,7 @@ create table KR_TBL_SDI_DEF
    STATISTICS_FIELD     INTEGER                not null,
    STATISTICS_LOCATION  INTEGER                not null,
    LOCATION_PROPERTY    CHAR(1)                not null,
+   SDI_FILTER_FORMAT    CHAR(1)                not null,
    SDI_FILTER_STRING    VARCHAR(500)           not null,
    SDI_STATUS           CHAR(1)                not null,
    REC_CRET_DTTM        CHAR(17)               not null,

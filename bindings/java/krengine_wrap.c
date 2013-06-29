@@ -194,7 +194,7 @@ static void SWIGUNUSED SWIG_JavaThrowException(JNIEnv *jenv, SWIG_JavaExceptionC
 extern "C" {
 #endif
 
-SWIGEXPORT jint JNICALL Java_krengine_krengineJNI_KR_1OPRCODE_1INSERT_1get(JNIEnv *jenv, jclass jcls) {
+SWIGEXPORT jint JNICALL Java_org_krproject_krengineJNI_KR_1OPRCODE_1INSERT_1get(JNIEnv *jenv, jclass jcls) {
   jint jresult = 0 ;
   E_KROprCode result;
   
@@ -206,7 +206,7 @@ SWIGEXPORT jint JNICALL Java_krengine_krengineJNI_KR_1OPRCODE_1INSERT_1get(JNIEn
 }
 
 
-SWIGEXPORT jint JNICALL Java_krengine_krengineJNI_KR_1OPRCODE_1DETECT_1get(JNIEnv *jenv, jclass jcls) {
+SWIGEXPORT jint JNICALL Java_org_krproject_krengineJNI_KR_1OPRCODE_1DETECT_1get(JNIEnv *jenv, jclass jcls) {
   jint jresult = 0 ;
   E_KROprCode result;
   
@@ -218,7 +218,7 @@ SWIGEXPORT jint JNICALL Java_krengine_krengineJNI_KR_1OPRCODE_1DETECT_1get(JNIEn
 }
 
 
-SWIGEXPORT jlong JNICALL Java_krengine_krengineJNI_kr_1engine_1startup(JNIEnv *jenv, jclass jcls, jstring jarg1, jstring jarg2, jstring jarg3, jstring jarg4, jstring jarg5, jint jarg6, jint jarg7, jstring jarg8, jstring jarg9, jstring jarg10, jstring jarg11, jint jarg12, jint jarg13, jint jarg14, jlong jarg15) {
+SWIGEXPORT jlong JNICALL Java_org_krproject_krengineJNI_kr_1engine_1startup(JNIEnv *jenv, jclass jcls, jstring jarg1, jstring jarg2, jstring jarg3, jstring jarg4, jstring jarg5, jint jarg6, jstring jarg7, jstring jarg8, jstring jarg9, jint jarg10, jint jarg11, jint jarg12, jlong jarg13) {
   jlong jresult = 0 ;
   char *arg1 = (char *) 0 ;
   char *arg2 = (char *) 0 ;
@@ -226,15 +226,13 @@ SWIGEXPORT jlong JNICALL Java_krengine_krengineJNI_kr_1engine_1startup(JNIEnv *j
   char *arg4 = (char *) 0 ;
   char *arg5 = (char *) 0 ;
   int arg6 ;
-  int arg7 ;
+  char *arg7 = (char *) 0 ;
   char *arg8 = (char *) 0 ;
   char *arg9 = (char *) 0 ;
-  char *arg10 = (char *) 0 ;
-  char *arg11 = (char *) 0 ;
+  int arg10 ;
+  int arg11 ;
   int arg12 ;
-  int arg13 ;
-  int arg14 ;
-  void *arg15 = (void *) 0 ;
+  void *arg13 = (void *) 0 ;
   T_KREngine *result = 0 ;
   
   (void)jenv;
@@ -265,7 +263,11 @@ SWIGEXPORT jlong JNICALL Java_krengine_krengineJNI_kr_1engine_1startup(JNIEnv *j
     if (!arg5) return 0;
   }
   arg6 = (int)jarg6; 
-  arg7 = (int)jarg7; 
+  arg7 = 0;
+  if (jarg7) {
+    arg7 = (char *)(*jenv)->GetStringUTFChars(jenv, jarg7, 0);
+    if (!arg7) return 0;
+  }
   arg8 = 0;
   if (jarg8) {
     arg8 = (char *)(*jenv)->GetStringUTFChars(jenv, jarg8, 0);
@@ -276,36 +278,25 @@ SWIGEXPORT jlong JNICALL Java_krengine_krengineJNI_kr_1engine_1startup(JNIEnv *j
     arg9 = (char *)(*jenv)->GetStringUTFChars(jenv, jarg9, 0);
     if (!arg9) return 0;
   }
-  arg10 = 0;
-  if (jarg10) {
-    arg10 = (char *)(*jenv)->GetStringUTFChars(jenv, jarg10, 0);
-    if (!arg10) return 0;
-  }
-  arg11 = 0;
-  if (jarg11) {
-    arg11 = (char *)(*jenv)->GetStringUTFChars(jenv, jarg11, 0);
-    if (!arg11) return 0;
-  }
+  arg10 = (int)jarg10; 
+  arg11 = (int)jarg11; 
   arg12 = (int)jarg12; 
-  arg13 = (int)jarg13; 
-  arg14 = (int)jarg14; 
-  arg15 = *(void **)&jarg15; 
-  result = (T_KREngine *)kr_engine_startup(arg1,arg2,arg3,arg4,arg5,arg6,arg7,arg8,arg9,arg10,arg11,arg12,arg13,arg14,arg15);
+  arg13 = *(void **)&jarg13; 
+  result = (T_KREngine *)kr_engine_startup(arg1,arg2,arg3,arg4,arg5,arg6,arg7,arg8,arg9,arg10,arg11,arg12,arg13);
   *(T_KREngine **)&jresult = result; 
   if (arg1) (*jenv)->ReleaseStringUTFChars(jenv, jarg1, (const char *)arg1);
   if (arg2) (*jenv)->ReleaseStringUTFChars(jenv, jarg2, (const char *)arg2);
   if (arg3) (*jenv)->ReleaseStringUTFChars(jenv, jarg3, (const char *)arg3);
   if (arg4) (*jenv)->ReleaseStringUTFChars(jenv, jarg4, (const char *)arg4);
   if (arg5) (*jenv)->ReleaseStringUTFChars(jenv, jarg5, (const char *)arg5);
+  if (arg7) (*jenv)->ReleaseStringUTFChars(jenv, jarg7, (const char *)arg7);
   if (arg8) (*jenv)->ReleaseStringUTFChars(jenv, jarg8, (const char *)arg8);
   if (arg9) (*jenv)->ReleaseStringUTFChars(jenv, jarg9, (const char *)arg9);
-  if (arg10) (*jenv)->ReleaseStringUTFChars(jenv, jarg10, (const char *)arg10);
-  if (arg11) (*jenv)->ReleaseStringUTFChars(jenv, jarg11, (const char *)arg11);
   return jresult;
 }
 
 
-SWIGEXPORT jint JNICALL Java_krengine_krengineJNI_kr_1engine_1run(JNIEnv *jenv, jclass jcls, jlong jarg1, jint jarg2, jint jarg3, jstring jarg4, jlong jarg5) {
+SWIGEXPORT jint JNICALL Java_org_krproject_krengineJNI_kr_1engine_1run(JNIEnv *jenv, jclass jcls, jlong jarg1, jint jarg2, jint jarg3, jstring jarg4, jlong jarg5) {
   jint jresult = 0 ;
   T_KREngine *arg1 = (T_KREngine *) 0 ;
   E_KROprCode arg2 ;
@@ -332,7 +323,7 @@ SWIGEXPORT jint JNICALL Java_krengine_krengineJNI_kr_1engine_1run(JNIEnv *jenv, 
 }
 
 
-SWIGEXPORT void JNICALL Java_krengine_krengineJNI_kr_1engine_1shutdown(JNIEnv *jenv, jclass jcls, jlong jarg1) {
+SWIGEXPORT void JNICALL Java_org_krproject_krengineJNI_kr_1engine_1shutdown(JNIEnv *jenv, jclass jcls, jlong jarg1) {
   T_KREngine *arg1 = (T_KREngine *) 0 ;
   
   (void)jenv;
@@ -342,7 +333,7 @@ SWIGEXPORT void JNICALL Java_krengine_krengineJNI_kr_1engine_1shutdown(JNIEnv *j
 }
 
 
-SWIGEXPORT jstring JNICALL Java_krengine_krengineJNI_kr_1engine_1info(JNIEnv *jenv, jclass jcls, jlong jarg1) {
+SWIGEXPORT jstring JNICALL Java_org_krproject_krengineJNI_kr_1engine_1info(JNIEnv *jenv, jclass jcls, jlong jarg1) {
   jstring jresult = 0 ;
   T_KREngine *arg1 = (T_KREngine *) 0 ;
   char *result = 0 ;

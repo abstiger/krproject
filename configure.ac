@@ -14,6 +14,8 @@ LT_INIT(disable_static)
 AC_PROG_CC
 AM_PROG_CC_C_O
 AC_PROG_LIBTOOL
+AM_PROG_LEX
+AC_PROG_YACC
 
 # Checks for libraries.
 
@@ -96,6 +98,9 @@ krtests/Makefile
 bindings/Makefile
 bindings/python/Makefile
 bindings/java/Makefile
+examples/Makefile
+examples/antifraud/Makefile
+examples/playweibo/Makefile
 etc/Makefile 
 doc/Makefile 
 ])

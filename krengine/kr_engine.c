@@ -9,9 +9,6 @@
 #include "krrule/kr_rule.h"
 #include "kr_engine.h"
 
-extern void *kr_engine_thread_init(void *env);
-extern void kr_engine_thread_fini(void *ctx);
-
 static int kr_engine_worker(void *ctx, void *arg);
 
 struct _kr_engine_t
@@ -19,15 +16,12 @@ struct _kr_engine_t
     char             *version;      /* version of krengine */
     char             *info;         /* information of krengine */
 
-    int              shmkey;        /* share memory key */
-    char             *krdbname;     /* name of krdb */
     char             *krdbmodule;   /* name of krdb's module */
     char             *datamodule;   /* name of data's module */
     char             *rulemodule;   /* name of rule's module */
     int              hdicachesize;  /* hdi cache size */
     int              threadcnt;     /* thread pool size */
     int              hwm;           /* thread pool high water mark */
-    void             *eventloop;    /* event loop */
 
     T_KRContextEnv   *krctxenv;     /* environment of the context */
     T_KRContext      *krctx;        /* dynamic memory address */
@@ -37,10 +31,8 @@ struct _kr_engine_t
 T_KREngine *kr_engine_startup(
         char *dsn, char *user, char *pass,
         char *logpath, char *logname, int loglevel,
-        int shmkey, char *krdbname, char *krdbmodule, 
-        char *datamodule, char *rulemodule, 
-        int hdicachesize, int threadcnt, int hwm, 
-        void *eventloop)
+        char *krdbmodule, char *datamodule, char *rulemodule, 
+        int hdicachesize, int threadcnt, int hwm, void *data)
 {
     /* Set log file and level */
     if (logpath) kr_log_set_path(logpath);
@@ -75,7 +67,7 @@ T_KREngine *kr_engine_startup(
         goto FAILED;
     }
     krengine->krctxenv = krctxenv;
-    krctxenv->krEventLoop = eventloop;
+    krctxenv->data = data;
 
     /* load pludge-in modules */
     if (krdbmodule) {
@@ -108,7 +100,7 @@ T_KREngine *kr_engine_startup(
             goto FAILED;
         }
     }
-    
+
     /* Connect to database */
     if (dsn) {
         krctxenv->ptDbs = dbsConnect(dsn, user, pass);
@@ -122,31 +114,19 @@ T_KREngine *kr_engine_startup(
         goto FAILED;
     }
 
-    /* Attach share memory */
-    if (shmkey) {
-        krengine->shmkey = shmkey;
-        krctxenv->ptShm  = kr_shm_attach(krengine->shmkey);
-        if (krctxenv->ptShm == NULL) {
-            KR_LOG(KR_LOGERROR, "kr_shm_attach [%d] failed!", krengine->shmkey);
-            goto FAILED;
-        }
-    } else {
-        KR_LOG(KR_LOGERROR, "shm-key not configured!\n");
+    /* Create share memory */
+    krctxenv->ptShm = kr_shm_create(krctxenv->ptDbs);
+    if (krctxenv->ptShm == NULL) {
+        KR_LOG(KR_LOGERROR, "kr_shm_create failed!");
         goto FAILED;
     }
 
     /* Start up krdb */
-    if (krdbname) {
-        krengine->krdbname = kr_strdup(krdbname);
-        krctxenv->ptKRDB = kr_db_startup(
-                krctxenv->ptDbs, krengine->krdbname, krctxenv->krdbModule);
-        if (krctxenv->ptKRDB == NULL) {
-            KR_LOG(KR_LOGERROR, "kr_db_startup [%s] [%s] failed!", \
-                    krengine->krdbname, krengine->krdbmodule);
-            goto FAILED;
-        }
-    } else {
-        KR_LOG(KR_LOGERROR, "krdb-name not configured!\n");
+    krctxenv->ptKRDB = kr_db_startup(\
+            krctxenv->ptDbs, "KRDB", krctxenv->krdbModule);
+    if (krctxenv->ptKRDB == NULL) {
+        KR_LOG(KR_LOGERROR, "kr_db_startup [%s] failed!", \ 
+                krengine->krdbmodule);
         goto FAILED;
     }
 
@@ -175,9 +155,9 @@ T_KREngine *kr_engine_startup(
         krengine->hwm = hwm;
         krengine->krtp = kr_threadpool_create(
                 krengine->threadcnt, krengine->hwm, krengine->krctxenv, 
-                kr_engine_thread_init, 
-                kr_engine_worker, 
-                kr_engine_thread_fini);
+                (KRThdInitFunc )kr_context_init, 
+                (KRThdWorkerFunc )kr_engine_worker, 
+                (KRThdFiniFunc )kr_context_fini);
         if (krengine->krtp == NULL) {
             KR_LOG(KR_LOGERROR, "kr_threadpool_create failed!");
             goto FAILED;
@@ -213,14 +193,13 @@ void kr_engine_shutdown(T_KREngine *krengine)
         if (krctxenv->dataModule) kr_module_close(krctxenv->dataModule);
         if (krctxenv->ruleModule) kr_module_close(krctxenv->ruleModule);
         if (krctxenv->ptDbs) dbsDisconnect(krctxenv->ptDbs);
-        if (krctxenv->ptShm) kr_shm_detach(krctxenv->ptShm);
+        if (krctxenv->ptShm) kr_shm_destroy(krctxenv->ptShm);
         if (krctxenv->ptKRDB) kr_db_shutdown(krctxenv->ptKRDB);
         if (krctxenv->ptHDICache) kr_hdi_cache_destroy(krctxenv->ptHDICache);
         kr_free(krengine->krctxenv);
     }
     if (krengine->version) kr_free(krengine->version);
     if (krengine->info) kr_free(krengine->info);
-    if (krengine->krdbname) kr_free(krengine->krdbname);
     if (krengine->krdbmodule) kr_free(krengine->krdbmodule);
     if (krengine->datamodule) kr_free(krengine->datamodule);
     if (krengine->rulemodule) kr_free(krengine->rulemodule);
@@ -248,23 +227,30 @@ int kr_engine_worker(void *ctx, void *arg)
     /* clean arguments' user extra data*/
     if (krarg->ExtraFreeFunc) krarg->ExtraFreeFunc(krarg->pExtra);
 
+    /* free argument */
+    kr_free(krarg);
+
     return 0;
 }
 
 
 int kr_engine_run(T_KREngine *krengine, E_KROprCode oprcode, int datasrc, char *msgbuf, void *extra)
 {
-    int iResult = 0;
-    T_KRContextArg stArg = {NULL, extra, NULL};
-
+    T_KRContextArg *ptArg = kr_calloc(sizeof(T_KRContextArg));
+    if (ptArg == NULL) {
+        KR_LOG(KR_LOGERROR, "kr_calloc ptArg failed!");
+        return -1;
+    }
+    ptArg->pExtra = extra;
+    
     switch(oprcode) 
     {
         case KR_OPRCODE_INSERT:
         {
             /* insert krdb */
-            stArg.ptCurrRec = \
+            ptArg->ptCurrRec = \
                 kr_db_insert(krengine->krctxenv->ptKRDB, datasrc, msgbuf);
-            if (stArg.ptCurrRec == NULL) {
+            if (ptArg->ptCurrRec == NULL) {
                 KR_LOG(KR_LOGERROR, "kr_db_insert failed!");
                 return -1;
             }
@@ -272,23 +258,24 @@ int kr_engine_run(T_KREngine *krengine, E_KROprCode oprcode, int datasrc, char *
         }
         case KR_OPRCODE_DETECT:
         {
+            int iResult = 0;
             /* insert krdb */
-            stArg.ptCurrRec = \
+            ptArg->ptCurrRec = \
                 kr_db_insert(krengine->krctxenv->ptKRDB, datasrc, msgbuf);
-            if (stArg.ptCurrRec == NULL) {
+            if (ptArg->ptCurrRec == NULL) {
                 KR_LOG(KR_LOGERROR, "kr_db_insert failed!");
                 return -1;
             }
 
             /* rule detect */
             if (krengine->threadcnt <= 0) {
-                iResult = kr_engine_worker(krengine->krctx, &stArg);
+                iResult = kr_engine_worker(krengine->krctx, ptArg);
                 if (iResult != 0) {
                     KR_LOG(KR_LOGERROR, "kr_server_detect failed!");
                     return -1;
                 }
             } else {
-                iResult = kr_threadpool_add_task(krengine->krtp, &stArg);
+                iResult = kr_threadpool_add_task(krengine->krtp, ptArg);
                 if (iResult != 0) {
                     KR_LOG(KR_LOGERROR, "kr_threadpool_add_task failed!");
                     return -1;

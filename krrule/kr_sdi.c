@@ -10,7 +10,8 @@ T_KRSDI *kr_sdi_construct(T_KRShmSDIDef *sdi_def, T_KRModule *datamodule)
     }
     krsdi->ptShmSDIDef = sdi_def;
     krsdi->lSDIId = sdi_def->lSdiId;
-    krsdi->ptSDICalc = kr_calc_construct(KR_CALCBEHOOF_DATA, \
+    //FIXME:replace J with sdi field
+    krsdi->ptSDICalc = kr_calc_construct('J', \ 
             sdi_def->caSdiFilterString, kr_rule_get_type, kr_rule_get_value);
     krsdi->eValueType = sdi_def->caSdiValueType[0];
     krsdi->SDIAggrFunc = (KRSDIAggrFunc )kr_sdi_aggr_func;

@@ -150,6 +150,9 @@ JAVAC = @JAVAC@
 JNI_CPPFLAGS = @JNI_CPPFLAGS@
 LD = @LD@
 LDFLAGS = @LDFLAGS@
+LEX = @LEX@
+LEXLIB = @LEXLIB@
+LEX_OUTPUT_ROOT = @LEX_OUTPUT_ROOT@
 LIBOBJS = @LIBOBJS@
 LIBS = @LIBS@
 LIBTOOL = @LIBTOOL@
@@ -191,6 +194,8 @@ STRIP = @STRIP@
 SWIG = @SWIG@
 SWIG_LIB = @SWIG_LIB@
 VERSION = @VERSION@
+YACC = @YACC@
+YFLAGS = @YFLAGS@
 _ACJNI_JAVAC = @_ACJNI_JAVAC@
 abs_builddir = @abs_builddir@
 abs_srcdir = @abs_srcdir@
@@ -600,17 +605,18 @@ uninstall-am: uninstall-krenginejarDATA uninstall-libLTLIBRARIES
 
 
 krengine_wrap.c: krengine.i 
-	${SWIG} -I${top_srcdir} -java -package krengine -o $@ $<
+	@mkdir -p org/krproject
+	${SWIG} -I${top_srcdir} -java -outdir org/krproject -package org.krproject -o $@ $<
 
 krengine-java.stamp: krengine_wrap.c
-	@${JAVAC} *.java
+	@${JAVAC} org/krproject/*.java
 	@date > $@
 
 $(krengine_jarfile): krengine-java.stamp
-	@$(JAR) cvf $(JARFLAGS) $(krengine_jarfile) *.class
+	@$(JAR) cvf $(JARFLAGS) $(krengine_jarfile) org/krproject/*.class org/krproject/*java
 
 clean-local:
-	-rm -f *.java *.class *.jar *.stamp
+	-rm -fr krengine_wrap.c *.jar *.stamp org
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

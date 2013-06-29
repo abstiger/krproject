@@ -3239,15 +3239,13 @@ SWIGINTERN PyObject *_wrap_kr_engine_startup(PyObject *SWIGUNUSEDPARM(self), PyO
   char *arg4 = (char *) 0 ;
   char *arg5 = (char *) 0 ;
   int arg6 ;
-  int arg7 ;
+  char *arg7 = (char *) 0 ;
   char *arg8 = (char *) 0 ;
   char *arg9 = (char *) 0 ;
-  char *arg10 = (char *) 0 ;
-  char *arg11 = (char *) 0 ;
+  int arg10 ;
+  int arg11 ;
   int arg12 ;
-  int arg13 ;
-  int arg14 ;
-  void *arg15 = (void *) 0 ;
+  void *arg13 = (void *) 0 ;
   int res1 ;
   char *buf1 = 0 ;
   int alloc1 = 0 ;
@@ -3265,27 +3263,22 @@ SWIGINTERN PyObject *_wrap_kr_engine_startup(PyObject *SWIGUNUSEDPARM(self), PyO
   int alloc5 = 0 ;
   int val6 ;
   int ecode6 = 0 ;
-  int val7 ;
-  int ecode7 = 0 ;
+  int res7 ;
+  char *buf7 = 0 ;
+  int alloc7 = 0 ;
   int res8 ;
   char *buf8 = 0 ;
   int alloc8 = 0 ;
   int res9 ;
   char *buf9 = 0 ;
   int alloc9 = 0 ;
-  int res10 ;
-  char *buf10 = 0 ;
-  int alloc10 = 0 ;
-  int res11 ;
-  char *buf11 = 0 ;
-  int alloc11 = 0 ;
+  int val10 ;
+  int ecode10 = 0 ;
+  int val11 ;
+  int ecode11 = 0 ;
   int val12 ;
   int ecode12 = 0 ;
-  int val13 ;
-  int ecode13 = 0 ;
-  int val14 ;
-  int ecode14 = 0 ;
-  int res15 ;
+  int res13 ;
   PyObject * obj0 = 0 ;
   PyObject * obj1 = 0 ;
   PyObject * obj2 = 0 ;
@@ -3299,11 +3292,9 @@ SWIGINTERN PyObject *_wrap_kr_engine_startup(PyObject *SWIGUNUSEDPARM(self), PyO
   PyObject * obj10 = 0 ;
   PyObject * obj11 = 0 ;
   PyObject * obj12 = 0 ;
-  PyObject * obj13 = 0 ;
-  PyObject * obj14 = 0 ;
   T_KREngine *result = 0 ;
   
-  if (!PyArg_ParseTuple(args,(char *)"OOOOOOOOOOOOOOO:kr_engine_startup",&obj0,&obj1,&obj2,&obj3,&obj4,&obj5,&obj6,&obj7,&obj8,&obj9,&obj10,&obj11,&obj12,&obj13,&obj14)) SWIG_fail;
+  if (!PyArg_ParseTuple(args,(char *)"OOOOOOOOOOOOO:kr_engine_startup",&obj0,&obj1,&obj2,&obj3,&obj4,&obj5,&obj6,&obj7,&obj8,&obj9,&obj10,&obj11,&obj12)) SWIG_fail;
   res1 = SWIG_AsCharPtrAndSize(obj0, &buf1, NULL, &alloc1);
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "kr_engine_startup" "', argument " "1"" of type '" "char *""'");
@@ -3334,11 +3325,11 @@ SWIGINTERN PyObject *_wrap_kr_engine_startup(PyObject *SWIGUNUSEDPARM(self), PyO
     SWIG_exception_fail(SWIG_ArgError(ecode6), "in method '" "kr_engine_startup" "', argument " "6"" of type '" "int""'");
   } 
   arg6 = (int)(val6);
-  ecode7 = SWIG_AsVal_int(obj6, &val7);
-  if (!SWIG_IsOK(ecode7)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode7), "in method '" "kr_engine_startup" "', argument " "7"" of type '" "int""'");
-  } 
-  arg7 = (int)(val7);
+  res7 = SWIG_AsCharPtrAndSize(obj6, &buf7, NULL, &alloc7);
+  if (!SWIG_IsOK(res7)) {
+    SWIG_exception_fail(SWIG_ArgError(res7), "in method '" "kr_engine_startup" "', argument " "7"" of type '" "char *""'");
+  }
+  arg7 = (char *)(buf7);
   res8 = SWIG_AsCharPtrAndSize(obj7, &buf8, NULL, &alloc8);
   if (!SWIG_IsOK(res8)) {
     SWIG_exception_fail(SWIG_ArgError(res8), "in method '" "kr_engine_startup" "', argument " "8"" of type '" "char *""'");
@@ -3349,46 +3340,35 @@ SWIGINTERN PyObject *_wrap_kr_engine_startup(PyObject *SWIGUNUSEDPARM(self), PyO
     SWIG_exception_fail(SWIG_ArgError(res9), "in method '" "kr_engine_startup" "', argument " "9"" of type '" "char *""'");
   }
   arg9 = (char *)(buf9);
-  res10 = SWIG_AsCharPtrAndSize(obj9, &buf10, NULL, &alloc10);
-  if (!SWIG_IsOK(res10)) {
-    SWIG_exception_fail(SWIG_ArgError(res10), "in method '" "kr_engine_startup" "', argument " "10"" of type '" "char *""'");
-  }
-  arg10 = (char *)(buf10);
-  res11 = SWIG_AsCharPtrAndSize(obj10, &buf11, NULL, &alloc11);
-  if (!SWIG_IsOK(res11)) {
-    SWIG_exception_fail(SWIG_ArgError(res11), "in method '" "kr_engine_startup" "', argument " "11"" of type '" "char *""'");
-  }
-  arg11 = (char *)(buf11);
+  ecode10 = SWIG_AsVal_int(obj9, &val10);
+  if (!SWIG_IsOK(ecode10)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode10), "in method '" "kr_engine_startup" "', argument " "10"" of type '" "int""'");
+  } 
+  arg10 = (int)(val10);
+  ecode11 = SWIG_AsVal_int(obj10, &val11);
+  if (!SWIG_IsOK(ecode11)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode11), "in method '" "kr_engine_startup" "', argument " "11"" of type '" "int""'");
+  } 
+  arg11 = (int)(val11);
   ecode12 = SWIG_AsVal_int(obj11, &val12);
   if (!SWIG_IsOK(ecode12)) {
     SWIG_exception_fail(SWIG_ArgError(ecode12), "in method '" "kr_engine_startup" "', argument " "12"" of type '" "int""'");
   } 
   arg12 = (int)(val12);
-  ecode13 = SWIG_AsVal_int(obj12, &val13);
-  if (!SWIG_IsOK(ecode13)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode13), "in method '" "kr_engine_startup" "', argument " "13"" of type '" "int""'");
-  } 
-  arg13 = (int)(val13);
-  ecode14 = SWIG_AsVal_int(obj13, &val14);
-  if (!SWIG_IsOK(ecode14)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode14), "in method '" "kr_engine_startup" "', argument " "14"" of type '" "int""'");
-  } 
-  arg14 = (int)(val14);
-  res15 = SWIG_ConvertPtr(obj14,SWIG_as_voidptrptr(&arg15), 0, 0);
-  if (!SWIG_IsOK(res15)) {
-    SWIG_exception_fail(SWIG_ArgError(res15), "in method '" "kr_engine_startup" "', argument " "15"" of type '" "void *""'"); 
+  res13 = SWIG_ConvertPtr(obj12,SWIG_as_voidptrptr(&arg13), 0, 0);
+  if (!SWIG_IsOK(res13)) {
+    SWIG_exception_fail(SWIG_ArgError(res13), "in method '" "kr_engine_startup" "', argument " "13"" of type '" "void *""'"); 
   }
-  result = (T_KREngine *)kr_engine_startup(arg1,arg2,arg3,arg4,arg5,arg6,arg7,arg8,arg9,arg10,arg11,arg12,arg13,arg14,arg15);
+  result = (T_KREngine *)kr_engine_startup(arg1,arg2,arg3,arg4,arg5,arg6,arg7,arg8,arg9,arg10,arg11,arg12,arg13);
   resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p__kr_engine_t, 0 |  0 );
   if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
   if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
   if (alloc3 == SWIG_NEWOBJ) free((char*)buf3);
   if (alloc4 == SWIG_NEWOBJ) free((char*)buf4);
   if (alloc5 == SWIG_NEWOBJ) free((char*)buf5);
+  if (alloc7 == SWIG_NEWOBJ) free((char*)buf7);
   if (alloc8 == SWIG_NEWOBJ) free((char*)buf8);
   if (alloc9 == SWIG_NEWOBJ) free((char*)buf9);
-  if (alloc10 == SWIG_NEWOBJ) free((char*)buf10);
-  if (alloc11 == SWIG_NEWOBJ) free((char*)buf11);
   return resultobj;
 fail:
   if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
@@ -3396,10 +3376,9 @@ fail:
   if (alloc3 == SWIG_NEWOBJ) free((char*)buf3);
   if (alloc4 == SWIG_NEWOBJ) free((char*)buf4);
   if (alloc5 == SWIG_NEWOBJ) free((char*)buf5);
+  if (alloc7 == SWIG_NEWOBJ) free((char*)buf7);
   if (alloc8 == SWIG_NEWOBJ) free((char*)buf8);
   if (alloc9 == SWIG_NEWOBJ) free((char*)buf9);
-  if (alloc10 == SWIG_NEWOBJ) free((char*)buf10);
-  if (alloc11 == SWIG_NEWOBJ) free((char*)buf11);
   return NULL;
 }
 

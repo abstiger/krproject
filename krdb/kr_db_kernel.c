@@ -401,7 +401,7 @@ T_KRDB* kr_create_db(char *db_name, T_KRModule *krdbmodule)
 
 void kr_drop_db(T_KRDB *krdb)
 {
-    kr_list_foreach(krdb->pTableList, (KRForEachFunc)kr_drop_table, NULL);
+    kr_list_foreach(krdb->pTableList, (KRForEachFunc)kr_drop_table, krdb);
     kr_list_destroy(krdb->pTableList);
 
     kr_list_foreach(krdb->pIndexList, (KRForEachFunc)kr_drop_db_index, krdb);

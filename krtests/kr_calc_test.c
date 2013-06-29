@@ -18,12 +18,12 @@ int main(int argc, char *argv[])
     
     if (argc == 1)
         //strcpy(calcstr, "((4%3+4*27/(10-2)) > 12.99)&&(F_1 !@ {'shanghai','beijing','guangzhou',})&&(S_3 ## [^S_*])||(D_1 @@ A_1);");
-//        strcpy(calcstr, "(F_1 !@ {'shanghai','beijing','guangzhou',});");
+        //strcpy(calcstr, "(F_1 !@ {'shanghai','beijing','guangzhou',});");
         strcpy(calcstr, "{\"op\":1,\"child\":[{\"kind\":3,\"value\":3}, {\"kind\":3,\"value\":5}]}");
     else
         strcpy(calcstr, argv[1]);
     
-    mycalc = kr_calc_construct(KR_CALCBEHOOF_DATA, calcstr, MyGetTypeFunc, MyGetValueFunc);
+    mycalc = kr_calc_construct('J', calcstr, MyGetTypeFunc, MyGetValueFunc);
     assert(mycalc != NULL);
     
     kr_calc_dump(mycalc, stdout);
@@ -34,7 +34,7 @@ int main(int argc, char *argv[])
     }
     
     if (kr_calc_eval(mycalc, NULL) != 0) {
-        fprintf(stderr, "kr_calc_eval failed!\n");
+        fprintf(stderr, "kr_calc_eval failed! %s\n", mycalc->err_msg);
         return -1;
     }
     

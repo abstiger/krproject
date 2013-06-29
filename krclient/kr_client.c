@@ -29,6 +29,7 @@ int kr_client_on(int fd)
 
 int kr_client_apply_struct(T_KRMessage *krmsg, int fd, int i)
 {
+    krmsg->datasrc = 1;
     char buf[1024] = {0};
     typedef struct _kr_tradflow_t{
         char     caOutCustNo[20+1];
@@ -75,7 +76,6 @@ int kr_client_apply_struct(T_KRMessage *krmsg, int fd, int i)
     memcpy(krmsg->msgbuf, msgbody, krmsg->msglen);
     if (kr_message_write(caNetErr, fd, krmsg) != krmsg->msglen) {
         fprintf(stderr, "kr_message_write apply error[%s]!\n", caNetErr);
-        kr_free(krmsg->msgbuf);
         return -1;
     }
 
@@ -85,6 +85,7 @@ int kr_client_apply_struct(T_KRMessage *krmsg, int fd, int i)
 
 int kr_client_apply_json(T_KRMessage *krmsg, int fd, int i)
 {
+    krmsg->datasrc = 1;
     char buf[1024] = {0};
 
     srandom((unsigned int)(time(NULL)+i));
@@ -115,11 +116,10 @@ int kr_client_apply_json(T_KRMessage *krmsg, int fd, int i)
     char *jsonmsg = cJSON_PrintUnformatted(msgbody);
     krmsg->msglen = strlen(jsonmsg);
     memcpy(krmsg->msgbuf, jsonmsg, krmsg->msglen);
-    kr_free(jsonmsg);
+    free(jsonmsg);
     cJSON_Delete(msgbody);
     if (kr_message_write(caNetErr, fd, krmsg) != krmsg->msglen) {
         fprintf(stderr, "kr_message_write apply error[%s]!\n", caNetErr);
-        kr_free(krmsg->msgbuf);
         return -1;
     }
 
@@ -128,6 +128,7 @@ int kr_client_apply_json(T_KRMessage *krmsg, int fd, int i)
 
 int kr_client_apply_weibo(T_KRMessage *krmsg, int fd, int i)
 {
+    krmsg->datasrc = 2;
     strcpy(krmsg->objectkey, "1761437952"); //set krmsg objectkey
     snprintf(krmsg->msgid, sizeof(krmsg->msgid), "%08d", i); //set krmsg msgid
     strcpy(krmsg->msgbuf, "{\"reposts_count\": 0, \"truncated\": false, \"text\": \"haha \", \"visible\": {\"type\": 0, \"list_id\": 0}, \"in_reply_to_status_id\": \"\", \"created_at_time\": 1369899542.0, \"id\": 3583680788661581, \"mid\": \"3583680788661581\", \"source\": \"source\", \"attitudes_count\": 0, \"favorited\": false, \"user\": {\"bi_followers_count\": 110, \"domain\": \"\", \"avatar_large\": \"http://tp1.sinaimg.cn/1761437952/180/5602071810/0\", \"block_word\": 0, \"star\": 0, \"id\": 1761437952, \"city\": \"1000\", \"verified\": false, \"follow_me\": true, \"verified_reason\": \"\", \"followers_count\": 542, \"mbtype\": 0, \"statuses_count\": 3266, \"friends_count\": 273, \"online_status\": 0, \"mbrank\": 0, \"idstr\": \"1761437952\", \"geo_enabled\": false, \"name\": \"\u624b\u5fc3\u91cc\u7684\u5e78\u798f\u611f\", \"remark\": \"\", \"favourites_count\": 45, \"screen_name\": \"\u624b\u5fc3\u91cc\u7684\u5e78\u798f\u611f\", \"url\": \"\", \"gender\": \"f\", \"created_at\": \"Sun Jun 13 11:39:02 +0800 2010\", \"verified_type\": -1, \"following\": true}, \"geo\": null, \"created_at\": \"Thu May 30 15:39:02 +0800 2013\", \"comments_count\": 0}");
@@ -135,7 +136,6 @@ int kr_client_apply_weibo(T_KRMessage *krmsg, int fd, int i)
     printf("krclient send:%s %d\n", krmsg->msgbuf, krmsg->msglen);
     if (kr_message_write(caNetErr, fd, krmsg) != krmsg->msglen) {
         fprintf(stderr, "kr_message_write apply error[%s]!\n", caNetErr);
-        kr_free(krmsg->msgbuf);
         return -1;
     }
 
@@ -152,7 +152,6 @@ int kr_client_apply(int fd, char fmt)
     stApply.msgtype = KR_MSGTYPE_APPLY;
     strcpy(stApply.serverid, SERVER_ID);
     strcpy(stApply.clientid, CLIENT_ID);
-    stApply.datasrc = 2;
     for (i=0; i<22; ++i) {
         if (fmt == 'J') {
             kr_client_apply_json(&stApply, fd, i);

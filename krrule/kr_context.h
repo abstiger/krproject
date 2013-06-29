@@ -2,7 +2,6 @@
 #define __KR_CONTEXT_H__
 
 #include "krutils/kr_utils.h"
-#include "krutils/kr_event.h"
 #include "dbs/dbs_basopr.h"
 #include "krshm/kr_shm.h"
 #include "krdb/kr_db.h"
@@ -13,11 +12,11 @@
 /* static environment, set while init */
 struct _kr_context_env_t
 {
-    T_KREventLoop    *krEventLoop; /* event loop */
+    void             *data;        /* engine startup extra data */
     T_KRModule       *krdbModule;  /* module for krdb */
     T_KRModule       *dataModule;  /* module for data */
     T_KRModule       *ruleModule;  /* module for rule */
-    T_DbsEnv         *ptDbs;       /* db connection, one per thread */
+    T_DbsEnv         *ptDbs;       /* db connection */
     T_KRShareMem     *ptShm;       /* share memory, read only in thread */
     T_KRDB           *ptKRDB;      /* krdb, read only in thread */
     T_KRCache        *ptHDICache;  /* hdi cache, need lock while mutli thread */
@@ -33,6 +32,7 @@ typedef struct _kr_context_arg_t
 typedef struct _kr_context_t
 {
     T_KRContextEnv   *ptEnv;      /* pointer to environment */
+    T_DbsEnv         *ptDbs;      /* db connection, one per thread */
     T_KRDynamicMem   *ptDym;      /* pointer to dynamic memory */
     T_KRContextArg   *ptArg;      /* pointer to arguments */
     
@@ -64,7 +64,7 @@ void *kr_rule_get_value(char kind, int id, void *param);
 
 T_KRContext *kr_context_init(T_KRContextEnv *ptEnv);
 int kr_context_set(T_KRContext *ptContext, T_KRContextArg *ptContextArg);
-void kr_context_free(T_KRContext *ptContext);
+void kr_context_fini(T_KRContext *ptContext);
 
 
 

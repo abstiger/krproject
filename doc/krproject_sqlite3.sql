@@ -1,7 +1,7 @@
 --==============================================================
 -- Database name:  KRDB
--- DBMS name:      Sqlite3 Server
--- Created on:     2012/11/1 17:49:32
+-- DBMS name:      IBM DB2 UDB 9.0 Common Server
+-- Created on:     2013/6/29 9:33:20
 --==============================================================
 
 
@@ -22,6 +22,8 @@ drop table KR_TBL_DYNDATA_DAY;
 drop table KR_TBL_DYNDATA_FLAG;
 
 drop table KR_TBL_DYNDATA_MON;
+
+drop table KR_TBL_GROUP;
 
 drop table KR_TBL_HDI_DEF;
 
@@ -132,6 +134,7 @@ create table KR_TBL_DDI_DEF
    STATISTICS_TYPE      CHAR(1)                not null,
    STATISTICS_VALUE     INTEGER                not null,
    STATISTICS_COUNT     INTEGER                not null,
+   DDI_FILTER_FORMAT    CHAR(1)                not null,
    DDI_FILTER_STRING    VARCHAR(500)           not null,
    STATISTICS_METHOD    CHAR(1)                not null,
    DDI_STATUS           CHAR(1)                not null,
@@ -177,6 +180,24 @@ create table KR_TBL_DYNDATA_MON
 );
 
 --==============================================================
+-- Table: KR_TBL_GROUP
+--==============================================================
+create table KR_TBL_GROUP
+(
+   GROUP_ID             INTEGER                not null,
+   GROUP_NAME           VARCHAR(30)            not null,
+   GROUP_DESC           VARCHAR(100)           not null,
+   GROUP_CALC_FORMAT    CHAR(1)                not null,
+   GROUP_CALC_STRING    VARCHAR(500)           not null,
+   GROUP_FUNC           VARCHAR(50)            not null,
+   GROUP_STATUS         CHAR(1)                not null,
+   REC_CRET_DTTM        CHAR(17)               not null,
+   LST_UPD_DTTM         CHAR(17)               not null,
+   LST_UPD_USER_ID      VARCHAR(15)            not null,
+   constraint P_PK_GROUP_ID primary key (GROUP_ID)
+);
+
+--==============================================================
 -- Table: KR_TBL_HDI_DEF
 --==============================================================
 create table KR_TBL_HDI_DEF
@@ -200,23 +221,6 @@ create table KR_TBL_HDI_DEF
    constraint P_PK_DDI_ID primary key (HDI_ID)
 );
 
-/*==============================================================*/
-/* Table: KR_TBL_GROUP                                          */
-/*==============================================================*/
-create table KR_TBL_GROUP
-(
-   GROUP_ID             int not null,
-   GROUP_NAME           varchar(30) not null,
-   GROUP_DESC           varchar(100) not null,
-   GROUP_STRING         varchar(500) not null,
-   GROUP_FUNC           varchar(50) not null,
-   GROUP_STATUS         char(1) not null,
-   REC_CRET_DTTM        char(17) not null,
-   LST_UPD_DTTM         char(17) not null,
-   LST_UPD_USER_ID      varchar(15) not null,
-   constraint P_PK_GROUP_ID primary key (GROUP_ID)
-);
-
 --==============================================================
 -- Table: KR_TBL_RULE
 --==============================================================
@@ -227,7 +231,8 @@ create table KR_TBL_RULE
    RULE_NAME            VARCHAR(30)            not null,
    RULE_DESC            VARCHAR(100)           not null,
    RULE_DATASRC         INTEGER                not null,
-   RULE_STRING          VARCHAR(500)           not null,
+   RULE_CALC_FORMAT     CHAR(1)                not null,
+   RULE_CALC_STRING     VARCHAR(500)           not null,
    RULE_TYPE            CHAR(1)                not null,
    RULE_FUNC            VARCHAR(50)            not null,
    RULE_WEIGHT          INTEGER                not null,
@@ -235,7 +240,7 @@ create table KR_TBL_RULE
    REC_CRET_DTTM        CHAR(17)               not null,
    LST_UPD_DTTM         CHAR(17)               not null,
    LST_UPD_USER_ID      VARCHAR(15)            not null,
-   constraint P_PK_RULE_ID primary key (RULE_ID)
+   constraint P_PK_RULE_ID primary key (GROUP_ID, RULE_ID)
 );
 
 --==============================================================
@@ -255,6 +260,7 @@ create table KR_TBL_SDI_DEF
    STATISTICS_FIELD     INTEGER                not null,
    STATISTICS_LOCATION  INTEGER                not null,
    LOCATION_PROPERTY    CHAR(1)                not null,
+   SDI_FILTER_FORMAT    CHAR(1)                not null,
    SDI_FILTER_STRING    VARCHAR(500)           not null,
    SDI_STATUS           CHAR(1)                not null,
    REC_CRET_DTTM        CHAR(17)               not null,

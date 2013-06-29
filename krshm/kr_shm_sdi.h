@@ -21,6 +21,7 @@ typedef struct _kr_shm_sdi_def_t
     long        lStatisticsField;
     long        lStatisticsLocation;
     char        caLocationProperty[1+1];
+    char        caSdiFilterFormat[1+1];
     char        caSdiFilterString[500+1];
 }T_KRShmSDIDef;
 

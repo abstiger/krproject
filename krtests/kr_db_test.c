@@ -19,7 +19,6 @@ static int MyPrintRecord(T_KRRecord *ptRecord, void *user_data);
 
 int main(int argc,char *argv[])
 {
-/*    
     int i = 0;
     int iResult = 0;
     char caTmpBuff[200] = {0};
@@ -30,17 +29,17 @@ int main(int argc,char *argv[])
     time_t    lTime;
     struct tm    *tTmLocal;
     char    sLogTime[128];
-    iResult = dbsDbConnect();
-    if (iResult != 0)
-    {
+    T_DbsEnv *dbsenv = dbsConnect(\
+            getenv("DBNAME"), getenv("DBUSER"), getenv("DBPASS"));
+    if (dbsenv == NULL) {
         KR_LOG(KR_LOGERROR, "dbsDbConnect Failed!");
         return -1;
     }
     
     //Step 1:kr_db_startup
-    gptKRDB = kr_db_startup("AFD KRDB", "/home/tiger/krproject/lib/antifraud.so");
-    if (gptKRDB == NULL)
-    {
+    T_KRModule *dbmod = kr_module_open("/home/tiger/krproject/lib/antifraud.so", RTLD_LAZY);
+    gptKRDB = kr_db_startup(dbsenv, "KRDB", dbmod);
+    if (gptKRDB == NULL) {
         KR_LOG(KR_LOGERROR, "kr_db_startup Failed!");
         return -1;
     }
@@ -48,6 +47,7 @@ int main(int argc,char *argv[])
     kr_db_load(gptKRDB);
     
     //Step 2:FraudDetect
+    /*
     for (i=0; i<22; i++)
     {
         memset(&stTradFlow1, 0x00, sizeof(T_KRTradFlow_1));
@@ -80,7 +80,6 @@ int main(int argc,char *argv[])
         
         if (i%10000 == 0)
         {
-            // get current time 
             memset (sLogTime, 0x00, sizeof(sLogTime));
             lTime = time (NULL);
             tTmLocal = localtime (&lTime);
@@ -98,22 +97,17 @@ int main(int argc,char *argv[])
         
         //sleep(1);
     }
+    */
 
     FILE *fpDump;
-    if ((fpDump = fopen("KRDB.dump", "w")) == NULL) 
-    {
-        BAS_LOG(BAS_LOGERROR, 0, errno, "Open DumpFile Error!");
+    if ((fpDump = fopen("KRDB.dump", "w")) == NULL) {
+        KR_LOG(KR_LOGERROR, "Open DumpFile Error!");
         return -1;
     }
-    KRDBDumpDBToFile(gptKRDB, fpDump);
     fclose(fpDump);
     kr_db_dump_field_def(gptKRDB, 1, stdout);
     kr_db_dump(gptKRDB, 0, stdout);
     //kr_db_dump(gptKRDB, 1, stdout);
-        printf("gptKRDB->ptCurrTable=[%p][%d][%s]\n", 
-            gptKRDB->ptCurrTable, gptKRDB->ptCurrTable->iRecordSize, 
-            gptKRDB->ptCurrTable->caMMapFile);
-    kr_db_mmap_file_handle(gptKRDB->ptCurrTable->caMMapFile, MyPrintRecord, NULL);
     
     //Step 3:kr_db_shutdown
     iResult = kr_db_shutdown(gptKRDB);
@@ -123,9 +117,9 @@ int main(int argc,char *argv[])
         return -1;
     }
     
-    dbsDbDisconnect();
+    kr_module_close(dbmod);
+    dbsDisconnect(dbsenv);
 
-*/
     return 0;
 }
 

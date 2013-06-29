@@ -45,9 +45,12 @@ int LoadShmRule(T_DbsEnv *dbsenv, T_KRShmRule *ptShmRule, long lGroupId)
                 kr_string_rtrim(stRuleCur.caOutRuleDesc), \
                 sizeof(ptShmRuleDef->caRuleDesc));
         ptShmRuleDef->lRuleDatasrc = stRuleCur.lOutRuleDatasrc;
-        strncpy(ptShmRuleDef->caRuleString, \
-                kr_string_rtrim(stRuleCur.caOutRuleString), \
-                sizeof(ptShmRuleDef->caRuleString));
+        strncpy(ptShmRuleDef->caRuleCalcFormat, \
+                kr_string_rtrim(stRuleCur.caOutRuleCalcFormat), \
+                sizeof(ptShmRuleDef->caRuleCalcFormat));
+        strncpy(ptShmRuleDef->caRuleCalcString, \
+                kr_string_rtrim(stRuleCur.caOutRuleCalcString), \
+                sizeof(ptShmRuleDef->caRuleCalcString));
         strncpy(ptShmRuleDef->caRuleType, \
                 kr_string_rtrim(stRuleCur.caOutRuleType), \
                 sizeof(ptShmRuleDef->caRuleType));        
@@ -86,8 +89,8 @@ int DumpShmRule(T_KRShmRule *ptShmRule, FILE *fp)
         fprintf(fp, "  lRuleId=[%ld], caRuleName=[%s], caRuleDesc=[%s],", 
                 ptShmRuleDef->lRuleId, ptShmRuleDef->caRuleName, 
                 ptShmRuleDef->caRuleDesc);
-        fprintf(fp, " lRuleDatasrc=[%ld], caRuleString=[%s],",
-                ptShmRuleDef->lRuleDatasrc, ptShmRuleDef->caRuleString);
+        fprintf(fp, " lRuleDatasrc=[%ld], caRuleCalcFormat=[%s], caRuleCalcString=[%s],",
+                ptShmRuleDef->lRuleDatasrc, ptShmRuleDef->caRuleCalcFormat, ptShmRuleDef->caRuleCalcString);
         fprintf(fp, " caRuleType=[%s], caRuleFunc=[%s],",
                 ptShmRuleDef->caRuleType, ptShmRuleDef->caRuleFunc);
         fprintf(fp, " lRuleWeight=[%ld] \n ", ptShmRuleDef->lRuleWeight);

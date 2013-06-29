@@ -1,10 +1,11 @@
 ACLOCAL_AMFLAGS = -I m4
-SUBDIRS = krutils dbs krshm krcalc krdb krrule krengine \
-          krcoordi krserver krclient krtests bindings etc doc
+SUBDIRS = dbs krutils krshm krcalc krdb krrule krengine \
+          krcoordi krserver krclient krtests \
+		  bindings examples etc doc
 
 AM_CPPFLAGS = -g -I$(includedir) -L$(libdir)
 
 include_HEADERS = kr_config.h
 
-EXTRA_DIST = examples 
+EXTRA_DIST = README 
 

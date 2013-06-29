@@ -10,7 +10,7 @@ E_KRFieldType kr_rule_get_type(char kind, int id, void *param)
     switch(kind) 
     {
         case KR_CALCKIND_SET:
-            return kr_aid_get_type(ptContext->ptEnv->ptDbs, id);
+            return kr_aid_get_type(ptContext->ptDbs, id);
             break;
         case KR_CALCKIND_CID:
             return kr_get_field_type(ptContext->ptCurrRec, id);
@@ -39,7 +39,7 @@ void *kr_rule_get_value(char kind, int id, void *param)
     switch(kind) 
     {
         case KR_CALCKIND_SET:
-            return kr_aid_get_value(ptContext->ptEnv->ptDbs, id);
+            return kr_aid_get_value(ptContext->ptDbs, id);
             break;
         case KR_CALCKIND_CID:
             return kr_get_field_value(ptContext->ptCurrRec, id);
@@ -72,8 +72,8 @@ T_KRRule *kr_rule_construct(T_KRShmRuleDef *rule_def, T_KRModule *rulemodule)
     }
     krrule->ptShmRuleDef = rule_def;
     krrule->lRuleId = rule_def->lRuleId;
-    krrule->ptRuleCalc = kr_calc_construct(KR_CALCBEHOOF_RULE, \
-        rule_def->caRuleString, kr_rule_get_type, kr_rule_get_value);
+    krrule->ptRuleCalc = kr_calc_construct(rule_def->caRuleCalcFormat[0], \
+        rule_def->caRuleCalcString, kr_rule_get_type, kr_rule_get_value);
     krrule->RuleFunc = (KRRuleFunc )kr_rule_func;
     if (rule_def->caRuleFunc[0] != '\0') {
         krrule->RuleFunc = (KRRuleFunc )kr_module_symbol(rulemodule, 

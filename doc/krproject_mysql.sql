@@ -1,17 +1,7 @@
-/*==============================================================*/
-/* Database name:  KRDB                                         */
-/* DBMS name:      MySQL 5.0                                    */
-/* Created on:     2013/2/4 16:44:37                            */
-/*==============================================================*/
-
-
 drop database if exists KRDB;
 
 use KRDB;
 
-/*==============================================================*/
-/* Table: KR_TBL_DATADIC_CFG                                    */
-/*==============================================================*/
 create table KR_TBL_DATADIC_CFG
 (
    DATADIC_ID           int not null,
@@ -20,9 +10,6 @@ create table KR_TBL_DATADIC_CFG
    primary key (DATADIC_ID, DATADIC_KEY)
 );
 
-/*==============================================================*/
-/* Table: KR_TBL_DATADIC_DEF                                    */
-/*==============================================================*/
 create table KR_TBL_DATADIC_DEF
 (
    DATADIC_ID           int not null,
@@ -34,9 +21,6 @@ create table KR_TBL_DATADIC_DEF
    primary key (DATADIC_ID)
 );
 
-/*==============================================================*/
-/* Table: KR_TBL_DATASRC_DEF                                    */
-/*==============================================================*/
 create table KR_TBL_DATASRC_DEF
 (
    DATASRC_ID           int not null,
@@ -52,9 +36,6 @@ create table KR_TBL_DATASRC_DEF
    primary key (DATASRC_ID)
 );
 
-/*==============================================================*/
-/* Table: KR_TBL_DATASRC_FIELD_DEF                              */
-/*==============================================================*/
 create table KR_TBL_DATASRC_FIELD_DEF
 (
    DATASRC_ID           int not null,
@@ -73,9 +54,6 @@ create table KR_TBL_DATASRC_FIELD_DEF
    primary key (DATASRC_ID, FIELD_ID)
 );
 
-/*==============================================================*/
-/* Table: KR_TBL_DATASRC_INDEX_DEF                              */
-/*==============================================================*/
 create table KR_TBL_DATASRC_INDEX_DEF
 (
    DATASRC_ID           int not null,
@@ -88,9 +66,6 @@ create table KR_TBL_DATASRC_INDEX_DEF
    primary key (DATASRC_ID, INDEX_ID)
 );
 
-/*==============================================================*/
-/* Table: KR_TBL_DDI_DEF                                        */
-/*==============================================================*/
 create table KR_TBL_DDI_DEF
 (
    DDI_ID               int not null,
@@ -109,6 +84,7 @@ create table KR_TBL_DDI_DEF
    STATISTICS_TYPE      char(1) not null,
    STATISTICS_VALUE     int not null,
    STATISTICS_COUNT     int not null,
+   DDI_FILTER_FORMAT    char(1) not null,
    DDI_FILTER_STRING    varchar(500) not null,
    STATISTICS_METHOD    char(1) not null,
    DDI_STATUS           char(1) not null,
@@ -118,9 +94,6 @@ create table KR_TBL_DDI_DEF
    primary key (DDI_ID)
 );
 
-/*==============================================================*/
-/* Table: KR_TBL_DYNDATA_DAY                                    */
-/*==============================================================*/
 create table KR_TBL_DYNDATA_DAY
 (
    DATA_DATE            char(8) not null,
@@ -130,9 +103,6 @@ create table KR_TBL_DYNDATA_DAY
    primary key (DATA_DATE, DATA_OBJECT, DATA_ID)
 );
 
-/*==============================================================*/
-/* Table: KR_TBL_DYNDATA_FLAG                                   */
-/*==============================================================*/
 create table KR_TBL_DYNDATA_FLAG
 (
    DATA_OBJECT          varchar(30) not null,
@@ -141,9 +111,6 @@ create table KR_TBL_DYNDATA_FLAG
    primary key (DATA_OBJECT, DATA_ID)
 );
 
-/*==============================================================*/
-/* Table: KR_TBL_DYNDATA_MON                                    */
-/*==============================================================*/
 create table KR_TBL_DYNDATA_MON
 (
    DATA_MONTH           char(6) not null,
@@ -153,15 +120,13 @@ create table KR_TBL_DYNDATA_MON
    primary key (DATA_MONTH, DATA_OBJECT, DATA_ID)
 );
 
-/*==============================================================*/
-/* Table: KR_TBL_GROUP                                          */
-/*==============================================================*/
 create table KR_TBL_GROUP
 (
    GROUP_ID             int not null,
    GROUP_NAME           varchar(30) not null,
    GROUP_DESC           varchar(100) not null,
-   GROUP_STRING         varchar(500) not null,
+   GROUP_CALC_FORMAT    char(1) not null,
+   GROUP_CALC_STRING    varchar(500) not null,
    GROUP_FUNC           varchar(50) not null,
    GROUP_STATUS         char(1) not null comment '1-已启用
             2-暂停
@@ -176,9 +141,6 @@ create table KR_TBL_GROUP
    primary key (GROUP_ID)
 );
 
-/*==============================================================*/
-/* Table: KR_TBL_HDI_DEF                                        */
-/*==============================================================*/
 create table KR_TBL_HDI_DEF
 (
    HDI_ID               int not null,
@@ -203,9 +165,6 @@ create table KR_TBL_HDI_DEF
    primary key (HDI_ID)
 );
 
-/*==============================================================*/
-/* Table: KR_TBL_RULE                                           */
-/*==============================================================*/
 create table KR_TBL_RULE
 (
    GROUP_ID             int not null,
@@ -213,7 +172,8 @@ create table KR_TBL_RULE
    RULE_NAME            varchar(30) not null,
    RULE_DESC            varchar(100) not null,
    RULE_DATASRC         int not null,
-   RULE_STRING          varchar(500) not null,
+   RULE_CALC_FORMAT     char(1) not null,
+   RULE_CALC_STRING     varchar(500) not null,
    RULE_TYPE            char(1) not null,
    RULE_FUNC            varchar(50) not null,
    RULE_WEIGHT          int not null,
@@ -230,9 +190,6 @@ create table KR_TBL_RULE
    primary key (GROUP_ID, RULE_ID)
 );
 
-/*==============================================================*/
-/* Table: KR_TBL_SDI_DEF                                        */
-/*==============================================================*/
 create table KR_TBL_SDI_DEF
 (
    SDI_ID               int not null comment '针对每个数据源都需要从0开始以1为步长递增
@@ -254,6 +211,7 @@ create table KR_TBL_SDI_DEF
             以此类推
             ',
    LOCATION_PROPERTY    char(1) not null comment '''0''-绝对定位 ''1''-相对定位',
+   SDI_FILTER_FORMAT    char(1) not null,
    SDI_FILTER_STRING    varchar(500) not null comment '取自过滤条件表的FILTER_ID',
    SDI_STATUS           char(1) not null comment '‘1’-已删除
             ‘0’-正常
@@ -264,9 +222,6 @@ create table KR_TBL_SDI_DEF
    primary key (SDI_ID)
 );
 
-/*==============================================================*/
-/* Table: KR_TBL_SET_CFG                                        */
-/*==============================================================*/
 create table KR_TBL_SET_CFG
 (
    SET_ID               int not null,
@@ -275,9 +230,6 @@ create table KR_TBL_SET_CFG
    primary key (SET_ID, ELEMENT_VALUE)
 );
 
-/*==============================================================*/
-/* Table: KR_TBL_SET_DEF                                        */
-/*==============================================================*/
 create table KR_TBL_SET_DEF
 (
    SET_ID               int not null,
@@ -293,9 +245,6 @@ create table KR_TBL_SET_DEF
    primary key (SET_ID)
 );
 
-/*==============================================================*/
-/* Table: KR_TBL_SET_TYPE_DEF                                   */
-/*==============================================================*/
 create table KR_TBL_SET_TYPE_DEF
 (
    SET_TYPE             char(2) not null,

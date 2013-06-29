@@ -35,7 +35,7 @@ POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
 subdir = .
-DIST_COMMON = $(am__configure_deps) $(include_HEADERS) \
+DIST_COMMON = README $(am__configure_deps) $(include_HEADERS) \
 	$(srcdir)/Makefile.am $(srcdir)/Makefile.in \
 	$(srcdir)/kr_config.h.in $(top_srcdir)/configure compile \
 	config.guess config.sub depcomp install-sh ltmain.sh missing \
@@ -182,6 +182,9 @@ JAVAC = @JAVAC@
 JNI_CPPFLAGS = @JNI_CPPFLAGS@
 LD = @LD@
 LDFLAGS = @LDFLAGS@
+LEX = @LEX@
+LEXLIB = @LEXLIB@
+LEX_OUTPUT_ROOT = @LEX_OUTPUT_ROOT@
 LIBOBJS = @LIBOBJS@
 LIBS = @LIBS@
 LIBTOOL = @LIBTOOL@
@@ -223,6 +226,8 @@ STRIP = @STRIP@
 SWIG = @SWIG@
 SWIG_LIB = @SWIG_LIB@
 VERSION = @VERSION@
+YACC = @YACC@
+YFLAGS = @YFLAGS@
 _ACJNI_JAVAC = @_ACJNI_JAVAC@
 abs_builddir = @abs_builddir@
 abs_srcdir = @abs_srcdir@
@@ -281,12 +286,13 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 ACLOCAL_AMFLAGS = -I m4
-SUBDIRS = krutils dbs krshm krcalc krdb krrule krengine \
-          krcoordi krserver krclient krtests bindings etc doc
+SUBDIRS = dbs krutils krshm krcalc krdb krrule krengine \
+          krcoordi krserver krclient krtests \
+		  bindings examples etc doc
 
 AM_CPPFLAGS = -g -I$(includedir) -L$(libdir)
 include_HEADERS = kr_config.h
-EXTRA_DIST = examples 
+EXTRA_DIST = README 
 all: kr_config.h
 	$(MAKE) $(AM_MAKEFLAGS) all-recursive
 

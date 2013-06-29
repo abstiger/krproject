@@ -69,7 +69,7 @@ int kr_hdi_aggr_day(T_KRHDI *krhdi, T_KRContext *krcontext, char *object)
 {
     int iResult = 0;
     double dValue = 0.0;
-    T_DbsEnv *dbsenv = krcontext->ptEnv->ptDbs;
+    T_DbsEnv *dbsenv = krcontext->ptDbs;
     
     T_HdiDaySel stHdiDaySel = {0};
     strcpy(stHdiDaySel.caInDataObject, object);
@@ -136,7 +136,7 @@ int kr_hdi_aggr_mon(T_KRHDI *krhdi, T_KRContext *krcontext, char *object)
     int iResult = 0;
     double dValue = 0.0;
     char caDataDate[8+1] = {0};
-    T_DbsEnv *dbsenv = krcontext->ptEnv->ptDbs;
+    T_DbsEnv *dbsenv = krcontext->ptDbs;
     
     T_HdiMonSel stHdiMonSel = {0};
     strcpy(stHdiMonSel.caInDataObject, object);
@@ -205,7 +205,7 @@ int kr_hdi_aggr_flag(T_KRHDI *krhdi, T_KRContext *krcontext, char *object)
 {
     int iResult = 0;
     char caDataDate[8+1] = {0};
-    T_DbsEnv *dbsenv = krcontext->ptEnv->ptDbs;
+    T_DbsEnv *dbsenv = krcontext->ptDbs;
     
     T_HdiFlagSel stHdiFlagSel = {0};
     strcpy(stHdiFlagSel.caInDataObject, object);

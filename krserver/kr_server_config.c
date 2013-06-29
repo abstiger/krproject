@@ -60,11 +60,6 @@ printf("server->rulemodule=[%s]\n", server->rulemodule);
         return -1;
     }
     
-    if (kr_config_getint("SYSTEM", "IPCKEY", &server->shmkey) != 0) {
-        printf("kr_config_getint IPCKEY failure!");
-        return -1;
-    }
-    
     if (kr_config_getint("SYSTEM", "DETECTMODE", &server->detectmode) != 0) {
         printf("kr_config_getint DETECTMODE failure!");
         return -1;
@@ -188,8 +183,8 @@ void kr_server_config_dump(T_KRServer *server, FILE *fp)
     fprintf(fp, "Dumping Server Configure...\n ");
     fprintf(fp, "configfile[%s]\n serverid[%s]\n daemonize[%d]\n pidfile[%s]\n ", \
         server->configfile, server->serverid, server->daemonize, server->pidfile);
-    fprintf(fp, "shmkey[%d]\n detectmode[%d]\n loglevel[%d]\n logpath[%s]", \
-        server->shmkey, server->detectmode, server->loglevel, server->logpath);
+    fprintf(fp, "detectmode[%d]\n loglevel[%d]\n logpath[%s]", \
+        server->detectmode, server->loglevel, server->logpath);
     fprintf(fp, "krdbmodule[%s]\n datamodule[%s]\n rulemodule[%s]\n", \
         server->krdbmodule, server->datamodule, server->rulemodule);
     fprintf(fp, "threadcnt[%d]\n hwm[%d]\n maxevents[%d]\n shutdown[%d]\n ", \

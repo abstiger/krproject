@@ -24,7 +24,6 @@ typedef struct _kr_server_t
     int  maxevents;               /* the max event number supported */
     int  hdicachesize;            /* cache size of historical dynamic item */
     
-    int shmkey;                   /* share memory key */
     int detectmode;               /* detect mode */
     int dumpinfo;                 /* dump info while server down:0-no,1-yes */
     int loglevel;                 /* log level of this server */

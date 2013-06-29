@@ -11,9 +11,20 @@ T_KRContext *kr_context_init(T_KRContextEnv *ptEnv)
 
     ptContext->ptEnv = ptEnv;
 
+    /* reconnect database in thread */
+    T_DbsEnv *dbsenv = ((T_KRContextEnv *)ptEnv)->ptDbs;
+    ptContext->ptDbs = dbsConnect(dbsenv->dsn, dbsenv->user, dbsenv->pass);
+    if (ptContext->ptDbs == NULL) {
+        KR_LOG(KR_LOGERROR, "dbsConnect [%s] [%s] [%s] failed!", \
+                dbsenv->dsn, dbsenv->user, dbsenv->pass);
+        kr_free(ptContext);
+        return NULL;
+    }
+
     ptContext->ptArg = kr_calloc(sizeof(T_KRContextArg));
-    if (ptContext == NULL) {
+    if (ptContext->ptArg == NULL) {
         KR_LOG(KR_LOGERROR, "kr_calloc ptContext->ptArg failed!");
+        dbsDisconnect(ptContext->ptDbs);
         kr_free(ptContext);
         return NULL;
     }
@@ -21,6 +32,7 @@ T_KRContext *kr_context_init(T_KRContextEnv *ptEnv)
     ptContext->ptDym = kr_dynamicmem_init(ptEnv);
     if (ptContext->ptDym == NULL) {
         KR_LOG(KR_LOGERROR, "kr_dynamicmem_init failed!");
+        dbsDisconnect(ptContext->ptDbs);
         kr_free(ptContext->ptArg);
         kr_free(ptContext);
         return NULL;
@@ -53,6 +65,7 @@ void kr_context_fini(T_KRContext *ptContext)
     if (ptContext) {
         kr_dynamicmem_fini(ptContext->ptDym);
         if (ptContext->ptArg) kr_free(ptContext->ptArg);
+        dbsDisconnect(ptContext->ptDbs);
         kr_free(ptContext);
     }
 }

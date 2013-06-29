@@ -10,7 +10,8 @@ T_KRDDI *kr_ddi_construct(T_KRShmDDIDef *ddi_def, T_KRModule *datamodule)
     }
     krddi->ptShmDDIDef = ddi_def;
     krddi->lDDIId = ddi_def->lDdiId;
-    krddi->ptDDICalc = kr_calc_construct(KR_CALCBEHOOF_DATA, \
+    //FIXME:
+    krddi->ptDDICalc = kr_calc_construct('J', \
         ddi_def->caDdiFilterString, kr_rule_get_type, kr_rule_get_value);
     krddi->eValueType = ddi_def->caDdiValueType[0];
     krddi->DDIAggrFunc = (KRDDIAggrFunc )kr_ddi_aggr_func;

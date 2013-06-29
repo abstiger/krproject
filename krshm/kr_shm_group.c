@@ -43,9 +43,12 @@ int LoadShmGroup(T_DbsEnv *dbsenv, T_KRShmGroup *ptShmGroup)
         strncpy(ptShmGroupDef->caGroupDesc, \
                 kr_string_rtrim(stGroupCur.caOutGroupDesc), \
                 sizeof(ptShmGroupDef->caGroupDesc));
-        strncpy(ptShmGroupDef->caGroupString, \
-                kr_string_rtrim(stGroupCur.caOutGroupString), \
-                sizeof(ptShmGroupDef->caGroupString));
+        strncpy(ptShmGroupDef->caGroupCalcFormat, \
+                kr_string_rtrim(stGroupCur.caOutGroupCalcFormat), \
+                sizeof(ptShmGroupDef->caGroupCalcFormat));
+        strncpy(ptShmGroupDef->caGroupCalcString, \
+                kr_string_rtrim(stGroupCur.caOutGroupCalcString), \
+                sizeof(ptShmGroupDef->caGroupCalcString));
         strncpy(ptShmGroupDef->caGroupFunc, \
                 kr_string_rtrim(stGroupCur.caOutGroupFunc), \
                 sizeof(ptShmGroupDef->caGroupFunc));
@@ -88,8 +91,8 @@ int DumpShmGroup(T_KRShmGroup *ptShmGroup, FILE *fp)
         fprintf(fp, "  lGroupId=[%ld], caGroupName=[%s], caGroupDesc=[%s],", 
                 ptShmGroupDef->lGroupId, ptShmGroupDef->caGroupName, 
                 ptShmGroupDef->caGroupDesc);
-        fprintf(fp, " caGroupString=[%s], caGroupFunc=[%s] \n", 
-                 ptShmGroupDef->caGroupString, ptShmGroupDef->caGroupFunc);
+        fprintf(fp, " caGroupCalcFormat=[%s], caGroupCalcString=[%s], caGroupFunc=[%s] \n", 
+                 ptShmGroupDef->caGroupCalcFormat, ptShmGroupDef->caGroupCalcString, ptShmGroupDef->caGroupFunc);
         /*dump rules of this group*/
         DumpShmRule(&ptShmGroupDef->stShmRule, fp);
         ptShmGroupDef++;

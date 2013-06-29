@@ -25,10 +25,8 @@ typedef struct _kr_sharemem_t
 
 
 
-T_KRShareMem *kr_shm_create(int shmkey);
-T_KRShareMem *kr_shm_attach(int shmkey);
-void kr_shm_detach(T_KRShareMem *ptShmBuf);
-int kr_shm_destroy(int shmkey);
+T_KRShareMem *kr_shm_create(T_DbsEnv *dbsenv);
+void kr_shm_destroy(T_KRShareMem *ptShmBuf);
 short kr_shm_switch(T_KRShareMem *ptShmBuf);
 short kr_shm_load(T_DbsEnv *dbsenv, T_KRShareMem *ptShmBuf);
 void kr_shm_dump(T_KRShareMem *ptShmBuf, FILE *fp);
