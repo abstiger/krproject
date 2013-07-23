@@ -85,6 +85,8 @@ T_KRRule *kr_rule_construct(T_KRShmRuleDef *rule_def, T_KRModule *rulemodule)
         }
     }
     krrule->bViolated = FALSE;
+    krrule->ptRelated = kr_hashtable_new(kr_pointer_hash, kr_pointer_equal);
+
     return krrule;
 }
 
@@ -92,6 +94,7 @@ T_KRRule *kr_rule_construct(T_KRShmRuleDef *rule_def, T_KRModule *rulemodule)
 int kr_rule_detect(T_KRRule *krrule, void *krcontext)
 {
     krrule->bViolated = FALSE;
+    kr_hashtable_remove_all(krrule->ptRelated);
 
     /*check datasrc first*/
     T_KRTable *krtable = ((T_KRContext *)krcontext)->ptCurrRec->ptTable;
@@ -104,7 +107,8 @@ int kr_rule_detect(T_KRRule *krrule, void *krcontext)
 
     /*calculate rule string*/
     if (kr_calc_eval(krrule->ptRuleCalc, krcontext) != 0) {
-        KR_LOG(KR_LOGERROR, "kr_calc_eval rule[%ld] failed!", krrule->lRuleId);
+        KR_LOG(KR_LOGERROR, "kr_calc_eval rule[%ld] failed[%s]!", \
+                krrule->lRuleId, krrule->ptRuleCalc->err_msg);
         return -1;
     }
     
@@ -121,9 +125,9 @@ int kr_rule_detect(T_KRRule *krrule, void *krcontext)
 }
 
 
-void kr_rule_destruct(void *rule)
+void kr_rule_destruct(T_KRRule *krrule)
 {
-    T_KRRule *krrule = (T_KRRule *)rule;
+    kr_hashtable_destroy(krrule->ptRelated);
     kr_calc_destruct(krrule->ptRuleCalc);
     kr_free(krrule);
 }
@@ -147,7 +151,7 @@ T_KRRuleGroup *kr_rule_group_construct(T_KRShmRule *shm_rule, T_KRModule *rulemo
     krrulegroup->ptShmRules = shm_rule;
     krrulegroup->lRuleCnt = shm_rule->lRuleDefCnt;
     krrulegroup->ptRuleList = kr_list_new();
-    kr_list_set_free(krrulegroup->ptRuleList, kr_rule_destruct);
+    kr_list_set_free(krrulegroup->ptRuleList, (KRFreeFunc )kr_rule_destruct);
     
     for (i=0; i<krrulegroup->lRuleCnt; ++i) {
         krrule = kr_rule_construct(&shm_rule->stShmRuleDef[i], rulemodule);

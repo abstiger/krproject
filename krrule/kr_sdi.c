@@ -10,8 +10,7 @@ T_KRSDI *kr_sdi_construct(T_KRShmSDIDef *sdi_def, T_KRModule *datamodule)
     }
     krsdi->ptShmSDIDef = sdi_def;
     krsdi->lSDIId = sdi_def->lSdiId;
-    //FIXME:replace J with sdi field
-    krsdi->ptSDICalc = kr_calc_construct('J', \ 
+    krsdi->ptSDICalc = kr_calc_construct(sdi_def->caSdiFilterFormat[0], \ 
             sdi_def->caSdiFilterString, kr_rule_get_type, kr_rule_get_value);
     krsdi->eValueType = sdi_def->caSdiValueType[0];
     krsdi->SDIAggrFunc = (KRSDIAggrFunc )kr_sdi_aggr_func;
@@ -25,6 +24,7 @@ T_KRSDI *kr_sdi_construct(T_KRShmSDIDef *sdi_def, T_KRModule *datamodule)
         }
     }
     krsdi->eValueInd = KR_VALUE_UNSET;
+    krsdi->ptRelated = kr_hashtable_new(kr_pointer_hash, kr_pointer_equal);
     
     return krsdi;
 }
@@ -34,6 +34,8 @@ int kr_sdi_compute(T_KRSDI *krsdi, void *param)
 {
     /*initialize first*/
     krsdi->eValueInd == KR_VALUE_UNSET;
+    kr_hashtable_remove_all(krsdi->ptRelated);
+
     /*string comes from kr_strdup, need kr_free*/
     if (krsdi->eValueType == KR_FIELDTYPE_STRING) 
         kr_free(krsdi->uValue.s);
@@ -66,6 +68,7 @@ int kr_sdi_compute(T_KRSDI *krsdi, void *param)
 
 void kr_sdi_destruct(T_KRSDI *krsdi)
 {
+    kr_hashtable_destroy(krsdi->ptRelated);
     kr_calc_destruct(krsdi->ptSDICalc);
     kr_free(krsdi);
 }

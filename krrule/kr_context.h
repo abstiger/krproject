@@ -41,7 +41,7 @@ typedef struct _kr_context_t
     void             *pKeyValue;
     T_KRList         *ptRecList;
     T_KRRecord       *ptRecord;
-    void             *ptExtra;    /* pointer to context's extra data */
+    char             *pcaResp;    /* response pointer */
 }T_KRContext;
 
 typedef enum {

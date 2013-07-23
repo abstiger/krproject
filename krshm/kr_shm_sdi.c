@@ -62,6 +62,9 @@ int LoadShmSDI(T_DbsEnv *dbsenv, T_KRShmSDI *ptShmSDI)
         strncpy(ptShmSDIDef->caLocationProperty, \
                 kr_string_rtrim(stSdiCur.caOutLocationProperty), \
                 sizeof(ptShmSDIDef->caLocationProperty));
+        strncpy(ptShmSDIDef->caSdiFilterFormat, \
+                kr_string_rtrim(stSdiCur.caOutSdiFilterFormat), \
+                sizeof(ptShmSDIDef->caSdiFilterFormat));
         strncpy(ptShmSDIDef->caSdiFilterString, \
                 kr_string_rtrim(stSdiCur.caOutSdiFilterString), \
                 sizeof(ptShmSDIDef->caSdiFilterString));
@@ -103,7 +106,7 @@ int DumpShmSDI(T_KRShmSDI *ptShmSDI, FILE *fp)
                 ptShmSDIDef->lStatisticsDatasrc, ptShmSDIDef->lStatisticsIndex, ptShmSDIDef->lStatisticsField);
         fprintf(fp, "  lStatisticsLocation=[%ld], caLocationProperty=[%s] \n", 
                 ptShmSDIDef->lStatisticsLocation, ptShmSDIDef->caLocationProperty);
-        fprintf(fp, "  caSdiFilterString=[%s] \n", ptShmSDIDef->caSdiFilterString);
+        fprintf(fp, "  caSdiFilterFormat=[%s], caSdiFilterString=[%s] \n", ptShmSDIDef->caSdiFilterFormat, ptShmSDIDef->caSdiFilterString);
         ptShmSDIDef++;
     }
     

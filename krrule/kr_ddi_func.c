@@ -166,6 +166,10 @@ int kr_ddi_aggr_func(T_KRDDI *krddi, T_KRContext *krcontext)
                        krddi->ptShmDDIDef->caStatisticsMethod[0]);
                 return -1;    
         }
+        
+        /*add this record to related*/
+        kr_hashtable_insert(krddi->ptRelated, \
+                krcontext->ptRecord, krcontext->ptRecord);
     
         /* This is what the difference between SDI and DDI:
          * SDI only set once, while DDI still need to traversal all the list

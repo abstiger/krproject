@@ -4,7 +4,7 @@
 
 int kr_rule_func(T_KRRule *krrule, T_KRContext *krcontext)
 {
-    cJSON *rule=NULL, *fired=NULL, *root=NULL;
+    krrule->bViolated = FALSE;
     if (krrule->ptRuleCalc->result_ind != KR_VALUE_SETED) {
         printf("***rule:[%ld] result_type:[%c] result_value:[%s]***\n", 
                 krrule->lRuleId,
@@ -18,19 +18,8 @@ int kr_rule_func(T_KRRule *krrule, T_KRContext *krcontext)
         return 0;
     }
 
-    /*set context's extra data with json format*/
-    if (krcontext->ptExtra == NULL) {
-        krcontext->ptExtra = cJSON_CreateObject();
-        cJSON_AddItemToObject(krcontext->ptExtra, "fired", \
-                              fired=cJSON_CreateArray());
-    } else {
-        fired = cJSON_GetObjectItem(krcontext->ptExtra, "fired");
-    }
-    root = (cJSON *)krcontext->ptExtra;
-    cJSON_AddItemToArray(fired, rule=cJSON_CreateObject());
-    cJSON_AddNumberToObject(rule, "id", krrule->lRuleId);
-    cJSON_AddStringToObject(rule, "name", krrule->ptShmRuleDef->caRuleName);
-    cJSON_AddNumberToObject(rule, "result", krrule->ptRuleCalc->result_value.b);
+    /*rule fired*/
+    krrule->bViolated = TRUE;
 
     /*
     switch(krrule->ptRuleCalc->result_type) 

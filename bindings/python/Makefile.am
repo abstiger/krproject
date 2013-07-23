@@ -1,7 +1,7 @@
-EXTRA_DIST = krengine.i 
 pkgpython_PYTHON = __init__.py krengine.py
 pkgpyexec_LTLIBRARIES   = _krengine.la
-_krengine_la_SOURCES    = krengine_wrap.c krengine.i
+nodist__krengine_la_SOURCES    = krengine_wrap.c 
+_krengine_la_SOURCES    = krengine.i
 _krengine_la_LIBADD     = $(top_srcdir)/krutils/libkrutils.la
 _krengine_la_LIBADD    += $(top_srcdir)/dbs/libdbsbas.la
 _krengine_la_LIBADD    += $(top_srcdir)/dbs/dbs/libdbsdbs.la

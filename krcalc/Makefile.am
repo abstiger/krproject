@@ -1,7 +1,8 @@
 lib_LTLIBRARIES        = libkrcalc.la
 libkrcalc_la_SOURCES   = \
-						 kr_calc_parser_flex.y   \
-						 kr_calc_lexer_flex.l   \
+						 kr_calc_parser_flex.c   \
+						 kr_calc_parser_flex.h   \
+						 kr_calc_lexer_flex.c   \
 						 kr_calc_parser_json.c   \
 						 kr_calc_parser_json.h   \
 						 kr_calc_parser_gwt.c   \
@@ -16,12 +17,13 @@ libkrcalc_la_SOURCES   = \
 libkrcalc_la_LIBADD    = $(top_srcdir)/krutils/libkrutils.la
 libkrcalc_la_LDFLAGS   =
 libkrcalc_la_CPPFLAGS  =
+EXTRA_DIST = kr_calc_lexer_flex.l kr_calc_parser_flex.y
 
 kr_calc_lexer_flex.c: kr_calc_lexer_flex.l kr_calc_parser_flex.c
-	lex --noline --outfile=$@ $<
+	$(LEX) --noline --outfile=$@ $<
 
 kr_calc_parser_flex.c: kr_calc_parser_flex.y
-	yacc -d --no-lines --output=$@ $< 
+	$(YACC) -d --no-lines --output=$@ $< 
 
 clean-local:
 	-rm -f kr_calc_lexer_flex.c kr_calc_parser_flex.h kr_calc_parser_flex.c

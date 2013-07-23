@@ -15,6 +15,7 @@ typedef struct _kr_rule_t
     T_KRCalc              *ptRuleCalc;
     KRRuleFunc            RuleFunc;
     boolean               bViolated;
+    T_KRHashTable         *ptRelated;
 }T_KRRule;
 
 struct _kr_rule_group_t
@@ -29,7 +30,7 @@ struct _kr_rule_group_t
 /*rules*/
 T_KRRule *kr_rule_construct(T_KRShmRuleDef *rule_def, T_KRModule *rulemodule);
 int kr_rule_detect(T_KRRule *krrule, void *krcontext);
-void kr_rule_destruct(void *rule);
+void kr_rule_destruct(T_KRRule *krrule);
 
 T_KRRuleGroup *kr_rule_group_construct(T_KRShmRule *rule_group_def, T_KRModule *rulemodule);
 int kr_rule_group_detect(T_KRContext *krcontext);

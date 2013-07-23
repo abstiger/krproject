@@ -26,6 +26,28 @@ int kr_server_handle_svron(void)
     return 0;
 }
 
+void kr_server_write_handler(T_KREventLoop *el, int fd, void *privdata, int mask)
+{
+    /* this is quite important for event driven programming */
+    if (privdata == NULL) return; 
+    char *jsonstr = (char *)privdata;
+
+    KR_LOG(KR_LOGDEBUG, "fd=[%d], jsonstr: %s ", fd, jsonstr);
+
+    /* send jsonstr back to client */
+    int nwrite = kr_net_write(fd, jsonstr, strlen(jsonstr));
+    if (nwrite != strlen(jsonstr)) {
+        KR_LOG(KR_LOGERROR, "kr_net_write[%d] jsonstr[%s] error[%d]!", \
+                fd, jsonstr, nwrite);
+    }
+    
+    kr_event_file_delete(el, fd, AE_WRITABLE);
+
+    /* free response string */
+    kr_engine_free_resp(jsonstr);
+    privdata=NULL;
+}
+
 int kr_server_handle_apply(T_KRMessage *krmsg)
 {
     int ret = 0;
@@ -39,12 +61,22 @@ int kr_server_handle_apply(T_KRMessage *krmsg)
     }
 
     /* run engine */
-    ret = kr_engine_run(krserver.krengine, eOprCode, \
+    char *resp = kr_engine_run(krserver.krengine, eOprCode, \
             krmsg->datasrc, krmsg->msgbuf, &krmsg->fd);
-    if (ret != 0) {
+    if (resp == NULL) {
         KR_LOG(KR_LOGERROR, "kr_engine_run:[%d] [%d] [%s] failed!", \
             eOprCode, krmsg->datasrc, krmsg->msgid);
         return -1; 
+    }
+        
+    /* write response */
+    if (kr_event_file_create(krserver.krel, 
+                krmsg->fd, KR_EVENT_WRITABLE, 
+                kr_server_write_handler, resp) == KR_NET_ERR) 
+    {
+        KR_LOG(KR_LOGERROR, "kr_event_file_create error!");
+        kr_engine_free_resp(resp);
+        return -1;
     }
 
     return 0;

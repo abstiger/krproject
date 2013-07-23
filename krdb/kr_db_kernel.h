@@ -76,6 +76,11 @@ typedef struct _kr_db_t
 }T_KRDB;
 
 
+static inline char* kr_get_field_name(T_KRRecord *krrecord, int ifldid)
+{ 
+    return ((T_KRTable *) krrecord->ptTable)->ptFieldDef[ifldid].name;
+}
+
 static inline E_KRFieldType kr_get_field_type(T_KRRecord *krrecord, int ifldid)
 { 
     return ((T_KRTable *) krrecord->ptTable)->ptFieldDef[ifldid].type;

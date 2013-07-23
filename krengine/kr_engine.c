@@ -234,12 +234,12 @@ int kr_engine_worker(void *ctx, void *arg)
 }
 
 
-int kr_engine_run(T_KREngine *krengine, E_KROprCode oprcode, int datasrc, char *msgbuf, void *extra)
+char *kr_engine_run(T_KREngine *krengine, E_KROprCode oprcode, int datasrc, char *msgbuf, void *extra)
 {
     T_KRContextArg *ptArg = kr_calloc(sizeof(T_KRContextArg));
     if (ptArg == NULL) {
         KR_LOG(KR_LOGERROR, "kr_calloc ptArg failed!");
-        return -1;
+        return NULL;
     }
     ptArg->pExtra = extra;
     
@@ -252,7 +252,7 @@ int kr_engine_run(T_KREngine *krengine, E_KROprCode oprcode, int datasrc, char *
                 kr_db_insert(krengine->krctxenv->ptKRDB, datasrc, msgbuf);
             if (ptArg->ptCurrRec == NULL) {
                 KR_LOG(KR_LOGERROR, "kr_db_insert failed!");
-                return -1;
+                return NULL;
             }
             break;
         }
@@ -264,35 +264,44 @@ int kr_engine_run(T_KREngine *krengine, E_KROprCode oprcode, int datasrc, char *
                 kr_db_insert(krengine->krctxenv->ptKRDB, datasrc, msgbuf);
             if (ptArg->ptCurrRec == NULL) {
                 KR_LOG(KR_LOGERROR, "kr_db_insert failed!");
-                return -1;
+                return NULL;
             }
 
             /* rule detect */
             if (krengine->threadcnt <= 0) {
                 iResult = kr_engine_worker(krengine->krctx, ptArg);
                 if (iResult != 0) {
-                    KR_LOG(KR_LOGERROR, "kr_server_detect failed!");
-                    return -1;
+                    KR_LOG(KR_LOGERROR, "kr_engine_worker failed!");
+                    return NULL;
                 }
+                return krengine->krctx->pcaResp;
             } else {
                 iResult = kr_threadpool_add_task(krengine->krtp, ptArg);
                 if (iResult != 0) {
                     KR_LOG(KR_LOGERROR, "kr_threadpool_add_task failed!");
-                    return -1;
+                    return NULL;
                 }
+                //FIXME:threadpool not support synchronize call
+                return NULL;
             }
             break;
         }
         default:
         {
             KR_LOG(KR_LOGERROR, "Unsupported oprcode:[%d]!", oprcode);
-            return -1;
+            return NULL;
         }
     }
-
-    return 0;
 }
 
+
+void kr_engine_free_resp(char *resp)
+{
+    if (resp != NULL) {
+        kr_free(resp);
+        resp = NULL;
+    }
+}
 
 char *kr_engine_info(T_KREngine *krengine)
 {

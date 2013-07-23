@@ -17,13 +17,14 @@ typedef struct _kr_ddi_t
     T_KRRecord            *ptCurrRec;
     E_KRValueInd          eValueInd;
     U_KRFieldVal          uValue;
+    T_KRHashTable         *ptRelated;
 }T_KRDDI;
 
 struct _kr_ddi_table_t
 {
     T_KRShmDDI            *ptShmDDIs;
     long                  lDDICnt;
-    T_KRHashTable           *ptDDITable;
+    T_KRHashTable         *ptDDITable;
     time_t                tConstructTime;
 };
 

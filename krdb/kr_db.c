@@ -202,7 +202,7 @@ T_KRDB* kr_db_startup(T_DbsEnv *dbsenv, char *dbname, T_KRModule *krdbmodule)
                 stDatasrcCur.caOutSizeKeepMode, \
                 stDatasrcCur.lOutSizeKeepValue, \
                 //TODO:sqlite3 let lOutFieldCnt->caOutFieldCnt
-                atoi(stDatasrcFieldCntSel.caOutFieldCnt));        
+                stDatasrcFieldCntSel.lOutFieldCnt);        
 
         kr_string_rtrim(stDatasrcCur.caOutDatasrcName);
         kr_string_rtrim(stDatasrcCur.caOutMapFuncPre);
@@ -248,7 +248,7 @@ T_KRDB* kr_db_startup(T_DbsEnv *dbsenv, char *dbname, T_KRModule *krdbmodule)
                 stDatasrcCur.caOutSizeKeepMode[0], \
                 stDatasrcCur.lOutSizeKeepValue, \
                 //TODO:sqlite3 let lOutFieldCnt->caOutFieldCnt
-                atoi(stDatasrcFieldCntSel.caOutFieldCnt), \
+                stDatasrcFieldCntSel.lOutFieldCnt, \
                 (KRLoadDefFunc)_kr_db_load_field_def, \
                 (KRMapFuncPre)MapFuncPre,
                 (KRMapFunc)MapFunc,

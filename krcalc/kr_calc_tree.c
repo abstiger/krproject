@@ -439,6 +439,8 @@ static int _kr_evaluate_extern(T_KRCalcTree *t, T_KRCalc *krcalc)
             krcalc->get_type_cb(t->kind, t->id, krcalc->data);
         t->type = kr_fieldtype_to_calctype(ele_type);
         if (t->type == KR_CALCTYPE_UNKNOWN) {
+            KR_LOG(KR_LOGERROR, "kind[%d],id[%d] type unknown", \
+                    t->kind, t->id);
             return -1;
         }
     }

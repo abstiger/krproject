@@ -74,6 +74,10 @@ int kr_sdi_aggr_func(T_KRSDI *krsdi, T_KRContext *krcontext)
                 KR_LOG(KR_LOGERROR, "Bad FieldType [%c]!", krsdi->eValueType);
                 return -1;
         }
+
+        /*add this record to related*/
+        kr_hashtable_insert(krsdi->ptRelated, \
+                krcontext->ptRecord, krcontext->ptRecord);
     
         /* This is what the difference between SDI and DDI:
          * SDI only set once, while DDI still need to traversal all the list

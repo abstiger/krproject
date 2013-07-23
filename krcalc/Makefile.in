@@ -35,8 +35,7 @@ POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
 subdir = krcalc
-DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in \
-	kr_calc_lexer_flex.c kr_calc_parser_flex.c
+DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/ax_jni_include_dir.m4 \
 	$(top_srcdir)/m4/ax_pkg_swig.m4 \
@@ -107,13 +106,6 @@ CCLD = $(CC)
 LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
 	--mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) \
 	$(LDFLAGS) -o $@
-LEXCOMPILE = $(LEX) $(AM_LFLAGS) $(LFLAGS)
-LTLEXCOMPILE = $(LIBTOOL) $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
-	--mode=compile $(LEX) $(AM_LFLAGS) $(LFLAGS)
-YLWRAP = $(top_srcdir)/ylwrap
-YACCCOMPILE = $(YACC) $(AM_YFLAGS) $(YFLAGS)
-LTYACCCOMPILE = $(LIBTOOL) $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
-	--mode=compile $(YACC) $(AM_YFLAGS) $(YFLAGS)
 SOURCES = $(libkrcalc_la_SOURCES)
 DIST_SOURCES = $(libkrcalc_la_SOURCES)
 ETAGS = etags
@@ -261,8 +253,9 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 lib_LTLIBRARIES = libkrcalc.la
 libkrcalc_la_SOURCES = \
-						 kr_calc_parser_flex.y   \
-						 kr_calc_lexer_flex.l   \
+						 kr_calc_parser_flex.c   \
+						 kr_calc_parser_flex.h   \
+						 kr_calc_lexer_flex.c   \
 						 kr_calc_parser_json.c   \
 						 kr_calc_parser_json.h   \
 						 kr_calc_parser_gwt.c   \
@@ -277,10 +270,11 @@ libkrcalc_la_SOURCES = \
 libkrcalc_la_LIBADD = $(top_srcdir)/krutils/libkrutils.la
 libkrcalc_la_LDFLAGS = 
 libkrcalc_la_CPPFLAGS = 
+EXTRA_DIST = kr_calc_lexer_flex.l kr_calc_parser_flex.y
 all: all-am
 
 .SUFFIXES:
-.SUFFIXES: .c .l .lo .o .obj .y
+.SUFFIXES: .c .lo .o .obj
 $(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
 	@for dep in $?; do \
 	  case '$(am__configure_deps)' in \
@@ -429,12 +423,6 @@ libkrcalc_la-kr_calc.lo: kr_calc.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libkrcalc_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libkrcalc_la-kr_calc.lo `test -f 'kr_calc.c' || echo '$(srcdir)/'`kr_calc.c
 
-.l.c:
-	$(am__skiplex) $(SHELL) $(YLWRAP) $< $(LEX_OUTPUT_ROOT).c $@ -- $(LEXCOMPILE)
-
-.y.c:
-	$(am__skipyacc) $(SHELL) $(YLWRAP) $< y.tab.c $@ y.tab.h $*.h y.output $*.output -- $(YACCCOMPILE)
-
 mostlyclean-libtool:
 	-rm -f *.lo
 
@@ -560,8 +548,6 @@ distclean-generic:
 maintainer-clean-generic:
 	@echo "This command is intended for maintainers to use"
 	@echo "it deletes files that may require special tools to rebuild."
-	-rm -f kr_calc_lexer_flex.c
-	-rm -f kr_calc_parser_flex.c
 clean: clean-am
 
 clean-am: clean-generic clean-libLTLIBRARIES clean-libtool clean-local \
@@ -651,10 +637,10 @@ uninstall-am: uninstall-libLTLIBRARIES
 
 
 kr_calc_lexer_flex.c: kr_calc_lexer_flex.l kr_calc_parser_flex.c
-	lex --noline --outfile=$@ $<
+	$(LEX) --noline --outfile=$@ $<
 
 kr_calc_parser_flex.c: kr_calc_parser_flex.y
-	yacc -d --no-lines --output=$@ $< 
+	$(YACC) -d --no-lines --output=$@ $< 
 
 clean-local:
 	-rm -f kr_calc_lexer_flex.c kr_calc_parser_flex.h kr_calc_parser_flex.c

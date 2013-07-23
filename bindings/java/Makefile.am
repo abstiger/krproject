@@ -1,8 +1,8 @@
-EXTRA_DATA = krengine.i
 krenginejardir = $(libdir)
 krenginejar_DATA = $(krengine_jarfile)
 lib_LTLIBRARIES  = libkrengine_java.la
-libkrengine_java_la_SOURCES    = krengine_wrap.c krengine.i
+nodist_libkrengine_java_la_SOURCES    = krengine_wrap.c
+libkrengine_java_la_SOURCES    = krengine.i
 libkrengine_java_la_LIBADD     = $(top_srcdir)/krutils/libkrutils.la
 libkrengine_java_la_LIBADD    += $(top_srcdir)/dbs/libdbsbas.la
 libkrengine_java_la_LIBADD    += $(top_srcdir)/dbs/dbs/libdbsdbs.la

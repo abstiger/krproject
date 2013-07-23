@@ -10,8 +10,7 @@ T_KRDDI *kr_ddi_construct(T_KRShmDDIDef *ddi_def, T_KRModule *datamodule)
     }
     krddi->ptShmDDIDef = ddi_def;
     krddi->lDDIId = ddi_def->lDdiId;
-    //FIXME:
-    krddi->ptDDICalc = kr_calc_construct('J', \
+    krddi->ptDDICalc = kr_calc_construct(ddi_def->caDdiFilterFormat[0], \
         ddi_def->caDdiFilterString, kr_rule_get_type, kr_rule_get_value);
     krddi->eValueType = ddi_def->caDdiValueType[0];
     krddi->DDIAggrFunc = (KRDDIAggrFunc )kr_ddi_aggr_func;
@@ -26,6 +25,7 @@ T_KRDDI *kr_ddi_construct(T_KRShmDDIDef *ddi_def, T_KRModule *datamodule)
         }
     }
     krddi->eValueInd = KR_VALUE_UNSET;
+    krddi->ptRelated = kr_hashtable_new(kr_pointer_hash, kr_pointer_equal);
     
     return krddi;
 }
@@ -35,6 +35,8 @@ int kr_ddi_compute(T_KRDDI *krddi, void *param)
 {
     /*initialize first*/
     krddi->eValueInd == KR_VALUE_UNSET;
+    kr_hashtable_remove_all(krddi->ptRelated);
+
     /*string comes from kr_strdup, need kr_free*/
     if (krddi->eValueType == KR_FIELDTYPE_STRING)
         kr_free(krddi->uValue.s);
@@ -67,6 +69,7 @@ int kr_ddi_compute(T_KRDDI *krddi, void *param)
 
 void kr_ddi_destruct(T_KRDDI *krddi)
 {
+    kr_hashtable_destroy(krddi->ptRelated);
     kr_calc_destruct(krddi->ptDDICalc);
     kr_free(krddi);
 }

@@ -53,15 +53,11 @@ if test x"${enable_java_binding}" = xyes; then
     AX_PROG_JAVAC
     AX_JNI_INCLUDE_DIR
     need_swig=yes
-    found_jnidir=no
     for jnidir in ${JNI_INCLUDE_DIRS}
     do
-        if test x"${found_jnidir}" = xno; then
-            JNI_CPPFLAGS="-I${jnidir}"
-            found_jnidir=yes
-        fi
+        JNI_CPPFLAGS="${JNI_CPPFLAGS} -I${jnidir}"
     done
-    if test x"${found_jnidir}" = xno; then
+    if test x"${JNI_CPPFLAGS}" = x; then
         AC_MSG_ERROR([
 -------------------------------------------------
 Krproject relies upon the JNI for Java bindings.
@@ -74,7 +70,7 @@ AC_SUBST([JNI_CPPFLAGS], [${JNI_CPPFLAGS}])
 
 # Check swig if needed
 if test x"${need_swig}" = xyes; then
-    AX_PKG_SWIG([2.0], [have_swig=yes], [SWIG2.0 is required to build bindings])
+    AX_PKG_SWIG([1.0], [have_swig=yes], [SWIG2.0 is required to build bindings])
 fi
 
 AM_CONDITIONAL([ENABLE_JAVA_BINDING], [test x"${enable_java_binding}" = xyes])

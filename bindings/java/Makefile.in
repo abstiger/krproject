@@ -92,8 +92,11 @@ libkrengine_java_la_DEPENDENCIES =  \
 	$(top_srcdir)/krdb/libkrdb.la \
 	$(top_srcdir)/krrule/libkrrule.la \
 	$(top_srcdir)/krengine/libkrengine.la
-am_libkrengine_java_la_OBJECTS = libkrengine_java_la-krengine_wrap.lo
-libkrengine_java_la_OBJECTS = $(am_libkrengine_java_la_OBJECTS)
+am_libkrengine_java_la_OBJECTS =
+nodist_libkrengine_java_la_OBJECTS =  \
+	libkrengine_java_la-krengine_wrap.lo
+libkrengine_java_la_OBJECTS = $(am_libkrengine_java_la_OBJECTS) \
+	$(nodist_libkrengine_java_la_OBJECTS)
 DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
@@ -107,7 +110,8 @@ CCLD = $(CC)
 LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
 	--mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) \
 	$(LDFLAGS) -o $@
-SOURCES = $(libkrengine_java_la_SOURCES)
+SOURCES = $(libkrengine_java_la_SOURCES) \
+	$(nodist_libkrengine_java_la_SOURCES)
 DIST_SOURCES = $(libkrengine_java_la_SOURCES)
 DATA = $(krenginejar_DATA)
 ETAGS = etags
@@ -253,11 +257,11 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-EXTRA_DATA = krengine.i
 krenginejardir = $(libdir)
 krenginejar_DATA = $(krengine_jarfile)
 lib_LTLIBRARIES = libkrengine_java.la
-libkrengine_java_la_SOURCES = krengine_wrap.c krengine.i
+nodist_libkrengine_java_la_SOURCES = krengine_wrap.c
+libkrengine_java_la_SOURCES = krengine.i
 libkrengine_java_la_LIBADD = $(top_srcdir)/krutils/libkrutils.la \
 	$(top_srcdir)/dbs/libdbsbas.la \
 	$(top_srcdir)/dbs/dbs/libdbsdbs.la \

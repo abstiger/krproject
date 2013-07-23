@@ -1,5 +1,3 @@
-drop database if exists KRDB;
-
 use KRDB;
 
 create table KR_TBL_DATADIC_CFG

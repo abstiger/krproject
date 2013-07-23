@@ -13968,15 +13968,11 @@ do
 done
 
     need_swig=yes
-    found_jnidir=no
     for jnidir in ${JNI_INCLUDE_DIRS}
     do
-        if test x"${found_jnidir}" = xno; then
-            JNI_CPPFLAGS="-I${jnidir}"
-            found_jnidir=yes
-        fi
+        JNI_CPPFLAGS="${JNI_CPPFLAGS} -I${jnidir}"
     done
-    if test x"${found_jnidir}" = xno; then
+    if test x"${JNI_CPPFLAGS}" = x; then
         as_fn_error $? "
 -------------------------------------------------
 Krproject relies upon the JNI for Java bindings.
@@ -14039,7 +14035,7 @@ done
 
         if test -z "$SWIG" ; then
                 SWIG2.0 is required to build bindings
-        elif test -n "2.0" ; then
+        elif test -n "1.0" ; then
                 { $as_echo "$as_me:${as_lineno-$LINENO}: checking SWIG version" >&5
 $as_echo_n "checking SWIG version... " >&6; }
                 swig_version=`$SWIG -version 2>&1 | grep 'SWIG Version' | sed 's/.*\([0-9][0-9]*\.[0-9][0-9]*\.[0-9][0-9]*\).*/\1/g'`
@@ -14047,7 +14043,7 @@ $as_echo_n "checking SWIG version... " >&6; }
 $as_echo "$swig_version" >&6; }
                 if test -n "$swig_version" ; then
                         # Calculate the required version number components
-                        required=2.0
+                        required=1.0
                         required_major=`echo $required | sed 's/[^0-9].*//'`
                         if test -z "$required_major" ; then
                                 required_major=0
@@ -14087,8 +14083,8 @@ $as_echo "$swig_version" >&6; }
                             \+ $available_minor \* 100 \+ $available_patch`
 
                         if test $available_swig_vernum -lt $required_swig_vernum; then
-                                { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: SWIG version >= 2.0 is required.  You have $swig_version." >&5
-$as_echo "$as_me: WARNING: SWIG version >= 2.0 is required.  You have $swig_version." >&2;}
+                                { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: SWIG version >= 1.0 is required.  You have $swig_version." >&5
+$as_echo "$as_me: WARNING: SWIG version >= 1.0 is required.  You have $swig_version." >&2;}
                                 SWIG=''
                                 SWIG2.0 is required to build bindings
                         else

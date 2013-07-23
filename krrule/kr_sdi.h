@@ -17,6 +17,7 @@ typedef struct _kr_sdi_t
     T_KRRecord            *ptCurrRec;
     E_KRValueInd          eValueInd;
     U_KRFieldVal          uValue;
+    T_KRHashTable         *ptRelated;
 }T_KRSDI;
 
 struct _kr_sdi_table_t
