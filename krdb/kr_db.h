@@ -2,8 +2,8 @@
 #define __KR_DB_H__
 
 #include <stdio.h>
-#include "dbs/dbs_basopr.h"
 #include "krdb/kr_db_kernel.h"
+#include "dbs/dbs_basopr.h"
 
 extern T_KRDB* kr_db_startup(T_DbsEnv *dbsenv, char *dbname, T_KRModule *krdbmodule);
 extern int kr_db_shutdown(T_KRDB *ptKRDB);

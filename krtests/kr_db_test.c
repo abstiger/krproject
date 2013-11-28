@@ -135,27 +135,27 @@ static int MyPrintRecord(T_KRRecord *ptRecord, void *user_data)
         pFieldVal = kr_get_field_value(ptRecord, i);
         switch(ptTable->ptFieldDef[i].type)
         {
-            case KR_FIELDTYPE_INT:
+            case KR_TYPE_INT:
                 fprintf(fp, "      Field:id[%3d], name[%30s], value[%d]\n", \
                         ptTable->ptFieldDef[i].id, ptTable->ptFieldDef[i].name, \
                         *(int *)pFieldVal);
                 break;
-            case KR_FIELDTYPE_LONG:
+            case KR_TYPE_LONG:
                 fprintf(fp, "      Field:id[%3d], name[%30s], value[%ld]\n", \
                         ptTable->ptFieldDef[i].id, ptTable->ptFieldDef[i].name, \
                         *(long *)pFieldVal);
                 break;    
-            case KR_FIELDTYPE_DOUBLE:
+            case KR_TYPE_DOUBLE:
                 fprintf(fp, "      Field:id[%3d], name[%30s], value[%f]\n", \
                         ptTable->ptFieldDef[i].id, ptTable->ptFieldDef[i].name, \
                         *(double *)pFieldVal);
                 break;
-            case KR_FIELDTYPE_STRING:
+            case KR_TYPE_STRING:
                 fprintf(fp, "      Field:id[%3d], name[%30s], value[%s]\n", \
                         ptTable->ptFieldDef[i].id, ptTable->ptFieldDef[i].name, \
                         (char *)pFieldVal);
                 break;
-            case KR_FIELDTYPE_POINTER:
+            case KR_TYPE_POINTER:
                 fprintf(fp, "      Field:id[%3d], name[%30s], value[%p]\n", \
                         ptTable->ptFieldDef[i].id, ptTable->ptFieldDef[i].name, \
                         pFieldVal);

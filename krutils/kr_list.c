@@ -208,7 +208,7 @@ T_KRList *kr_list_dup(T_KRList *orig)
 }
 
 /* Traversal the list,dealing value with the function specified */
-void kr_list_foreach(T_KRList *list, KRForEachFunc func, void *user_data)
+void kr_list_foreach(T_KRList *list, KRListForEachFunc func, void *user_data)
 {
     T_KRListNode *node, *next;
     

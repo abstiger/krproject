@@ -41,7 +41,7 @@ void kr_server_write_handler(T_KREventLoop *el, int fd, void *privdata, int mask
                 fd, jsonstr, nwrite);
     }
     
-    kr_event_file_delete(el, fd, AE_WRITABLE);
+    kr_event_file_delete(el, fd, KR_EVENT_WRITABLE);
 
     /* free response string */
     kr_engine_free_resp(jsonstr);

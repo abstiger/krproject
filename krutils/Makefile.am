@@ -2,6 +2,7 @@ lib_LTLIBRARIES         = libkrutils.la
 libkrutils_la_SOURCES   = \
 						  kr_macros.h \
 						  kr_types.h \
+						  kr_endian.h \
 						  kr_alloc.h \
 						  kr_alloc.c \
 						  kr_datetime.h \
@@ -16,8 +17,8 @@ libkrutils_la_SOURCES   = \
 						  kr_list.c \
 						  kr_hashtable.h \
 						  kr_hashtable.c \
-						  kr_set.h \
-						  kr_set.c \
+						  kr_hashset.h \
+						  kr_hashset.c \
 						  kr_regex.h \
 						  kr_regex.c \
 						  kr_json.h \
@@ -38,12 +39,16 @@ libkrutils_la_SOURCES   = \
 						  kr_event.c \
 						  kr_cache.h \
 						  kr_cache.c \
+						  kr_message.h \
+						  kr_message.c \
 						  kr_utils.h
 
-EXTRA_DIST              = \
-						  kr_event_epoll.c \
-						  kr_event_kqueue.c \
-						  kr_event_select.c 
+EXTRA_DIST = \
+			 kr_event_epoll.c \
+			 kr_event_kqueue.c \
+			 kr_event_select.c
+
+
 
 libkrutils_la_LIBADD    = 
 libkrutils_la_LDFLAGS   = -lpthread -ldl -lm

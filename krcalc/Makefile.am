@@ -1,8 +1,8 @@
 lib_LTLIBRARIES        = libkrcalc.la
 libkrcalc_la_SOURCES   = \
+						 kr_calc_lexer_flex.c   \
 						 kr_calc_parser_flex.c   \
 						 kr_calc_parser_flex.h   \
-						 kr_calc_lexer_flex.c   \
 						 kr_calc_parser_json.c   \
 						 kr_calc_parser_json.h   \
 						 kr_calc_parser_gwt.c   \

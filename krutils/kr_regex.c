@@ -25,7 +25,7 @@ T_KRRegex *kr_regex_compile(const char *pattern)
 /* do a regex match
  * return KR_TRUE while matched, KR_FALSE for else
  */
-boolean kr_regex_execute(const T_KRRegex *krregex, const char *str)
+kr_bool kr_regex_execute(const T_KRRegex *krregex, const char *str)
 {
     int nRet = 0;
     nRet = regexec(&krregex->regex, str, 0, NULL, 0);

@@ -2,6 +2,7 @@
 #include <signal.h>
 #include <fcntl.h>
 #include <errno.h>
+#include <sys/stat.h>
 
 T_KRServer krserver = {0};
 

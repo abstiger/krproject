@@ -1,163 +1,127 @@
-#include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
-
-#include "kr_macros.h"
 #include "kr_string.h"
 
-/*****************************************************************************/
-/* FUNC:   boolean kr_string_isnumeric(const char *psBuf)                    */
-/* PARAMS: psBuf - 输入串 (I)                                                */
-/* RETURN: 0 - 不是                                                          */
-/*         1 - 是                                                            */
-/* DESC:   判断是否为全数字串                                                */
-/*****************************************************************************/
-boolean kr_string_isnumeric(const char *psBuf)
+
+/*TODO:repalce this with a better hash*/
+unsigned int kr_string_hash(const kr_string s)
+{
+    const signed char *p;
+    unsigned int h = 5381;
+
+    for (p = s; *p != '\0'; p++)
+        h = (h << 5) + h + *p;
+
+    return h;
+}
+
+
+kr_bool kr_string_equal(kr_string s1, kr_string s2)
+{
+    return kr_string_compare(s1, s2)==0?TRUE:FALSE;
+}
+
+
+kr_string kr_string_dup(kr_string s)
+{
+    size_t l = kr_string_length(s)+1;
+    kr_string p = kr_calloc(l);
+
+    memcpy(p,s,l);
+    return p;
+}
+
+
+kr_bool kr_string_isnumeric(const kr_string s)
 {
     int i;
-    for (i = 0; i < strlen(psBuf); i++) 
-    {
-        if ((psBuf[i] < '0') || (psBuf[i] > '9')) 
-        {
+    for (i = 0; i < strlen(s); i++) {
+        if ((s[i] < '0') || (s[i] > '9')) {
             return FALSE;
         }
     }
     return TRUE;
 }
 
-/*****************************************************************************/
-/* FUNC:   boolean kr_string_isdecimal(const char *psBuf)                    */
-/* PARAMS: psBuf - 输入串 (I)                                                */
-/* RETURN: 0 - 不是                                                          */
-/*         1 - 是                                                            */
-/* DESC:   判断是否为全数串                                                  */
-/*****************************************************************************/
-boolean kr_string_isdecimal(const char *psBuf)
+
+kr_bool kr_string_isdecimal(const kr_string s)
 {
     int i;
-    for (i = 0; i < strlen(psBuf); i++) 
-    {
-        if (((psBuf[i] <  '0') || (psBuf[i] >  '9')) &&
-            (psBuf[i] != '.') && (psBuf[i] != '-') && (psBuf[i] != '+')) 
-        {
+    for (i = 0; i < strlen(s); i++) {
+        if (((s[i] <  '0') || (s[i] >  '9')) &&
+            (s[i] != '.') && (s[i] != '-') && (s[i] != '+')) {
             return FALSE;
         }
     }
     return TRUE;
 }
 
-/*****************************************************************************/
-/* FUNC:   boolean kr_string_isalphabet(const char *psBuf)                   */
-/* PARAMS: psBuf - 输入串 (I)                                                */
-/* RETURN: 0 - 不是                                                          */
-/*         1 - 是                                                            */
-/* DESC:   判断是否为全字母串                                                */
-/*****************************************************************************/
-boolean kr_string_isalphabet(const char *psBuf)
+
+kr_bool kr_string_isalphabet(const kr_string s)
 {
     int i;
-    for (i = 0; i < strlen(psBuf); i++) 
-    {
-        if ((psBuf[i] < 'A') ||
-            ((psBuf[i] > 'Z') && (psBuf[i] < 'a')) ||
-            (psBuf[i] > 'z'))
-        {
+    for (i = 0; i < strlen(s); i++) {
+        if ((s[i] < 'A') ||
+            ((s[i] > 'Z') && (s[i] < 'a')) ||
+            (s[i] > 'z')) {
             return FALSE;
         }
     }
     return TRUE;
 }
 
-/*****************************************************************************/
-/* FUNC:   char *kr_string_rtrim(char *pcaBuf)                               */
-/* PARAMS: pcaBuf  - 转换串 (I/O)                                            */
-/* RETURN: 转换结果串                                                        */
-/* DESC:   去除右边空格                                                      */
-/*****************************************************************************/
-char *kr_string_rtrim(char *pcaBuf)
+
+kr_string kr_string_rtrim(kr_string s)
 {
     register int l;
-    for(l=(int)strlen(pcaBuf); l>0 && isspace((unsigned char)pcaBuf[l-1]); l--) 
-        pcaBuf[l-1]='\0';
-    return pcaBuf;
+    for(l=(int)strlen(s); l>0 && isspace((unsigned char)s[l-1]); l--) 
+        s[l-1]='\0';
+    return s;
 }
 
-/*****************************************************************************/
-/* FUNC:   char *kr_string_ltrim(char *pcaBuf)                               */
-/* PARAMS: pcaBuf  - 传入串 (I)                                              */
-/* RETURN: 转换结果串                                                        */
-/* DESC:   去除左边空格                                                      */
-/*****************************************************************************/
-char *kr_string_ltrim( char *pcaBuf )
+
+kr_string kr_string_ltrim(kr_string s)
 {
     register char *p;
-    for( p=pcaBuf; isspace((unsigned char)*p); p++ );
-        if( p!=pcaBuf )  strcpy(pcaBuf, p);
-    return pcaBuf;
+    for( p=s; isspace((unsigned char)*p); p++ );
+        if( p!=s )  strcpy(s, p);
+    return s;
 }
 
-/*****************************************************************************/
-/* FUNC:   char *kr_string_alltrim(char *pcaBuf)                             */
-/* PARAMS: pcaBuf  - 传入串 (I)                                              */
-/* RETURN: 转换结果串                                                        */
-/* DESC:   去除两边空格                                                      */
-/*****************************************************************************/
-char *kr_string_alltrim( char *pcaBuf )
+
+kr_string kr_string_alltrim(kr_string s)
 {
-    kr_string_rtrim(pcaBuf);
-    kr_string_ltrim(pcaBuf);
-    return pcaBuf;
+    kr_string_rtrim(s);
+    kr_string_ltrim(s);
+    return s;
 }
 
-/*****************************************************************************/
-/* FUNC:   char *kr_string_toupper(char *pcaBuf)                             */
-/* PARAMS: psBuf - 转换串 (I/O)                                              */
-/* RETURN: 返回串                                                            */
-/*         1 - 是                                                            */
-/* DESC:   转换为全大写                                                      */
-/*****************************************************************************/
-char *kr_string_toupper(char *pcaBuf)
+
+kr_string kr_string_toupper(kr_string s)
 {
     int i;
-    for (i = 0; i < strlen(pcaBuf); i++)
-    {
-        if (((unsigned char)pcaBuf[i] >= 0x81) && 
-            ((unsigned char)pcaBuf[i] <= 0xfe))
-        {
-            /* 如果是汉字的前半个字符，跳过整个汉字不做转换 */
+    for (i = 0; i < strlen(s); i++) {
+        if (((unsigned char)s[i] >= 0x81) && 
+            ((unsigned char)s[i] <= 0xfe)) {
             i++;
-        }
-        else
-        {
-            pcaBuf[i] = toupper(pcaBuf[i]);
+        } else {
+            s[i] = toupper(s[i]);
         }
     }
-    return pcaBuf;
+    return s;
 }
 
-/*****************************************************************************/
-/* FUNC:   char *kr_string_tolower(char *pcaBuf)                             */
-/* PARAMS: psBuf - 转换串 (I/O)                                              */
-/* RETURN: 返回串                                                            */
-/*         1 - 是                                                            */
-/* DESC:   转换为全小写                                                      */
-/*****************************************************************************/
-char *kr_string_tolower(char *pcaBuf)
+
+kr_string kr_string_tolower(kr_string s)
 {
     int i;
-    for (i = 0; i < strlen(pcaBuf); i++)
-    {
-        if (((unsigned char)pcaBuf[i] >= 0x81) && 
-            ((unsigned char)pcaBuf[i] <= 0xfe))
-        {
-            /* 如果是汉字的前半个字符，跳过整个汉字不做转换 */
+    for (i = 0; i < strlen(s); i++) {
+        if (((unsigned char)s[i] >= 0x81) && 
+            ((unsigned char)s[i] <= 0xfe)) {
             i++;
-        }
-        else
-        {
-            pcaBuf[i] = tolower(pcaBuf[i]);
+        } else {
+            s[i] = tolower(s[i]);
         }
     }
-    return pcaBuf;
+    return s;
 }

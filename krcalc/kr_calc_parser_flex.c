@@ -1491,7 +1491,7 @@ yyreduce:
 				  (yyval) -> child[0] = (yyvsp[(1) - (3)]);
 				  (yyval) -> child[1] = (yyvsp[(3) - (3)]);
 				  (yyval) -> op = KR_CALCOP_OR;
-				  (yyval) -> type = KR_CALCTYPE_BOOLEAN;
+				  (yyval) -> type = KR_TYPE_BOOL;
 				  (yyval) -> attr.val.b = FALSE;
 				}
     break;
@@ -1502,7 +1502,7 @@ yyreduce:
 				  (yyval) -> child[0] = (yyvsp[(1) - (3)]);
 				  (yyval) -> child[1] = (yyvsp[(3) - (3)]);
 				  (yyval) -> op = KR_CALCOP_AND;
-				  (yyval) -> type = KR_CALCTYPE_BOOLEAN;
+				  (yyval) -> type = KR_TYPE_BOOL;
 				  (yyval) -> attr.val.b = FALSE;
 				}
     break;
@@ -1512,7 +1512,7 @@ yyreduce:
     { (yyval) = kr_calctree_node_new(KR_CALCKIND_LOGIC);
 				  (yyval) -> child[0] = (yyvsp[(2) - (2)]);
 				  (yyval) -> op = KR_CALCOP_NOT;
-				  (yyval) -> type = KR_CALCTYPE_BOOLEAN;
+				  (yyval) -> type = KR_TYPE_BOOL;
 				  (yyval) -> attr.val.b = FALSE;
 			    }
     break;
@@ -1528,7 +1528,7 @@ yyreduce:
 				  (yyval) -> child[0] = (yyvsp[(1) - (3)]);
 				  (yyval) -> child[1] = (yyvsp[(3) - (3)]);
 				  (yyval) -> op = KR_CALCOP_LT;
-				  (yyval) -> type = KR_CALCTYPE_BOOLEAN;
+				  (yyval) -> type = KR_TYPE_BOOL;
 				  (yyval) -> attr.val.b = FALSE;
 				}
     break;
@@ -1539,7 +1539,7 @@ yyreduce:
 				  (yyval) -> child[0] = (yyvsp[(1) - (3)]);
 				  (yyval) -> child[1] = (yyvsp[(3) - (3)]);
 				  (yyval) -> op = KR_CALCOP_LE;
-				  (yyval) -> type = KR_CALCTYPE_BOOLEAN;
+				  (yyval) -> type = KR_TYPE_BOOL;
 				  (yyval) -> attr.val.b = FALSE;
 				}
     break;
@@ -1550,7 +1550,7 @@ yyreduce:
 				  (yyval) -> child[0] = (yyvsp[(1) - (3)]);
 				  (yyval) -> child[1] = (yyvsp[(3) - (3)]);
 				  (yyval) -> op = KR_CALCOP_GT;
-				  (yyval) -> type = KR_CALCTYPE_BOOLEAN;
+				  (yyval) -> type = KR_TYPE_BOOL;
 				  (yyval) -> attr.val.b = FALSE;
 				}
     break;
@@ -1561,7 +1561,7 @@ yyreduce:
 				  (yyval) -> child[0] = (yyvsp[(1) - (3)]);
 				  (yyval) -> child[1] = (yyvsp[(3) - (3)]);
 				  (yyval) -> op = KR_CALCOP_GE;
-				  (yyval) -> type = KR_CALCTYPE_BOOLEAN;
+				  (yyval) -> type = KR_TYPE_BOOL;
 				  (yyval) -> attr.val.b = FALSE;
 				}
     break;
@@ -1572,7 +1572,7 @@ yyreduce:
 				  (yyval) -> child[0] = (yyvsp[(1) - (3)]);
 				  (yyval) -> child[1] = (yyvsp[(3) - (3)]);
 				  (yyval) -> op = KR_CALCOP_EQ;
-				  (yyval) -> type = KR_CALCTYPE_BOOLEAN;
+				  (yyval) -> type = KR_TYPE_BOOL;
 				  (yyval) -> attr.val.b = FALSE;
 				}
     break;
@@ -1583,7 +1583,7 @@ yyreduce:
 				  (yyval) -> child[0] = (yyvsp[(1) - (3)]);
 				  (yyval) -> child[1] = (yyvsp[(3) - (3)]);
 				  (yyval) -> op = KR_CALCOP_NEQ;
-				  (yyval) -> type = KR_CALCTYPE_BOOLEAN;
+				  (yyval) -> type = KR_TYPE_BOOL;
 				  (yyval) -> attr.val.b = FALSE;
 				}
     break;
@@ -1594,7 +1594,7 @@ yyreduce:
 				  (yyval) -> child[0] = (yyvsp[(1) - (3)]);
 				  (yyval) -> child[1] = (yyvsp[(3) - (3)]);
 				  (yyval) -> op = KR_CALCOP_BL;
-				  (yyval) -> type = KR_CALCTYPE_BOOLEAN;
+				  (yyval) -> type = KR_TYPE_BOOL;
 				  (yyval) -> attr.val.b = FALSE;
 				}
     break;
@@ -1605,7 +1605,7 @@ yyreduce:
 				  (yyval) -> child[0] = (yyvsp[(1) - (3)]);
 				  (yyval) -> child[1] = (yyvsp[(3) - (3)]);
 				  (yyval) -> op = KR_CALCOP_NBL;
-				  (yyval) -> type = KR_CALCTYPE_BOOLEAN;
+				  (yyval) -> type = KR_TYPE_BOOL;
 				  (yyval) -> attr.val.b = FALSE;
 				}
     break;
@@ -1616,7 +1616,7 @@ yyreduce:
 				  (yyval) -> child[0] = (yyvsp[(1) - (3)]);
 				  (yyval) -> child[1] = (yyvsp[(3) - (3)]);
 				  (yyval) -> op = KR_CALCOP_MATCH;
-				  (yyval) -> type = KR_CALCTYPE_BOOLEAN;
+				  (yyval) -> type = KR_TYPE_BOOL;
 				  (yyval) -> attr.val.b = FALSE;
 				}
     break;
@@ -1632,7 +1632,7 @@ yyreduce:
 				  (yyval) -> child[0] = (yyvsp[(1) - (3)]);
 				  (yyval) -> child[1] = (yyvsp[(3) - (3)]);
 				  (yyval) -> op = KR_CALCOP_PLUS;
-				  (yyval) -> type = KR_CALCTYPE_DOUBLE;
+				  (yyval) -> type = KR_TYPE_DOUBLE;
 				  (yyval) -> attr.val.d = 0.0;
 				}
     break;
@@ -1643,7 +1643,7 @@ yyreduce:
 				  (yyval) -> child[0] = (yyvsp[(1) - (3)]);
 				  (yyval) -> child[1] = (yyvsp[(3) - (3)]);
 				  (yyval) -> op = KR_CALCOP_SUB;
-				  (yyval) -> type = KR_CALCTYPE_DOUBLE;
+				  (yyval) -> type = KR_TYPE_DOUBLE;
 				  (yyval) -> attr.val.d = 0.0;
 				}
     break;
@@ -1654,7 +1654,7 @@ yyreduce:
 				  (yyval) -> child[0] = (yyvsp[(1) - (3)]);
 				  (yyval) -> child[1] = (yyvsp[(3) - (3)]);
 				  (yyval) -> op = KR_CALCOP_MUT;
-				  (yyval) -> type = KR_CALCTYPE_DOUBLE;
+				  (yyval) -> type = KR_TYPE_DOUBLE;
 				  (yyval) -> attr.val.d = 0.0;
 				}
     break;
@@ -1665,7 +1665,7 @@ yyreduce:
 				  (yyval) -> child[0] = (yyvsp[(1) - (3)]);
 				  (yyval) -> child[1] = (yyvsp[(3) - (3)]);
 				  (yyval) -> op = KR_CALCOP_DIV;
-				  (yyval) -> type = KR_CALCTYPE_DOUBLE;
+				  (yyval) -> type = KR_TYPE_DOUBLE;
 				  (yyval) -> attr.val.d = 0.0;
 				}
     break;
@@ -1676,7 +1676,7 @@ yyreduce:
 				  (yyval) -> child[0] = (yyvsp[(1) - (3)]);
 				  (yyval) -> child[1] = (yyvsp[(3) - (3)]);
 				  (yyval) -> op = KR_CALCOP_MOD;
-				  (yyval) -> type = KR_CALCTYPE_INTEGER;
+				  (yyval) -> type = KR_TYPE_INT;
 				  (yyval) -> attr.val.i = 0;
 				}
     break;

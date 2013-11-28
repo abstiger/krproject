@@ -18,5 +18,6 @@ extern void kr_log_set_level(KRLogLevel level);
 
 /*define for easy log*/
 #define KR_LOG(level, fmt, ...)   kr_log(__FILE__, __LINE__, level, fmt, ##__VA_ARGS__)
+#define KR_LOGHEX(level, buf, len)   kr_log_hex(__FILE__, __LINE__, level, buf, len)
 
 #endif /*__KR_LOG_H__*/

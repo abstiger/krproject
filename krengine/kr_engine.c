@@ -3,10 +3,10 @@
 #include "krutils/kr_json.h"
 #include "krutils/kr_threadpool.h"
 #include "krutils/kr_cache.h"
-#include "krshm/kr_shm.h"
+#include "krparam/kr_param.h"
 #include "krcalc/kr_calc.h"
 #include "krdb/kr_db.h"
-#include "krrule/kr_rule.h"
+#include "krdata/kr_data.h"
 #include "kr_engine.h"
 
 static int kr_engine_worker(void *ctx, void *arg);
@@ -125,7 +125,7 @@ T_KREngine *kr_engine_startup(
     krctxenv->ptKRDB = kr_db_startup(\
             krctxenv->ptDbs, "KRDB", krctxenv->krdbModule);
     if (krctxenv->ptKRDB == NULL) {
-        KR_LOG(KR_LOGERROR, "kr_db_startup [%s] failed!", \ 
+        KR_LOG(KR_LOGERROR, "kr_db_startup [%s] failed!", \
                 krengine->krdbmodule);
         goto FAILED;
     }
@@ -218,9 +218,9 @@ int kr_engine_worker(void *ctx, void *arg)
         return -1;
     }
 
-    /* group list route and rule group detect*/
-    if (kr_group_list_detect(krcontext) != 0) {
-        KR_LOG(KR_LOGERROR, "kr_group_list_detect failed!");
+    /* FIXME:group list route and rule group detect*/
+    if (kr_group_list_route(krcontext) != 0) {
+        KR_LOG(KR_LOGERROR, "kr_group_list_route failed!");
         return -1;
     }
 

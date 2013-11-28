@@ -1,6 +1,6 @@
 #include "krutils/kr_utils.h"
 #include "krutils/kr_json.h"
-#include "krserver/kr_server_message.h"
+#include "krutils/kr_message.h"
 #include <time.h>
 #include <errno.h>
 #include <signal.h>
@@ -167,6 +167,7 @@ printf("Send:fd:[%d], msgid[%s], msgtype[%d], serverid[%s], clientid[%s], "
             stApply.serverid, stApply.clientid, 
             stApply.datasrc, stApply.objectkey, stApply.msglen);
 
+        memset(&readbuf, 0, sizeof(readbuf));
         readlen = read(fd, &readbuf, sizeof(readbuf));
         if( readlen < 0) {
             fprintf(stderr, "read fd failed[%s]!\n", strerror(errno));

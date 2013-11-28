@@ -9,7 +9,7 @@ libdbsdbs_la_SOURCES     = t_dbs101_datasrc_def_cur.cfg \
                            t_dbs103_datasrc_field_cur.cfg \
                            t_dbs104_datasrc_field_cnt_sel.cfg \
                            t_dbs105_datasrc_field_def_sel.cfg \
-                           t_dbs201_set_def_sel.cfg \
+                           t_dbs201_set_def_cur.cfg \
                            t_dbs202_set_cfg_cur.cfg \
                            t_dbs301_sdi_cur.cfg \
                            t_dbs302_ddi_cur.cfg \

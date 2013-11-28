@@ -1,8 +1,7 @@
 #ifndef __KR_MACROS_H__
 #define __KR_MACROS_H__
 
-/* We include stddef.h to get the system's definition of NULL
- */
+/* We include stddef.h to get the system's definition of NULL */
 #include <stddef.h>
 
 /* Guard C code in headers, while including them from C++ */
@@ -26,8 +25,6 @@
 #    define NULL        ((void*) 0)
 #  endif /* !__cplusplus */
 #endif
-
-typedef int   boolean;
 
 #ifndef    FALSE
 #define    FALSE    (0)
@@ -62,8 +59,17 @@ typedef int   boolean;
 #define TOUPPER(c)              (ISLOWER (c) ? (c) - 'a' + 'A' : (c))
 #define TOLOWER(c)              (ISUPPER (c) ? (c) - 'A' + 'a' : (c))
 
-/* 相关长度宏定义 */
-#define KR_FILENAME_LEN      1024
-#define KR_MAXINPUT_LEN      4096
+/*
+ * The KR_LIKELY and KR_UNLIKELY macros let the programmer give hints to 
+ * the compiler about the expected result of an expression. Some compilers
+ * can use this information for optimizations.
+ */
+#if defined __GNUC__ || defined __llvm__
+#define KR_LIKELY(x) __builtin_expect ((x), 1)
+#define KR_UNLIKELY(x) __builtin_expect ((x), 0)
+#else
+#define KR_LIKELY(x) (x)
+#define KR_UNLIKELY(x) (x)
+#endif
 
 #endif /* __KR_MACROS_H__ */

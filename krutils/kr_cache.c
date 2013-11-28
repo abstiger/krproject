@@ -1,7 +1,8 @@
 #include "kr_cache.h"
 
 
-static T_KRCacheNode *kr_cache_node_new(T_KRCache *cache, void *key, void *value)
+static T_KRCacheNode *
+kr_cache_node_new(T_KRCache *cache, void *key, void *value)
 {
     T_KRCacheNode *cachenode= (T_KRCacheNode *)kr_malloc(sizeof(T_KRCacheNode));
     if (cachenode == NULL) {

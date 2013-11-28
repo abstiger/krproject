@@ -30,19 +30,19 @@ T_KRCalcTree *kr_calc_parse_ele(T_KRCalc *krcalc, int kind, cJSON *json)
     {
         case KR_CALCKIND_INT:
             tree = kr_calctree_node_new(kind);
-            tree->type = KR_CALCTYPE_INTEGER;
+            tree->type = KR_TYPE_INT;
             tree->attr.val.i = kr_calcjson_getint(json);
             tree->ind = KR_VALUE_SETED;
             break;
         case KR_CALCKIND_FLOAT:
             tree = kr_calctree_node_new(kind);
-            tree->type = KR_CALCTYPE_DOUBLE;
+            tree->type = KR_TYPE_DOUBLE;
             tree->attr.val.d = kr_calcjson_getdouble(json);
             tree->ind = KR_VALUE_SETED;
             break;
         case KR_CALCKIND_STRING:
             tree = kr_calctree_node_new(kind);
-            tree->type = KR_CALCTYPE_STRING;
+            tree->type = KR_TYPE_STRING;
             tree->attr.val.s = kr_strdup(kr_calcjson_getstring(json));
             tree->ind = KR_VALUE_SETED;
             break;
@@ -89,31 +89,31 @@ T_KRCalcTree *kr_calc_parse_ele(T_KRCalc *krcalc, int kind, cJSON *json)
         case KR_CALCKIND_MINT:
             krcalc->multi_cnt++;
             tree = kr_calctree_node_new(kind);
-            tree->type = KR_CALCTYPE_INTEGER;
+            tree->type = KR_TYPE_INT;
             tree->attr.set = 
-                kr_make_set_from_multi(kind, kr_calcjson_getstring(json));
+                kr_make_hashset_from_multi(kind, kr_calcjson_getstring(json));
             tree->ind = KR_VALUE_SETED;
             break;
         case KR_CALCKIND_MFLOAT:
             krcalc->multi_cnt++;
             tree = kr_calctree_node_new(kind);
-            tree->type = KR_CALCTYPE_DOUBLE;
+            tree->type = KR_TYPE_DOUBLE;
             tree->attr.set = 
-                kr_make_set_from_multi(kind, kr_calcjson_getstring(json));
+                kr_make_hashset_from_multi(kind, kr_calcjson_getstring(json));
             tree->ind = KR_VALUE_SETED;
             break;
         case KR_CALCKIND_MSTRING:
             krcalc->multi_cnt++;
             tree = kr_calctree_node_new(kind);
-            tree->type = KR_CALCTYPE_STRING;
+            tree->type = KR_TYPE_STRING;
             tree->attr.set = 
-                kr_make_set_from_multi(kind, kr_calcjson_getstring(json));
+                kr_make_hashset_from_multi(kind, kr_calcjson_getstring(json));
             tree->ind = KR_VALUE_SETED;
             break;
         case KR_CALCKIND_REGEX:
             krcalc->regex_cnt++;
             tree = kr_calctree_node_new(kind);
-            tree->type = KR_CALCTYPE_STRING;
+            tree->type = KR_TYPE_STRING;
             tree->attr.regex = kr_regex_compile(kr_calcjson_getstring(json));
             tree->ind = KR_VALUE_SETED;
             break;
@@ -142,7 +142,7 @@ T_KRCalcTree *kr_calc_parse_exp(T_KRCalc *krcalc, int op, cJSON *json)
         case KR_CALCOP_MOD:
             tree = kr_calctree_node_new(KR_CALCKIND_ARITH);
             tree->op = op;
-            tree->type = KR_CALCTYPE_DOUBLE;
+            tree->type = KR_TYPE_DOUBLE;
             tree->ind = KR_VALUE_UNSET;
             break;
         case KR_CALCOP_NOT:
@@ -160,7 +160,7 @@ T_KRCalcTree *kr_calc_parse_exp(T_KRCalc *krcalc, int op, cJSON *json)
         case KR_CALCOP_MATCH:
             tree = kr_calctree_node_new(KR_CALCKIND_LOGIC);
             tree->op = op;
-            tree->type = KR_CALCTYPE_BOOLEAN;
+            tree->type = KR_TYPE_BOOL;
             tree->ind = KR_VALUE_UNSET;
             break;
         default:

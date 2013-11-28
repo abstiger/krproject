@@ -4,12 +4,9 @@
 #include "krutils/kr_utils.h"
 #include "krutils/kr_threadpool.h"
 #include "krutils/kr_cache.h"
-#include "krshm/kr_shm.h"
-#include "krcalc/kr_calc.h"
-#include "krdb/kr_db.h"
-#include "krrule/kr_rule.h"
+#include "krutils/kr_event.h"
+#include "krutils/kr_message.h"
 #include "krengine/kr_engine.h"
-#include "kr_server_message.h"
 
 typedef struct _kr_server_t
 {

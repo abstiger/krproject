@@ -27,6 +27,15 @@ typedef enum {
     KR_SIZEKEEPMODE_TIME    = '1'  /*keep transtime interval*/
 }E_KRSizeKeepMode;
 
+/*field description*/
+typedef struct _kr_field_def_t
+{
+    int           id;
+    char          name[30+1];
+    E_KRType      type;
+    int           length;
+    size_t        offset;
+}T_KRFieldDef;
 
 /*record stored in krdb*/
 typedef struct _kr_record_t
@@ -81,14 +90,14 @@ static inline char* kr_get_field_name(T_KRRecord *krrecord, int ifldid)
     return ((T_KRTable *) krrecord->ptTable)->ptFieldDef[ifldid].name;
 }
 
-static inline E_KRFieldType kr_get_field_type(T_KRRecord *krrecord, int ifldid)
+static inline E_KRType kr_get_field_type(T_KRRecord *krrecord, int ifldid)
 { 
     return ((T_KRTable *) krrecord->ptTable)->ptFieldDef[ifldid].type;
 }
 
 static inline void* kr_get_field_value(T_KRRecord *krrecord, int ifldid)
 {
-    int field_offset = \
+    size_t field_offset = \
          ((T_KRTable *) krrecord->ptTable)->ptFieldDef[ifldid].offset;
     return &krrecord->pRecBuf[field_offset];
 }

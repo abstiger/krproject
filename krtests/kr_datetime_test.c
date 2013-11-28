@@ -9,10 +9,9 @@
 
 int main()
 {
-    boolean ret = FALSE;
+    kr_bool ret = FALSE;
     char caDate[KR_DATE_LEN+1];
     char caTempDate[KR_DATE_LEN+1];
-    char caJulian[KR_JULIAN_LEN+1];
     char caTime[KR_TIME_LEN+1];
     char caTempTime[KR_TIME_LEN+1];
     
@@ -29,7 +28,6 @@ int main()
     strcpy(caDate, "20120329");
     
     printf("kr_date_getmonthend 20120329 [%s]\n", kr_date_getmonthend(caDate));
-    printf("kr_date_tojulian [%s] [%s]\n", caDate, kr_date_tojulian(caDate, caJulian));
     printf("kr_date_addmonth [%s] [%d]:[%s]\n", caDate, 1, kr_date_addmonth(caDate, 1, caTempDate));
     printf("kr_date_addday [%s] [%d]:[%s]\n", caDate, -30, kr_date_addday(caDate, -30, caTempDate));
     printf("kr_time_system [%s]\n", kr_time_system(caTime));

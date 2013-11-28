@@ -83,8 +83,8 @@ am__uninstall_files_from_dir = { \
 am__installdirs = "$(DESTDIR)$(libdir)"
 LTLIBRARIES = $(lib_LTLIBRARIES)
 libkrcalc_la_DEPENDENCIES = $(top_srcdir)/krutils/libkrutils.la
-am_libkrcalc_la_OBJECTS = libkrcalc_la-kr_calc_parser_flex.lo \
-	libkrcalc_la-kr_calc_lexer_flex.lo \
+am_libkrcalc_la_OBJECTS = libkrcalc_la-kr_calc_lexer_flex.lo \
+	libkrcalc_la-kr_calc_parser_flex.lo \
 	libkrcalc_la-kr_calc_parser_json.lo \
 	libkrcalc_la-kr_calc_parser_gwt.lo \
 	libkrcalc_la-kr_calc_parser.lo libkrcalc_la-kr_calc_tree.lo \
@@ -253,9 +253,9 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 lib_LTLIBRARIES = libkrcalc.la
 libkrcalc_la_SOURCES = \
+						 kr_calc_lexer_flex.c   \
 						 kr_calc_parser_flex.c   \
 						 kr_calc_parser_flex.h   \
-						 kr_calc_lexer_flex.c   \
 						 kr_calc_parser_json.c   \
 						 kr_calc_parser_json.h   \
 						 kr_calc_parser_gwt.c   \
@@ -374,19 +374,19 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LTCOMPILE) -c -o $@ $<
 
-libkrcalc_la-kr_calc_parser_flex.lo: kr_calc_parser_flex.c
-@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libkrcalc_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libkrcalc_la-kr_calc_parser_flex.lo -MD -MP -MF $(DEPDIR)/libkrcalc_la-kr_calc_parser_flex.Tpo -c -o libkrcalc_la-kr_calc_parser_flex.lo `test -f 'kr_calc_parser_flex.c' || echo '$(srcdir)/'`kr_calc_parser_flex.c
-@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/libkrcalc_la-kr_calc_parser_flex.Tpo $(DEPDIR)/libkrcalc_la-kr_calc_parser_flex.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='kr_calc_parser_flex.c' object='libkrcalc_la-kr_calc_parser_flex.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libkrcalc_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libkrcalc_la-kr_calc_parser_flex.lo `test -f 'kr_calc_parser_flex.c' || echo '$(srcdir)/'`kr_calc_parser_flex.c
-
 libkrcalc_la-kr_calc_lexer_flex.lo: kr_calc_lexer_flex.c
 @am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libkrcalc_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libkrcalc_la-kr_calc_lexer_flex.lo -MD -MP -MF $(DEPDIR)/libkrcalc_la-kr_calc_lexer_flex.Tpo -c -o libkrcalc_la-kr_calc_lexer_flex.lo `test -f 'kr_calc_lexer_flex.c' || echo '$(srcdir)/'`kr_calc_lexer_flex.c
 @am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/libkrcalc_la-kr_calc_lexer_flex.Tpo $(DEPDIR)/libkrcalc_la-kr_calc_lexer_flex.Plo
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='kr_calc_lexer_flex.c' object='libkrcalc_la-kr_calc_lexer_flex.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libkrcalc_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libkrcalc_la-kr_calc_lexer_flex.lo `test -f 'kr_calc_lexer_flex.c' || echo '$(srcdir)/'`kr_calc_lexer_flex.c
+
+libkrcalc_la-kr_calc_parser_flex.lo: kr_calc_parser_flex.c
+@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libkrcalc_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libkrcalc_la-kr_calc_parser_flex.lo -MD -MP -MF $(DEPDIR)/libkrcalc_la-kr_calc_parser_flex.Tpo -c -o libkrcalc_la-kr_calc_parser_flex.lo `test -f 'kr_calc_parser_flex.c' || echo '$(srcdir)/'`kr_calc_parser_flex.c
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/libkrcalc_la-kr_calc_parser_flex.Tpo $(DEPDIR)/libkrcalc_la-kr_calc_parser_flex.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='kr_calc_parser_flex.c' object='libkrcalc_la-kr_calc_parser_flex.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libkrcalc_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libkrcalc_la-kr_calc_parser_flex.lo `test -f 'kr_calc_parser_flex.c' || echo '$(srcdir)/'`kr_calc_parser_flex.c
 
 libkrcalc_la-kr_calc_parser_json.lo: kr_calc_parser_json.c
 @am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libkrcalc_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libkrcalc_la-kr_calc_parser_json.lo -MD -MP -MF $(DEPDIR)/libkrcalc_la-kr_calc_parser_json.Tpo -c -o libkrcalc_la-kr_calc_parser_json.lo `test -f 'kr_calc_parser_json.c' || echo '$(srcdir)/'`kr_calc_parser_json.c

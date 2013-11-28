@@ -11,7 +11,7 @@ AM_INIT_AUTOMAKE([foreign -Wall -Werror])
 LT_INIT(disable_static)
 
 # Checks for programs.
-AC_PROG_CC
+AC_PROG_CC_C99
 AM_PROG_CC_C_O
 AC_PROG_LIBTOOL
 AM_PROG_LEX
@@ -20,16 +20,17 @@ AC_PROG_YACC
 # Checks for libraries.
 
 # Checks for header files.
+AC_CHECK_HEADERS([stdint.h inttypes.h unistd.h])
+AC_CHECK_HEADERS([endian.h byteswap.h])
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_C_INLINE
 AC_TYPE_SIZE_T
-AC_CHECK_SIZEOF(void *)
-AC_CHECK_SIZEOF(long long)
-AC_CHECK_SIZEOF(int64_t)
+
+# check for bytesex stuff
+AC_C_BIGENDIAN
 
 # Checks for library functions.
-AC_CHECK_FUNCS(epoll_ctl kqueue poll select)
 
 # Check enables
 need_swig=no
@@ -82,14 +83,14 @@ Makefile
 krutils/Makefile 
 dbs/Makefile 
 dbs/dbs/Makefile 
-krshm/Makefile 
 krcalc/Makefile 
+krparam/Makefile 
 krdb/Makefile 
-krrule/Makefile 
+krdata/Makefile 
 krengine/Makefile 
-krcoordi/Makefile
 krserver/Makefile
 krclient/Makefile
+krcoordi/Makefile
 krtests/Makefile
 bindings/Makefile
 bindings/python/Makefile

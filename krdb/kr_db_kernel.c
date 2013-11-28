@@ -10,8 +10,8 @@ static inline int kr_db_field_compare(void *p1, void *p2, void *sort_field)
     T_KRRecord *ptRec1 = (T_KRRecord *)p1;
     T_KRRecord *ptRec2 = (T_KRRecord *)p2;
     
-    E_KRFieldType eType1 = kr_get_field_type(ptRec1, iFldId);
-    E_KRFieldType eType2 = kr_get_field_type(ptRec1, iFldId);
+    E_KRType eType1 = kr_get_field_type(ptRec1, iFldId);
+    E_KRType eType2 = kr_get_field_type(ptRec1, iFldId);
     if (eType1 != eType2) return 0;
         
     void *pVal1 = kr_get_field_value(ptRec1, iFldId);
@@ -19,15 +19,15 @@ static inline int kr_db_field_compare(void *p1, void *p2, void *sort_field)
     
     switch(eType1)
     {
-        case KR_FIELDTYPE_INT:
+        case KR_TYPE_INT:
             return (int )(*(int *)pVal1 - *(int *)pVal2);
-        case KR_FIELDTYPE_LONG:
+        case KR_TYPE_LONG:
             return (int )(*(long *)pVal1 - *(long *)pVal2);
-        case KR_FIELDTYPE_DOUBLE:
+        case KR_TYPE_DOUBLE:
             return (int )(*(double *)pVal1 - *(double *)pVal2);
-        case KR_FIELDTYPE_STRING:
+        case KR_TYPE_STRING:
             return strcmp((char *)pVal1, (char *)pVal2);
-        case KR_FIELDTYPE_POINTER:
+        case KR_TYPE_POINTER:
             return (int )(*(int *)pVal1 - *(int *)pVal2);
     }
     return 0;
@@ -88,7 +88,7 @@ T_KRIndex* kr_create_index(T_KRDB *krdb, T_KRTable *krtable, int index_id,
     ptIndex->iIndexFieldId = index_field_id;
     ptIndex->iSortFieldId = sort_field_id;
     
-    E_KRFieldType index_field_type = krtable->ptFieldDef[index_field_id].type;
+    E_KRType index_field_type = krtable->ptFieldDef[index_field_id].type;
     KRHashFunc hash_func = (KRHashFunc )kr_get_hash_func(index_field_type);
     KREqualFunc equal_func = (KREqualFunc )kr_get_equal_func(index_field_type);
     

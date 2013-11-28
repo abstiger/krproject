@@ -44,9 +44,12 @@ int kr_db_mmap_table(T_KRTable *ptTable)
     }
     ptTable->uiMMapSize = i*sysconf(_SC_PAGE_SIZE);
 
-printf("mmap_file_size =[%u]:[%u] + [%u] + [%ld] page_size=[%ld].\n", \
-        ptTable->uiMMapSize, sizeof(T_KRTable), (ptTable->iFieldCnt * sizeof(T_KRFieldDef)), \
-        (ptTable->iRecordSize * ptTable->lSizeKeepValue), sysconf(_SC_PAGE_SIZE));
+printf("mmap_file_size =[%u]:[%ld] + [%ld] + [%ld] page_size=[%ld].\n", \
+        ptTable->uiMMapSize, 
+        (long )sizeof(T_KRTable), 
+        (long )(ptTable->iFieldCnt * sizeof(T_KRFieldDef)), 
+        (long )(ptTable->iRecordSize * ptTable->lSizeKeepValue), 
+        (long )sysconf(_SC_PAGE_SIZE));
     
     lseek(fd, ptTable->uiMMapSize-1, SEEK_SET);
     if (write(fd, " ", 1) < 0) {

@@ -71,19 +71,19 @@ whitespace  [ \t]+
 "!@"            {return NBL;}
 "##"            {return MATCH;}
 {number}        { (*yylval) = kr_calctree_node_new(KR_CALCKIND_INT);
-			      (*yylval)->type = KR_CALCTYPE_INTEGER;
+			      (*yylval)->type = KR_TYPE_INT;
 			      (*yylval)->attr.val.i = atoi(yytext);
 			      (*yylval)->ind = KR_VALUE_SETED;
 			      return NUM;
 			    }
 {fnumber}       { (*yylval) = kr_calctree_node_new(KR_CALCKIND_FLOAT);
-			      (*yylval)->type = KR_CALCTYPE_DOUBLE;
+			      (*yylval)->type = KR_TYPE_DOUBLE;
 			      (*yylval)->attr.val.d = atof(yytext);
 			      (*yylval)->ind = KR_VALUE_SETED;
 			      return FNUM;
 			    }
 {string}        { (*yylval) = kr_calctree_node_new(KR_CALCKIND_STRING);
-			      (*yylval)->type = KR_CALCTYPE_STRING;
+			      (*yylval)->type = KR_TYPE_STRING;
 			      char caTemp[1024]={0};
 			      strncpy(caTemp, yytext+1, yyleng -2);
 			      (*yylval)->attr.val.s = (char *)kr_strdup(caTemp);
@@ -91,7 +91,7 @@ whitespace  [ \t]+
 			      return STR;
 			    }
 {constchar}		{ (*yylval) = kr_calctree_node_new(KR_CALCKIND_STRING);
-			      (*yylval)->type = KR_CALCTYPE_STRING;
+			      (*yylval)->type = KR_TYPE_STRING;
 			      (*yylval)->attr.val.s = (char *)kr_strdup(yytext);
 			      (*yylval)->ind = KR_VALUE_SETED;
 			      return SCHAR;
@@ -135,9 +135,9 @@ whitespace  [ \t]+
                   (*yylval) = kr_calctree_node_new(KR_CALCKIND_MINT);
                   char caTemp[1024]={0};
 			      strncpy(caTemp, yytext+1, yyleng -2);
-			      (*yylval)->type = KR_CALCTYPE_INTEGER;
+			      (*yylval)->type = KR_TYPE_INT;
 			      (*yylval)->attr.set = \
-                      kr_make_set_from_multi(KR_CALCKIND_MINT, caTemp);
+                      kr_make_hashset_from_multi(KR_CALCKIND_MINT, caTemp);
 			      (*yylval)->ind = KR_VALUE_SETED;
 			      return MULTI;
                 }
@@ -145,9 +145,9 @@ whitespace  [ \t]+
                   (*yylval) = kr_calctree_node_new(KR_CALCKIND_MFLOAT);
                   char caTemp[1024]={0};
 			      strncpy(caTemp, yytext+1, yyleng -2);
-			      (*yylval)->type = KR_CALCTYPE_DOUBLE;
+			      (*yylval)->type = KR_TYPE_DOUBLE;
 			      (*yylval)->attr.set = \
-                      kr_make_set_from_multi(KR_CALCKIND_MFLOAT, caTemp);
+                      kr_make_hashset_from_multi(KR_CALCKIND_MFLOAT, caTemp);
 			      (*yylval)->ind = KR_VALUE_SETED;
 			      return MULTI;
                 }
@@ -155,9 +155,9 @@ whitespace  [ \t]+
                   (*yylval) = kr_calctree_node_new(KR_CALCKIND_MSTRING);
                   char caTemp[1024]={0};
 			      strncpy(caTemp, yytext+1, yyleng -2);
-			      (*yylval)->type = KR_CALCTYPE_STRING;
+			      (*yylval)->type = KR_TYPE_STRING;
 			      (*yylval)->attr.set = \
-                      kr_make_set_from_multi(KR_CALCKIND_MSTRING, caTemp);
+                      kr_make_hashset_from_multi(KR_CALCKIND_MSTRING, caTemp);
 			      (*yylval)->ind = KR_VALUE_SETED;
 			      return MULTI;
                 }
@@ -165,7 +165,7 @@ whitespace  [ \t]+
                   (*yylval) = kr_calctree_node_new(KR_CALCKIND_REGEX);
                   char caTemp[1024]={0};
 			      strncpy(caTemp, yytext+1, yyleng -2);
-			      (*yylval)->type = KR_CALCTYPE_STRING;
+			      (*yylval)->type = KR_TYPE_STRING;
 			      (*yylval)->attr.regex = kr_regex_compile(caTemp);
 			      (*yylval)->ind = KR_VALUE_SETED;
 			      return REGEX;

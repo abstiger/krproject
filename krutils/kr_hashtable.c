@@ -1,8 +1,6 @@
 #include <string.h>  /* memset */
 #include <assert.h>
 
-#include "kr_types.h"
-#include "kr_alloc.h"
 #include "kr_hashtable.h"
 
 #define HASH_TABLE_MIN_SHIFT 3  /* 1 << 3 == 8 buckets */
@@ -206,7 +204,7 @@ kr_hashtable_lookup_node_for_insertion (T_KRHashTable    *hash_table,
     unsigned int node_index;
     unsigned int hash_value;
     unsigned int first_tombstone;
-    boolean have_tombstone = FALSE;
+    kr_bool have_tombstone = FALSE;
     unsigned int step = 0;
     
     /* Empty buckets have hash_value set to 0, and for tombstones, it's 1.
@@ -271,7 +269,7 @@ kr_hashtable_lookup_node_for_insertion (T_KRHashTable    *hash_table,
 static void
 kr_hashtable_remove_node (T_KRHashTable   *hash_table,
                           T_KRHashNode    *node,
-                          boolean      notify)
+                          kr_bool      notify)
 {
     if (notify && hash_table->key_destroy_func)
         hash_table->key_destroy_func(node->key);
@@ -301,7 +299,7 @@ kr_hashtable_remove_node (T_KRHashTable   *hash_table,
  * for the key and value of the hash node.
  */
 static void
-kr_hashtable_remove_all_nodes (T_KRHashTable *hash_table, boolean notify)
+kr_hashtable_remove_all_nodes (T_KRHashTable *hash_table, kr_bool notify)
 {
     int i;
     
@@ -523,7 +521,7 @@ kr_hashtable_lookup (T_KRHashTable   *hash_table, const void * key)
  * @value: return location for the value associated with the key, or %NULL
  *
  * Looks up a key in the #T_KRHashTable, returning the original key and the
- * associated value and a #boolean which is %TRUE if the key was found. This
+ * associated value and a #kr_bool which is %TRUE if the key was found. This
  * is useful if you need to free the memory allocated for the original key,
  * for example before calling kr_hashtable_remove().
  *
@@ -532,7 +530,7 @@ kr_hashtable_lookup (T_KRHashTable   *hash_table, const void * key)
  *
  * Return value: %TRUE if the key was found in the #T_KRHashTable.
  **/
-boolean
+kr_bool
 kr_hashtable_lookup_extended (T_KRHashTable    *hash_table,
                               const void    *lookup_key,
                               void       **orig_key,
@@ -579,7 +577,7 @@ static void
 kr_hashtable_insert_internal (T_KRHashTable *hash_table,
                               void        *key,
                               void        *value,
-                              boolean      keep_new_key)
+                              kr_bool      keep_new_key)
 {
     T_KRHashNode *node;
     unsigned int node_index;
@@ -686,10 +684,10 @@ kr_hashtable_replace (T_KRHashTable *hash_table,
  * Do a lookup of @key and remove it if it is found, calling the
  * destroy notify handlers only if @notify is %TRUE.
  */
-static boolean
+static kr_bool
 kr_hashtable_remove_internal (T_KRHashTable    *hash_table,
                               const void     *key,
-                              boolean        notify)
+                              kr_bool        notify)
 {
     T_KRHashNode *node;
     unsigned int node_index;
@@ -724,7 +722,7 @@ kr_hashtable_remove_internal (T_KRHashTable    *hash_table,
  *
  * Return value: %TRUE if the key was found and removed from the #T_KRHashTable.
  **/
-boolean
+kr_bool
 kr_hashtable_remove (T_KRHashTable    *hash_table,
                      const void     *key)
 {
@@ -741,7 +739,7 @@ kr_hashtable_remove (T_KRHashTable    *hash_table,
  *
  * Return value: %TRUE if the key was found and removed from the #T_KRHashTable.
  **/
-boolean
+kr_bool
 kr_hashtable_steal (T_KRHashTable    *hash_table,
                     const void *  key)
 {
@@ -809,7 +807,7 @@ static unsigned int
 kr_hashtable_foreach_remove_or_steal (T_KRHashTable *hash_table,
                                       KRHRFunc       func,
                                       void        *user_data,
-                                      boolean      notify)
+                                      kr_bool      notify)
 {
     unsigned int deleted = 0;
     int i;

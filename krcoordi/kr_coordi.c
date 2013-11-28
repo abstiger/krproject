@@ -1,6 +1,7 @@
 #include "kr_coordi.h"
 #include <signal.h>
 #include <fcntl.h>
+#include <unistd.h>
 #include <errno.h>
 
 T_KRCoordi krcoordi = {0};
@@ -11,6 +12,7 @@ extern int kr_coordi_config_parse(char *configfile, T_KRCoordi *coordi);
 extern void kr_coordi_config_dump(T_KRCoordi *coordi, FILE *fp);
 extern void kr_coordi_config_reset(T_KRCoordi *coordi);
 
+static int kr_coordi_finalize();
 
 
 static void kr_coordi_usage(void)
@@ -162,7 +164,7 @@ int kr_coordi_initialize(void)
 }
 
 
-int kr_coordi_finalize()
+static int kr_coordi_finalize()
 {
     /* event loop delete */
     kr_event_loop_delete(krcoordi.el);

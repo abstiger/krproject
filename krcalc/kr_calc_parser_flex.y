@@ -52,7 +52,7 @@ rule        :rule OR subrule
 				  $$ -> child[0] = $1;
 				  $$ -> child[1] = $3;
 				  $$ -> op = KR_CALCOP_OR;
-				  $$ -> type = KR_CALCTYPE_BOOLEAN;
+				  $$ -> type = KR_TYPE_BOOL;
 				  $$ -> attr.val.b = FALSE;
 				}
 			|rule AND subrule 
@@ -60,14 +60,14 @@ rule        :rule OR subrule
 				  $$ -> child[0] = $1;
 				  $$ -> child[1] = $3;
 				  $$ -> op = KR_CALCOP_AND;
-				  $$ -> type = KR_CALCTYPE_BOOLEAN;
+				  $$ -> type = KR_TYPE_BOOL;
 				  $$ -> attr.val.b = FALSE;
 				}
 			|NOT rule
 			    { $$ = kr_calctree_node_new(KR_CALCKIND_LOGIC);
 				  $$ -> child[0] = $2;
 				  $$ -> op = KR_CALCOP_NOT;
-				  $$ -> type = KR_CALCTYPE_BOOLEAN;
+				  $$ -> type = KR_TYPE_BOOL;
 				  $$ -> attr.val.b = FALSE;
 			    }
 			|subrule
@@ -79,7 +79,7 @@ subrule		:subrule LT term
 				  $$ -> child[0] = $1;
 				  $$ -> child[1] = $3;
 				  $$ -> op = KR_CALCOP_LT;
-				  $$ -> type = KR_CALCTYPE_BOOLEAN;
+				  $$ -> type = KR_TYPE_BOOL;
 				  $$ -> attr.val.b = FALSE;
 				}
 			|subrule LE term 
@@ -87,7 +87,7 @@ subrule		:subrule LT term
 				  $$ -> child[0] = $1;
 				  $$ -> child[1] = $3;
 				  $$ -> op = KR_CALCOP_LE;
-				  $$ -> type = KR_CALCTYPE_BOOLEAN;
+				  $$ -> type = KR_TYPE_BOOL;
 				  $$ -> attr.val.b = FALSE;
 				}
 			|subrule GT term 
@@ -95,7 +95,7 @@ subrule		:subrule LT term
 				  $$ -> child[0] = $1;
 				  $$ -> child[1] = $3;
 				  $$ -> op = KR_CALCOP_GT;
-				  $$ -> type = KR_CALCTYPE_BOOLEAN;
+				  $$ -> type = KR_TYPE_BOOL;
 				  $$ -> attr.val.b = FALSE;
 				}
 			|subrule GE term 
@@ -103,7 +103,7 @@ subrule		:subrule LT term
 				  $$ -> child[0] = $1;
 				  $$ -> child[1] = $3;
 				  $$ -> op = KR_CALCOP_GE;
-				  $$ -> type = KR_CALCTYPE_BOOLEAN;
+				  $$ -> type = KR_TYPE_BOOL;
 				  $$ -> attr.val.b = FALSE;
 				}
 			|subrule EQ term 
@@ -111,7 +111,7 @@ subrule		:subrule LT term
 				  $$ -> child[0] = $1;
 				  $$ -> child[1] = $3;
 				  $$ -> op = KR_CALCOP_EQ;
-				  $$ -> type = KR_CALCTYPE_BOOLEAN;
+				  $$ -> type = KR_TYPE_BOOL;
 				  $$ -> attr.val.b = FALSE;
 				}
 			|subrule NEQ term 
@@ -119,7 +119,7 @@ subrule		:subrule LT term
 				  $$ -> child[0] = $1;
 				  $$ -> child[1] = $3;
 				  $$ -> op = KR_CALCOP_NEQ;
-				  $$ -> type = KR_CALCTYPE_BOOLEAN;
+				  $$ -> type = KR_TYPE_BOOL;
 				  $$ -> attr.val.b = FALSE;
 				}
 			|subrule BL aggr 
@@ -127,7 +127,7 @@ subrule		:subrule LT term
 				  $$ -> child[0] = $1;
 				  $$ -> child[1] = $3;
 				  $$ -> op = KR_CALCOP_BL;
-				  $$ -> type = KR_CALCTYPE_BOOLEAN;
+				  $$ -> type = KR_TYPE_BOOL;
 				  $$ -> attr.val.b = FALSE;
 				}
 			|subrule NBL aggr 
@@ -135,7 +135,7 @@ subrule		:subrule LT term
 				  $$ -> child[0] = $1;
 				  $$ -> child[1] = $3;
 				  $$ -> op = KR_CALCOP_NBL;
-				  $$ -> type = KR_CALCTYPE_BOOLEAN;
+				  $$ -> type = KR_TYPE_BOOL;
 				  $$ -> attr.val.b = FALSE;
 				}
 			|subrule MATCH regex 
@@ -143,7 +143,7 @@ subrule		:subrule LT term
 				  $$ -> child[0] = $1;
 				  $$ -> child[1] = $3;
 				  $$ -> op = KR_CALCOP_MATCH;
-				  $$ -> type = KR_CALCTYPE_BOOLEAN;
+				  $$ -> type = KR_TYPE_BOOL;
 				  $$ -> attr.val.b = FALSE;
 				}
 			|term
@@ -155,7 +155,7 @@ term		:term PLUS term
 				  $$ -> child[0] = $1;
 				  $$ -> child[1] = $3;
 				  $$ -> op = KR_CALCOP_PLUS;
-				  $$ -> type = KR_CALCTYPE_DOUBLE;
+				  $$ -> type = KR_TYPE_DOUBLE;
 				  $$ -> attr.val.d = 0.0;
 				}
 			|term SUB term 
@@ -163,7 +163,7 @@ term		:term PLUS term
 				  $$ -> child[0] = $1;
 				  $$ -> child[1] = $3;
 				  $$ -> op = KR_CALCOP_SUB;
-				  $$ -> type = KR_CALCTYPE_DOUBLE;
+				  $$ -> type = KR_TYPE_DOUBLE;
 				  $$ -> attr.val.d = 0.0;
 				}
 			|term MUT term 
@@ -171,7 +171,7 @@ term		:term PLUS term
 				  $$ -> child[0] = $1;
 				  $$ -> child[1] = $3;
 				  $$ -> op = KR_CALCOP_MUT;
-				  $$ -> type = KR_CALCTYPE_DOUBLE;
+				  $$ -> type = KR_TYPE_DOUBLE;
 				  $$ -> attr.val.d = 0.0;
 				}
 			|term DIV term 
@@ -179,7 +179,7 @@ term		:term PLUS term
 				  $$ -> child[0] = $1;
 				  $$ -> child[1] = $3;
 				  $$ -> op = KR_CALCOP_DIV;
-				  $$ -> type = KR_CALCTYPE_DOUBLE;
+				  $$ -> type = KR_TYPE_DOUBLE;
 				  $$ -> attr.val.d = 0.0;
 				}
 			|term MOD term 
@@ -187,7 +187,7 @@ term		:term PLUS term
 				  $$ -> child[0] = $1;
 				  $$ -> child[1] = $3;
 				  $$ -> op = KR_CALCOP_MOD;
-				  $$ -> type = KR_CALCTYPE_INTEGER;
+				  $$ -> type = KR_TYPE_INT;
 				  $$ -> attr.val.i = 0;
 				}
 			|primary

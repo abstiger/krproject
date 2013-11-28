@@ -17,11 +17,11 @@ struct _kr_calc_tree_t
     int                     id;
     E_KRValueInd            ind;
     union { 
-        U_KRCalcValue      val;
-        T_KRSet           *set;
+        U_KRValue          val;
+        T_KRHashSet       *set;
         T_KRRegex         *regex;
     }attr;
-    E_KRCalcType            type;
+    E_KRType               type;
 };
 
 /* function declarations */

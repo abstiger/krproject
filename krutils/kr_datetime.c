@@ -1,31 +1,17 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <time.h>
+#include "kr_datetime.h"
 
-#include "kr_macros.h"
-
-/*
- * Date & Time operating function
- */
-
-/*****************************************************************************/
-/* FUNC:   char *kr_time_system(char *pcaSysTime)                            */
-/* PARAMS: pcaSysTime - 日期时间(YYYYMMDDHHMISS) (O)                         */
-/* RETURN: 格式YYYYMMDDHHMISS                                                */
-/* DESC:   取得UNIX系统时间                                                  */
-/*****************************************************************************/
 char *kr_time_system(char *pcaSysTime)
 {
     struct tm *ptTime;
     time_t tTimeVal;
 
-    if ((tTimeVal = time(NULL)) == -1)
-    {
+    if ((tTimeVal = time(NULL)) == -1) {
         return NULL;
     }
-    if ((ptTime = localtime(&tTimeVal)) == NULL)
-    {
+    if ((ptTime = localtime(&tTimeVal)) == NULL) {
         return NULL;
     }
 
@@ -41,14 +27,7 @@ char *kr_time_system(char *pcaSysTime)
 }
 
 
-/*****************************************************************************/
-/* FUNC:   boolean kr_date_isvalid(const char *pcaDate)                      */
-/* PARAMS: pcaDate - 日期(YYYYMMDD) (I)                                      */
-/* RETURN:  1:合法日期                                                       */
-/*          0:非法日期                                                       */
-/* DESC:   判断日期十分合法                                                  */
-/*****************************************************************************/
-boolean kr_date_isvalid(const char *pcaDate)
+kr_bool kr_date_isvalid(const char *pcaDate)
 {
     char caYear[5], caMonth[3], caDay[3];
     struct tm   tTime;
@@ -57,7 +36,6 @@ boolean kr_date_isvalid(const char *pcaDate)
     memset(caMonth, 0, sizeof(caMonth));
     memset(caDay, 0, sizeof(caDay));
 
-    /* 构造date */
     memcpy(caYear, pcaDate, 4);
     memcpy(caMonth, pcaDate + 4, 2);
     memcpy(caDay, pcaDate + 6, 2);
@@ -70,44 +48,29 @@ boolean kr_date_isvalid(const char *pcaDate)
     tTime.tm_sec   = 1;
     tTime.tm_isdst = -1;
 
-    if (mktime(&tTime) == -1)
-    {
+    if (mktime(&tTime) == -1) {
         return FALSE;
     }
 
     return TRUE;
 }
 
-/*****************************************************************************/
-/* FUNC:   boolean kr_date_isleap(const char *pcaDate)                       */
-/* PARAMS: pcaDate - 年份 (I)                                                */
-/* RETURN:  1:闰年                                                           */
-/*          0:非闰年                                                         */
-/* DESC:   计算caBeginDay之前iDay天的日期                                    */
-/*****************************************************************************/
-boolean kr_date_isleap(const char *pcaDate)
+
+kr_bool kr_date_isleap(const char *pcaDate)
 {
     char caYear[4+1] = {0};
     int iYear = 0;
     
     memcpy(caYear, pcaDate, 4);
     iYear = atoi(caYear);
-    if ((iYear % 4 == 0 && iYear % 100 != 0 ) || iYear % 400 == 0)
-    {
+    if ((iYear % 4 == 0 && iYear % 100 != 0 ) || iYear % 400 == 0) {
         return TRUE;
-    }
-    else
-    {
+    } else {
         return FALSE;
     }
 }
 
-/*****************************************************************************/
-/* FUNC:   char *kr_date_getmonthend(char *pcaDate)                          */
-/* PARAMS: pcaDate    - 日期串 (YYYYMMDD) (I/O)                              */
-/* RETURN: 返回串                                                            */
-/* DESC:   得到当月的最后一天                                                */
-/*****************************************************************************/
+
 char *kr_date_getmonthend(char *pcaDate)
 {
     char caYear[5];
@@ -137,12 +100,9 @@ char *kr_date_getmonthend(char *pcaDate)
             memcpy(pcaDate + 6, "30", 2);
             break;
         case 2:
-            if (kr_date_isleap(caYear))
-            {
+            if (kr_date_isleap(caYear)) {
                 memcpy(pcaDate + 6, "29", 2);
-            }
-            else
-            {
+            } else {
                 memcpy(pcaDate + 6, "28", 2);
             }
             break;
@@ -152,61 +112,7 @@ char *kr_date_getmonthend(char *pcaDate)
     return pcaDate;
 }
 
-/*****************************************************************************/
-/* FUNC:   char *kr_date_tojulian(const char *pcaDate, char *pcaJulianDate)  */
-/* PARAMS: pcaDate - 日期(YYYYMMDD) (I)                                      */
-/* RETURN: 太阳日 (YYDDD)                                                    */
-/* DESC:   把日期转换为太阳日格式                                            */
-/*****************************************************************************/
-char *kr_date_tojulian(const char *pcaDate, char *pcaJulianDate)
-{
-    char caYear[6], caMonth[3], caDay[3];
-    struct tm    tTime;
-    struct tm     *ptTimeStruct;
-    time_t        tTimeVal;
 
-    memset(caYear, 0, sizeof(caYear));
-    memset(caMonth, 0, sizeof(caMonth));
-    memset(caDay, 0, sizeof(caDay));
-
-    /* 构造date */
-    memcpy(caYear, pcaDate, 4);
-    memcpy(caMonth, pcaDate + 4, 2);
-    memcpy(caDay, pcaDate + 6, 2);
-
-    tTime.tm_year  = atoi(caYear) - 1900;
-    tTime.tm_mon   = atoi(caMonth) - 1;
-    tTime.tm_mday  = atoi(caDay);
-    tTime.tm_hour  = 0;
-    tTime.tm_min   = 0;
-    tTime.tm_sec   = 1;
-    tTime.tm_isdst = -1;
-
-    if ((tTimeVal = mktime(&tTime)) == -1)
-    {
-        return NULL;
-    }
-
-    if ((ptTimeStruct = localtime(&tTimeVal)) == NULL)
-    {
-        return NULL;
-    }
-
-    sprintf(pcaJulianDate, "%02d%03d",
-            ptTimeStruct->tm_year % 100,
-            ptTimeStruct->tm_yday + 1);
-
-    return pcaJulianDate;
-}
-
-/*****************************************************************************/
-/* FUNC:   char *kr_date_addmonth(const char *pcaBegin, int iMonths, char *pcaEnd) */
-/* PARAMS: pcaBegin - 开始的日期(YYYYMMDD) (I)                               */
-/*         iMonths      - 月数                                               */
-/*         pcaEnd   - 结束的日期(YYYYMMDD) (O)                               */
-/* RETURN: 指向结束日期的字符串指针                                          */
-/* DESC:   计算pcaBegin之后iMonths月的日期                                   */
-/*****************************************************************************/
 char *kr_date_addmonth(const char *pcaBegin, int iMonths, char *pcaEnd)
 {
     char caYear[5], caMonth[3], caDay[3];
@@ -220,12 +126,9 @@ char *kr_date_addmonth(const char *pcaBegin, int iMonths, char *pcaEnd)
 
     memcpy(caYear, pcaBegin, 4);
     memcpy(caMonth, pcaBegin + 4, 2);
-    if (pcaBegin[6] == 0)
-    {
+    if (pcaBegin[6] == 0) {
         strcpy(caDay, "01");
-    }
-    else
-    {
+    } else {
         memcpy(caDay, pcaBegin + 6, 2);
     }
 
@@ -249,25 +152,21 @@ char *kr_date_addmonth(const char *pcaBegin, int iMonths, char *pcaEnd)
 
         sprintf(pcaEnd, "%s%s%s", caYear, caMonth, caDay);
 
-        if ((tTimeVal = mktime(&tTime)) == -1)
-        {
+        if ((tTimeVal = mktime(&tTime)) == -1) {
             return NULL;
         }
-        if ((ptTm = localtime(&tTimeVal)) == NULL)
-        {
+        if ((ptTm = localtime(&tTimeVal)) == NULL) {
             return NULL;
         }
         sprintf(caBufTmp, "%04d%02d%02d", \
                 ptTm->tm_year + 1900, ptTm->tm_mon + 1, ptTm->tm_mday);
-        if (memcmp(pcaEnd, caBufTmp, sizeof(caBufTmp) - 1) == 0)
-        {
+        if (memcmp(pcaEnd, caBufTmp, sizeof(caBufTmp) - 1) == 0) {
             break;
         }
         sprintf(caDay, "%02d", (int)(atol(caDay) - 1));
     }
 
-    if (pcaBegin[6] == 0)
-    {
+    if (pcaBegin[6] == 0) {
         pcaEnd[6] = 0;
     }
 
@@ -275,14 +174,6 @@ char *kr_date_addmonth(const char *pcaBegin, int iMonths, char *pcaEnd)
 }
 
 
-/*****************************************************************************/
-/* FUNC:   char *kr_date_addday(const char *pcaBegin, int iDays, char *pcaEnd) */
-/* PARAMS: pcaBegin - 开始的日期(YYYYMMDD) (I)                              */
-/*         iDays        - 天数                                               */
-/*         pcaEnd   - 结束的日期(YYYYMMDD) (O)                               */
-/* RETURN: 日前,格式YYYYMMDD                                                 */
-/* DESC:   计算caBeginDay之后iDay天的日期                                    */
-/*****************************************************************************/
 char *kr_date_addday(const char *pcaBegin, int iDays, char *pcaEnd)
 {
     struct tm tTime, *ptTime;
@@ -305,8 +196,7 @@ char *kr_date_addday(const char *pcaBegin, int iDays, char *pcaEnd)
     tTime.tm_sec   = 1;
     tTime.tm_isdst = -1;
 
-    if ((tTimeNow = mktime(&tTime)) == -1)
-    {
+    if ((tTimeNow = mktime(&tTime)) == -1) {
         return NULL;
     }
     tTimeNow += iDays * (24 * 60 * 60);
@@ -321,14 +211,7 @@ char *kr_date_addday(const char *pcaBegin, int iDays, char *pcaEnd)
     return pcaEnd;
 }
 
-/*****************************************************************************/
-/* FUNC:   char *kr_time_addsec(const char *pcaBegin, long iSecs, char *pcaEnd) */
-/* PARAMS: pcaBegin - 开始的日期时间(YYYYMMDDHHMISS) (I)                     */
-/*         iSecs        - 秒数                                               */
-/*         pcaBegin - 结束的日期时间(YYYYMMDDHHMISS) (O)                     */
-/* RETURN: 指向结束日期时间的字符串指针                                      */
-/* DESC:   计算pcaBegin之后iSecs秒的日期时间                                 */
-/*****************************************************************************/
+
 char *kr_time_addsec(const char *pcaBegin, long iSecs, char *pcaEnd)
 {
     struct tm tTime, *pTime;
@@ -358,8 +241,7 @@ char *kr_time_addsec(const char *pcaBegin, long iSecs, char *pcaEnd)
     tTime.tm_sec   = atoi(second);
     tTime.tm_isdst = -1;
 
-    if ((lTime = mktime(&tTime)) == -1)
-    {
+    if ((lTime = mktime(&tTime)) == -1) {
         return NULL;
     }
     lTime += iSecs;
@@ -378,13 +260,6 @@ char *kr_time_addsec(const char *pcaBegin, long iSecs, char *pcaEnd)
 }
 
 
-/*****************************************************************************/
-/* FUNC: long kr_time_interval(const char *pcaBegin, const char *pcaEnd)     */
-/* PARAMS: pcaBegin - 开始的日期时间(YYYYMMDDHHMISS) (I)                     */
-/*         pcaBegin - 结束的日期时间(YYYYMMDDHHMISS) (O)                     */
-/* RETURN: 指向日期时间间隔(秒)                                              */
-/* DESC:   计算两个日期之间的间隔(秒)                                        */
-/*****************************************************************************/
 long kr_time_interval(const char *pcaBegin, const char *pcaEnd)
 {
     time_t  lTimeBegin, lTimeEnd;
@@ -468,6 +343,7 @@ time_t kr_time_to_ttime(char *pcaTime)
 
     return mktime(&tTime);
 }
+
 
 char *kr_ttime_to_date(time_t lTime, char *pcaDate)
 {

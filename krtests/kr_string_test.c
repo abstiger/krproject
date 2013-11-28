@@ -6,7 +6,7 @@
 
 int main()
 {
-    boolean ret;
+    kr_bool ret;
     char caNumeric[10]="12345678";
     char caDecimal[10]="-1.23456";
     char caAlphabet[10]="abcdexyz";

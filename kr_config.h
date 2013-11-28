@@ -1,29 +1,26 @@
 /* kr_config.h.  Generated from kr_config.h.in by configure.  */
 /* kr_config.h.in.  Generated from configure.ac by autoheader.  */
 
+/* Define if building universal (internal helper macro) */
+/* #undef AC_APPLE_UNIVERSAL_BUILD */
+
+/* Define to 1 if you have the <byteswap.h> header file. */
+#define HAVE_BYTESWAP_H 1
+
 /* Define to 1 if you have the <dlfcn.h> header file. */
 #define HAVE_DLFCN_H 1
 
-/* Define to 1 if you have the `epoll_ctl' function. */
-#define HAVE_EPOLL_CTL 1
+/* Define to 1 if you have the <endian.h> header file. */
+#define HAVE_ENDIAN_H 1
 
 /* Define to 1 if you have the <inttypes.h> header file. */
 #define HAVE_INTTYPES_H 1
 
-/* Define to 1 if you have the `kqueue' function. */
-/* #undef HAVE_KQUEUE */
-
 /* Define to 1 if you have the <memory.h> header file. */
 #define HAVE_MEMORY_H 1
 
-/* Define to 1 if you have the `poll' function. */
-#define HAVE_POLL 1
-
 /* If available, contains the Python version number currently in use. */
-#define HAVE_PYTHON "2.7"
-
-/* Define to 1 if you have the `select' function. */
-#define HAVE_SELECT 1
+/* #undef HAVE_PYTHON */
 
 /* Define to 1 if you have the <stdint.h> header file. */
 #define HAVE_STDINT_H 1
@@ -74,20 +71,23 @@
 /* Define to the version of this package. */
 #define PACKAGE_VERSION "1.0.0"
 
-/* The size of `int64_t', as computed by sizeof. */
-#define SIZEOF_INT64_T 8
-
-/* The size of `long long', as computed by sizeof. */
-#define SIZEOF_LONG_LONG 8
-
-/* The size of `void *', as computed by sizeof. */
-#define SIZEOF_VOID_P 8
-
 /* Define to 1 if you have the ANSI C header files. */
 #define STDC_HEADERS 1
 
 /* Version number of package */
 #define VERSION "1.0.0"
+
+/* Define WORDS_BIGENDIAN to 1 if your processor stores words with the most
+   significant byte first (like Motorola and SPARC, unlike Intel). */
+#if defined AC_APPLE_UNIVERSAL_BUILD
+# if defined __BIG_ENDIAN__
+#  define WORDS_BIGENDIAN 1
+# endif
+#else
+# ifndef WORDS_BIGENDIAN
+/* #  undef WORDS_BIGENDIAN */
+# endif
+#endif
 
 /* Define to 1 if `lex' declares `yytext' as a `char *' by default, not a
    `char[]'. */

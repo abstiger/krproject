@@ -15,7 +15,7 @@ typedef struct _kr_regex
 }T_KRRegex;
 
 T_KRRegex *kr_regex_compile(const char *pattern);
-boolean kr_regex_execute(const T_KRRegex *krregex, const char *str);
+kr_bool kr_regex_execute(const T_KRRegex *krregex, const char *str);
 void kr_regex_free(T_KRRegex *krregex);
 
 #endif /* __KR_REGEX_H__ */

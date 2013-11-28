@@ -1,12 +1,12 @@
 #include "krcalc/kr_calc.h"
 #include <assert.h>
 
-E_KRFieldType MyGetTypeFunc(char kind, int id, void *param)
+E_KRType kr_data_get_type(char kind, int id, void *param)
 {
-    return KR_FIELDTYPE_INT;
+    return KR_TYPE_INT;
 }
 
-void *MyGetValueFunc(char kind, int id, void *param)
+void *kr_data_get_value(char kind, int id, void *param)
 {
     return &id;
 }
@@ -23,7 +23,7 @@ int main(int argc, char *argv[])
     else
         strcpy(calcstr, argv[1]);
     
-    mycalc = kr_calc_construct('J', calcstr, MyGetTypeFunc, MyGetValueFunc);
+    mycalc = kr_calc_construct('J', calcstr);
     assert(mycalc != NULL);
     
     kr_calc_dump(mycalc, stdout);
@@ -39,16 +39,16 @@ int main(int argc, char *argv[])
     }
     
     switch(mycalc->result_type) {
-    case KR_CALCTYPE_BOOLEAN:   
+    case KR_TYPE_BOOL:   
         printf("result_type:[%c] result_value:[%d]\n", mycalc->result_type, mycalc->result_value.b); 
         break;
-    case KR_CALCTYPE_INTEGER:   
+    case KR_TYPE_INT:   
         printf("result_type:[%c] result_value:[%d]\n", mycalc->result_type, mycalc->result_value.i); 
         break;
-    case KR_CALCTYPE_DOUBLE:   
+    case KR_TYPE_DOUBLE:   
         printf("result_type:[%c] result_value:[%lf]\n", mycalc->result_type, mycalc->result_value.d); 
         break;
-    case KR_CALCTYPE_STRING:   
+    case KR_TYPE_STRING:   
         printf("result_type:[%c] result_value:[%s]\n", mycalc->result_type, mycalc->result_value.s);    
         break;     
     default:

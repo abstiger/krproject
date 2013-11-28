@@ -137,6 +137,7 @@ void kr_free(void *ptr) {
     update_kr_malloc_stat_free(oldsize+PREFIX_SIZE);
     free(realptr);
 #endif
+    ptr = NULL;
 }
 
 char *kr_strdup(const char *s) {

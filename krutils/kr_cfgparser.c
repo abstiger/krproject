@@ -6,6 +6,8 @@
 
 #include "kr_cfgparser.h"
 
+#define KR_CONFIG_FILELEN 1024
+#define KR_CONFIG_LINELEN 4096
 #define KR_CONFIG_MEMO      '#'
 #define KR_CONFIG_STRING_BORDER  '"'
 #define _IS_STRING_BORDER(x)     (x == KR_CONFIG_STRING_BORDER)
@@ -13,7 +15,7 @@
 #define _IS_SECTION_BEGIN(x)     (x == '[')
 #define _IS_YES(x)               (x == 'Y' || x == 'y')
 
-char gcaConfigFileName[KR_FILENAME_LEN + 1] = {0};
+char gcaConfigFileName[KR_CONFIG_FILELEN + 1] = {0};
 
 static int _tIsThisEntry(const char *vspLine, const char *vspEntry);
 static void _vClearBlank(char *vspLine);
@@ -36,7 +38,7 @@ static char *_vReplaceEnv(const char *input, char *output);
 static void _vClearBlank(char *vspLine)
 {
     int     i = 0, j, k;
-    char    buf[KR_MAXINPUT_LEN];
+    char    buf[KR_CONFIG_LINELEN];
 
     while (vspLine[i] != 0) {
         if (vspLine[i] == KR_CONFIG_MEMO || vspLine[i] == '\n') {
@@ -54,7 +56,7 @@ static void _vClearBlank(char *vspLine)
     }
 
     i = 0;
-    memset(buf, 0, KR_MAXINPUT_LEN);
+    memset(buf, 0, KR_CONFIG_LINELEN);
 
     while ((vspLine[i] != '=') && (i < strlen(vspLine)))
         i++;
@@ -242,13 +244,13 @@ int kr_config_getstring(const char *vspSection, const char *vspEntry, char *vspV
     int     cbNum = FALSE;
     int     tInSection = FALSE;
     FILE    *fp;
-    char    saLine[KR_MAXINPUT_LEN+1] = {0};
+    char    saLine[KR_CONFIG_LINELEN+1] = {0};
 
     if ((fp = fopen(gcaConfigFileName, "r")) == NULL) {
         return -1;
     }
 
-    while (NULL != fgets(saLine, KR_MAXINPUT_LEN, fp)) {
+    while (NULL != fgets(saLine, KR_CONFIG_LINELEN, fp)) {
         _vClearBlank(saLine);
 
         if (_tIsSection(saLine)) {
@@ -294,7 +296,7 @@ int kr_config_getstring(const char *vspSection, const char *vspEntry, char *vspV
 
 int kr_config_getint(const char *vspSection, const char *vspEntry, int *vtpValue)
 {
-    char buf[KR_MAXINPUT_LEN] = {0};
+    char buf[KR_CONFIG_LINELEN] = {0};
 
     if (kr_config_getstring(vspSection, vspEntry, buf) != 0) {
         *vtpValue = 0;
@@ -325,7 +327,7 @@ int kr_config_getint(const char *vspSection, const char *vspEntry, int *vtpValue
 
 int kr_config_getshort(const char *vspSection, const char *vspEntry, short *vnpValue)
 {
-    char buf[KR_MAXINPUT_LEN] = {0};
+    char buf[KR_CONFIG_LINELEN] = {0};
 
     if (kr_config_getstring(vspSection, vspEntry, buf) != 0) {
         *vnpValue = 0;
@@ -355,7 +357,7 @@ int kr_config_getshort(const char *vspSection, const char *vspEntry, short *vnpV
  */
 int kr_config_getlong(const char *vspSection, const char *vspEntry, long *vlpValue)
 {
-    char buf[KR_MAXINPUT_LEN] = {0};
+    char buf[KR_CONFIG_LINELEN] = {0};
 
     if (kr_config_getstring(vspSection, vspEntry, buf) != 0) {
         *vlpValue = 0L;
@@ -385,7 +387,7 @@ int kr_config_getlong(const char *vspSection, const char *vspEntry, long *vlpVal
  */
 int kr_config_getdouble(const char *vspSection, const char *vspEntry, double *vdpValue)
 {
-    char buf[KR_MAXINPUT_LEN] = {0};
+    char buf[KR_CONFIG_LINELEN] = {0};
 
     if (kr_config_getstring(vspSection, vspEntry, buf) != 0) {
         *vdpValue = 0L;

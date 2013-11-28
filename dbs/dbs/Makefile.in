@@ -88,7 +88,7 @@ am_libdbsdbs_la_OBJECTS = libdbsdbs_la-t_dbs101_datasrc_def_cur.lo \
 	libdbsdbs_la-t_dbs103_datasrc_field_cur.lo \
 	libdbsdbs_la-t_dbs104_datasrc_field_cnt_sel.lo \
 	libdbsdbs_la-t_dbs105_datasrc_field_def_sel.lo \
-	libdbsdbs_la-t_dbs201_set_def_sel.lo \
+	libdbsdbs_la-t_dbs201_set_def_cur.lo \
 	libdbsdbs_la-t_dbs202_set_cfg_cur.lo \
 	libdbsdbs_la-t_dbs301_sdi_cur.lo \
 	libdbsdbs_la-t_dbs302_ddi_cur.lo \
@@ -269,7 +269,7 @@ libdbsdbs_la_SOURCES = t_dbs101_datasrc_def_cur.cfg \
                            t_dbs103_datasrc_field_cur.cfg \
                            t_dbs104_datasrc_field_cnt_sel.cfg \
                            t_dbs105_datasrc_field_def_sel.cfg \
-                           t_dbs201_set_def_sel.cfg \
+                           t_dbs201_set_def_cur.cfg \
                            t_dbs202_set_cfg_cur.cfg \
                            t_dbs301_sdi_cur.cfg \
                            t_dbs302_ddi_cur.cfg \
@@ -359,7 +359,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libdbsdbs_la-t_dbs103_datasrc_field_cur.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libdbsdbs_la-t_dbs104_datasrc_field_cnt_sel.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libdbsdbs_la-t_dbs105_datasrc_field_def_sel.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libdbsdbs_la-t_dbs201_set_def_sel.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libdbsdbs_la-t_dbs201_set_def_cur.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libdbsdbs_la-t_dbs202_set_cfg_cur.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libdbsdbs_la-t_dbs301_sdi_cur.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libdbsdbs_la-t_dbs302_ddi_cur.Plo@am__quote@
@@ -426,12 +426,12 @@ libdbsdbs_la-t_dbs105_datasrc_field_def_sel.lo: t_dbs105_datasrc_field_def_sel.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libdbsdbs_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libdbsdbs_la-t_dbs105_datasrc_field_def_sel.lo `test -f 't_dbs105_datasrc_field_def_sel.c' || echo '$(srcdir)/'`t_dbs105_datasrc_field_def_sel.c
 
-libdbsdbs_la-t_dbs201_set_def_sel.lo: t_dbs201_set_def_sel.c
-@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libdbsdbs_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libdbsdbs_la-t_dbs201_set_def_sel.lo -MD -MP -MF $(DEPDIR)/libdbsdbs_la-t_dbs201_set_def_sel.Tpo -c -o libdbsdbs_la-t_dbs201_set_def_sel.lo `test -f 't_dbs201_set_def_sel.c' || echo '$(srcdir)/'`t_dbs201_set_def_sel.c
-@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/libdbsdbs_la-t_dbs201_set_def_sel.Tpo $(DEPDIR)/libdbsdbs_la-t_dbs201_set_def_sel.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='t_dbs201_set_def_sel.c' object='libdbsdbs_la-t_dbs201_set_def_sel.lo' libtool=yes @AMDEPBACKSLASH@
+libdbsdbs_la-t_dbs201_set_def_cur.lo: t_dbs201_set_def_cur.c
+@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libdbsdbs_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libdbsdbs_la-t_dbs201_set_def_cur.lo -MD -MP -MF $(DEPDIR)/libdbsdbs_la-t_dbs201_set_def_cur.Tpo -c -o libdbsdbs_la-t_dbs201_set_def_cur.lo `test -f 't_dbs201_set_def_cur.c' || echo '$(srcdir)/'`t_dbs201_set_def_cur.c
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/libdbsdbs_la-t_dbs201_set_def_cur.Tpo $(DEPDIR)/libdbsdbs_la-t_dbs201_set_def_cur.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='t_dbs201_set_def_cur.c' object='libdbsdbs_la-t_dbs201_set_def_cur.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libdbsdbs_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libdbsdbs_la-t_dbs201_set_def_sel.lo `test -f 't_dbs201_set_def_sel.c' || echo '$(srcdir)/'`t_dbs201_set_def_sel.c
+@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libdbsdbs_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libdbsdbs_la-t_dbs201_set_def_cur.lo `test -f 't_dbs201_set_def_cur.c' || echo '$(srcdir)/'`t_dbs201_set_def_cur.c
 
 libdbsdbs_la-t_dbs202_set_cfg_cur.lo: t_dbs202_set_cfg_cur.c
 @am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libdbsdbs_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libdbsdbs_la-t_dbs202_set_cfg_cur.lo -MD -MP -MF $(DEPDIR)/libdbsdbs_la-t_dbs202_set_cfg_cur.Tpo -c -o libdbsdbs_la-t_dbs202_set_cfg_cur.lo `test -f 't_dbs202_set_cfg_cur.c' || echo '$(srcdir)/'`t_dbs202_set_cfg_cur.c

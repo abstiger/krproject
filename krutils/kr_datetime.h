@@ -2,16 +2,15 @@
 #define __KR_DATETIME_H__
 
 #include <time.h>
+#include "kr_types.h"
 
 #define KR_DATE_LEN 8
 #define KR_TIME_LEN 14
-#define KR_JULIAN_LEN 7
 
 /* Time operating functions */
-extern boolean   kr_date_isvalid(const char *pcaDate);
-extern boolean   kr_date_isleap(const char *pcaDate);
+extern kr_bool   kr_date_isvalid(const char *pcaDate);
+extern kr_bool   kr_date_isleap(const char *pcaDate);
 extern char *kr_date_getmonthend(char *pcaDate);
-extern char *kr_date_tojulian(const char *pcaDate, char *pcaJulianDate);
 extern char *kr_date_addmonth(const char *pcaBegin, int iMonths, char *pcaEnd);
 extern char *kr_date_addday(const char *pcaBegin, int iDays, char *pcaEnd);
 extern char *kr_time_system(char *pcaSysTime);

@@ -3,16 +3,14 @@
 
 extern int kr_calc_parse(T_KRCalc *krcalc);
 
-T_KRCalc *kr_calc_construct(E_KRCalcFormat format, char *calcstr, 
-                          KRGetTypeFunc get_type_func, 
-                          KRGetValueFunc get_value_func)
+T_KRCalc *kr_calc_construct(E_KRCalcFormat format, char *calcstr)
 {
     T_KRCalc *krcalc = (T_KRCalc *)kr_calloc(sizeof(T_KRCalc));
     krcalc->calc_format = format;
     krcalc->calc_string = kr_strdup(calcstr);
     
-    krcalc->get_type_cb = get_type_func;
-    krcalc->get_value_cb = get_value_func;
+    krcalc->get_type_cb = kr_data_get_type;
+    krcalc->get_value_cb = kr_data_get_value;
     
     if (kr_calc_parse(krcalc) != 0) {
         fprintf(stderr, "kr_calc_parse failed[%s]!\n", krcalc->err_msg);
@@ -53,7 +51,7 @@ int kr_calc_eval(T_KRCalc *krcalc, void *param)
     
     krcalc->result_ind = t->ind;
     krcalc->result_type = t->type;
-    memcpy(&krcalc->result_value, &t->attr.val, sizeof(U_KRCalcValue));
+    memcpy(&krcalc->result_value, &t->attr.val, sizeof(U_KRValue));
     
     return 0;
 }

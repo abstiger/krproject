@@ -13,5 +13,6 @@ int kr_db_mmap_sync(T_KRTable *krtable);
 int kr_db_mmap_table(T_KRTable *ptTable);
 int kr_db_mmap_file_load(T_KRTable *krtable, char *mmap_file, MMapFunc handle_record_func);
 void kr_db_unmmap_table(T_KRTable *ptTable);
+int kr_db_mmap_file_handle(char *mmap_file, MMapFunc handle_record_func, void *user_data);
 
 #endif /* __KR_DB_MMAP_H__ */

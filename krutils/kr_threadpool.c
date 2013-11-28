@@ -1,3 +1,4 @@
+#include "kr_types.h"
 #include "kr_threadpool.h"
 #include <stdio.h>
 #include <stdlib.h>
@@ -69,7 +70,7 @@ T_KRThreadPool *kr_threadpool_create(unsigned int nthreads, unsigned int hwm, vo
     tp->threads = (pthread_t *)kr_calloc(nthreads*sizeof(pthread_t));
     if(tp->threads == NULL) {
         fprintf(stderr, "calloc [%u] pthread_t error!\n", nthreads);
-        kr_queue_fini(tp->queue); free(tp);
+        kr_queue_fini(tp->queue); kr_free(tp);
         return NULL;
     }
     

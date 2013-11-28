@@ -202,7 +202,7 @@ T_KRDB* kr_db_startup(T_DbsEnv *dbsenv, char *dbname, T_KRModule *krdbmodule)
                 stDatasrcCur.caOutSizeKeepMode, \
                 stDatasrcCur.lOutSizeKeepValue, \
                 //TODO:sqlite3 let lOutFieldCnt->caOutFieldCnt
-                stDatasrcFieldCntSel.lOutFieldCnt);        
+                atol(stDatasrcFieldCntSel.caOutFieldCnt));        
 
         kr_string_rtrim(stDatasrcCur.caOutDatasrcName);
         kr_string_rtrim(stDatasrcCur.caOutMapFuncPre);
@@ -248,7 +248,7 @@ T_KRDB* kr_db_startup(T_DbsEnv *dbsenv, char *dbname, T_KRModule *krdbmodule)
                 stDatasrcCur.caOutSizeKeepMode[0], \
                 stDatasrcCur.lOutSizeKeepValue, \
                 //TODO:sqlite3 let lOutFieldCnt->caOutFieldCnt
-                stDatasrcFieldCntSel.lOutFieldCnt, \
+                atol(stDatasrcFieldCntSel.caOutFieldCnt), \
                 (KRLoadDefFunc)_kr_db_load_field_def, \
                 (KRMapFuncPre)MapFuncPre,
                 (KRMapFunc)MapFunc,
@@ -304,7 +304,7 @@ static int _kr_db_load_table(T_KRTable *ptTable, void *user_data)
     int nRet = 0;
     /*load mmap file if it exists*/
     if (access(ptTable->caMMapFile, R_OK) == 0) {
-        nRet = kr_db_mmap_file_handle(ptTable->caMMapFile, _kr_db_load_record, ptTable);
+        nRet = kr_db_mmap_file_handle(ptTable->caMMapFile, (MMapFunc )_kr_db_load_record, ptTable);
         if (nRet != 0) {
             KR_LOG(KR_LOGERROR, "load mmap file [%s] Error!", ptTable->caMMapFile);
             return -1;
@@ -378,27 +378,27 @@ void kr_db_dump_record(T_KRRecord *ptRecord, FILE *fp)
         pFieldVal = kr_get_field_value(ptRecord, i);
         switch(ptTable->ptFieldDef[i].type)
         {
-            case KR_FIELDTYPE_INT:
+            case KR_TYPE_INT:
                 fprintf(fp, "      Field:id[%3d], name[%30s], value[%d]\n", \
                         ptTable->ptFieldDef[i].id, ptTable->ptFieldDef[i].name, 
                         *(int *)pFieldVal);
                 break;
-            case KR_FIELDTYPE_LONG:
+            case KR_TYPE_LONG:
                 fprintf(fp, "      Field:id[%3d], name[%30s], value[%ld]\n", \
                         ptTable->ptFieldDef[i].id, ptTable->ptFieldDef[i].name,
                         *(long *)pFieldVal);
                 break;    
-            case KR_FIELDTYPE_DOUBLE:
+            case KR_TYPE_DOUBLE:
                 fprintf(fp, "      Field:id[%3d], name[%30s], value[%f]\n", \
                         ptTable->ptFieldDef[i].id, ptTable->ptFieldDef[i].name, 
                         *(double *)pFieldVal);
                 break;
-            case KR_FIELDTYPE_STRING:
+            case KR_TYPE_STRING:
                 fprintf(fp, "      Field:id[%3d], name[%30s], value[%s]\n", \
                         ptTable->ptFieldDef[i].id, ptTable->ptFieldDef[i].name, 
                         (char *)pFieldVal);
                 break;
-            case KR_FIELDTYPE_POINTER:
+            case KR_TYPE_POINTER:
                 fprintf(fp, "      Field:id[%3d], name[%30s], value[%p]\n", \
                         ptTable->ptFieldDef[i].id, ptTable->ptFieldDef[i].name, 
                         pFieldVal);
