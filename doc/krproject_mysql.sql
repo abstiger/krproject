@@ -1,11 +1,20 @@
+drop database if exists KRDB;
+
 use KRDB;
 
 create table KR_TBL_DATADIC_CFG
 (
+   REC_ID               int not null auto_increment,
    DATADIC_ID           int not null,
    DATADIC_KEY          varchar(30) not null,
    DATADIC_VALUE        varchar(200) not null,
-   primary key (DATADIC_ID, DATADIC_KEY)
+   primary key (REC_ID)
+);
+
+create unique index IDX_DATADIC_CFG on KR_TBL_DATADIC_CFG
+(
+   DATADIC_ID,
+   DATADIC_KEY
 );
 
 create table KR_TBL_DATADIC_DEF
@@ -13,13 +22,13 @@ create table KR_TBL_DATADIC_DEF
    DATADIC_ID           int not null,
    DATADIC_NAME         varchar(30) not null,
    DATADIC_DESC         varchar(100) not null,
-   REC_CRET_DTTM        char(17) not null,
-   LST_UPD_DTTM         char(17) not null,
+   REC_CRET_DTTM        timestamp not null,
+   LST_UPD_DTTM         timestamp not null,
    LST_UPD_USER_ID      varchar(15) not null,
    primary key (DATADIC_ID)
 );
 
-create table KR_TBL_DATASRC_DEF
+create table KR_TBL_DATASRC
 (
    DATASRC_ID           int not null,
    DATASRC_NAME         varchar(30) not null,
@@ -27,15 +36,16 @@ create table KR_TBL_DATASRC_DEF
    MAP_FUNC_PRE         varchar(50) not null,
    MAP_FUNC             varchar(50) not null,
    MAP_FUNC_POST        varchar(50) not null,
-   DATASRC_USAGE        char(1) not null comment '°Æ0°Ø-≈˙¡ø ˝æ›‘¥£¨°Æ1°Ø-◊º µ ± ˝æ›‘¥',
+   DATASRC_USAGE        char(1) not null comment '‚Äò0‚Äô-ÊâπÈáèÊï∞ÊçÆÊ∫êÔºå‚Äò1‚Äô-ÂáÜÂÆûÊó∂Êï∞ÊçÆÊ∫ê',
    MMAP_FILE_NAME       varchar(100) not null,
    SIZE_KEEP_MODE       char(1) not null,
    SIZE_KEEP_VALUE      int not null,
    primary key (DATASRC_ID)
 );
 
-create table KR_TBL_DATASRC_FIELD_DEF
+create table KR_TBL_DATASRC_FIELD
 (
+   REC_ID               int not null auto_increment,
    DATASRC_ID           int not null,
    FIELD_ID             int not null,
    FIELD_NAME           varchar(30) not null,
@@ -49,11 +59,18 @@ create table KR_TBL_DATASRC_FIELD_DEF
    FIELD_DATADIC_RECT   int not null,
    FIELD_USE_RECT       char(2) not null,
    FIELD_SET_RECT       char(2) not null,
-   primary key (DATASRC_ID, FIELD_ID)
+   primary key (REC_ID)
 );
 
-create table KR_TBL_DATASRC_INDEX_DEF
+create unique index IDX_DATASRC_FIELD_DEF on KR_TBL_DATASRC_FIELD
 (
+   DATASRC_ID,
+   FIELD_ID
+);
+
+create table KR_TBL_DATASRC_INDEX
+(
+   REC_ID               int not null auto_increment,
    DATASRC_ID           int not null,
    INDEX_ID             int not null,
    INDEX_NAME           varchar(30) not null,
@@ -61,17 +78,23 @@ create table KR_TBL_DATASRC_INDEX_DEF
    INDEX_TYPE           char(1) not null,
    INDEX_FIELD_ID       int not null,
    SORT_FIELD_ID        int not null,
-   primary key (DATASRC_ID, INDEX_ID)
+   primary key (REC_ID)
 );
 
-create table KR_TBL_DDI_DEF
+create unique index IDX_DATASRC_INDEX_DEF on KR_TBL_DATASRC_INDEX
+(
+   DATASRC_ID,
+   INDEX_ID
+);
+
+create table KR_TBL_DDI
 (
    DDI_ID               int not null,
    DDI_NAME             varchar(30) not null,
    DDI_DESC             varchar(100) not null,
-   DDI_TYPE             char(1) not null comment '°Æ0°Ø-≈˙¡øÕ≥º∆
-            °Æ1°Ø-ºØ÷– µ ±Õ≥º∆
-            °Æ9°Ø-∂ØÃ¨º∆À„Õ≥º∆
+   DDI_TYPE             char(1) not null comment '‚Äò0‚Äô-ÊâπÈáèÁªüËÆ°
+            ‚Äò1‚Äô-ÈõÜ‰∏≠ÂÆûÊó∂ÁªüËÆ°
+            ‚Äò9‚Äô-Âä®ÊÄÅËÆ°ÁÆóÁªüËÆ°
             ',
    DDI_VALUE_TYPE       char(1) not null,
    DDI_AGGR_FUNC        varchar(50) not null,
@@ -86,8 +109,8 @@ create table KR_TBL_DDI_DEF
    DDI_FILTER_STRING    varchar(500) not null,
    STATISTICS_METHOD    char(1) not null,
    DDI_STATUS           char(1) not null,
-   REC_CRET_DTTM        char(17) not null,
-   LST_UPD_DTTM         char(17) not null,
+   REC_CRET_DTTM        timestamp not null,
+   LST_UPD_DTTM         timestamp not null,
    LST_UPD_USER_ID      varchar(15) not null,
    primary key (DDI_ID)
 );
@@ -126,27 +149,52 @@ create table KR_TBL_GROUP
    GROUP_CALC_FORMAT    char(1) not null,
    GROUP_CALC_STRING    varchar(500) not null,
    GROUP_FUNC           varchar(50) not null,
-   GROUP_STATUS         char(1) not null comment '1-“—∆Ù”√
-            2-‘›Õ£
-            3-¥˝∏¥∫À
-            4-“—∏¥∫À
-            5-∏¥∫Àæ‹æ¯
-            6-“—…æ≥˝
+   GROUP_STATUS         char(1) not null comment '1-Â∑≤ÂêØÁî®
+            2-ÊöÇÂÅú
+            3-ÂæÖÂ§çÊ†∏
+            4-Â∑≤Â§çÊ†∏
+            5-Â§çÊ†∏ÊãíÁªù
+            6-Â∑≤Âà†Èô§
             ',
-   REC_CRET_DTTM        char(17) not null,
-   LST_UPD_DTTM         char(17) not null,
+   REC_CRET_DTTM        timestamp not null,
+   LST_UPD_DTTM         timestamp not null,
    LST_UPD_USER_ID      varchar(15) not null,
    primary key (GROUP_ID)
 );
 
-create table KR_TBL_HDI_DEF
+create table KR_TBL_GROUP_RULE
+(
+   REC_ID               int not null auto_increment,
+   GROUP_ID             int not null,
+   RULE_ID              int not null,
+   RULE_WEIGHT          int not null,
+   RULE_STATUS          char(1) not null comment '1-Â∑≤ÂêØÁî®
+            2-ÊöÇÂÅú
+            3-ÂæÖÂ§çÊ†∏
+            4-Â∑≤Â§çÊ†∏
+            5-Â§çÊ†∏ÊãíÁªù
+            6-Â∑≤Âà†Èô§
+            ',
+   REC_CRET_DTTM        timestamp not null,
+   LST_UPD_DTTM         timestamp not null,
+   LST_UPD_USER_ID      varchar(15) not null,
+   primary key (REC_ID)
+);
+
+create unique index IDX_GROUP_RULE on KR_TBL_GROUP_RULE
+(
+   GROUP_ID,
+   RULE_ID
+);
+
+create table KR_TBL_HDI
 (
    HDI_ID               int not null,
    HDI_NAME             varchar(30) not null,
    HDI_DESC             varchar(100) not null,
-   HDI_TYPE             char(1) not null comment '°Æ0°Ø-≈˙¡øÕ≥º∆
-            °Æ1°Ø-ºØ÷– µ ±Õ≥º∆
-            °Æ9°Ø-∂ØÃ¨º∆À„Õ≥º∆
+   HDI_TYPE             char(1) not null comment '‚Äò0‚Äô-ÊâπÈáèÁªüËÆ°
+            ‚Äò1‚Äô-ÈõÜ‰∏≠ÂÆûÊó∂ÁªüËÆ°
+            ‚Äò9‚Äô-Âä®ÊÄÅËÆ°ÁÆóÁªüËÆ°
             ',
    HDI_VALUE_TYPE       char(1) not null,
    HDI_AGGR_FUNC        varchar(50) not null,
@@ -157,15 +205,14 @@ create table KR_TBL_HDI_DEF
    STATISTICS_VALUE     int not null,
    STATISTICS_METHOD    char(1) not null,
    HDI_STATUS           char(1) not null,
-   REC_CRET_DTTM        char(17) not null,
-   LST_UPD_DTTM         char(17) not null,
+   REC_CRET_DTTM        timestamp not null,
+   LST_UPD_DTTM         timestamp not null,
    LST_UPD_USER_ID      varchar(15) not null,
    primary key (HDI_ID)
 );
 
 create table KR_TBL_RULE
 (
-   GROUP_ID             int not null,
    RULE_ID              int not null,
    RULE_NAME            varchar(30) not null,
    RULE_DESC            varchar(100) not null,
@@ -175,28 +222,28 @@ create table KR_TBL_RULE
    RULE_TYPE            char(1) not null,
    RULE_FUNC            varchar(50) not null,
    RULE_WEIGHT          int not null,
-   RULE_STATUS          char(1) not null comment '1-“—∆Ù”√
-            2-‘›Õ£
-            3-¥˝∏¥∫À
-            4-“—∏¥∫À
-            5-∏¥∫Àæ‹æ¯
-            6-“—…æ≥˝
+   RULE_STATUS          char(1) not null comment '1-Â∑≤ÂêØÁî®
+            2-ÊöÇÂÅú
+            3-ÂæÖÂ§çÊ†∏
+            4-Â∑≤Â§çÊ†∏
+            5-Â§çÊ†∏ÊãíÁªù
+            6-Â∑≤Âà†Èô§
             ',
-   REC_CRET_DTTM        char(17) not null,
-   LST_UPD_DTTM         char(17) not null,
+   REC_CRET_DTTM        timestamp not null,
+   LST_UPD_DTTM         timestamp not null,
    LST_UPD_USER_ID      varchar(15) not null,
-   primary key (GROUP_ID, RULE_ID)
+   primary key (RULE_ID)
 );
 
-create table KR_TBL_SDI_DEF
+create table KR_TBL_SDI
 (
-   SDI_ID               int not null comment '’Î∂‘√ø∏ˆ ˝æ›‘¥∂º–Ë“™¥”0ø™ º“‘1Œ™≤Ω≥§µ›‘ˆ
-            ÷˜“™ «∑Ω±„∫ÛÃ®µƒ ˝◊È∂®Œª
+   SDI_ID               int not null comment 'ÈíàÂØπÊØè‰∏™Êï∞ÊçÆÊ∫êÈÉΩÈúÄË¶Å‰ªé0ÂºÄÂßã‰ª•1‰∏∫Ê≠•ÈïøÈÄíÂ¢û
+            ‰∏ªË¶ÅÊòØÊñπ‰æøÂêéÂè∞ÁöÑÊï∞ÁªÑÂÆö‰Ωç
             ',
    SDI_NAME             varchar(30) not null,
    SDI_DESC             varchar(100) not null,
-   SDI_TYPE             char(1) not null comment '''0''°™»°◊‘ ˝æ›‘¥
-            ''1''°™◊‘∂®“ÂªÒ»°
+   SDI_TYPE             char(1) not null comment '''0''‚ÄîÂèñËá™Êï∞ÊçÆÊ∫ê
+            ''1''‚ÄîËá™ÂÆö‰πâËé∑Âèñ
             ',
    SDI_VALUE_TYPE       char(1) not null,
    SDI_AGGR_FUNC        varchar(50) not null,
@@ -204,28 +251,35 @@ create table KR_TBL_SDI_DEF
    STATISTICS_DATASRC   int not null,
    STATISTICS_INDEX     int not null,
    STATISTICS_FIELD     int not null,
-   STATISTICS_LOCATION  int not null comment 'µ±± Œ™0£¨
-            …œ± Œ™1£¨
-            “‘¥À¿‡Õ∆
+   STATISTICS_LOCATION  int not null comment 'ÂΩìÁ¨î‰∏∫0Ôºå
+            ‰∏äÁ¨î‰∏∫1Ôºå
+            ‰ª•Ê≠§Á±ªÊé®
             ',
-   LOCATION_PROPERTY    char(1) not null comment '''0''-æ¯∂‘∂®Œª ''1''-œ‡∂‘∂®Œª',
+   LOCATION_PROPERTY    char(1) not null comment '''0''-ÁªùÂØπÂÆö‰Ωç ''1''-Áõ∏ÂØπÂÆö‰Ωç',
    SDI_FILTER_FORMAT    char(1) not null,
-   SDI_FILTER_STRING    varchar(500) not null comment '»°◊‘π˝¬ÀÃıº˛±ÌµƒFILTER_ID',
-   SDI_STATUS           char(1) not null comment '°Æ1°Ø-“—…æ≥˝
-            °Æ0°Ø-’˝≥£
+   SDI_FILTER_STRING    varchar(500) not null comment 'ÂèñËá™ËøáÊª§Êù°‰ª∂Ë°®ÁöÑFILTER_ID',
+   SDI_STATUS           char(1) not null comment '‚Äò1‚Äô-Â∑≤Âà†Èô§
+            ‚Äò0‚Äô-Ê≠£Â∏∏
             ',
-   REC_CRET_DTTM        char(17) not null,
-   LST_UPD_DTTM         char(17) not null,
+   REC_CRET_DTTM        timestamp not null,
+   LST_UPD_DTTM         timestamp not null,
    LST_UPD_USER_ID      varchar(15) not null,
    primary key (SDI_ID)
 );
 
 create table KR_TBL_SET_CFG
 (
+   REC_ID               int not null auto_increment,
    SET_ID               int not null,
    ELEMENT_VALUE        varchar(200) not null,
    ELEMENT_DESC         varchar(200) not null,
-   primary key (SET_ID, ELEMENT_VALUE)
+   primary key (REC_ID)
+);
+
+create unique index IDX_SET_CFG on KR_TBL_SET_CFG
+(
+   SET_ID,
+   ELEMENT_VALUE
 );
 
 create table KR_TBL_SET_DEF
@@ -237,8 +291,8 @@ create table KR_TBL_SET_DEF
    SET_TYPE             char(2) not null,
    ELEMENT_TYPE         char(1) not null,
    ELEMENT_LENGTH       int not null,
-   REC_CRET_DTTM        char(17) not null,
-   LST_UPD_DTTM         char(17) not null,
+   REC_CRET_DTTM        timestamp not null,
+   LST_UPD_DTTM         timestamp not null,
    LST_UPD_USER_ID      varchar(15) not null,
    primary key (SET_ID)
 );

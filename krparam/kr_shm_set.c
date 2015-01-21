@@ -3,7 +3,7 @@
 #include "dbs/dbs/set_def_cur.h"
 #include "kr_shm_set.h"
 
-int LoadShmSet(T_DbsEnv *dbsenv, T_KRShmSet *ptShmSet)
+int kr_shm_set_load(T_DbsEnv *dbsenv, T_KRShmSet *ptShmSet)
 {
     int nRet = 0;
     int iResult = 0;
@@ -20,8 +20,10 @@ int LoadShmSet(T_DbsEnv *dbsenv, T_KRShmSet *ptShmSet)
     while(1)
     {
         iResult=dbsSetDefCur(dbsenv, KR_DBCURFETCH, &stSetDefCur);
-        if (iResult != KR_DBNOTFOUND && iResult != KR_DBOK) {
-            KR_LOG(KR_LOGERROR, "dbsSetDefCur Fetch Error!");
+        if (iResult != KR_DBNOTFOUND && 
+                iResult != KR_DBOK && iResult != KR_DBOKWITHINFO) {
+            KR_LOG(KR_LOGERROR, "dbsSetDefCur Fetch Error[%d]![%s]:[%s]",
+                    iResult, dbsenv->sqlstate, dbsenv->sqlerrmsg);
             nRet = -1;
             break;
         } else if (iResult == KR_DBNOTFOUND) {
@@ -70,17 +72,16 @@ int LoadShmSet(T_DbsEnv *dbsenv, T_KRShmSet *ptShmSet)
 }
 
 
-int DumpShmSet(T_KRShmSet *ptShmSet, FILE *fp)
+int kr_shm_set_dump(T_KRShmSet *ptShmSet, FILE *fp)
 {
-    long l;
-    T_KRShmSetDef *ptShmSetDef = &ptShmSet->stShmSetDef[0];
-    char            caTimeString[80];
+    char caTimeString[80];
     struct tm *ptmNow = localtime(&ptShmSet->tLastLoadTime);
     strftime(caTimeString, sizeof(caTimeString), "%c", ptmNow);
     
     fprintf(fp, "Dumping Set...\n");
     fprintf(fp, "Last Load Time[%s]\n", caTimeString);
-    for (l=0; l<ptShmSet->lSetDefCnt; l++) {
+    T_KRShmSetDef *ptShmSetDef = &ptShmSet->stShmSetDef[0];
+    for (int i=0; i<ptShmSet->lSetDefCnt; i++) {
         fprintf(fp, "  lSetId=[%ld], caSetName=[%s], caSetDesc=[%s] \n", 
                 ptShmSetDef->lSetId, ptShmSetDef->caSetName, ptShmSetDef->caSetDesc);
         fprintf(fp, "  caSetUsage=[%s], caSetType=[%s], caElementType=[%s], lElementLength=[%ld]\n", 
@@ -89,4 +90,17 @@ int DumpShmSet(T_KRShmSet *ptShmSet, FILE *fp)
     }
     
     return 0;
+}
+
+cJSON *kr_shm_set_info(T_KRShmSetDef *ptShmSetDef)
+{
+    cJSON *set = cJSON_CreateObject();
+    cJSON_AddNumberToObject(set, "id", ptShmSetDef->lSetId);
+    cJSON_AddStringToObject(set, "name", ptShmSetDef->caSetName);
+    cJSON_AddStringToObject(set, "desc", ptShmSetDef->caSetDesc);
+    cJSON_AddStringToObject(set, "usage", ptShmSetDef->caSetUsage);
+    cJSON_AddStringToObject(set, "type", ptShmSetDef->caSetType);
+    cJSON_AddStringToObject(set, "ele_type", ptShmSetDef->caElementType);
+    cJSON_AddNumberToObject(set, "ele_length", ptShmSetDef->lElementLength);
+    return set;
 }

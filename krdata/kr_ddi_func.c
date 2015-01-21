@@ -2,7 +2,7 @@
 
 typedef enum {
     KR_DDI_STATISTICS_INCLUDE     = 'I',  /*include current record*/
-    KR_DDI_STATISTICS_EXCLUDE     = 'X'   /*exclude current record*/
+    KR_DDI_STATISTICS_EXCLUDE     = 'E'   /*exclude current record*/
 }E_KRDDIStatisticsType;
 
 typedef enum {
@@ -21,9 +21,6 @@ int kr_ddi_aggr_func(T_KRDDI *krddi, T_KRContext *krcontext)
     int iResult = -1;
     int iAbsLoc = -1;
     int iRelLoc = -1;
-    
-    time_t tCurrTransTime = kr_get_transtime(krcontext->ptCurrRec);
-    time_t tRecTransTime;
     
     T_KRListNode *node = krcontext->ptRecList->tail;
     while(node)
@@ -48,8 +45,10 @@ int kr_ddi_aggr_func(T_KRDDI *krddi, T_KRContext *krcontext)
         }
         
         /*时间窗口校验*/
-        tRecTransTime = kr_get_transtime(krcontext->ptRecord);
-        if ((tCurrTransTime - tRecTransTime) > krddi->ptShmDDIDef->lStatisticsValue ) {
+        time_t tCurrTransTime = kr_get_transtime(krcontext->ptCurrRec);
+        time_t tRecTransTime = kr_get_transtime(krcontext->ptRecord);
+        if ((tCurrTransTime - tRecTransTime) > 
+                krddi->ptShmDDIDef->lStatisticsValue ) {
             node = node->prev;
             continue;
         }
@@ -59,11 +58,11 @@ int kr_ddi_aggr_func(T_KRDDI *krddi, T_KRContext *krcontext)
         if (iResult != 0) {
             KR_LOG(KR_LOGERROR, "kr_calc_eval[%ld] failed!", krddi->lDDIId);
             return -1;
-        } else if (krddi->ptDDICalc->result_type != KR_TYPE_BOOL) {
+        } else if (kr_calc_type(krddi->ptDDICalc) != KR_TYPE_BOOL) {
             KR_LOG(KR_LOGERROR, "result_type of ddi_calc must be boolean!");
             return -1;
-        } else if (krddi->ptDDICalc->result_ind != KR_VALUE_SETED ||
-                   !krddi->ptDDICalc->result_value.b) {
+        } else if (kr_calc_ind(krddi->ptDDICalc) != KR_VALUE_SETED ||
+                   !kr_calc_value(krddi->ptDDICalc)->b) {
             node = node->prev;
             continue;
         }
@@ -185,14 +184,14 @@ int kr_ddi_aggr_func(T_KRDDI *krddi, T_KRContext *krcontext)
         /*add this record to related*/
         kr_hashtable_insert(krddi->ptRelated, \
                 krcontext->ptRecord, krcontext->ptRecord);
-    
-        /* This is what the difference between SDI and DDI:
-         * SDI only set once, while DDI still need to traversal all the list
-         */
-        krddi->eValueInd = KR_VALUE_SETED;
         
         node = node->prev;
     }
+
+    /* This is what the difference between SDI and DDI:
+     * SDI only set once, while DDI still need to traversal all the list
+     */
+    krddi->eValueInd = KR_VALUE_SETED;
 
     return 0;
 }

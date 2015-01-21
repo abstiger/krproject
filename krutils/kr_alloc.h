@@ -1,6 +1,8 @@
 #ifndef __KR_ALLOC_H__
 #define __KR_ALLOC_H__
 
+#include <stdio.h>
+
 /* Double expansion needed for stringification of macro values. */
 #define __xstr(s) __str(s)
 #define __str(s) #s

@@ -18,6 +18,9 @@ AM_PROG_LEX
 AC_PROG_YACC
 
 # Checks for libraries.
+AX_LIB_READLINE
+#AX_CHECK_LIBRARY([LIBUV], [uv.h], [uv], [], [AC_MSG_ERROR([Unable to find libuv])])
+#AX_CHECK_LIBRARY([JANSSON], [jansson.h], [jansson], [], [AC_MSG_ERROR([Unable to find jansson])])
 
 # Checks for header files.
 AC_CHECK_HEADERS([stdint.h inttypes.h unistd.h])
@@ -31,6 +34,8 @@ AC_TYPE_SIZE_T
 AC_C_BIGENDIAN
 
 # Checks for library functions.
+
+#PKG_CHECK_MODULES(AVROC, avro-c >= 1.7.6, [AC_DEFINE([HAVE_AVROC], [1], [Use avro-c])])
 
 # Check enables
 need_swig=no
@@ -80,25 +85,29 @@ AM_CONDITIONAL([ENABLE_PYTHON_BINDING], [test x"${enable_python_binding}" = xyes
 
 AC_CONFIG_FILES([
 Makefile 
-krutils/Makefile 
 dbs/Makefile 
 dbs/dbs/Makefile 
+krutils/Makefile 
 krcalc/Makefile 
 krparam/Makefile 
 krdb/Makefile 
 krdata/Makefile 
+krflow/Makefile 
 krengine/Makefile 
+krchannel/Makefile 
 krserver/Makefile
-krclient/Makefile
 krcoordi/Makefile
-krtests/Makefile
-bindings/Makefile
-bindings/python/Makefile
-bindings/java/Makefile
+krtools/Makefile
+tests/Makefile
 examples/Makefile
 examples/antifraud/Makefile
 examples/playweibo/Makefile
 etc/Makefile 
 doc/Makefile 
+krclient/Makefile
+krclient/bindings/python/Makefile
+krclient/bindings/java/Makefile
+krshell/Makefile
+krweb/Makefile
 ])
 AC_OUTPUT

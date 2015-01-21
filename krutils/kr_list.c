@@ -324,10 +324,8 @@ void kr_list_remove_all(T_KRList *list, void *key)
  * This function can't fail. */
 void kr_list_move_head(T_KRList *list, T_KRListNode *node)
 {
-    if (node->prev)
-        node->prev->next = node->next;
-    else
-        list->head = node->next;
+    if (!node->prev) return; //already head
+    node->prev->next = node->next;
     if (node->next)
         node->next->prev = node->prev;
     else

@@ -2,8 +2,6 @@ lib_LTLIBRARIES      = libkrdb.la
 libkrdb_la_SOURCES   = \
 					   kr_db.h \
 					   kr_db.c \
-					   kr_db_mmap.h \
-					   kr_db_mmap.c \
 					   kr_db_kernel.h \
 					   kr_db_kernel.c 
 

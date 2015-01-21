@@ -26,10 +26,28 @@ T_KRHDI *kr_hdi_construct(T_KRShmHDIDef *hdi_def, T_KRModule *datamodule)
     return krhdi;
 }
 
+void kr_hdi_init(T_KRHDI *krhdi)
+{
+    /*initialize first*/
+    krhdi->eValueInd = KR_VALUE_UNSET;
+
+    /*string comes from kr_strdup, need kr_free*/
+    if (krhdi->eValueType == KR_TYPE_STRING)
+        kr_free(krhdi->uValue.s);
+    memset(&krhdi->uValue, 0x00, sizeof(krhdi->uValue));
+}
 
 void kr_hdi_destruct(T_KRHDI *krhdi)
 {
     kr_free(krhdi);
+}
+
+cJSON *kr_hdi_info(T_KRHDI *krhdi) 
+{ 
+    cJSON *hdi = cJSON_CreateObject(); 
+    cJSON *def = kr_shm_hdi_info(krhdi->ptShmHDIDef); 
+    cJSON_AddItemToObject(hdi, "def", def); 
+    return hdi; 
 }
 
 
@@ -63,6 +81,15 @@ T_KRHDITable *kr_hdi_table_construct(T_KRShmHDI *shm_hdi, T_KRModule *datamodule
     return krhditable;    
 }
 
+static void _kr_hdi_init_hfunc(void *key, void *value, void *data)
+{
+    kr_hdi_init((T_KRHDI *)value);
+}
+
+void kr_hdi_table_init(T_KRHDITable *krhditable)
+{
+    kr_hashtable_foreach(krhditable->ptHDITable, _kr_hdi_init_hfunc, NULL);
+}
 
 void kr_hdi_table_destruct(T_KRHDITable *krhditable)
 {
@@ -70,3 +97,8 @@ void kr_hdi_table_destruct(T_KRHDITable *krhditable)
     kr_free(krhditable);
 }
 
+T_KRHDI *kr_hdi_lookup(T_KRHDITable *krhditable, int id)
+{
+    long lHID = (long )id;
+    return kr_hashtable_lookup(krhditable->ptHDITable, &lHID);
+}

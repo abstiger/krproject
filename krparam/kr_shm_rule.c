@@ -3,7 +3,7 @@
 #include "dbs/dbs/rule_cur.h"
 #include "kr_shm_rule.h"
 
-int LoadShmRule(T_DbsEnv *dbsenv, T_KRShmRule *ptShmRule, long lGroupId)
+int kr_shm_rule_load(T_DbsEnv *dbsenv, T_KRShmRule *ptShmRule, long lGroupId)
 {
     int nRet = 0;
     int iResult = 0;
@@ -21,8 +21,10 @@ int LoadShmRule(T_DbsEnv *dbsenv, T_KRShmRule *ptShmRule, long lGroupId)
     while(1)
     {
         iResult=dbsRuleCur(dbsenv, KR_DBCURFETCH, &stRuleCur);
-        if (iResult != KR_DBNOTFOUND && iResult != KR_DBOK) {
-            KR_LOG(KR_LOGERROR, "dbsRuleCur Fetch Error!");
+        if (iResult != KR_DBNOTFOUND && 
+                iResult != KR_DBOK && iResult != KR_DBOKWITHINFO) {
+            KR_LOG(KR_LOGERROR, "dbsRuleCur Fetch Error[%d]![%s]:[%s]",
+                    iResult, dbsenv->sqlstate, dbsenv->sqlerrmsg);
             nRet = -1;
             break;
         } else if (iResult == KR_DBNOTFOUND) {
@@ -75,7 +77,7 @@ int LoadShmRule(T_DbsEnv *dbsenv, T_KRShmRule *ptShmRule, long lGroupId)
 }
 
 
-int DumpShmRule(T_KRShmRule *ptShmRule, FILE *fp)
+int kr_shm_rule_dump(T_KRShmRule *ptShmRule, FILE *fp)
 {
     long l;
     T_KRShmRuleDef *ptShmRuleDef = &ptShmRule->stShmRuleDef[0];
@@ -98,4 +100,19 @@ int DumpShmRule(T_KRShmRule *ptShmRule, FILE *fp)
     }
     
     return 0;
+}
+
+cJSON *kr_shm_rule_info(T_KRShmRuleDef *ptShmRuleDef)
+{
+    cJSON *rule = cJSON_CreateObject();
+    cJSON_AddNumberToObject(rule, "id", ptShmRuleDef->lRuleId);
+    cJSON_AddStringToObject(rule, "name", ptShmRuleDef->caRuleName);
+    cJSON_AddStringToObject(rule, "desc", ptShmRuleDef->caRuleDesc);
+    cJSON_AddNumberToObject(rule, "datasrc", ptShmRuleDef->lRuleDatasrc);
+    cJSON_AddStringToObject(rule, "type", ptShmRuleDef->caRuleType);
+    cJSON_AddStringToObject(rule, "func", ptShmRuleDef->caRuleFunc);
+    cJSON_AddNumberToObject(rule, "weight", ptShmRuleDef->lRuleWeight);
+    cJSON_AddStringToObject(rule, "calc_format", ptShmRuleDef->caRuleCalcFormat);
+    cJSON_AddStringToObject(rule, "calc_string", ptShmRuleDef->caRuleCalcString);
+    return rule;
 }

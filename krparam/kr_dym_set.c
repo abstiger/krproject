@@ -20,12 +20,14 @@ static int kr_set_load(T_KRHashSet *krhashset, int set_id, T_DbsEnv *dbsenv)
     while(1)
     {
         iResult=dbsSetCfgCur(dbsenv, KR_DBCURFETCH, &stSetCfgCur);
-        if (iResult != KR_DBNOTFOUND && iResult != KR_DBOK) {
-            KR_LOG(KR_LOGERROR, "dbsSetCfgCur Fetch Error!");
+        if (iResult != KR_DBNOTFOUND && 
+                iResult != KR_DBOK && iResult != KR_DBOKWITHINFO) {
+            KR_LOG(KR_LOGERROR, "dbsSetCfgCur Fetch Error[%d]![%s]:[%s]",
+                    iResult, dbsenv->sqlstate, dbsenv->sqlerrmsg);
             nRet = -1;
             break;
         } else if (iResult == KR_DBNOTFOUND) {
-            KR_LOG(KR_LOGERROR, "Load DataSet[%d],Elements[%d] Totally!", \
+            KR_LOG(KR_LOGDEBUG, "Load DataSet[%d],Elements[%d] Totally!", \
                     stSetCfgCur.lInSetId, iCnt);
             break;
         }
@@ -48,7 +50,7 @@ static int kr_set_load(T_KRHashSet *krhashset, int set_id, T_DbsEnv *dbsenv)
                 break;
             case KR_TYPE_STRING: 
                 uEleVal.s = stSetCfgCur.caOutElementValue;
-                nRet = kr_hashset_add(krhashset, &uEleVal.s);
+                nRet = kr_hashset_add(krhashset, uEleVal.s);
                 break;
             default:
                 KR_LOG(KR_LOGERROR, "Unknown set value type[%c]!", \
@@ -103,11 +105,23 @@ T_KRSet *kr_set_construct(T_KRShmSetDef *krshmsetdef, T_DbsEnv *dbsenv)
     return krset;
 }
 
+void kr_set_init(T_KRSet *krset)
+{
+    //dummy function
+}
 
 void kr_set_destruct(T_KRSet *krset)
 {
     kr_hashset_destroy(krset->ptHashSet);
     kr_free(krset);
+}
+
+cJSON *kr_set_info(T_KRSet *krset) 
+{ 
+    cJSON *set = cJSON_CreateObject(); 
+    cJSON *def = kr_shm_set_info(krset->ptShmSetDef); 
+    cJSON_AddItemToObject(set, "def", def); 
+    return set; 
 }
 
 T_KRSetTable *kr_set_table_construct(T_KRShmSet *krshmset, T_DbsEnv *dbsenv)
@@ -140,6 +154,10 @@ T_KRSetTable *kr_set_table_construct(T_KRShmSet *krshmset, T_DbsEnv *dbsenv)
     return krsettable;    
 }
 
+void kr_set_table_init(T_KRSetTable *krsettable)
+{
+    //dummy function
+}
 
 void kr_set_table_destruct(T_KRSetTable *krsettable)
 {
@@ -147,4 +165,8 @@ void kr_set_table_destruct(T_KRSetTable *krsettable)
     kr_free(krsettable);
 }
 
-
+T_KRSet *kr_set_lookup(T_KRSetTable *krsettable, int id)
+{
+    long lSID = (long )id;
+    return kr_hashtable_lookup(krsettable->ptSetTable, &lSID);
+}

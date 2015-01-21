@@ -7,28 +7,27 @@
 #define YYSTYPE         T_KRCalcTree*
 #define YY_EXTRA_TYPE   T_KRCalc*
 
-#define MAXCHILDREN 2
 /* calculator tree definition */
 struct _kr_calc_tree_t
-{ 
-    struct _kr_calc_tree_t *child[MAXCHILDREN];
-    E_KRCalcOp              op;
-    E_KRCalcKind            kind;
-    int                     id;
-    E_KRValueInd            ind;
-    union { 
-        U_KRValue          val;
-        T_KRHashSet       *set;
-        T_KRRegex         *regex;
-    }attr;
-    E_KRType               type;
+{
+    struct _kr_calc_tree_t **children;
+    int                      childnum;
+    
+    E_KRCalcKind             kind;
+    E_KRCalcOp               op;
+    int                      id;
+
+    E_KRType                 type;
+    E_KRValueInd             ind;
+    U_KRValue                value;
 };
 
 /* function declarations */
-extern T_KRCalcTree *kr_calctree_node_new(E_KRCalcKind kind);
-extern int kr_calctree_check(T_KRCalcTree * root, char *errmsg);
-extern int kr_calctree_eval(T_KRCalcTree * root, void *param);
-extern void kr_calctree_dump(T_KRCalcTree *root, FILE *fp);
-extern void kr_calctree_free(T_KRCalcTree *root);
+extern T_KRCalcTree *kr_calc_tree_new(E_KRCalcKind kind);
+extern void kr_calc_tree_append(T_KRCalcTree *t, T_KRCalcTree *child);
+extern void kr_calc_tree_free(T_KRCalcTree *root);
+
+extern int kr_calc_tree_check(T_KRCalcTree *root, T_KRCalc *krcalc);
+extern int kr_calc_tree_eval(T_KRCalcTree *root, T_KRCalc *krcalc);
 
 #endif  /* __KR_CALC_TREE_H__ */

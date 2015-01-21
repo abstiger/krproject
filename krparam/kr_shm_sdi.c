@@ -3,7 +3,7 @@
 #include "dbs/dbs/sdi_cur.h"
 #include "kr_shm_sdi.h"
 
-int LoadShmSDI(T_DbsEnv *dbsenv, T_KRShmSDI *ptShmSDI)
+int kr_shm_sdi_load(T_DbsEnv *dbsenv, T_KRShmSDI *ptShmSDI)
 {
     int nRet = 0;
     int iResult = 0;
@@ -20,8 +20,10 @@ int LoadShmSDI(T_DbsEnv *dbsenv, T_KRShmSDI *ptShmSDI)
     while(1)
     {
         iResult=dbsSdiCur(dbsenv, KR_DBCURFETCH, &stSdiCur);
-        if (iResult != KR_DBNOTFOUND && iResult != KR_DBOK) {
-            KR_LOG(KR_LOGERROR, "dbsSdiCur Fetch Error!");
+        if (iResult != KR_DBNOTFOUND && 
+                iResult != KR_DBOK && iResult != KR_DBOKWITHINFO) {
+            KR_LOG(KR_LOGERROR, "dbsSdiCur Fetch Error[%d]![%s]:[%s]",
+                    iResult, dbsenv->sqlstate, dbsenv->sqlerrmsg);
             nRet = -1;
             break;
         } else if (iResult == KR_DBNOTFOUND) {
@@ -85,7 +87,7 @@ int LoadShmSDI(T_DbsEnv *dbsenv, T_KRShmSDI *ptShmSDI)
 }
 
 
-int DumpShmSDI(T_KRShmSDI *ptShmSDI, FILE *fp)
+int kr_shm_sdi_dump(T_KRShmSDI *ptShmSDI, FILE *fp)
 {
     long l;
     T_KRShmSDIDef *ptShmSDIDef = &ptShmSDI->stShmSDIDef[0];
@@ -111,4 +113,23 @@ int DumpShmSDI(T_KRShmSDI *ptShmSDI, FILE *fp)
     }
     
     return 0;
+}
+
+cJSON *kr_shm_sdi_info(T_KRShmSDIDef *ptShmSDIDef)
+{
+    cJSON *sdi = cJSON_CreateObject();
+    cJSON_AddNumberToObject(sdi, "id", ptShmSDIDef->lSdiId);
+    cJSON_AddStringToObject(sdi, "name", ptShmSDIDef->caSdiName);
+    cJSON_AddStringToObject(sdi, "desc", ptShmSDIDef->caSdiDesc);
+    cJSON_AddStringToObject(sdi, "type", ptShmSDIDef->caSdiType);
+    cJSON_AddStringToObject(sdi, "value_type", ptShmSDIDef->caSdiValueType);
+    cJSON_AddStringToObject(sdi, "aggr_func", ptShmSDIDef->caSdiAggrFunc);
+    cJSON_AddNumberToObject(sdi, "datasrc", ptShmSDIDef->lStatisticsDatasrc);
+    cJSON_AddNumberToObject(sdi, "index", ptShmSDIDef->lStatisticsIndex);
+    cJSON_AddNumberToObject(sdi, "field", ptShmSDIDef->lStatisticsField);
+    cJSON_AddNumberToObject(sdi, "location", ptShmSDIDef->lStatisticsLocation);
+    cJSON_AddStringToObject(sdi, "location_property", ptShmSDIDef->caLocationProperty);
+    cJSON_AddStringToObject(sdi, "filter_format", ptShmSDIDef->caSdiFilterFormat);
+    cJSON_AddStringToObject(sdi, "filter_string", ptShmSDIDef->caSdiFilterString);
+    return sdi;
 }

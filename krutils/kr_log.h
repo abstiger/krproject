@@ -1,6 +1,8 @@
 #ifndef __KR_LOG_H__
 #define __KR_LOG_H__
 
+#include "kr_json.h"
+
 /* loglevel enumeration */
 typedef enum {
     KR_LOGFATAL   = 1,
@@ -11,10 +13,11 @@ typedef enum {
 }KRLogLevel;
 
 /* log functions */
-extern void kr_log(const char *file, int line, KRLogLevel level, const char *fmt, ...);
+extern cJSON *kr_log_dump_json(void);
 extern void kr_log_set_path(char *path);
 extern void kr_log_set_name(char *name) ;
 extern void kr_log_set_level(KRLogLevel level);
+extern void kr_log(const char *file, int line, KRLogLevel level, const char *fmt, ...);
 
 /*define for easy log*/
 #define KR_LOG(level, fmt, ...)   kr_log(__FILE__, __LINE__, level, fmt, ##__VA_ARGS__)

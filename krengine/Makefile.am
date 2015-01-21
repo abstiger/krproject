@@ -1,12 +1,12 @@
 lib_LTLIBRARIES          = libkrengine.la
 include_HEADERS          = kr_engine.h
 
-libkrengine_la_SOURCES   = kr_engine.h    \
-						   kr_engine.c    \
-						   kr_rule.c      \
-						   kr_rule_func.c \
-						   kr_group.c     \
-						   kr_group_func.c 
+libkrengine_la_SOURCES   = kr_message.h       \
+                           kr_message.c       \
+						   kr_engine.h        \
+						   kr_engine.c        \
+						   kr_engine_detect.c \
+						   kr_engine_handle.c 
      
 libkrengine_la_LIBADD    = $(top_srcdir)/krutils/libkrutils.la
 libkrengine_la_LIBADD   += $(top_srcdir)/dbs/libdbsbas.la

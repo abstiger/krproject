@@ -27,7 +27,8 @@ typedef struct _kr_shm_set_t
 }T_KRShmSet;
 
 
-int LoadShmSet(T_DbsEnv *dbsenv, T_KRShmSet *ptShmSet);
-int DumpShmSet(T_KRShmSet *ptShmSet, FILE *fp);
+int kr_shm_set_load(T_DbsEnv *dbsenv, T_KRShmSet *ptShmSet);
+int kr_shm_set_dump(T_KRShmSet *ptShmSet, FILE *fp);
+cJSON *kr_shm_set_info(T_KRShmSetDef *ptShmSetDef);
 
 #endif  /*__KR_SHM_SET_H__*/

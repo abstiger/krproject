@@ -2,7 +2,7 @@
 #include "dbs/dbs/ddi_cur.h"
 #include "kr_shm_ddi.h"
 
-int LoadShmDDI(T_DbsEnv *dbsenv, T_KRShmDDI *ptShmDDI)
+int kr_shm_ddi_load(T_DbsEnv *dbsenv, T_KRShmDDI *ptShmDDI)
 {
     int nRet = 0;
     int iResult = 0;
@@ -19,8 +19,10 @@ int LoadShmDDI(T_DbsEnv *dbsenv, T_KRShmDDI *ptShmDDI)
     while(1)
     {
         iResult=dbsDdiCur(dbsenv, KR_DBCURFETCH, &stDdiCur);
-        if (iResult != KR_DBNOTFOUND && iResult != KR_DBOK) {
-            KR_LOG(KR_LOGERROR, "dbsDdiCur Fetch Error!");
+        if (iResult != KR_DBNOTFOUND && 
+                iResult != KR_DBOK && iResult != KR_DBOKWITHINFO) {
+            KR_LOG(KR_LOGERROR, "dbsDdiCur Fetch Error![%s]:[%s]", 
+                    dbsenv->sqlstate, dbsenv->sqlerrmsg);
             nRet = -1;
             break;
         } else if (iResult == KR_DBNOTFOUND) {
@@ -88,7 +90,7 @@ int LoadShmDDI(T_DbsEnv *dbsenv, T_KRShmDDI *ptShmDDI)
 }
 
 
-int DumpShmDDI(T_KRShmDDI *ptShmDDI, FILE *fp)
+int kr_shm_ddi_dump(T_KRShmDDI *ptShmDDI, FILE *fp)
 {
     long l;
     T_KRShmDDIDef *ptShmDDIDef = &ptShmDDI->stShmDDIDef[0];
@@ -114,4 +116,25 @@ int DumpShmDDI(T_KRShmDDI *ptShmDDI, FILE *fp)
     }
     
     return 0;
+}
+
+cJSON *kr_shm_ddi_info(T_KRShmDDIDef *ptShmDDIDef)
+{
+    cJSON *ddi = cJSON_CreateObject();
+    cJSON_AddNumberToObject(ddi, "id", ptShmDDIDef->lDdiId);
+    cJSON_AddStringToObject(ddi, "name", ptShmDDIDef->caDdiName);
+    cJSON_AddStringToObject(ddi, "desc", ptShmDDIDef->caDdiDesc);
+    cJSON_AddStringToObject(ddi, "type", ptShmDDIDef->caDdiType);
+    cJSON_AddStringToObject(ddi, "value_type", ptShmDDIDef->caDdiValueType);
+    cJSON_AddStringToObject(ddi, "aggr_func", ptShmDDIDef->caDdiAggrFunc);
+    cJSON_AddNumberToObject(ddi, "datasrc", ptShmDDIDef->lStatisticsDatasrc);
+    cJSON_AddNumberToObject(ddi, "index", ptShmDDIDef->lStatisticsIndex);
+    cJSON_AddNumberToObject(ddi, "field", ptShmDDIDef->lStatisticsField);
+    cJSON_AddStringToObject(ddi, "statictics_type", ptShmDDIDef->caStatisticsType);
+    cJSON_AddNumberToObject(ddi, "statictics_value", ptShmDDIDef->lStatisticsValue);
+    cJSON_AddNumberToObject(ddi, "statictics_count", ptShmDDIDef->lStatisticsCount);
+    cJSON_AddStringToObject(ddi, "statictics_method", ptShmDDIDef->caStatisticsMethod);
+    cJSON_AddStringToObject(ddi, "filter_format", ptShmDDIDef->caDdiFilterFormat);
+    cJSON_AddStringToObject(ddi, "filter_string", ptShmDDIDef->caDdiFilterString);
+    return ddi;
 }

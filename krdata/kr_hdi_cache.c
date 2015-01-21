@@ -64,7 +64,8 @@ static void kr_hdi_cache_node_dump(T_KRHashTable *cache_table, FILE *fp)
 T_KRCache *kr_hdi_cache_create(unsigned int cache_size)
 {
     T_KRCache *cache = kr_cache_new(cache_size, 
-                                    kr_string_hash, kr_string_equal,
+                                    (KRHashFunc )kr_string_hash, 
+                                    (KREqualFunc )kr_string_equal,
                                     (KRDupFunc )kr_strdup, kr_free,
                                     NULL, (KRFreeFunc )kr_hashtable_destroy,
                                     (KRFunc )kr_hdi_cache_node_dump);

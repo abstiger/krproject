@@ -11882,6 +11882,136 @@ test -n "$YACC" || YACC="yacc"
 
 # Checks for libraries.
 
+  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for a readline compatible library" >&5
+$as_echo_n "checking for a readline compatible library... " >&6; }
+if ${ax_cv_lib_readline+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+
+    ORIG_LIBS="$LIBS"
+    for readline_lib in readline edit editline; do
+      for termcap_lib in "" termcap curses ncurses; do
+        if test -z "$termcap_lib"; then
+          TRY_LIB="-l$readline_lib"
+        else
+          TRY_LIB="-l$readline_lib -l$termcap_lib"
+        fi
+        LIBS="$ORIG_LIBS $TRY_LIB"
+        cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+/* Override any GCC internal prototype to avoid an error.
+   Use char because int might match the return type of a GCC
+   builtin and then its argument prototype would still apply.  */
+#ifdef __cplusplus
+extern "C"
+#endif
+char readline ();
+int
+main ()
+{
+return readline ();
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  ax_cv_lib_readline="$TRY_LIB"
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+        if test -n "$ax_cv_lib_readline"; then
+          break
+        fi
+      done
+      if test -n "$ax_cv_lib_readline"; then
+        break
+      fi
+    done
+    if test -z "$ax_cv_lib_readline"; then
+      ax_cv_lib_readline="no"
+    fi
+    LIBS="$ORIG_LIBS"
+
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ax_cv_lib_readline" >&5
+$as_echo "$ax_cv_lib_readline" >&6; }
+
+  if test "$ax_cv_lib_readline" != "no"; then
+    LIBS="$LIBS $ax_cv_lib_readline"
+
+$as_echo "#define HAVE_LIBREADLINE 1" >>confdefs.h
+
+    for ac_header in readline.h readline/readline.h
+do :
+  as_ac_Header=`$as_echo "ac_cv_header_$ac_header" | $as_tr_sh`
+ac_fn_c_check_header_mongrel "$LINENO" "$ac_header" "$as_ac_Header" "$ac_includes_default"
+if eval test \"x\$"$as_ac_Header"\" = x"yes"; then :
+  cat >>confdefs.h <<_ACEOF
+#define `$as_echo "HAVE_$ac_header" | $as_tr_cpp` 1
+_ACEOF
+
+fi
+
+done
+
+    { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether readline supports history" >&5
+$as_echo_n "checking whether readline supports history... " >&6; }
+if ${ax_cv_lib_readline_history+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+
+      ax_cv_lib_readline_history="no"
+      cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+/* Override any GCC internal prototype to avoid an error.
+   Use char because int might match the return type of a GCC
+   builtin and then its argument prototype would still apply.  */
+#ifdef __cplusplus
+extern "C"
+#endif
+char add_history ();
+int
+main ()
+{
+return add_history ();
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  ax_cv_lib_readline_history="yes"
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ax_cv_lib_readline_history" >&5
+$as_echo "$ax_cv_lib_readline_history" >&6; }
+    if test "$ax_cv_lib_readline_history" = "yes"; then
+
+$as_echo "#define HAVE_READLINE_HISTORY 1" >>confdefs.h
+
+      for ac_header in history.h readline/history.h
+do :
+  as_ac_Header=`$as_echo "ac_cv_header_$ac_header" | $as_tr_sh`
+ac_fn_c_check_header_mongrel "$LINENO" "$ac_header" "$as_ac_Header" "$ac_includes_default"
+if eval test \"x\$"$as_ac_Header"\" = x"yes"; then :
+  cat >>confdefs.h <<_ACEOF
+#define `$as_echo "HAVE_$ac_header" | $as_tr_cpp` 1
+_ACEOF
+
+fi
+
+done
+
+    fi
+  fi
+
+#AX_CHECK_LIBRARY([LIBUV], [uv.h], [uv], [], [AC_MSG_ERROR([Unable to find libuv])])
+#AX_CHECK_LIBRARY([JANSSON], [jansson.h], [jansson], [], [AC_MSG_ERROR([Unable to find jansson])])
+
 # Checks for header files.
 for ac_header in stdint.h inttypes.h unistd.h
 do :
@@ -12192,6 +12322,8 @@ $as_echo "#define AC_APPLE_UNIVERSAL_BUILD 1" >>confdefs.h
 
 
 # Checks for library functions.
+
+#PKG_CHECK_MODULES(AVROC, avro-c >= 1.7.6, [AC_DEFINE([HAVE_AVROC], [1], [Use avro-c])])
 
 # Check enables
 need_swig=no
@@ -13399,7 +13531,7 @@ else
 JAVA_TEST=Test.java
 CLASS_TEST=Test.class
 cat << \EOF > $JAVA_TEST
-/* #line 13402 "configure" */
+/* #line 13534 "configure" */
 public class Test {
 }
 EOF
@@ -13687,7 +13819,7 @@ fi
 
 
 
-ac_config_files="$ac_config_files Makefile krutils/Makefile dbs/Makefile dbs/dbs/Makefile krcalc/Makefile krparam/Makefile krdb/Makefile krdata/Makefile krengine/Makefile krserver/Makefile krclient/Makefile krcoordi/Makefile krtests/Makefile bindings/Makefile bindings/python/Makefile bindings/java/Makefile examples/Makefile examples/antifraud/Makefile examples/playweibo/Makefile etc/Makefile doc/Makefile"
+ac_config_files="$ac_config_files Makefile dbs/Makefile dbs/dbs/Makefile krutils/Makefile krcalc/Makefile krparam/Makefile krdb/Makefile krdata/Makefile krflow/Makefile krengine/Makefile krchannel/Makefile krserver/Makefile krcoordi/Makefile krtools/Makefile tests/Makefile examples/Makefile examples/antifraud/Makefile examples/playweibo/Makefile etc/Makefile doc/Makefile krclient/Makefile krclient/bindings/python/Makefile krclient/bindings/java/Makefile krshell/Makefile krweb/Makefile"
 
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
@@ -14708,26 +14840,30 @@ do
     "depfiles") CONFIG_COMMANDS="$CONFIG_COMMANDS depfiles" ;;
     "libtool") CONFIG_COMMANDS="$CONFIG_COMMANDS libtool" ;;
     "Makefile") CONFIG_FILES="$CONFIG_FILES Makefile" ;;
-    "krutils/Makefile") CONFIG_FILES="$CONFIG_FILES krutils/Makefile" ;;
     "dbs/Makefile") CONFIG_FILES="$CONFIG_FILES dbs/Makefile" ;;
     "dbs/dbs/Makefile") CONFIG_FILES="$CONFIG_FILES dbs/dbs/Makefile" ;;
+    "krutils/Makefile") CONFIG_FILES="$CONFIG_FILES krutils/Makefile" ;;
     "krcalc/Makefile") CONFIG_FILES="$CONFIG_FILES krcalc/Makefile" ;;
     "krparam/Makefile") CONFIG_FILES="$CONFIG_FILES krparam/Makefile" ;;
     "krdb/Makefile") CONFIG_FILES="$CONFIG_FILES krdb/Makefile" ;;
     "krdata/Makefile") CONFIG_FILES="$CONFIG_FILES krdata/Makefile" ;;
+    "krflow/Makefile") CONFIG_FILES="$CONFIG_FILES krflow/Makefile" ;;
     "krengine/Makefile") CONFIG_FILES="$CONFIG_FILES krengine/Makefile" ;;
+    "krchannel/Makefile") CONFIG_FILES="$CONFIG_FILES krchannel/Makefile" ;;
     "krserver/Makefile") CONFIG_FILES="$CONFIG_FILES krserver/Makefile" ;;
-    "krclient/Makefile") CONFIG_FILES="$CONFIG_FILES krclient/Makefile" ;;
     "krcoordi/Makefile") CONFIG_FILES="$CONFIG_FILES krcoordi/Makefile" ;;
-    "krtests/Makefile") CONFIG_FILES="$CONFIG_FILES krtests/Makefile" ;;
-    "bindings/Makefile") CONFIG_FILES="$CONFIG_FILES bindings/Makefile" ;;
-    "bindings/python/Makefile") CONFIG_FILES="$CONFIG_FILES bindings/python/Makefile" ;;
-    "bindings/java/Makefile") CONFIG_FILES="$CONFIG_FILES bindings/java/Makefile" ;;
+    "krtools/Makefile") CONFIG_FILES="$CONFIG_FILES krtools/Makefile" ;;
+    "tests/Makefile") CONFIG_FILES="$CONFIG_FILES tests/Makefile" ;;
     "examples/Makefile") CONFIG_FILES="$CONFIG_FILES examples/Makefile" ;;
     "examples/antifraud/Makefile") CONFIG_FILES="$CONFIG_FILES examples/antifraud/Makefile" ;;
     "examples/playweibo/Makefile") CONFIG_FILES="$CONFIG_FILES examples/playweibo/Makefile" ;;
     "etc/Makefile") CONFIG_FILES="$CONFIG_FILES etc/Makefile" ;;
     "doc/Makefile") CONFIG_FILES="$CONFIG_FILES doc/Makefile" ;;
+    "krclient/Makefile") CONFIG_FILES="$CONFIG_FILES krclient/Makefile" ;;
+    "krclient/bindings/python/Makefile") CONFIG_FILES="$CONFIG_FILES krclient/bindings/python/Makefile" ;;
+    "krclient/bindings/java/Makefile") CONFIG_FILES="$CONFIG_FILES krclient/bindings/java/Makefile" ;;
+    "krshell/Makefile") CONFIG_FILES="$CONFIG_FILES krshell/Makefile" ;;
+    "krweb/Makefile") CONFIG_FILES="$CONFIG_FILES krweb/Makefile" ;;
 
   *) as_fn_error $? "invalid argument: \`$ac_config_target'" "$LINENO" 5;;
   esac

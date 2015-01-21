@@ -1,7 +1,8 @@
 #include "kr_dym_ddi.h"
 
 /*static dataitem*/
-T_KRDDI *kr_ddi_construct(T_KRShmDDIDef *ddi_def, T_KRModule *datamodule)
+T_KRDDI *kr_ddi_construct(T_KRShmDDIDef *ddi_def, T_KRModule *datamodule,
+        KRGetTypeFunc get_type_func, KRGetValueFunc get_value_func)
 {
     T_KRDDI *krddi = kr_calloc(sizeof(T_KRDDI));
     if (krddi == NULL) {
@@ -11,7 +12,7 @@ T_KRDDI *kr_ddi_construct(T_KRShmDDIDef *ddi_def, T_KRModule *datamodule)
     krddi->ptShmDDIDef = ddi_def;
     krddi->lDDIId = ddi_def->lDdiId;
     krddi->ptDDICalc = kr_calc_construct(ddi_def->caDdiFilterFormat[0], \
-            ddi_def->caDdiFilterString);
+            ddi_def->caDdiFilterString, get_type_func, get_value_func);
     krddi->eValueType = ddi_def->caDdiValueType[0];
     /*get the retrieve data function from module*/
     if (ddi_def->caDdiAggrFunc[0] != '\0') {
@@ -29,6 +30,17 @@ T_KRDDI *kr_ddi_construct(T_KRShmDDIDef *ddi_def, T_KRModule *datamodule)
     return krddi;
 }
 
+void kr_ddi_init(T_KRDDI *krddi)
+{
+    /*initialize first*/
+    krddi->eValueInd = KR_VALUE_UNSET;
+    kr_hashtable_remove_all(krddi->ptRelated);
+
+    /*string comes from kr_strdup, need kr_free*/
+    if (krddi->eValueType == KR_TYPE_STRING)
+        kr_free(krddi->uValue.s);
+    memset(&krddi->uValue, 0x00, sizeof(krddi->uValue));
+}
 
 void kr_ddi_destruct(T_KRDDI *krddi)
 {
@@ -37,7 +49,15 @@ void kr_ddi_destruct(T_KRDDI *krddi)
     kr_free(krddi);
 }
 
-T_KRDDITable *kr_ddi_table_construct(T_KRShmDDI *shm_ddi, T_KRModule *datamodule)
+cJSON *kr_ddi_info(T_KRDDI *krddi)
+{
+    cJSON *ddi = cJSON_CreateObject();
+    cJSON *def = kr_shm_ddi_info(krddi->ptShmDDIDef);
+    cJSON_AddItemToObject(ddi, "def", def);
+    return ddi;
+}
+
+T_KRDDITable *kr_ddi_table_construct(T_KRShmDDI *shm_ddi, T_KRModule *datamodule, KRGetTypeFunc get_type_func, KRGetValueFunc get_value_func)
 {
     T_KRDDITable *krdditable = kr_calloc(sizeof(T_KRDDITable));
     if (krdditable == NULL) {
@@ -53,7 +73,8 @@ T_KRDDITable *kr_ddi_table_construct(T_KRShmDDI *shm_ddi, T_KRModule *datamodule
     int i = 0;
     T_KRDDI *krddi = NULL;
     for (i=0; i<shm_ddi->lDDIDefCnt; ++i) {
-        krddi = kr_ddi_construct(&shm_ddi->stShmDDIDef[i], datamodule);
+        krddi = kr_ddi_construct(&shm_ddi->stShmDDIDef[i], datamodule, \
+                get_type_func, get_value_func);
         if (krddi == NULL) {
             KR_LOG(KR_LOGERROR, "kr_ddi_construct [%d] failed!", i);
             kr_hashtable_destroy(krdditable->ptDDITable);
@@ -67,6 +88,15 @@ T_KRDDITable *kr_ddi_table_construct(T_KRShmDDI *shm_ddi, T_KRModule *datamodule
     return krdditable;    
 }
 
+static void _kr_ddi_init_hfunc(void *key, void *value, void *data)
+{
+    kr_ddi_init((T_KRDDI *)value);
+}
+
+void kr_ddi_table_init(T_KRDDITable *krdditable)
+{
+    kr_hashtable_foreach(krdditable->ptDDITable, _kr_ddi_init_hfunc, NULL);
+}
 
 void kr_ddi_table_destruct(T_KRDDITable *krdditable)
 {
@@ -74,3 +104,8 @@ void kr_ddi_table_destruct(T_KRDDITable *krdditable)
     kr_free(krdditable);
 }
 
+T_KRDDI *kr_ddi_lookup(T_KRDDITable *krdditable, int id)
+{
+    long lDID = (long )id;
+    return kr_hashtable_lookup(krdditable->ptDDITable, &lDID);
+}

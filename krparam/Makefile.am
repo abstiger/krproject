@@ -32,6 +32,7 @@ libkrparam_la_SOURCES   = \
      
 libkrparam_la_LIBADD    = $(top_srcdir)/krutils/libkrutils.la
 libkrparam_la_LIBADD   += $(top_srcdir)/dbs/dbs/libdbsdbs.la
+libkrparam_la_LIBADD   += $(top_srcdir)/krcalc/libkrcalc.la
 libkrparam_la_LDFLAGS   = 
 libkrparam_la_CPPFLAGS  = 
 

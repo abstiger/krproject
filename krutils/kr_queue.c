@@ -1,3 +1,4 @@
+#include "kr_alloc.h"
 #include "kr_queue.h"
 #include <stdio.h>
 #include <stdlib.h>

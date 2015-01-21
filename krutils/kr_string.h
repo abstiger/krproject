@@ -19,6 +19,7 @@ static inline int kr_string_compare(const kr_string s1, const kr_string s2)
 extern unsigned int kr_string_hash(const kr_string s);
 extern kr_bool kr_string_equal(kr_string s1, kr_string s2);
 extern kr_string kr_string_dup(kr_string s);
+extern kr_string kr_string_dupenv(kr_string s);
 
 extern kr_bool kr_string_isnumeric(const kr_string s);
 extern kr_bool kr_string_isdecimal(const kr_string s);

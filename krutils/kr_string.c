@@ -1,3 +1,4 @@
+#include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
 #include "kr_string.h"
@@ -124,4 +125,38 @@ kr_string kr_string_tolower(kr_string s)
         }
     }
     return s;
+}
+
+kr_string kr_string_dupenv(kr_string s)
+{
+    if (s == NULL) return NULL;
+
+    char caOutput[1024] = {0};
+    char caEnv[100] = {0};
+    char *pInput = s;
+    char *pOutput = caOutput;
+    char *pEnv = caEnv;
+
+    while(*pInput)
+    {
+        if (*pInput == '$') {
+            memset(caEnv, 0, sizeof(caEnv));
+            if (*(++pInput) == '{') {
+                while(*(++pInput) != '}') {
+                    *pEnv++ = *pInput;
+                }
+                ++pInput;
+            }
+
+            char *env = getenv(caEnv);
+            if (env != NULL) {
+                memcpy(pOutput, env, strlen(env));
+                pOutput += strlen(env);
+            }
+        } else {
+            *pOutput++ = *pInput++;
+        }
+    }
+
+    return kr_strdup(caOutput);
 }

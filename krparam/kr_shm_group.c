@@ -3,7 +3,7 @@
 #include "dbs/dbs/group_cur.h"
 #include "kr_shm_group.h"
 
-int LoadShmGroup(T_DbsEnv *dbsenv, T_KRShmGroup *ptShmGroup)
+int kr_shm_group_load(T_DbsEnv *dbsenv, T_KRShmGroup *ptShmGroup)
 {
     int nRet = 0;
     int iResult = 0;
@@ -20,8 +20,10 @@ int LoadShmGroup(T_DbsEnv *dbsenv, T_KRShmGroup *ptShmGroup)
     while(1)
     {
         iResult=dbsGroupCur(dbsenv, KR_DBCURFETCH, &stGroupCur);
-        if (iResult != KR_DBNOTFOUND && iResult != KR_DBOK) {
-            KR_LOG(KR_LOGERROR, "dbsGroupCur Fetch Error!");
+        if (iResult != KR_DBNOTFOUND && 
+                iResult != KR_DBOK && iResult != KR_DBOKWITHINFO) {
+            KR_LOG(KR_LOGERROR, "dbsGroupCur Fetch Error[%d]![%s]:[%s]",  
+                    iResult, dbsenv->sqlstate, dbsenv->sqlerrmsg);
             nRet = -1;
             break;
         } else if (iResult == KR_DBNOTFOUND) {
@@ -52,10 +54,14 @@ int LoadShmGroup(T_DbsEnv *dbsenv, T_KRShmGroup *ptShmGroup)
         strncpy(ptShmGroupDef->caGroupFunc, \
                 kr_string_rtrim(stGroupCur.caOutGroupFunc), \
                 sizeof(ptShmGroupDef->caGroupFunc));
+        ptShmGroupDef->lGroupBlockLeft = stGroupCur.lOutGroupBlockLeft;
+        ptShmGroupDef->lGroupBlockRight = stGroupCur.lOutGroupBlockRight;
+        ptShmGroupDef->lGroupAlertLeft = stGroupCur.lOutGroupAlertLeft;
+        ptShmGroupDef->lGroupAlertRight = stGroupCur.lOutGroupAlertRight;
         /*load rules of this group*/
-        if (LoadShmRule(dbsenv, &ptShmGroupDef->stShmRule, \
+        if (kr_shm_rule_load(dbsenv, &ptShmGroupDef->stShmRule, \
                     ptShmGroupDef->lGroupId) != 0) {
-            KR_LOG(KR_LOGERROR, "LoadShmRule [%ld] failed!", \
+            KR_LOG(KR_LOGERROR, "kr_shm_rule_load [%ld] failed!", \
                     ptShmGroupDef->lGroupId);
             nRet = -1;
             break;
@@ -77,7 +83,7 @@ int LoadShmGroup(T_DbsEnv *dbsenv, T_KRShmGroup *ptShmGroup)
 }
 
 
-int DumpShmGroup(T_KRShmGroup *ptShmGroup, FILE *fp)
+int kr_shm_group_dump(T_KRShmGroup *ptShmGroup, FILE *fp)
 {
     long l;
     T_KRShmGroupDef *ptShmGroupDef = &ptShmGroup->stShmGroupDef[0];
@@ -94,9 +100,22 @@ int DumpShmGroup(T_KRShmGroup *ptShmGroup, FILE *fp)
         fprintf(fp, " caGroupCalcFormat=[%s], caGroupCalcString=[%s], caGroupFunc=[%s] \n", 
                  ptShmGroupDef->caGroupCalcFormat, ptShmGroupDef->caGroupCalcString, ptShmGroupDef->caGroupFunc);
         /*dump rules of this group*/
-        DumpShmRule(&ptShmGroupDef->stShmRule, fp);
+        kr_shm_rule_dump(&ptShmGroupDef->stShmRule, fp);
         ptShmGroupDef++;
     }
     
     return 0;
 }
+
+cJSON *kr_shm_group_info(T_KRShmGroupDef *ptShmGroupDef)
+{
+    cJSON *group = cJSON_CreateObject();
+    cJSON_AddNumberToObject(group, "id", ptShmGroupDef->lGroupId);
+    cJSON_AddStringToObject(group, "name", ptShmGroupDef->caGroupName);
+    cJSON_AddStringToObject(group, "desc", ptShmGroupDef->caGroupDesc);
+    cJSON_AddStringToObject(group, "func", ptShmGroupDef->caGroupFunc);
+    cJSON_AddStringToObject(group, "calc_format", ptShmGroupDef->caGroupCalcFormat);
+    cJSON_AddStringToObject(group, "calc_string", ptShmGroupDef->caGroupCalcString);
+    return group;
+}
+

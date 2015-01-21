@@ -2,55 +2,19 @@
 #define __KR_SERVER_H__
 
 #include "krutils/kr_utils.h"
-#include "krutils/kr_threadpool.h"
-#include "krutils/kr_cache.h"
-#include "krutils/kr_event.h"
-#include "krutils/kr_message.h"
 #include "krengine/kr_engine.h"
+#include "krchannel/kr_channel.h"
+#include "kr_server_config.h"
 
 typedef struct _kr_server_t
 {
-    /* General */
-    char *configfile;             /* krserver's configure file */
-    char *serverid;               /* server identifier */
-    char *krdbmodule;             /* krdb's module file */
-    char *datamodule;             /* data's module file */
-    char *rulemodule;             /* rule's module file */
-    int  daemonize;               /* True if running as a daemon */
-    char *pidfile;                /* PID file path */
-    int  maxevents;               /* the max event number supported */
-    int  hdicachesize;            /* cache size of historical dynamic item */
-    
-    int detectmode;               /* detect mode */
-    int dumpinfo;                 /* dump info while server down:0-no,1-yes */
-    int loglevel;                 /* log level of this server */
-    char *logpath;                /* Path of log file */
-    
-    int threadcnt;                /* Thread pool size, 0: no threads*/
-    int hwm;                      /* Thread pool high water mark*/
-    int shutdown;                 /* Shutdown flag */
-    char *dbname;                 /* data source name */
-    char *dbuser;                 /* database user */
-    char *dbpass;                 /* database password */
+    int               status;                 /* status of this server */
 
-    /* Networking */
-    int tcpport;                  /* TCP listening port */
-    char *tcpbindaddr;            /* Bind address or NULL */
-    int  clustermode;             /* Server in cluder:1 or not:0 */
-    int  weights;                 /* weights for this server in cluster mode */
-    int  replica;                 /* a replication server:1 or not:0*/
-    int coordport;                /* Coordinator port */
-    char *coordip;                /* Coordinator ip */
-    int ipfd;                     /* TCP socket file descriptor */
-    int sofd;                     /* Unix socket file descriptor */
-    int cofd;                     /* Coordinator connecting socket */
-    int retrytimes;               /* retry times for connecting cluster */
-    int retryinterval;            /* retry interval for connecting cluster */
-    char neterr[KR_NET_ERR_LEN];  /* Error buffer for kr_net.c */
-        
-    /* Global variables*/
-    T_KREngine       *krengine;   /* The Engine */
-    T_KREventLoop    *krel;       /* the main event loop */
+    char             *config_file;            /* configure file */
+    T_KRServerConfig *config;                 /* krserver configuration */
+    T_KREngine       *krengine;               /* the Engine */
+    int               channel_count;          /* channel count */
+    T_KRChannel     **krchannels;             /* the channels */
 }T_KRServer;
 
 #endif  /*__KR_SERVER_H__*/

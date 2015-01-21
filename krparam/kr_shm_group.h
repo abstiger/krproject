@@ -16,6 +16,10 @@ typedef struct _kr_shm_group_def_t
     char        caGroupCalcFormat[1+1];
     char        caGroupCalcString[500+1];
     char        caGroupFunc[50+1];
+    long        lGroupBlockLeft;
+    long        lGroupBlockRight;
+    long        lGroupAlertLeft;
+    long        lGroupAlertRight;
     T_KRShmRule stShmRule;
 }T_KRShmGroupDef;
 
@@ -27,7 +31,8 @@ typedef struct _kr_shm_group_t
 }T_KRShmGroup;
 
 
-extern int LoadShmGroup(T_DbsEnv *dbsenv, T_KRShmGroup *ptShmGroup);
-extern int DumpShmGroup(T_KRShmGroup *ptShmGroup, FILE *fp);
+int kr_shm_group_load(T_DbsEnv *dbsenv, T_KRShmGroup *ptShmGroup);
+int kr_shm_group_dump(T_KRShmGroup *ptShmGroup, FILE *fp);
+cJSON *kr_shm_group_info(T_KRShmGroupDef *ptShmGroupDef);
 
 #endif  /*__KR_SHM_GROUP_H__*/

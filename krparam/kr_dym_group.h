@@ -27,10 +27,16 @@ typedef struct _kr_group_list_t
 
 
 /*groups*/
-T_KRGroup *kr_group_construct(T_KRShmGroupDef *group_def, T_KRModule *groupmodule);
-void kr_group_destruct(void *group);
+T_KRGroup *kr_group_construct(T_KRShmGroupDef *group_def, 
+        KRGetTypeFunc get_type_func, KRGetValueFunc get_value_func);
+void kr_group_destruct(T_KRGroup *krgroup);
+void kr_group_init(T_KRGroup *krgroup);
+cJSON *kr_group_info(T_KRGroup *krgroup);
 
-T_KRGroupList *kr_group_list_construct(T_KRShmGroup *group_list_def, T_KRModule *groupmodule);
+T_KRGroupList *kr_group_list_construct(T_KRShmGroup *group_list_def, 
+        KRGetTypeFunc get_type_func, KRGetValueFunc get_value_func);
 void kr_group_list_destruct(T_KRGroupList *krgrouplist);
+void kr_group_list_init(T_KRGroupList *krgrouplist);
+T_KRGroup *kr_group_lookup(T_KRGroupList *krgrouplist, int id);
 
 #endif /* __KR_GROUP_H__ */

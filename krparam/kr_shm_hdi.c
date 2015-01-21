@@ -3,7 +3,7 @@
 #include "dbs/dbs/hdi_cur.h"
 #include "kr_shm_hdi.h"
 
-int LoadShmHDI(T_DbsEnv *dbsenv, T_KRShmHDI *ptShmHDI)
+int kr_shm_hdi_load(T_DbsEnv *dbsenv, T_KRShmHDI *ptShmHDI)
 {
     int nRet = 0;
     int iResult = 0;
@@ -20,8 +20,10 @@ int LoadShmHDI(T_DbsEnv *dbsenv, T_KRShmHDI *ptShmHDI)
     while(1)
     {
         iResult=dbsHdiCur(dbsenv, KR_DBCURFETCH, &stHdiCur);
-        if (iResult != KR_DBNOTFOUND && iResult != KR_DBOK) {
-            KR_LOG(KR_LOGERROR, "dbsHdiCur Fetch Error!");
+        if (iResult != KR_DBNOTFOUND && 
+                iResult != KR_DBOK && iResult != KR_DBOKWITHINFO) {
+            KR_LOG(KR_LOGERROR, "dbsHdiCur Fetch Error[%d]![%s]:[%s]",
+                    iResult, dbsenv->sqlstate, dbsenv->sqlerrmsg);
             nRet = -1;
             break;
         } else if (iResult == KR_DBNOTFOUND) {
@@ -81,7 +83,7 @@ int LoadShmHDI(T_DbsEnv *dbsenv, T_KRShmHDI *ptShmHDI)
 }
 
 
-int DumpShmHDI(T_KRShmHDI *ptShmHDI, FILE *fp)
+int kr_shm_hdi_dump(T_KRShmHDI *ptShmHDI, FILE *fp)
 {
     long l;
     T_KRShmHDIDef *ptShmHDIDef = &ptShmHDI->stShmHDIDef[0];
@@ -105,4 +107,21 @@ int DumpShmHDI(T_KRShmHDI *ptShmHDI, FILE *fp)
     }
     
     return 0;
+}
+
+cJSON *kr_shm_hdi_info(T_KRShmHDIDef *ptShmHDIDef)
+{
+    cJSON *hdi = cJSON_CreateObject();
+    cJSON_AddNumberToObject(hdi, "id", ptShmHDIDef->lHdiId);
+    cJSON_AddStringToObject(hdi, "name", ptShmHDIDef->caHdiName);
+    cJSON_AddStringToObject(hdi, "desc", ptShmHDIDef->caHdiDesc);
+    cJSON_AddStringToObject(hdi, "type", ptShmHDIDef->caHdiType);
+    cJSON_AddStringToObject(hdi, "value_type", ptShmHDIDef->caHdiValueType);
+    cJSON_AddStringToObject(hdi, "aggr_func", ptShmHDIDef->caHdiAggrFunc);
+    cJSON_AddNumberToObject(hdi, "datasrc", ptShmHDIDef->lStatisticsDatasrc);
+    cJSON_AddNumberToObject(hdi, "index", ptShmHDIDef->lStatisticsIndex);
+    cJSON_AddStringToObject(hdi, "statictics_type", ptShmHDIDef->caStatisticsType);
+    cJSON_AddNumberToObject(hdi, "statictics_value", ptShmHDIDef->lStatisticsValue);
+    cJSON_AddStringToObject(hdi, "statictics_method", ptShmHDIDef->caStatisticsMethod);
+    return hdi;
 }

@@ -1,1 +1,1 @@
-SUBDIRS = antifraud playweibo
+SUBDIRS = antifraud playweibo 

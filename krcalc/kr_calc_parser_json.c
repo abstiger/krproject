@@ -29,96 +29,82 @@ T_KRCalcTree *kr_calc_parse_ele(T_KRCalc *krcalc, int kind, cJSON *json)
     switch(kind) 
     {
         case KR_CALCKIND_INT:
-            tree = kr_calctree_node_new(kind);
+            tree = kr_calc_tree_new(kind);
             tree->type = KR_TYPE_INT;
-            tree->attr.val.i = kr_calcjson_getint(json);
+            tree->value.i = kr_calcjson_getint(json);
             tree->ind = KR_VALUE_SETED;
             break;
         case KR_CALCKIND_FLOAT:
-            tree = kr_calctree_node_new(kind);
+            tree = kr_calc_tree_new(kind);
             tree->type = KR_TYPE_DOUBLE;
-            tree->attr.val.d = kr_calcjson_getdouble(json);
+            tree->value.d = kr_calcjson_getdouble(json);
             tree->ind = KR_VALUE_SETED;
             break;
         case KR_CALCKIND_STRING:
-            tree = kr_calctree_node_new(kind);
+            tree = kr_calc_tree_new(kind);
             tree->type = KR_TYPE_STRING;
-            tree->attr.val.s = kr_strdup(kr_calcjson_getstring(json));
+            tree->value.s = kr_strdup(kr_calcjson_getstring(json));
             tree->ind = KR_VALUE_SETED;
             break;
         case KR_CALCKIND_CID:
-            krcalc->cid_cnt++;
-            tree = kr_calctree_node_new(kind);
+            tree = kr_calc_tree_new(kind);
             tree->id = kr_calcjson_getint(json);
             tree->ind = KR_VALUE_UNSET;
             break;
         case KR_CALCKIND_FID:
-            krcalc->fid_cnt++;
-            tree = kr_calctree_node_new(kind);
+            tree = kr_calc_tree_new(kind);
             tree->id = kr_calcjson_getint(json);
             tree->ind = KR_VALUE_UNSET;
             break;
         case KR_CALCKIND_SID:
-            krcalc->sid_cnt++;
-            tree = kr_calctree_node_new(kind);
+            tree = kr_calc_tree_new(kind);
             tree->id = kr_calcjson_getint(json);
             tree->ind = KR_VALUE_UNSET;
             break;
         case KR_CALCKIND_DID:
-            krcalc->did_cnt++;
-            tree = kr_calctree_node_new(kind);
+            tree = kr_calc_tree_new(kind);
             tree->id = kr_calcjson_getint(json);
             tree->ind = KR_VALUE_UNSET;
             break;
         case KR_CALCKIND_HID:
-            krcalc->hid_cnt++;
-            tree = kr_calctree_node_new(kind);
+            tree = kr_calc_tree_new(kind);
             tree->id = kr_calcjson_getint(json);
             tree->ind = KR_VALUE_UNSET;
             break;
         case KR_CALCKIND_SET:
-            krcalc->set_cnt++;
-            tree = kr_calctree_node_new(kind);
+            tree = kr_calc_tree_new(kind);
             tree->id = kr_calcjson_getint(json);
-            tree->type = 
-                krcalc->get_type_cb(kind, tree->id, krcalc->data);
-            tree->attr.set = 
-                krcalc->get_value_cb(kind, tree->id, krcalc->data);
-            tree->ind = KR_VALUE_SETED;
+            tree->ind = KR_VALUE_UNSET;
             break;
         case KR_CALCKIND_MINT:
-            krcalc->multi_cnt++;
-            tree = kr_calctree_node_new(kind);
-            tree->type = KR_TYPE_INT;
-            tree->attr.set = 
-                kr_make_hashset_from_multi(kind, kr_calcjson_getstring(json));
+            tree = kr_calc_tree_new(kind);
+            tree->type = KR_TYPE_POINTER;
+            tree->value.p = \
+                kr_hashset_make(KR_TYPE_INT, kr_calcjson_getstring(json));
             tree->ind = KR_VALUE_SETED;
             break;
         case KR_CALCKIND_MFLOAT:
-            krcalc->multi_cnt++;
-            tree = kr_calctree_node_new(kind);
-            tree->type = KR_TYPE_DOUBLE;
-            tree->attr.set = 
-                kr_make_hashset_from_multi(kind, kr_calcjson_getstring(json));
+            tree = kr_calc_tree_new(kind);
+            tree->type = KR_TYPE_POINTER;
+            tree->value.p = \
+                kr_hashset_make(KR_TYPE_DOUBLE, kr_calcjson_getstring(json));
             tree->ind = KR_VALUE_SETED;
             break;
         case KR_CALCKIND_MSTRING:
-            krcalc->multi_cnt++;
-            tree = kr_calctree_node_new(kind);
-            tree->type = KR_TYPE_STRING;
-            tree->attr.set = 
-                kr_make_hashset_from_multi(kind, kr_calcjson_getstring(json));
+            tree = kr_calc_tree_new(kind);
+            tree->type = KR_TYPE_POINTER;
+            tree->value.p = \
+                kr_hashset_make(KR_TYPE_STRING, kr_calcjson_getstring(json));
             tree->ind = KR_VALUE_SETED;
             break;
         case KR_CALCKIND_REGEX:
-            krcalc->regex_cnt++;
-            tree = kr_calctree_node_new(kind);
-            tree->type = KR_TYPE_STRING;
-            tree->attr.regex = kr_regex_compile(kr_calcjson_getstring(json));
+            tree = kr_calc_tree_new(kind);
+            tree->type = KR_TYPE_POINTER;
+            tree->value.p = kr_regex_compile(kr_calcjson_getstring(json));
             tree->ind = KR_VALUE_SETED;
             break;
         default:
-            sprintf(krcalc->err_msg, "unknown kind [%d]!\n", kind);
+            sprintf(krcalc->calc_errmsg, "unknown kind [%d]!\n", kind);
             return NULL;
             break;
     }
@@ -131,7 +117,6 @@ T_KRCalcTree *kr_calc_parse_exp(T_KRCalc *krcalc, int op, cJSON *json)
 {
     assert(json);
     T_KRCalcTree *tree = NULL;
-    int childnum=2; /*unary=1, binary=2(default), ternary=3*/
     /* get operation code */
     switch(op)
     {
@@ -140,44 +125,57 @@ T_KRCalcTree *kr_calc_parse_exp(T_KRCalc *krcalc, int op, cJSON *json)
         case KR_CALCOP_MUT:
         case KR_CALCOP_DIV:
         case KR_CALCOP_MOD:
-            tree = kr_calctree_node_new(KR_CALCKIND_ARITH);
+        {
+            tree = kr_calc_tree_new(KR_CALCKIND_ARITH);
             tree->op = op;
             tree->type = KR_TYPE_DOUBLE;
             tree->ind = KR_VALUE_UNSET;
             break;
-        case KR_CALCOP_NOT:
-            childnum = 1;
+        }
         case KR_CALCOP_LT:
         case KR_CALCOP_LE:
         case KR_CALCOP_GT:
         case KR_CALCOP_GE:
         case KR_CALCOP_EQ:
         case KR_CALCOP_NEQ:
-        case KR_CALCOP_AND:
-        case KR_CALCOP_OR:
         case KR_CALCOP_BL:
         case KR_CALCOP_NBL:
         case KR_CALCOP_MATCH:
-            tree = kr_calctree_node_new(KR_CALCKIND_LOGIC);
+        {
+            tree = kr_calc_tree_new(KR_CALCKIND_LOGIC);
             tree->op = op;
             tree->type = KR_TYPE_BOOL;
             tree->ind = KR_VALUE_UNSET;
             break;
-        default:
-            sprintf(krcalc->err_msg, "unknown op [%d]!\n", op);
-            return NULL;
+        }
+        case KR_CALCOP_NOT:
+        case KR_CALCOP_AND:
+        case KR_CALCOP_OR:
+        {
+            tree = kr_calc_tree_new(KR_CALCKIND_REL);
+            tree->op = op;
+            tree->type = KR_TYPE_BOOL;
+            tree->ind = KR_VALUE_UNSET;
             break;
-    }
-
-    int i = 0;
-    cJSON *children = cJSON_GetObjectItem(json, "child");
-    for (i=0; i<childnum; ++i) {
-        cJSON *child = cJSON_GetArrayItem(children, i);
-        tree->child[i] = _kr_calc_parse_json(krcalc, child);
-        if (tree->child[i] == NULL) {
-            sprintf(krcalc->err_msg, "_kr_calc_parse_json child%d failed!\n", i);
+        }
+        default:
+        {
+            krcalc->calc_status = -1;
+            sprintf(krcalc->calc_errmsg, "unknown op [%d]!\n", op);
             return NULL;
         }
+    }
+
+    cJSON *children = cJSON_GetObjectItem(json, "child");
+    for (int i=0; i<cJSON_GetArraySize(children); ++i) {
+        cJSON *child = cJSON_GetArrayItem(children, i);
+        T_KRCalcTree *node = _kr_calc_parse_json(krcalc, child);
+        if (node == NULL) {
+            krcalc->calc_status = -1;
+            sprintf(krcalc->calc_errmsg, "_kr_calc_parse_json child%d failed!", i);
+            return NULL;
+        }
+        kr_calc_tree_append(tree, node);
     }
 
     return tree;
@@ -212,13 +210,15 @@ int kr_calc_parse_json(T_KRCalc *krcalc)
 {
     cJSON *krjson = cJSON_Parse(krcalc->calc_string);
     if (krjson == NULL) {
-        sprintf(krcalc->err_msg, "cJSON_Parse %s failed", krcalc->calc_string);
+        krcalc->calc_status = -1;
+        sprintf(krcalc->calc_errmsg, "cJSON_Parse %s failed", krcalc->calc_string);
         return -1;
     }
 
     krcalc->calc_tree = _kr_calc_parse_json(krcalc, krjson);
     if (krcalc->calc_tree == NULL) {
-        sprintf(krcalc->err_msg, "_kr_calc_parse_json failed");
+        krcalc->calc_status = -1;
+        sprintf(krcalc->calc_errmsg, "_kr_calc_parse_json failed");
         cJSON_Delete(krjson);
         return -1;
     }
@@ -226,3 +226,5 @@ int kr_calc_parse_json(T_KRCalc *krcalc)
     cJSON_Delete(krjson);
     return 0;
 }
+
+

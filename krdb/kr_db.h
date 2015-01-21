@@ -16,4 +16,9 @@ extern void kr_db_dump_record(T_KRRecord *ptRecord, FILE *fp);
 extern void kr_db_dump_field_def(T_KRDB *ptKRDB, int iTableId, FILE *fp);
 extern int kr_db_set_field_def(T_DbsEnv *dbsenv, T_KRFieldDef *ptFieldDef, int iTableId, int iFieldId);
 
+extern cJSON *kr_db_info(T_KRDB *krdb);
+extern cJSON *kr_db_table_info(T_KRTable *krtable);
+extern cJSON *kr_db_index_info(T_KRIndex *krindex);
+extern cJSON *kr_db_record_info(T_KRRecord *krrecord);
+
 #endif /* __KR_DB_H__ */

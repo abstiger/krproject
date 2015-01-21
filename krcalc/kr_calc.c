@@ -1,22 +1,26 @@
 #include "kr_calc.h"
 #include "kr_calc_tree.h"
+#include "kr_calc_parser.h"
+#include "kr_calc_dumper.h"
 
-extern int kr_calc_parse(T_KRCalc *krcalc);
 
-T_KRCalc *kr_calc_construct(E_KRCalcFormat format, char *calcstr)
+T_KRCalc *kr_calc_construct(E_KRCalcFormat format, char *calcstr, 
+        KRGetTypeFunc get_type_func, KRGetValueFunc get_value_func)
 {
-    T_KRCalc *krcalc = (T_KRCalc *)kr_calloc(sizeof(T_KRCalc));
+    T_KRCalc *krcalc = (T_KRCalc *)kr_calloc(sizeof(*krcalc));
     krcalc->calc_format = format;
     krcalc->calc_string = kr_strdup(calcstr);
     
-    krcalc->get_type_cb = kr_data_get_type;
-    krcalc->get_value_cb = kr_data_get_value;
+    krcalc->get_type_cb = get_type_func;
+    krcalc->get_value_cb = get_value_func;
     
+    /*parse it*/
     if (kr_calc_parse(krcalc) != 0) {
-        fprintf(stderr, "kr_calc_parse failed[%s]!\n", krcalc->err_msg);
+        KR_LOG(KR_LOGERROR, "kr_calc_parse failed [%s]!", 
+                krcalc->calc_errmsg);
+        kr_free(krcalc);
         return NULL;
     }
-    kr_calc_dump(krcalc, stdout);
     
     return krcalc;
 }
@@ -25,15 +29,16 @@ void kr_calc_destruct(T_KRCalc *krcalc)
 {
     if (krcalc != NULL) {
         kr_free(krcalc->calc_string);
-        kr_calctree_free(krcalc->calc_tree);
+        kr_calc_tree_free(krcalc->calc_tree);
         kr_free(krcalc); krcalc = NULL;
     }
 }
 
 int kr_calc_check(T_KRCalc *krcalc)
 {
-    if (kr_calctree_check(krcalc->calc_tree, krcalc->err_msg) != 0) {
-        fprintf(stderr, "kr_calctree_check failed [%s]!\n", krcalc->err_msg);
+    if (kr_calc_tree_check(krcalc->calc_tree, krcalc) != 0) {
+        KR_LOG(KR_LOGERROR, "kr_calc_tree_check failed [%s]!", 
+                krcalc->calc_errmsg);
         return -1;
     }
     return 0;
@@ -42,33 +47,40 @@ int kr_calc_check(T_KRCalc *krcalc)
 /* evaluate the calc with current record as parameter */
 int kr_calc_eval(T_KRCalc *krcalc, void *param)
 {
-    T_KRCalcTree *t=krcalc->calc_tree;
-    krcalc->data = param;
-    if (kr_calctree_eval(t, krcalc) != 0) {
-        fprintf(stderr, "kr_calctree_eval %s failed\n", krcalc->calc_string);
+    krcalc->calc_param = param;
+
+    if (kr_calc_tree_eval(krcalc->calc_tree, krcalc) != 0) {
+        KR_LOG(KR_LOGERROR, "kr_calc_tree_eval %s failed", 
+                krcalc->calc_string);
         return -1;
     }
-    
-    krcalc->result_ind = t->ind;
-    krcalc->result_type = t->type;
-    memcpy(&krcalc->result_value, &t->attr.val, sizeof(U_KRValue));
     
     return 0;
 }
 
 
-/* print the calc to the printer */
-void kr_calc_dump(T_KRCalc *krcalc, FILE *fp)
+int kr_calc_status(T_KRCalc *krcalc)
 {
-    fprintf(fp, "Dumping Calc:[%c][%s]:\n    ", \
-            krcalc->calc_format, krcalc->calc_string);
-    fprintf(fp, "cid_cnt:[%d],", krcalc->cid_cnt);
-    fprintf(fp, "fid_cnt:[%d],", krcalc->fid_cnt);
-    fprintf(fp, "sid_cnt:[%d],", krcalc->sid_cnt);
-    fprintf(fp, "did_cnt:[%d],", krcalc->did_cnt);
-    fprintf(fp, "hid_cnt:[%d],", krcalc->hid_cnt);
-    fprintf(fp, "set_cnt:[%d],", krcalc->set_cnt);
-    fprintf(fp, "multi_cnt:[%d],", krcalc->multi_cnt);
-    fprintf(fp, "regex_cnt:[%d]\n", krcalc->regex_cnt);
-    kr_calctree_dump(krcalc->calc_tree, fp);
+    return krcalc->calc_status;
 }
+
+char *kr_calc_errmsg(T_KRCalc *krcalc)
+{
+    return krcalc->calc_errmsg;
+}
+
+E_KRType kr_calc_type(T_KRCalc *krcalc)
+{
+    return krcalc->calc_tree->type;
+}
+
+E_KRValueInd kr_calc_ind(T_KRCalc *krcalc)
+{
+    return krcalc->calc_tree->ind;
+}
+
+U_KRValue *kr_calc_value(T_KRCalc *krcalc)
+{
+    return &krcalc->calc_tree->value;
+}
+

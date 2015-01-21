@@ -4,14 +4,12 @@
 #include <errno.h>
 #include <sys/stat.h>
 
-T_KRServer krserver = {0};
+T_KRServer *krserver = NULL;
 
-extern void kr_server_tcp_accept_handler(T_KREventLoop *el, int fd, void *privdata, int mask);
-extern void kr_server_message_read_handler(T_KREventLoop *el, int fd, void *privdata, int mask);
+extern int kr_server_register_default(T_KRServer *krserver);
 
-extern int kr_server_config_parse(char *configfile, T_KRServer *server);
-extern void kr_server_config_dump(T_KRServer *server, FILE *fp);
-extern void kr_server_config_free(T_KRServer *server);
+static int kr_server_startup(void);
+static void kr_server_shutdown(void);
 
 
 static void kr_server_usage(void)
@@ -26,18 +24,17 @@ static int kr_server_argument_parse(int argc, char *argv[])
     
     while ((opt = getopt(argc, argv, "c:h")) != -1)
     {
-         switch(opt)
-         {
-             case 'c':
-                 krserver.configfile = kr_strdup(optarg);
-                 break;
-             case 'h':
-                 kr_server_usage();
-                 break;
-             default:
-                 fprintf(stderr, "Unrecognized option: -%c.", optopt);
-                 kr_server_usage();
-                 return -1;
+         switch(opt) {
+         case 'c':
+             krserver->config_file = kr_strdup(optarg);
+             break;
+         case 'h':
+             kr_server_usage();
+             break;
+         default:
+             fprintf(stderr, "Unrecognized option: -%c.", optopt);
+             kr_server_usage();
+             return -1;
          }
     }
     
@@ -65,65 +62,61 @@ static void kr_server_daemonize(void)
 
 static void kr_server_sigterm_action(int sig) 
 {
-    KR_LOG(KR_LOGWARNING, "Received SIGTERM[%d], scheduling shutdown...", sig);
-    krserver.shutdown = 1;
+    KR_LOG(KR_LOGWARNING, "Received Signal[%d], scheduling shutdown...", sig);
+    fprintf(stderr, "Received Signal[%d], scheduling shutdown...\n", sig);
+    kr_server_shutdown();
 }
 
 
-void kr_server_sigterm_setup(void) 
+static int kr_server_signal_setup(void) 
 {
-    struct sigaction act;
+    signal(SIGHUP, SIG_IGN);
+    signal(SIGPIPE, SIG_IGN);
 
+    struct sigaction act;
     sigemptyset(&act.sa_mask);
     act.sa_flags = 0;
     act.sa_handler = kr_server_sigterm_action;
+    sigaction(SIGINT, &act, NULL);
     sigaction(SIGTERM, &act, NULL);
+    sigaction(SIGQUIT, &act, NULL);
+
+    return 0;
 }
 
 
-int kr_server_cron(T_KREventLoop *el, long long id, void *data)
+static void kr_server_remove_pidfile(char *pidfile) 
 {
-    /*
-    KR_LOG(KR_LOGDEBUG, "memory info: used:[%d], rss:[%d], radio:[%f]!\n", \
-        kr_malloc_used_memory(), kr_malloc_get_rss(), \
-        kr_malloc_get_fragmentation_ratio());
-    */    
-    if (krserver.shutdown == 1) {
-        KR_LOG(KR_LOGWARNING, "Shutdown krserver...");
-        krserver.shutdown = 0;
-        kr_server_finalize();
-    }
-    return 500;
+    unlink(pidfile);
 }
 
 
-static int kr_server_try_connect_to_cluster(void)
+static void kr_server_create_pidfile(char *pidfile) 
 {
-    if (krserver.coordport != 0) {
-        krserver.cofd = kr_net_tcp_connect(krserver.neterr, \
-            krserver.coordip, krserver.coordport);
-        if (krserver.cofd == KR_NET_ERR) {
-            KR_LOG(KR_LOGERROR, "kr_net_tcp_connect[%s][%d] failed[%s]",
-                krserver.coordip, krserver.coordport, krserver.neterr);
-            return -1;
-        }
+    /* Try to write the pid file in a best-effort way. */
+    FILE *fp = fopen(pidfile, "w");
+    if (fp) {
+        fprintf(fp,"%d\n",(int)getpid());
+        fclose(fp);
     }
+}
+
+
+static void kr_server_callback(T_KRMessage *apply, \
+        T_KRMessage *reply, T_KRChannel *channel)
+{
     
-    if (krserver.cofd < 0) {
-        KR_LOG(KR_LOGERROR, "Can't connect to coordinator in cluster!");
-        return -1;
-    }
-    
-    /* write svron message to the cluster */
-    if (kr_server_handle_svron() != 0) {
-        KR_LOG(KR_LOGERROR, "kr_server_handle_svron cluster!");
-        return -1;
-    }
-    
-    /* Register read file event */
-    if (kr_event_file_create(krserver.krel, krserver.cofd, KR_EVENT_READABLE, \
-        kr_server_message_read_handler, NULL) == KR_NET_ERR) {
-        KR_LOG(KR_LOGERROR, "kr_event_file_create failed[%s]", krserver.neterr);
+    kr_channel_send(channel, reply); 
+
+}
+
+static int kr_server_feed(T_KRChannel *channel, \
+        T_KRMessage *apply, T_KRMessage *reply, T_KREngine *krengine)
+{
+    /* feed message to krengine */
+    if (kr_engine_run(krengine, apply, reply, \
+                (KRCBFunc )kr_server_callback, channel) != 0) {
+        fprintf(stderr, "call kr_engine_run failed!\n");
         return -1;
     }
     
@@ -131,151 +124,115 @@ static int kr_server_try_connect_to_cluster(void)
 }
 
 
-int kr_server_connect_to_cluster(void)
+static int kr_server_startup(void)
 {
-    int i = 0;
-    
-    for (i = 0; i < krserver.retrytimes ; ++i) {
-        /* try to connect to the cluster*/
-        if (kr_server_try_connect_to_cluster() == 0) {
-            return 0;
-        }
-        
-        /* sleep a while then go next try*/
-        sleep(krserver.retryinterval);
+    /* Parse configure file */
+    krserver->config = kr_server_config_parse(krserver->config_file);
+    if (krserver->config == NULL) {
+        fprintf(stderr, "kr_server_config_parse [%s] failed!\n", \
+                krserver->config_file);
+        return -1;
     }
-    
-    return -1;
-}
 
-
-int kr_server_initialize(void)
-{
-    int ret = 0;
-    
     /* signal handling */
-    signal(SIGHUP, SIG_IGN);
-    signal(SIGPIPE, SIG_IGN);
-    kr_server_sigterm_setup();
+    if (kr_server_signal_setup() != 0) {
+        fprintf(stderr, "kr_server_signal_handle failed!\n");
+        return -1;
+    }
     
     /* Daemonize */
-    if (krserver.daemonize) {
+    if (krserver->config->daemonize) {
         kr_server_daemonize();
     }
-    
-    /* Create event loop */
-    krserver.krel = kr_event_loop_create(krserver.maxevents);
 
-    /* Register server cron time event */
-    kr_event_time_create(krserver.krel, 1, kr_server_cron, NULL, NULL);
-    
+    /* Create Pidfile */
+    if (krserver->config->pidfile) {
+        kr_server_create_pidfile(krserver->config->pidfile); 
+    }
+
     /* Start up krengine */
-    krserver.krengine = kr_engine_startup(
-            krserver.dbname, krserver.dbuser, krserver.dbpass,
-            krserver.logpath, krserver.serverid, krserver.loglevel,
-            krserver.krdbmodule, krserver.datamodule, krserver.rulemodule,
-            krserver.hdicachesize, krserver.threadcnt, krserver.hwm,
-            krserver.krel);
-    if (krserver.krengine == NULL) {
+    krserver->krengine = kr_engine_startup(krserver->config->engine, krserver);
+    if (krserver->krengine == NULL) {
         KR_LOG(KR_LOGERROR, "kr_engine_startup failed!\n");
         return -1;
     }
-        
-    /* Becoming a server */
-    if (krserver.tcpport != 0) {
-        krserver.ipfd = kr_net_tcp_server(krserver.neterr, \
-            krserver.tcpport, krserver.tcpbindaddr);
-        if (krserver.ipfd == KR_NET_ERR) {
-            KR_LOG(KR_LOGERROR, "kr_net_tcp_server[%d] failed[%s]",
-                krserver.tcpport, krserver.neterr);
-            return -1;
-        }
-    }
-    if (krserver.ipfd < 0) {
-        KR_LOG(KR_LOGERROR, "tcpport [%d] uncorrect!", krserver.tcpport);
+
+    /* Register server default handles */
+    if (kr_server_register_default(krserver) != 0) {
+        KR_LOG(KR_LOGERROR, "kr_server_register_default failed!\n");
         return -1;
     }
     
-    /* Register tcp accept file event */
-    ret = kr_event_file_create(krserver.krel, krserver.ipfd, 
-            KR_EVENT_READABLE,  kr_server_tcp_accept_handler, NULL);
-    if (ret == KR_NET_ERR) {
-        KR_LOG(KR_LOGERROR, "kr_event_file_create tcp error");
-        return -1;
-    }
-    
-    /* Serve as part of cluster */
-    if (krserver.clustermode != 0) {
-        if (kr_server_connect_to_cluster() != 0) {
-            KR_LOG(KR_LOGERROR, "kr_server_connect_to_cluster failed");
+    /* Open channels */
+    for (int i=0; i<krserver->config->channel_count; ++i) {
+        T_KRChannelConfig *channel_config = krserver->config->channels[i];
+        T_KRChannel *channel = krserver->krchannels[i];
+
+        channel = kr_channel_open(channel_config, \
+                (KRChannelFeedFunc )kr_server_feed, krserver->krengine);
+        if (channel == NULL) {
+            KR_LOG(KR_LOGERROR, "kr_channel_open %s failed!", \
+                    channel_config->name);
             return -1;
-        }
+        }    
+        krserver->channel_count++; 
     }
     
     return 0;
 }
 
 
-int kr_server_finalize()
+static void kr_server_shutdown(void)
 {
-    /* event loop stop */
-    kr_event_loop_stop(krserver.krel);
-
-    /* kr_db_dump */
-    /*
-    FILE *fpKRDBDump = NULL;
-    char caDateTime[14+1] = {0};
-    char caKRDBDumpFileName[1024]= {0};
-    snprintf(caKRDBDumpFileName, sizeof(caKRDBDumpFileName), \
-             "KRDB.%s.Dump", kr_time_system(caDateTime));
-    if ((fpKRDBDump = fopen(caKRDBDumpFileName, "w")) != NULL) {
-        kr_db_dump(krserver.krdb, 0, fpKRDBDump);
-        fclose(fpKRDBDump);
+    /* Close channels */
+    for (int i=0; i<krserver->channel_count; ++i) {
+        kr_channel_close(krserver->krchannels[i]);
     }
-    */
     
     /* Shutdown krengine */
-    kr_engine_shutdown(krserver.krengine);
+    kr_engine_shutdown(krserver->krengine);
+
 
     /* Server config free */
-    kr_server_config_dump(&krserver, stdout);
-    kr_server_config_free(&krserver);
-    
-    return 0;
+    if (krserver->config) {
+        /* remove pidfile */
+        if (krserver->config->pidfile) {
+            kr_server_remove_pidfile(krserver->config->pidfile);
+        }
+        kr_server_config_free(krserver->config);
+    }
+
+    /* free config file */
+    if (krserver->config_file) {
+        kr_free(krserver->config_file);
+    }
+
+    /* free server */
+    kr_free(krserver);
 }
 
 
 int main(int argc, char *argv[])
 {
-    int ret = 0;
+    /* calloc krserver */
+    krserver = kr_calloc(sizeof(*krserver));
     
     /* Parse arguments to get the configure file name */
-    ret = kr_server_argument_parse(argc, argv);
-    if (ret != 0) {
+    if (kr_server_argument_parse(argc, argv) != 0) {
         fprintf(stderr, "kr_server_argument_parse failed!\n");
-        exit(1);
+        goto exit;
     }
     
-    /* Parse configure file to the global structure */
-    ret = kr_server_config_parse(krserver.configfile, &krserver);
-    if (ret != 0) {
-        fprintf(stderr, "kr_server_parse_configfile [%s] failed!\n", \
-                krserver.configfile);
-        exit(1);
+    
+    /* startup krserver */
+    if (kr_server_startup() != 0) {
+        fprintf(stderr, "kr_server_startup failed!\n");
+        goto exit;
     }
-    
-    /* initialize krserver */
-    ret = kr_server_initialize();
-    if (ret != 0) {
-        fprintf(stderr, "kr_server_initialize failed!\n");
-        exit(1);
-    }
-    
-    /* Run the main event loop */
-    kr_event_loop_run(krserver.krel);
-    
-    /* event loop delete */
-    kr_event_loop_delete(krserver.krel);
 
     exit(0);
+
+exit:
+    kr_server_shutdown();
+    exit(1);
 }

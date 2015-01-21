@@ -38,11 +38,11 @@ int kr_sdi_aggr_func(T_KRSDI *krsdi, T_KRContext *krcontext)
         if (iResult != 0) {
             KR_LOG(KR_LOGERROR, "kr_calc_eval [%ld] failed!", krsdi->lSDIId);
             return -1;
-        } else if (krsdi->ptSDICalc->result_type != KR_TYPE_BOOL) {
+        } else if (kr_calc_type(krsdi->ptSDICalc) != KR_TYPE_BOOL) {
             KR_LOG(KR_LOGERROR, "result_type of sdi_calc must be boolean!");
             return -1;
-        } else if (krsdi->ptSDICalc->result_ind != KR_VALUE_SETED ||
-                   !krsdi->ptSDICalc->result_value.b) {
+        } else if (kr_calc_ind(krsdi->ptSDICalc) != KR_VALUE_SETED ||
+                   !kr_calc_value(krsdi->ptSDICalc)->b) {
             node = node->prev;
             continue;
         }

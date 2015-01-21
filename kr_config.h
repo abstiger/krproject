@@ -13,14 +13,32 @@
 /* Define to 1 if you have the <endian.h> header file. */
 #define HAVE_ENDIAN_H 1
 
+/* Define to 1 if you have the <history.h> header file. */
+/* #undef HAVE_HISTORY_H */
+
 /* Define to 1 if you have the <inttypes.h> header file. */
 #define HAVE_INTTYPES_H 1
+
+/* Define if you have a readline compatible library */
+#define HAVE_LIBREADLINE 1
 
 /* Define to 1 if you have the <memory.h> header file. */
 #define HAVE_MEMORY_H 1
 
 /* If available, contains the Python version number currently in use. */
 /* #undef HAVE_PYTHON */
+
+/* Define to 1 if you have the <readline.h> header file. */
+/* #undef HAVE_READLINE_H */
+
+/* Define if your readline library has \`add_history' */
+#define HAVE_READLINE_HISTORY 1
+
+/* Define to 1 if you have the <readline/history.h> header file. */
+#define HAVE_READLINE_HISTORY_H 1
+
+/* Define to 1 if you have the <readline/readline.h> header file. */
+#define HAVE_READLINE_READLINE_H 1
 
 /* Define to 1 if you have the <stdint.h> header file. */
 #define HAVE_STDINT_H 1

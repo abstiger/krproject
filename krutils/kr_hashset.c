@@ -2,7 +2,7 @@
 #include "kr_hashset.h"
 
 /*create a new set*/
-T_KRHashSet *kr_hashset_create(char *name, char key_type)
+T_KRHashSet *kr_hashset_create(char *name, E_KRType key_type)
 {
     T_KRHashSet *krset = (T_KRHashSet *)kr_calloc(sizeof(T_KRHashSet));
     krset->name = (char *)kr_strdup(name);
@@ -13,6 +13,44 @@ T_KRHashSet *kr_hashset_create(char *name, char key_type)
     
     return krset;
 }
+
+/*make a new hashset from multi_string*/
+T_KRHashSet *kr_hashset_make(E_KRType key_type, char *multi_string)
+{
+    T_KRHashSet *krhashset = kr_hashset_create(multi_string, key_type);
+    if (krhashset == NULL) {
+        return NULL;
+    }
+    char *str = kr_strdup(multi_string);
+    char *save_str = NULL;
+    char *p = strtok_r(str, ",", &save_str);
+    U_KRValue val;
+    while(p)
+    {
+        switch(krhashset->type) 
+        {
+            case KR_TYPE_INT:
+                val.i=atoi(p);
+                kr_hashset_add(krhashset, &val.i);
+                break;
+            case KR_TYPE_DOUBLE:
+                val.d=atof(p);
+                kr_hashset_add(krhashset, &val.d);
+                break;
+            case KR_TYPE_STRING:
+                p = p+1;
+                p[strlen(p)-1] = '\0';
+                val.s=p;
+                kr_hashset_add(krhashset, val.s);
+                break;
+        }
+        p=strtok_r(NULL, ",", &save_str);
+    }
+    kr_free(str);
+
+    return krhashset;
+}
+
 
 /* search an element in a krset
  * return TURE while found, FALSE for else
@@ -54,4 +92,15 @@ void kr_hashset_destroy(T_KRHashSet *krset)
         kr_free(krset->name);
         kr_free(krset); krset=NULL;
     }
+}
+
+static void _dump_set(void *key, void *value, FILE *fp)
+{
+    fprintf(fp, "   ele:[%s]\n", (char *)key);
+}
+
+void kr_hashset_dump(T_KRHashSet *krset, FILE *fp)
+{
+    fprintf(fp, "dump set:[%s][%c]\n", krset->name, krset->type);
+    kr_hashtable_foreach(krset->set, (KRHFunc )_dump_set, fp);
 }

@@ -6,7 +6,7 @@
 #include "krutils/kr_conhash.h"
 #include "krutils/kr_json.h"
 #include "krutils/kr_event.h"
-#include "krutils/kr_message.h"
+#include "kr_message.h"
 
 typedef enum {
     KR_COORDI_SERVER = 'S',
@@ -34,15 +34,17 @@ typedef struct _kr_coordi_t
     /* General */
     char *configfile;             /* krcoordi's configure file */
     char *coordiid;               /* coordi identifier */
-    int daemonize;                /* True if running as a daemon */
-    int loglevel;                 /* log level of this coordi */
-    char *logpath;                /* Path of log file */
-    int shutdown;                 /* Shutdown flag */
+    int  daemonize;                /* True if running as a daemon */
+    char *pidfile;                /* pid file */
+    char *logpath;                /* path of log file */
+    char *logname;                /* name of log file */
+    int  loglevel;                 /* log level of this coordi */
     int  maxevents;               /* the max event number supported */
+    char *tcpbindaddr;            /* Bind address or NULL */
+    int  tcpport;                  /* TCP listening port */
 
     /* Networking */
-    int tcpport;                  /* TCP listening port */
-    char *tcpbindaddr;            /* Bind address or NULL */
+    int shutdown;                 /* Shutdown flag */
     int ipfd;                     /* TCP socket file descriptor */
     char neterr[KR_NET_ERR_LEN];  /* Error buffer for kr_net.c */
         

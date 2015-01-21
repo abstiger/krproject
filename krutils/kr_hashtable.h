@@ -9,7 +9,6 @@ typedef struct _kr_hashtable_t  T_KRHashTable;
 
 typedef void (*KRHFunc)(void *key, void *value, void *data);
 typedef kr_bool  (*KRHRFunc)(void *key, void *value, void *user_data);
-typedef void (*KRDestroyNotify)(void *data);
 
 /* Hash table operating functions */
 T_KRHashTable* kr_hashtable_new (KRHashFunc hash_func, KREqualFunc key_equal_func);

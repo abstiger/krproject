@@ -14,7 +14,6 @@ extern void kr_coordi_config_reset(T_KRCoordi *coordi);
 
 static int kr_coordi_finalize();
 
-
 static void kr_coordi_usage(void)
 {
     fprintf(stderr, "Usage: ./krcoordi -c[your configure file] [-h]\n");
@@ -122,7 +121,7 @@ int kr_coordi_initialize(void)
     
     /* Set log file and level */
     kr_log_set_path(krcoordi.logpath);
-    kr_log_set_name(krcoordi.coordiid);
+    kr_log_set_name(krcoordi.logname);
     kr_log_set_level(krcoordi.loglevel);
     
     /* Construct consistent hash */

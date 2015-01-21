@@ -22,6 +22,14 @@ typedef struct _kr_log_t {
 
 T_KRLog gstKRLog = {".", "trace", KR_LOGWARNING};
 
+cJSON *kr_log_dump_json(void)
+{
+    cJSON *log = cJSON_CreateObject(); 
+    cJSON_AddStringToObject(log, "path", gstKRLog.logpath);
+    cJSON_AddStringToObject(log, "name", gstKRLog.logname);
+    cJSON_AddNumberToObject(log, "level", gstKRLog.loglevel);
+    return log;
+}
 
 void kr_log_set_path(char *path) 
 {

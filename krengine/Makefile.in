@@ -40,6 +40,7 @@ DIST_COMMON = $(include_HEADERS) $(srcdir)/Makefile.am \
 	$(srcdir)/Makefile.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/ax_jni_include_dir.m4 \
+	$(top_srcdir)/m4/ax_lib_readline.m4 \
 	$(top_srcdir)/m4/ax_pkg_swig.m4 \
 	$(top_srcdir)/m4/ax_prog_jar.m4 \
 	$(top_srcdir)/m4/ax_prog_javac.m4 \
@@ -91,9 +92,9 @@ libkrengine_la_DEPENDENCIES = $(top_srcdir)/krutils/libkrutils.la \
 	$(top_srcdir)/krparam/libkrparam.la \
 	$(top_srcdir)/krdb/libkrdb.la \
 	$(top_srcdir)/krdata/libkrdata.la
-am_libkrengine_la_OBJECTS = libkrengine_la-kr_engine.lo \
-	libkrengine_la-kr_rule.lo libkrengine_la-kr_rule_func.lo \
-	libkrengine_la-kr_group.lo libkrengine_la-kr_group_func.lo
+am_libkrengine_la_OBJECTS = libkrengine_la-kr_message.lo \
+	libkrengine_la-kr_engine.lo libkrengine_la-kr_engine_detect.lo \
+	libkrengine_la-kr_engine_handle.lo
 libkrengine_la_OBJECTS = $(am_libkrengine_la_OBJECTS)
 libkrengine_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
@@ -259,12 +260,12 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 lib_LTLIBRARIES = libkrengine.la
 include_HEADERS = kr_engine.h
-libkrengine_la_SOURCES = kr_engine.h    \
-						   kr_engine.c    \
-						   kr_rule.c      \
-						   kr_rule_func.c \
-						   kr_group.c     \
-						   kr_group_func.c 
+libkrengine_la_SOURCES = kr_message.h       \
+                           kr_message.c       \
+						   kr_engine.h        \
+						   kr_engine.c        \
+						   kr_engine_detect.c \
+						   kr_engine_handle.c 
 
 libkrengine_la_LIBADD = $(top_srcdir)/krutils/libkrutils.la \
 	$(top_srcdir)/dbs/libdbsbas.la \
@@ -350,10 +351,9 @@ distclean-compile:
 	-rm -f *.tab.c
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkrengine_la-kr_engine.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkrengine_la-kr_group.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkrengine_la-kr_group_func.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkrengine_la-kr_rule.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkrengine_la-kr_rule_func.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkrengine_la-kr_engine_detect.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkrengine_la-kr_engine_handle.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkrengine_la-kr_message.Plo@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
@@ -376,6 +376,13 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LTCOMPILE) -c -o $@ $<
 
+libkrengine_la-kr_message.lo: kr_message.c
+@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libkrengine_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libkrengine_la-kr_message.lo -MD -MP -MF $(DEPDIR)/libkrengine_la-kr_message.Tpo -c -o libkrengine_la-kr_message.lo `test -f 'kr_message.c' || echo '$(srcdir)/'`kr_message.c
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/libkrengine_la-kr_message.Tpo $(DEPDIR)/libkrengine_la-kr_message.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='kr_message.c' object='libkrengine_la-kr_message.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libkrengine_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libkrengine_la-kr_message.lo `test -f 'kr_message.c' || echo '$(srcdir)/'`kr_message.c
+
 libkrengine_la-kr_engine.lo: kr_engine.c
 @am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libkrengine_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libkrengine_la-kr_engine.lo -MD -MP -MF $(DEPDIR)/libkrengine_la-kr_engine.Tpo -c -o libkrengine_la-kr_engine.lo `test -f 'kr_engine.c' || echo '$(srcdir)/'`kr_engine.c
 @am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/libkrengine_la-kr_engine.Tpo $(DEPDIR)/libkrengine_la-kr_engine.Plo
@@ -383,33 +390,19 @@ libkrengine_la-kr_engine.lo: kr_engine.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libkrengine_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libkrengine_la-kr_engine.lo `test -f 'kr_engine.c' || echo '$(srcdir)/'`kr_engine.c
 
-libkrengine_la-kr_rule.lo: kr_rule.c
-@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libkrengine_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libkrengine_la-kr_rule.lo -MD -MP -MF $(DEPDIR)/libkrengine_la-kr_rule.Tpo -c -o libkrengine_la-kr_rule.lo `test -f 'kr_rule.c' || echo '$(srcdir)/'`kr_rule.c
-@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/libkrengine_la-kr_rule.Tpo $(DEPDIR)/libkrengine_la-kr_rule.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='kr_rule.c' object='libkrengine_la-kr_rule.lo' libtool=yes @AMDEPBACKSLASH@
+libkrengine_la-kr_engine_detect.lo: kr_engine_detect.c
+@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libkrengine_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libkrengine_la-kr_engine_detect.lo -MD -MP -MF $(DEPDIR)/libkrengine_la-kr_engine_detect.Tpo -c -o libkrengine_la-kr_engine_detect.lo `test -f 'kr_engine_detect.c' || echo '$(srcdir)/'`kr_engine_detect.c
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/libkrengine_la-kr_engine_detect.Tpo $(DEPDIR)/libkrengine_la-kr_engine_detect.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='kr_engine_detect.c' object='libkrengine_la-kr_engine_detect.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libkrengine_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libkrengine_la-kr_rule.lo `test -f 'kr_rule.c' || echo '$(srcdir)/'`kr_rule.c
+@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libkrengine_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libkrengine_la-kr_engine_detect.lo `test -f 'kr_engine_detect.c' || echo '$(srcdir)/'`kr_engine_detect.c
 
-libkrengine_la-kr_rule_func.lo: kr_rule_func.c
-@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libkrengine_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libkrengine_la-kr_rule_func.lo -MD -MP -MF $(DEPDIR)/libkrengine_la-kr_rule_func.Tpo -c -o libkrengine_la-kr_rule_func.lo `test -f 'kr_rule_func.c' || echo '$(srcdir)/'`kr_rule_func.c
-@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/libkrengine_la-kr_rule_func.Tpo $(DEPDIR)/libkrengine_la-kr_rule_func.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='kr_rule_func.c' object='libkrengine_la-kr_rule_func.lo' libtool=yes @AMDEPBACKSLASH@
+libkrengine_la-kr_engine_handle.lo: kr_engine_handle.c
+@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libkrengine_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libkrengine_la-kr_engine_handle.lo -MD -MP -MF $(DEPDIR)/libkrengine_la-kr_engine_handle.Tpo -c -o libkrengine_la-kr_engine_handle.lo `test -f 'kr_engine_handle.c' || echo '$(srcdir)/'`kr_engine_handle.c
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/libkrengine_la-kr_engine_handle.Tpo $(DEPDIR)/libkrengine_la-kr_engine_handle.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='kr_engine_handle.c' object='libkrengine_la-kr_engine_handle.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libkrengine_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libkrengine_la-kr_rule_func.lo `test -f 'kr_rule_func.c' || echo '$(srcdir)/'`kr_rule_func.c
-
-libkrengine_la-kr_group.lo: kr_group.c
-@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libkrengine_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libkrengine_la-kr_group.lo -MD -MP -MF $(DEPDIR)/libkrengine_la-kr_group.Tpo -c -o libkrengine_la-kr_group.lo `test -f 'kr_group.c' || echo '$(srcdir)/'`kr_group.c
-@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/libkrengine_la-kr_group.Tpo $(DEPDIR)/libkrengine_la-kr_group.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='kr_group.c' object='libkrengine_la-kr_group.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libkrengine_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libkrengine_la-kr_group.lo `test -f 'kr_group.c' || echo '$(srcdir)/'`kr_group.c
-
-libkrengine_la-kr_group_func.lo: kr_group_func.c
-@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libkrengine_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libkrengine_la-kr_group_func.lo -MD -MP -MF $(DEPDIR)/libkrengine_la-kr_group_func.Tpo -c -o libkrengine_la-kr_group_func.lo `test -f 'kr_group_func.c' || echo '$(srcdir)/'`kr_group_func.c
-@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/libkrengine_la-kr_group_func.Tpo $(DEPDIR)/libkrengine_la-kr_group_func.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='kr_group_func.c' object='libkrengine_la-kr_group_func.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libkrengine_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libkrengine_la-kr_group_func.lo `test -f 'kr_group_func.c' || echo '$(srcdir)/'`kr_group_func.c
+@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libkrengine_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libkrengine_la-kr_engine_handle.lo `test -f 'kr_engine_handle.c' || echo '$(srcdir)/'`kr_engine_handle.c
 
 mostlyclean-libtool:
 	-rm -f *.lo

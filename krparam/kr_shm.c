@@ -53,32 +53,32 @@ short kr_shm_load(T_DbsEnv *dbsenv, T_KRShareMem *ptShmBuf)
     nBackSecId = (ptShmBuf->nSecId+1)%N_MAX_SEC;
             
     memset(&ptShmBuf->stShmSet[nBackSecId], 0, sizeof(T_KRShmSet));
-    if (LoadShmSet(dbsenv, &ptShmBuf->stShmSet[nBackSecId]) != 0) {
-        KR_LOG(KR_LOGERROR, "LoadShmSet failed!");
+    if (kr_shm_set_load(dbsenv, &ptShmBuf->stShmSet[nBackSecId]) != 0) {
+        KR_LOG(KR_LOGERROR, "kr_shm_set_load failed!");
         return -1;
     }
 
     memset(&ptShmBuf->stShmSDI[nBackSecId], 0, sizeof(T_KRShmSDI));
-    if (LoadShmSDI(dbsenv, &ptShmBuf->stShmSDI[nBackSecId]) != 0) {
-        KR_LOG(KR_LOGERROR, "LoadShmSDI failed!");
+    if (kr_shm_sdi_load(dbsenv, &ptShmBuf->stShmSDI[nBackSecId]) != 0) {
+        KR_LOG(KR_LOGERROR, "kr_shm_sdi_load failed!");
         return -1;
     }
     
     memset(&ptShmBuf->stShmDDI[nBackSecId], 0, sizeof(T_KRShmDDI));
-    if (LoadShmDDI(dbsenv, &ptShmBuf->stShmDDI[nBackSecId]) != 0) {
-        KR_LOG(KR_LOGERROR, "LoadShmDDI failed!");
+    if (kr_shm_ddi_load(dbsenv, &ptShmBuf->stShmDDI[nBackSecId]) != 0) {
+        KR_LOG(KR_LOGERROR, "kr_shm_ddi_load failed!");
         return -1;
     }
 
     memset(&ptShmBuf->stShmHDI[nBackSecId], 0, sizeof(T_KRShmHDI));
-    if (LoadShmHDI(dbsenv, &ptShmBuf->stShmHDI[nBackSecId]) != 0) {
-        KR_LOG(KR_LOGERROR, "LoadShmHDI failed!");
+    if (kr_shm_hdi_load(dbsenv, &ptShmBuf->stShmHDI[nBackSecId]) != 0) {
+        KR_LOG(KR_LOGERROR, "kr_shm_hdi_load failed!");
         return -1;
     }
     
     memset(&ptShmBuf->stShmGroup[nBackSecId], 0, sizeof(T_KRShmGroup));
-    if (LoadShmGroup(dbsenv, &ptShmBuf->stShmGroup[nBackSecId]) != 0) {
-        KR_LOG(KR_LOGERROR, "LoadShmGroup failed!");
+    if (kr_shm_group_load(dbsenv, &ptShmBuf->stShmGroup[nBackSecId]) != 0) {
+        KR_LOG(KR_LOGERROR, "kr_shm_group_load failed!");
         return -1;
     }
 
@@ -99,18 +99,40 @@ void kr_shm_dump(T_KRShareMem *ptShmBuf, FILE *fp)
             sizeof(*ptShmBuf), nCurrSecId, nBackSecId);
     
     fprintf(fp, "\n******Dump Active******\n");
-    DumpShmSet(&ptShmBuf->stShmSet[nCurrSecId], fp);
-    DumpShmSDI(&ptShmBuf->stShmSDI[nCurrSecId], fp);
-    DumpShmDDI(&ptShmBuf->stShmDDI[nCurrSecId], fp);
-    DumpShmHDI(&ptShmBuf->stShmHDI[nCurrSecId], fp);
-    DumpShmGroup(&ptShmBuf->stShmGroup[nCurrSecId], fp);
+    kr_shm_set_dump(&ptShmBuf->stShmSet[nCurrSecId], fp);
+    kr_shm_sdi_dump(&ptShmBuf->stShmSDI[nCurrSecId], fp);
+    kr_shm_ddi_dump(&ptShmBuf->stShmDDI[nCurrSecId], fp);
+    kr_shm_hdi_dump(&ptShmBuf->stShmHDI[nCurrSecId], fp);
+    kr_shm_group_dump(&ptShmBuf->stShmGroup[nCurrSecId], fp);
 
     fprintf(fp, "\n****Dump Standby******\n");
-    DumpShmSet(&ptShmBuf->stShmSet[nCurrSecId], fp);
-    DumpShmSDI(&ptShmBuf->stShmSDI[nBackSecId], fp);
-    DumpShmDDI(&ptShmBuf->stShmDDI[nBackSecId], fp);
-    DumpShmHDI(&ptShmBuf->stShmHDI[nBackSecId], fp);
-    DumpShmGroup(&ptShmBuf->stShmGroup[nBackSecId], fp);
+    kr_shm_set_dump(&ptShmBuf->stShmSet[nCurrSecId], fp);
+    kr_shm_sdi_dump(&ptShmBuf->stShmSDI[nBackSecId], fp);
+    kr_shm_ddi_dump(&ptShmBuf->stShmDDI[nBackSecId], fp);
+    kr_shm_hdi_dump(&ptShmBuf->stShmHDI[nBackSecId], fp);
+    kr_shm_group_dump(&ptShmBuf->stShmGroup[nBackSecId], fp);
     
     fflush(fp);
+}
+
+
+cJSON *kr_shm_info(T_KRShareMem *ptShm)
+{
+    cJSON *shm = cJSON_CreateObject();
+
+    short nCurrSecId = ptShm->nSecId;
+    cJSON_AddNumberToObject(shm, "current_secid", nCurrSecId);
+
+    cJSON_AddNumberToObject(shm, "set_load_time", 
+            (long )ptShm->stShmSet[nCurrSecId].tLastLoadTime);
+    cJSON_AddNumberToObject(shm, "sdi_load_time", 
+            (long )ptShm->stShmSDI[nCurrSecId].tLastLoadTime);
+    cJSON_AddNumberToObject(shm, "ddi_load_time", 
+            (long )ptShm->stShmDDI[nCurrSecId].tLastLoadTime);
+    cJSON_AddNumberToObject(shm, "hdi_load_time", 
+            (long )ptShm->stShmHDI[nCurrSecId].tLastLoadTime);
+    cJSON_AddNumberToObject(shm, "group_load_time", 
+            (long )ptShm->stShmGroup[nCurrSecId].tLastLoadTime);
+
+    return shm;
 }

@@ -29,7 +29,8 @@ typedef struct _kr_shm_rule_t
 }T_KRShmRule;
 
 
-extern int LoadShmRule(T_DbsEnv *dbsenv, T_KRShmRule *ptShmRule, long lGroupId);
-extern int DumpShmRule(T_KRShmRule *ptShmRule, FILE *fp);
+int kr_shm_rule_load(T_DbsEnv *dbsenv, T_KRShmRule *ptShmRule, long lGroupId);
+int kr_shm_rule_dump(T_KRShmRule *ptShmRule, FILE *fp);
+cJSON *kr_shm_rule_info(T_KRShmRuleDef *ptShmRuleDef);
 
 #endif  /*__KR_SHM_RULE_H__*/

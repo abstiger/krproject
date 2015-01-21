@@ -1,6 +1,4 @@
-#include "krutils/kr_utils.h"
 #include "kr_db_kernel.h"
-#include "kr_db_mmap.h"
 
 #define KR_MEMALIGN(size)   (((size) + 0xf) & ~(size_t) 0xf)
 
@@ -107,8 +105,8 @@ T_KRIndex* kr_create_index(T_KRDB *krdb, T_KRTable *krtable, int index_id,
         
         /* db-index build will be a little bit complicated...
          * Check whether db-index with same index_id exists?
-         * exists: link hashtable to the exist one, add to table-index list;
-         * not: create an new hashtable, add to table-index and db-index list;
+         * if exists: link hashtable to the exist one, add to table-index list;
+         * if not: create an new hashtable, add to table/db-index list;
          */
         case KR_INDEXTYPE_DB:
         {
@@ -213,9 +211,6 @@ int kr_insert_record(T_KRRecord *krrecord, T_KRTable *krtable)
     }
     krtable->uiRecordLoc = (++krtable->uiRecordLoc) % krtable->lSizeKeepValue;
     
-    /*third:mmap file need sync*/
-    if (krtable->caMMapFile[0] != '\0')  kr_db_mmap_sync(krtable);
-    
     return 0;
 }
 
@@ -230,22 +225,18 @@ void kr_delete_record(T_KRRecord *krrecord, T_KRTable *krtable)
     if (--krtable->uiRecordNum < 0) {
         krtable->uiRecordNum = 0;
     }
-    
-    /*third:mmap file need sync*/
-    if (krtable->caMMapFile[0] != '\0') kr_db_mmap_sync(krtable);
 }
 
 
 static void 
 kr_assign_field_value(T_KRTable *krtable, T_KRRecord *krrecord, void *msg)
 {
-    int fldno = 0, fldlen = 0;
-    void *data = msg, *fldval = NULL;
+    void *data = msg;
+    int fldlen = 0; void *fldval = NULL;
 
     if (krtable->pMapFuncPre) data=krtable->pMapFuncPre(msg);
-    for (fldno=0; fldno<krtable->iFieldCnt; fldno++)
-    {
-        fldlen = krtable->ptFieldDef[fldno].length;
+    for (int fldno=0; fldno<krtable->iFieldCnt; fldno++) {
+        fldlen = kr_get_field_length(krrecord, fldno);
         fldval = kr_get_field_value(krrecord, fldno);
         krtable->pMapFunc(fldval, fldno, fldlen, data);
     }
@@ -275,34 +266,23 @@ T_KRRecord* kr_create_record_from_data(T_KRTable *krtable, void *data)
     return ptRecord;
 }
 
-T_KRRecord* kr_create_record_from_mmap(T_KRTable *krtable, void *mmaprec)
-{
-    unsigned int offset = 0;
-    char *recaddr = NULL;
-    recaddr = &krtable->pRecordBuff[krtable->uiRecordLoc*krtable->iRecordSize];
-    
-    T_KRRecord *ptRecord = (T_KRRecord *)recaddr;
-    if (ptRecord->ptTable != NULL) {
-        kr_delete_record(ptRecord, ptRecord->ptTable);
-        kr_destroy_record(ptRecord);
-    }
-    memcpy(ptRecord, mmaprec, krtable->iRecordSize);
-    
-    offset += sizeof(T_KRRecord);
-    ptRecord->ptTable  = krtable;
-    ptRecord->pRecBuf = &recaddr[offset];
-
-    return ptRecord;
-}
 
 void kr_destroy_record(T_KRRecord *krrecord)
 {
     /*we do nothing with this function currently*/
 }
 
+void kr_lock_table(T_KRTable *krtable)
+{
+    pthread_mutex_lock(&krtable->tLock);
+}
 
-T_KRTable* kr_create_table(T_KRDB *krdb, int table_id, 
-                char *table_name, char *mmap_file, 
+void kr_unlock_table(T_KRTable *krtable)
+{
+    pthread_mutex_unlock(&krtable->tLock);
+}
+
+T_KRTable* kr_create_table(T_KRDB *krdb, int table_id, char *table_name, 
                 E_KRSizeKeepMode keep_mode, long keep_value, int field_cnt, 
                 KRLoadDefFunc load_field_def_func, 
                 KRMapFuncPre map_func_pre,
@@ -315,9 +295,9 @@ T_KRTable* kr_create_table(T_KRDB *krdb, int table_id,
         fprintf(stderr, "kr_calloc ptTable failed!\n");
         return NULL;
     }
+    pthread_mutex_init(&ptTable->tLock, NULL);
     ptTable->iTableId = table_id;
     strncpy(ptTable->caTableName, table_name, sizeof(ptTable->caTableName));
-    strncpy(ptTable->caMMapFile, mmap_file, sizeof(ptTable->caMMapFile));
     ptTable->eSizeKeepMode = keep_mode;
     ptTable->lSizeKeepValue = keep_value;
     ptTable->iFieldCnt = field_cnt;
@@ -328,10 +308,13 @@ T_KRTable* kr_create_table(T_KRDB *krdb, int table_id,
     }
     load_field_def_func(param, ptTable->ptFieldDef, &ptTable->iTableId);
     
+    /*compute record size*/
     ptTable->iRecordSize = sizeof(T_KRRecord);
-    int i = 0;
-    for (i = 0; i<ptTable->iFieldCnt; i++) {
+    for (int i = 0; i<ptTable->iFieldCnt; i++) {
         ptTable->iRecordSize += ptTable->ptFieldDef[i].length;
+        if (ptTable->ptFieldDef[i].type == KR_TYPE_STRING) {
+            ptTable->iRecordSize += 1;
+        }
     }
     ptTable->iRecordSize = KR_MEMALIGN(ptTable->iRecordSize);
 
@@ -341,18 +324,11 @@ T_KRTable* kr_create_table(T_KRDB *krdb, int table_id,
     ptTable->uiRecordNum = 0;
     ptTable->uiRecordLoc = 0;
 
-    if (ptTable->caMMapFile[0] == '\0') {
-        ptTable->pRecordBuff = \
-            (char *)kr_calloc(ptTable->iRecordSize * ptTable->lSizeKeepValue);
-        if (ptTable->pRecordBuff == NULL) {
-            fprintf(stderr, "kr_calloc ptTable->pRecordBuff failed!\n");
-            return NULL;
-        }
-    } else {
-        if (kr_db_mmap_table(ptTable) != 0) {
-            fprintf(stderr, "kr_create_mmap_file failed!\n");
-            return NULL;
-        }
+    ptTable->pRecordBuff = \
+        (char *)kr_calloc(ptTable->iRecordSize * ptTable->lSizeKeepValue);
+    if (ptTable->pRecordBuff == NULL) {
+        fprintf(stderr, "kr_calloc ptTable->pRecordBuff failed!\n");
+        return NULL;
     }
     ptTable->pIndexList = kr_list_new();
     kr_list_set_match(ptTable->pIndexList, (KRCompareFunc )kr_indexid_match);
@@ -364,11 +340,8 @@ T_KRTable* kr_create_table(T_KRDB *krdb, int table_id,
 
 void kr_drop_table(T_KRTable *krtable, T_KRDB *krdb)
 {
-    if (krtable->caMMapFile[0] == '\0') {
-        kr_free(krtable->pRecordBuff);
-    } else {
-        kr_db_unmmap_table(krtable);
-    }
+    pthread_mutex_destroy(&krtable->tLock);
+    kr_free(krtable->pRecordBuff);
 
     kr_list_remove(krdb->pTableList, krtable);
     kr_list_foreach(krtable->pIndexList, \

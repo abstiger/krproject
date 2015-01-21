@@ -11,14 +11,16 @@ libkrutils_la_SOURCES   = \
 						  kr_string.c \
 						  kr_log.h \
 						  kr_log.c \
-						  kr_cfgparser.h \
-						  kr_cfgparser.c \
 						  kr_list.h \
 						  kr_list.c \
+						  kr_ntree.h \
+						  kr_ntree.c \
 						  kr_hashtable.h \
 						  kr_hashtable.c \
 						  kr_hashset.h \
 						  kr_hashset.c \
+						  kr_functable.h \
+						  kr_functable.c \
 						  kr_regex.h \
 						  kr_regex.c \
 						  kr_json.h \
@@ -39,8 +41,6 @@ libkrutils_la_SOURCES   = \
 						  kr_event.c \
 						  kr_cache.h \
 						  kr_cache.c \
-						  kr_message.h \
-						  kr_message.c \
 						  kr_utils.h
 
 EXTRA_DIST = \

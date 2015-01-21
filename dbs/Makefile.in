@@ -40,6 +40,7 @@ subdir = dbs
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/ax_jni_include_dir.m4 \
+	$(top_srcdir)/m4/ax_lib_readline.m4 \
 	$(top_srcdir)/m4/ax_pkg_swig.m4 \
 	$(top_srcdir)/m4/ax_prog_jar.m4 \
 	$(top_srcdir)/m4/ax_prog_javac.m4 \
@@ -294,11 +295,6 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 SUBDIRS = . dbs
-rapodbc_SOURCES = rapodbc.c
-rapodbc_CPPFLAGS = 
-rapodbc_LDFLAGS = -lodbc 
-#rapodbc_CPPFLAGS       = @ODBC_INCLUDE@
-#rapodbc_LDFLAGS        = -lodbc @ODBC_LDFLAGS@ @ODBC_LIBS@
 lib_LTLIBRARIES = libdbsbas.la 
 libdbsbas_la_SOURCES = dbs_basopr.h \
                          dbs_basopr.c  
@@ -306,6 +302,9 @@ libdbsbas_la_SOURCES = dbs_basopr.h \
 libdbsbas_la_CPPFLAGS = 
 libdbsbas_la_LDFLAGS = -lodbc 
 libdbsbas_la_LIBADD = 
+rapodbc_SOURCES = rapodbc.c
+rapodbc_CPPFLAGS = 
+rapodbc_LDFLAGS = -lodbc 
 all: all-recursive
 
 .SUFFIXES:
@@ -764,6 +763,8 @@ uninstall-am: uninstall-libLTLIBRARIES
 	pdf pdf-am ps ps-am tags tags-recursive uninstall uninstall-am \
 	uninstall-libLTLIBRARIES
 
+#rapodbc_CPPFLAGS       = @ODBC_INCLUDE@
+#rapodbc_LDFLAGS        = -lodbc @ODBC_LDFLAGS@ @ODBC_LIBS@
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

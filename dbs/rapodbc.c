@@ -760,7 +760,7 @@ int GenCurImplementation(FILE *fp)
     fprintf(fp, "int dbs%s(T_DbsEnv *dbsenv, int iFuncCode, T_%s *pt%s)\n", gszRegulatedName, gszRegulatedName, gszRegulatedName);
     fprintf(fp, "{\n");
     fprintf(fp, "    SQLRETURN rc = SQL_SUCCESS;\n");
-    fprintf(fp, "    SQLLEN hLen = 0;\n");
+    fprintf(fp, "    SQLLEN iLen = 0, iNTS = SQL_NTS;\n");
     fprintf(fp, "    switch (iFuncCode)\n");
     fprintf(fp, "    {\n");
     /* open cursor */
@@ -769,30 +769,52 @@ int GenCurImplementation(FILE *fp)
     ConstructHostSql(fp);
     fprintf(fp, "          rc = SQLAllocHandle(SQL_HANDLE_STMT, dbsenv->hdbc, &pt%s->hstmt);\n", gszRegulatedName);
     fprintf(fp, "          if (rc != SQL_SUCCESS) {\n");
+    fprintf(fp, "              dbsGetError(dbsenv, pt%s->hstmt);\n", gszRegulatedName);
     fprintf(fp, "              return rc;\n");
     fprintf(fp, "          }\n");
     fprintf(fp, "          rc = SQLPrepare(pt%s->hstmt, (SQLCHAR *)hca%sSql, SQL_NTS);\n", gszRegulatedName, gszRegulatedName);
     fprintf(fp, "          if (rc != SQL_SUCCESS) {\n");
+    fprintf(fp, "              dbsGetError(dbsenv, pt%s->hstmt);\n", gszRegulatedName);
     fprintf(fp, "              return rc;\n");
     fprintf(fp, "          }\n");
     int i;
     for (i=0; i<giInputColumns; i++) {
-        fprintf(fp, "          rc = SQLBindParameter(pt%s->hstmt, %d, SQL_PARAM_INPUT, %s, %s, %d, %d, %spt%s->%s%s, %d, &hLen);\n", \
-                gszRegulatedName, i+1, gtColumns[i].caSqlType, gtColumns[i].caSqlType, gtColumns[i].iLength, gtColumns[i].iScale,  gtColumns[i].iType == KR_SQL_TYPE_CHAR?"":"&", \
-                gszRegulatedName, gtColumns[i].caPrefix, gtColumns[i].caFieldName, gtColumns[i].iType == KR_SQL_TYPE_CHAR?gtColumns[i].iLength+1:0);
+        fprintf(fp, "          rc = SQLBindParameter(pt%s->hstmt, %d, SQL_PARAM_INPUT, %s, %s, %d, %d, %spt%s->%s%s, %d, &%s);\n", \
+                gszRegulatedName, 
+                i+1, 
+                gtColumns[i].caSqlType, 
+                gtColumns[i].caSqlType, 
+                gtColumns[i].iLength, 
+                gtColumns[i].iScale,  
+                gtColumns[i].iType == KR_SQL_TYPE_CHAR?"":"&", \
+                gszRegulatedName, 
+                gtColumns[i].caPrefix, 
+                gtColumns[i].caFieldName, 
+                gtColumns[i].iType == KR_SQL_TYPE_CHAR?gtColumns[i].iLength+1:0,
+                gtColumns[i].iType == KR_SQL_TYPE_CHAR?"iNTS":"iLen");
         fprintf(fp, "          if (rc != SQL_SUCCESS) {\n");
+        fprintf(fp, "              dbsGetError(dbsenv, pt%s->hstmt);\n", gszRegulatedName);
         fprintf(fp, "              return rc;\n");
         fprintf(fp, "          }\n");
     }
     fprintf(fp, "          rc = SQLExecute(pt%s->hstmt);\n", gszRegulatedName);
     fprintf(fp, "          if (rc != SQL_SUCCESS) {\n");
+    fprintf(fp, "              dbsGetError(dbsenv, pt%s->hstmt);\n", gszRegulatedName);
     fprintf(fp, "              return rc;\n");
     fprintf(fp, "          }\n");
     for (i=giInputColumns; i<giInputColumns + giOutputColumns; i++) {
-        fprintf(fp, "          rc = SQLBindCol(pt%s->hstmt, %d, %s, %spt%s->%s%s, %d, &hLen);\n", \
-                gszRegulatedName, i-giInputColumns+1, gtColumns[i].caSqlType, gtColumns[i].iType == KR_SQL_TYPE_CHAR?"":"&",\
-                gszRegulatedName, gtColumns[i].caPrefix, gtColumns[i].caFieldName, gtColumns[i].iType == KR_SQL_TYPE_CHAR?gtColumns[i].iLength+1:0);
+        fprintf(fp, "          rc = SQLBindCol(pt%s->hstmt, %d, %s, %spt%s->%s%s, %d, &%s);\n", \
+                gszRegulatedName, 
+                i-giInputColumns+1, 
+                gtColumns[i].caSqlType, 
+                gtColumns[i].iType == KR_SQL_TYPE_CHAR?"":"&",
+                gszRegulatedName, 
+                gtColumns[i].caPrefix, 
+                gtColumns[i].caFieldName, 
+                gtColumns[i].iType == KR_SQL_TYPE_CHAR?gtColumns[i].iLength+1:0,
+                gtColumns[i].iType == KR_SQL_TYPE_CHAR?"iNTS":"iLen");
         fprintf(fp, "          if (rc != SQL_SUCCESS) {\n");
+        fprintf(fp, "              dbsGetError(dbsenv, pt%s->hstmt);\n", gszRegulatedName);
         fprintf(fp, "              return rc;\n");
         fprintf(fp, "          }\n");
     }
@@ -803,7 +825,8 @@ int GenCurImplementation(FILE *fp)
     fprintf(fp, "      case KR_DBCURFETCH:\n");
     //fprintf(fp, "          memset(pt%s, 0x00, sizeof(T_%s));\n", gszRegulatedName, gszRegulatedName);
     fprintf(fp, "          rc = SQLFetch(pt%s->hstmt);\n", gszRegulatedName);
-    fprintf(fp, "          if (rc != SQL_SUCCESS) {\n");
+    fprintf(fp, "          if (rc != SQL_SUCCESS && rc != SQL_NO_DATA) {\n");
+    fprintf(fp, "              dbsGetError(dbsenv, pt%s->hstmt);\n", gszRegulatedName);
     fprintf(fp, "              return rc;\n");
     fprintf(fp, "          }\n");
     fprintf(fp, "          return rc;\n\n");
@@ -811,9 +834,6 @@ int GenCurImplementation(FILE *fp)
     /* close cursor */
     fprintf(fp, "      case KR_DBCURCLOSE:\n");
     fprintf(fp, "          rc = SQLFreeHandle(SQL_HANDLE_STMT, pt%s->hstmt);\n", gszRegulatedName);
-    fprintf(fp, "          if (rc != SQL_SUCCESS) {\n");
-    fprintf(fp, "              return rc;\n");
-    fprintf(fp, "          }\n");
     fprintf(fp, "          return rc;\n\n");
 
     /*default*/
@@ -839,29 +859,49 @@ int GenUpdImplementation(FILE *fp)
     fprintf(fp, "int dbs%s(T_DbsEnv *dbsenv, T_%s *pt%s)\n", gszRegulatedName, gszRegulatedName, gszRegulatedName);
     fprintf(fp, "{\n");
     fprintf(fp, "    SQLRETURN  rc = SQL_SUCCESS;\n");
-    fprintf(fp, "    SQLLEN     hLen = 0;\n");
+    fprintf(fp, "    SQLLEN iLen = 0, iNTS = SQL_NTS;\n");
     ConstructHostSql(fp);
-    fprintf(fp, "          rc = SQLAllocHandle(SQL_HANDLE_STMT, dbsenv->hdbc, &pt%s->hstmt);\n", gszRegulatedName);
-    fprintf(fp, "          if (rc != SQL_SUCCESS) {\n");
-    fprintf(fp, "              return rc;\n");
-    fprintf(fp, "          }\n");
-    fprintf(fp, "          rc = SQLPrepare(pt%s->hstmt, (SQLCHAR *)hca%sSql, SQL_NTS);\n", gszRegulatedName, gszRegulatedName);
-    fprintf(fp, "          if (rc != SQL_SUCCESS) {\n");
-    fprintf(fp, "              return rc;\n");
-    fprintf(fp, "          }\n");
+    fprintf(fp, "    rc = SQLAllocHandle(SQL_HANDLE_STMT, dbsenv->hdbc, &pt%s->hstmt);\n", gszRegulatedName);
+    fprintf(fp, "    if (rc != SQL_SUCCESS) {\n");
+    fprintf(fp, "        dbsGetError(dbsenv, pt%s->hstmt);\n", gszRegulatedName);
+    fprintf(fp, "        SQLFreeHandle(SQL_HANDLE_STMT, pt%s->hstmt);\n", gszRegulatedName);
+    fprintf(fp, "        return rc;\n");
+    fprintf(fp, "    }\n");
+    fprintf(fp, "    rc = SQLPrepare(pt%s->hstmt, (SQLCHAR *)hca%sSql, SQL_NTS);\n", gszRegulatedName, gszRegulatedName);
+    fprintf(fp, "    if (rc != SQL_SUCCESS) {\n");
+    fprintf(fp, "        dbsGetError(dbsenv, pt%s->hstmt);\n", gszRegulatedName);
+    fprintf(fp, "        SQLFreeHandle(SQL_HANDLE_STMT, pt%s->hstmt);\n", gszRegulatedName);
+    fprintf(fp, "        return rc;\n");
+    fprintf(fp, "    }\n");
     int i;
     for (i=0; i<giInputColumns; i++) {
-        fprintf(fp, "          rc = SQLBindParameter(pt%s->hstmt, %d, SQL_PARAM_INPUT, %s, %s, %d, %d, %spt%s->%s%s, %d, &hLen);\n", \
-                gszRegulatedName, i+1, gtColumns[i].caSqlType, gtColumns[i].caSqlType, gtColumns[i].iLength, gtColumns[i].iScale, gtColumns[i].iType == KR_SQL_TYPE_CHAR?"":"&",\
-                gszRegulatedName, gtColumns[i].caPrefix, gtColumns[i].caFieldName, gtColumns[i].iLength);
-        fprintf(fp, "          if (rc != SQL_SUCCESS) {\n");
-        fprintf(fp, "              return rc;\n");
-        fprintf(fp, "          }\n");
+        fprintf(fp, "    rc = SQLBindParameter(pt%s->hstmt, %d, SQL_PARAM_INPUT, %s, %s, %d, %d, %spt%s->%s%s, %d, &%s);\n", \
+                gszRegulatedName, 
+                i+1, 
+                gtColumns[i].caSqlType, 
+                gtColumns[i].caSqlType, 
+                gtColumns[i].iLength, 
+                gtColumns[i].iScale,
+                gtColumns[i].iType == KR_SQL_TYPE_CHAR?"":"&",
+                gszRegulatedName, 
+                gtColumns[i].caPrefix, 
+                gtColumns[i].caFieldName, 
+                gtColumns[i].iLength, 
+                gtColumns[i].iType == KR_SQL_TYPE_CHAR?"iNTS":"iLen");
+        fprintf(fp, "    if (rc != SQL_SUCCESS) {\n");
+        fprintf(fp, "        dbsGetError(dbsenv, pt%s->hstmt);\n", gszRegulatedName);
+        fprintf(fp, "        SQLFreeHandle(SQL_HANDLE_STMT, pt%s->hstmt);\n", gszRegulatedName);
+        fprintf(fp, "        return rc;\n");
+        fprintf(fp, "    }\n");
     }
-    fprintf(fp, "          rc = SQLExecute(pt%s->hstmt);\n", gszRegulatedName);
-    fprintf(fp, "          if (rc != SQL_SUCCESS) {\n");
-    fprintf(fp, "              return rc;\n");
-    fprintf(fp, "          }\n");
+    fprintf(fp, "    rc = SQLExecute(pt%s->hstmt);\n", gszRegulatedName);
+    fprintf(fp, "    if (rc != SQL_SUCCESS) {\n");
+    fprintf(fp, "        dbsGetError(dbsenv, pt%s->hstmt);\n", gszRegulatedName);
+    fprintf(fp, "        SQLFreeHandle(SQL_HANDLE_STMT, pt%s->hstmt);\n", gszRegulatedName);
+    fprintf(fp, "        return rc;\n");
+    fprintf(fp, "    }\n");
+
+    fprintf(fp, "    SQLFreeHandle(SQL_HANDLE_STMT, pt%s->hstmt);\n", gszRegulatedName);
     fprintf(fp, "    return rc;\n");
     fprintf(fp, "}\n\n\n");
     return 0;
@@ -887,57 +927,82 @@ int GenSelImplementation(FILE *fp)
     fprintf(fp, "int dbs%s(T_DbsEnv *dbsenv, int iFuncCode, T_%s *pt%s)\n", gszRegulatedName, gszRegulatedName, gszRegulatedName);
     fprintf(fp, "{\n");
     fprintf(fp, "    SQLRETURN rc = SQL_SUCCESS;\n");
-    fprintf(fp, "    SQLLEN hLen = 0;\n");
+    fprintf(fp, "    SQLLEN iLen = 0, iNTS = SQL_NTS;\n");
     fprintf(fp, "    switch (iFuncCode)\n");
     fprintf(fp, "    {\n");
     /* select */
     fprintf(fp, "      case KR_DBSELECT:\n");
     fprintf(fp, "      {\n");
     ConstructHostSql(fp);
-    fprintf(fp, "          rc = SQLAllocHandle(SQL_HANDLE_STMT, dbsenv->hdbc, &pt%s->hstmt);\n", gszRegulatedName);
-    fprintf(fp, "          if (rc != SQL_SUCCESS) {\n");
-    fprintf(fp, "              return rc;\n");
-    fprintf(fp, "          }\n");
-    fprintf(fp, "          rc = SQLPrepare(pt%s->hstmt, (SQLCHAR *)hca%sSql, SQL_NTS);\n", gszRegulatedName, gszRegulatedName);
-    fprintf(fp, "          if (rc != SQL_SUCCESS) {\n");
-    fprintf(fp, "              return rc;\n");
-    fprintf(fp, "          }\n");
+    fprintf(fp, "           rc = SQLAllocHandle(SQL_HANDLE_STMT, dbsenv->hdbc, &pt%s->hstmt);\n", gszRegulatedName);
+    fprintf(fp, "           if (rc != SQL_SUCCESS) {\n");
+    fprintf(fp, "               dbsGetError(dbsenv, pt%s->hstmt);\n", gszRegulatedName);
+    fprintf(fp, "               SQLFreeHandle(SQL_HANDLE_STMT, pt%s->hstmt);\n", gszRegulatedName);
+    fprintf(fp, "               return rc;\n");
+    fprintf(fp, "           }\n");
+    fprintf(fp, "           rc = SQLPrepare(pt%s->hstmt, (SQLCHAR *)hca%sSql, SQL_NTS);\n", gszRegulatedName, gszRegulatedName);
+    fprintf(fp, "           if (rc != SQL_SUCCESS) {\n");
+    fprintf(fp, "               dbsGetError(dbsenv, pt%s->hstmt);\n", gszRegulatedName);
+    fprintf(fp, "               SQLFreeHandle(SQL_HANDLE_STMT, pt%s->hstmt);\n", gszRegulatedName);
+    fprintf(fp, "               return rc;\n");
+    fprintf(fp, "           }\n");
     int i;
     for (i=0; i<giInputColumns; i++) {
-        fprintf(fp, "          rc = SQLBindParameter(pt%s->hstmt, %d, SQL_PARAM_INPUT, %s, %s, %d, %d, %spt%s->%s%s, %d, &hLen);\n", \
-                gszRegulatedName, i+1, gtColumns[i].caSqlType, gtColumns[i].caSqlType, gtColumns[i].iLength, gtColumns[i].iScale, gtColumns[i].iType == KR_SQL_TYPE_CHAR?"":"&", \
-                gszRegulatedName, gtColumns[i].caPrefix, gtColumns[i].caFieldName, gtColumns[i].iType == KR_SQL_TYPE_CHAR?gtColumns[i].iLength+1:0);
-        fprintf(fp, "          if (rc != SQL_SUCCESS) {\n");
-        fprintf(fp, "              return rc;\n");
-        fprintf(fp, "          }\n");
+        fprintf(fp, "           rc = SQLBindParameter(pt%s->hstmt, %d, SQL_PARAM_INPUT, %s, %s, %d, %d, %spt%s->%s%s, %d, &%s);\n", \
+                gszRegulatedName, 
+                i+1, 
+                gtColumns[i].caSqlType,
+                gtColumns[i].caSqlType, 
+                gtColumns[i].iLength, 
+                gtColumns[i].iScale, 
+                gtColumns[i].iType == KR_SQL_TYPE_CHAR?"":"&", 
+                gszRegulatedName, 
+                gtColumns[i].caPrefix, 
+                gtColumns[i].caFieldName, 
+                gtColumns[i].iType == KR_SQL_TYPE_CHAR?gtColumns[i].iLength+1:0,
+                gtColumns[i].iType == KR_SQL_TYPE_CHAR?"iNTS":"iLen");
+        fprintf(fp, "           if (rc != SQL_SUCCESS) {\n");
+        fprintf(fp, "               dbsGetError(dbsenv, pt%s->hstmt);\n", gszRegulatedName);
+        fprintf(fp, "               SQLFreeHandle(SQL_HANDLE_STMT, pt%s->hstmt);\n", gszRegulatedName);
+        fprintf(fp, "               return rc;\n");
+        fprintf(fp, "           }\n");
     }
-    fprintf(fp, "          rc = SQLExecute(pt%s->hstmt);\n", gszRegulatedName);
-    fprintf(fp, "          if (rc != SQL_SUCCESS) {\n");
-    fprintf(fp, "              return rc;\n");
-    fprintf(fp, "          }\n");
+    fprintf(fp, "           rc = SQLExecute(pt%s->hstmt);\n", gszRegulatedName);
+    fprintf(fp, "           if (rc != SQL_SUCCESS) {\n");
+    fprintf(fp, "               dbsGetError(dbsenv, pt%s->hstmt);\n", gszRegulatedName);
+    fprintf(fp, "               SQLFreeHandle(SQL_HANDLE_STMT, pt%s->hstmt);\n", gszRegulatedName);
+    fprintf(fp, "               return rc;\n");
+    fprintf(fp, "           }\n");
     for (i=giInputColumns; i<giInputColumns + giOutputColumns; i++) {
-        fprintf(fp, "          rc = SQLBindCol(pt%s->hstmt, %d, %s, %spt%s->%s%s, %d, &hLen);\n", \
-                gszRegulatedName, i-giInputColumns+1, gtColumns[i].caSqlType, gtColumns[i].iType == KR_SQL_TYPE_CHAR?"":"&", \
-                gszRegulatedName, gtColumns[i].caPrefix, gtColumns[i].caFieldName, gtColumns[i].iType == KR_SQL_TYPE_CHAR?gtColumns[i].iLength+1:0);
-        fprintf(fp, "          if (rc != SQL_SUCCESS) {\n");
-        fprintf(fp, "              return rc;\n");
-        fprintf(fp, "          }\n");
+        fprintf(fp, "           rc = SQLBindCol(pt%s->hstmt, %d, %s, %spt%s->%s%s, %d, &%s);\n", \
+                gszRegulatedName, 
+                i-giInputColumns+1, 
+                gtColumns[i].caSqlType, 
+                gtColumns[i].iType == KR_SQL_TYPE_CHAR?"":"&", 
+                gszRegulatedName, 
+                gtColumns[i].caPrefix, 
+                gtColumns[i].caFieldName, 
+                gtColumns[i].iType == KR_SQL_TYPE_CHAR?gtColumns[i].iLength+1:0,
+                gtColumns[i].iType == KR_SQL_TYPE_CHAR?"iNTS":"iLen");
+        fprintf(fp, "           if (rc != SQL_SUCCESS) {\n");
+        fprintf(fp, "               dbsGetError(dbsenv, pt%s->hstmt);\n", gszRegulatedName);
+        fprintf(fp, "               SQLFreeHandle(SQL_HANDLE_STMT, pt%s->hstmt);\n", gszRegulatedName);
+        fprintf(fp, "               return rc;\n");
+        fprintf(fp, "           }\n");
     }
-    fprintf(fp, "          rc = SQLFetch(pt%s->hstmt);\n", gszRegulatedName);
-    fprintf(fp, "          if (rc != SQL_SUCCESS) {\n");
-    fprintf(fp, "              return rc;\n");
-    fprintf(fp, "          }\n");
+    fprintf(fp, "           rc = SQLFetch(pt%s->hstmt);\n", gszRegulatedName);
+    fprintf(fp, "           if (rc != SQL_SUCCESS) {\n");
+    fprintf(fp, "               dbsGetError(dbsenv, pt%s->hstmt);\n", gszRegulatedName);
+    fprintf(fp, "               SQLFreeHandle(SQL_HANDLE_STMT, pt%s->hstmt);\n", gszRegulatedName);
+    fprintf(fp, "               return rc;\n");
+    fprintf(fp, "           }\n");
 
-    fprintf(fp, "          rc = SQLFreeHandle(SQL_HANDLE_STMT, pt%s->hstmt);\n", gszRegulatedName);
-    fprintf(fp, "          if (rc != SQL_SUCCESS) {\n");
-    fprintf(fp, "              return rc;\n");
-    fprintf(fp, "          }\n");
-
-    fprintf(fp, "          return rc;\n");
-    fprintf(fp, "      }\n");
+    fprintf(fp, "           SQLFreeHandle(SQL_HANDLE_STMT, pt%s->hstmt);\n", gszRegulatedName);
+    fprintf(fp, "           return rc;\n");
+    fprintf(fp, "       }\n");
     /*default*/
-    fprintf(fp, "      default:\n");
-    fprintf(fp, "          return -1;\n");
+    fprintf(fp, "       default:\n");
+    fprintf(fp, "           return -1;\n");
     fprintf(fp, "    }\n");
     fprintf(fp, "}\n");
 

@@ -7,11 +7,7 @@ extern int kr_hdi_aggr_func(T_KRHDI *krhdi, T_KRContext *krcontext);
 int kr_hdi_compute(T_KRHDI *krhdi, void *param)
 {
     /*initialize first*/
-    krhdi->eValueInd == KR_VALUE_UNSET;
-    /*string comes from kr_strdup, need kr_free*/
-    if (krhdi->eValueType == KR_TYPE_STRING)
-        kr_free(krhdi->uValue.s);
-    memset(&krhdi->uValue, 0x00, sizeof(krhdi->uValue));
+    kr_hdi_init(krhdi);
 
     T_KRShmHDIDef *ptHDIDef = krhdi->ptShmHDIDef;
     T_KRContext *ptContext = (T_KRContext *)param;
@@ -30,7 +26,8 @@ int kr_hdi_compute(T_KRHDI *krhdi, void *param)
     ptContext->ptRecList = \
         kr_get_record_list(ptIndex, ptContext->pKeyValue);
     
-    krhdi->HDIAggrFunc=krhdi->HDIAggrFunc?krhdi->HDIAggrFunc:kr_hdi_aggr_func;
+    if (krhdi->HDIAggrFunc == NULL) 
+        krhdi->HDIAggrFunc = (KRHDIAggrFunc )kr_hdi_aggr_func;
     if (krhdi->HDIAggrFunc(krhdi, ptContext) != 0) {
         KR_LOG(KR_LOGERROR, "Run HDI[%ld] AggrFunc failed!", krhdi->lHDIId);
         return -1;
@@ -79,7 +76,7 @@ static void kr_hdi_get_value_from_cache(T_KRHDI *krhdi, T_KRContext *krcontext)
         /*if not, compute it and set the cache*/
         kr_hdi_compute(krhdi, krcontext);
         if (krhdi->eValueInd != KR_VALUE_SETED) {
-            KR_LOG(KR_LOGERROR, "kr_hdi_compute failed!");
+            KR_LOG(KR_LOGDEBUG, "kr_hdi_compute [%ld] unset!", krhdi->lHDIId);
             return;
         }
         
@@ -117,7 +114,7 @@ void *kr_hdi_get_value(int hid, T_KRContext *krcontext)
         if (krcontext->ptEnv->ptHDICache != NULL) {
             kr_hdi_get_value_from_cache(krhdi, krcontext);
         } else if (kr_hdi_compute(krhdi, krcontext) != 0) {
-            KR_LOG(KR_LOGERROR, "kr_hdi_compute [%d] failed!", hid);
+            KR_LOG(KR_LOGDEBUG, "kr_hdi_compute [%d] unset!", hid);
             return NULL;
         }
         krhdi->ptCurrRec = krcontext->ptCurrRec;

@@ -10,15 +10,19 @@
 /* db environment, one connection per this */
 typedef struct _dbs_env_t 
 { 
+    SQLHENV    henv; 
+    SQLHDBC    hdbc; 
     SQLCHAR   *dsn;
     SQLCHAR   *user;
     SQLCHAR   *pass;
-    SQLHENV    henv; 
-    SQLHDBC    hdbc; 
+    SQLINTEGER sqlcode;
+    SQLCHAR    sqlstate[SQL_SQLSTATE_SIZE+1];
+    SQLCHAR    sqlerrmsg[SQL_MAX_MESSAGE_LENGTH+1];
 }T_DbsEnv;
 
 /* return code */
 #define KR_DBOK              SQL_SUCCESS
+#define KR_DBOKWITHINFO      SQL_SUCCESS_WITH_INFO
 #define KR_DBNOTFOUND        SQL_NO_DATA
 #define KR_DBNULLVAL         SQL_NULL_DATA
 
@@ -40,6 +44,7 @@ T_DbsEnv *dbsConnect(char *dsn, char *user, char *pass);
 int dbsDisconnect(T_DbsEnv *dbsenv);
 int dbsCommit(T_DbsEnv *dbsenv);
 int dbsRollback(T_DbsEnv *dbsenv);
+void dbsGetError(T_DbsEnv *dbsenv, SQLHSTMT hstmt);
 
 #endif
 

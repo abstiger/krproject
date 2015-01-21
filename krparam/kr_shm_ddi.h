@@ -36,7 +36,8 @@ typedef struct _kr_shm_ddi_t
 }T_KRShmDDI;
 
 
-int LoadShmDDI(T_DbsEnv *dbsenv, T_KRShmDDI *ptShmDDI);
-int DumpShmDDI(T_KRShmDDI *ptShmDDI, FILE *fp);
+int kr_shm_ddi_load(T_DbsEnv *dbsenv, T_KRShmDDI *ptShmDDI);
+int kr_shm_ddi_dump(T_KRShmDDI *ptShmDDI, FILE *fp);
+cJSON *kr_shm_ddi_info(T_KRShmDDIDef *ptShmDDIDef);
 
 #endif  /*__KR_SHM_DDI_H__*/

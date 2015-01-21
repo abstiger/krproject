@@ -1,7 +1,10 @@
 ACLOCAL_AMFLAGS = -I m4
-SUBDIRS = dbs krutils krcalc krparam krdb krdata krengine \
-          krserver krclient krcoordi krtests \
-		  bindings examples etc doc
+
+SUBDIRS  = dbs krutils krcalc krparam krdb krdata krflow krengine \
+		   krchannel krserver krcoordi krtools \
+		   tests examples etc doc 
+
+SUBDIRS += krclient krshell krweb
 
 AM_CPPFLAGS = -g -I$(includedir) -L$(libdir)
 

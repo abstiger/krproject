@@ -20,12 +20,16 @@ typedef struct _kr_dynamic_mem_t
 }T_KRDynamicMem;
 
 
-T_KRDynamicMem *kr_dynamicmem_init(T_KRShareMem *ptShm, \
-        T_KRModule *ptDataModule, T_KRModule *ptRuleModule);
-void kr_dynamicmem_fini(T_KRDynamicMem *ptDyn);
+T_KRDynamicMem *kr_dym_construct(
+        T_KRShareMem *ptShm, T_KRModule *ptDataModule, T_DbsEnv *dbsenv,
+        KRGetTypeFunc get_type_func, KRGetValueFunc get_value_func);
+void kr_dym_destruct(T_KRDynamicMem *ptDyn);
+void kr_dym_init(T_KRDynamicMem *ptDyn);
+cJSON *kr_dym_info(T_KRDynamicMem *ptDyn);
 
-int kr_dynamicmem_check(T_KRDynamicMem *ptDyn, T_KRShareMem *ptShm, \
-        T_KRModule *ptDataModule, T_KRModule *ptRuleModule);
+int kr_dym_check(T_KRDynamicMem *ptDyn, 
+        T_KRShareMem *ptShm, T_KRModule *ptDataModule, T_DbsEnv *dbsenv,
+        KRGetTypeFunc get_type_func, KRGetValueFunc get_value_func);
 
 #endif  /*__KR_DYM_H__*/
 

@@ -9,9 +9,9 @@
 #define KR_HDI_OBJECT_LEN 30
 
 typedef enum {
-    KR_HDI_STATISTICS_DAY     = 'D',  /*day's statistics*/
-    KR_HDI_STATISTICS_MONTH   = 'M',  /*month's statistics*/
-    KR_HDI_STATISTICS_FLAG    = 'F'   /*flag's statistics*/
+    KR_HDI_STATISTICS_DAY     = '0',  /*day's statistics*/
+    KR_HDI_STATISTICS_MONTH   = '1',  /*month's statistics*/
+    KR_HDI_STATISTICS_FLAG    = '2'   /*flag's statistics*/
 }E_KRHDIStatisticsType;
 
 typedef enum {
@@ -100,11 +100,11 @@ int kr_hdi_aggr_day(T_KRHDI *krhdi, T_KRContext *krcontext, char *object)
     kr_ttime_to_date(tBeginTime, stHdiDaySel.caInDataDateBegin);
     kr_ttime_to_date(tEndTime, stHdiDaySel.caInDataDateEnd);
     iResult = dbsHdiDaySel(dbsenv, KR_DBSELECT, &stHdiDaySel);
-    if (iResult != KR_DBOK && iResult != KR_DBNOTFOUND)
-    {
-        KR_LOG(KR_LOGERROR, "dbsHdiDaySel [%s],[%ld],[%s],[%s] Error!",\
+    if (iResult != KR_DBOK && iResult != KR_DBNOTFOUND) {
+        KR_LOG(KR_LOGERROR, "dbsHdiDaySel [%s],[%ld],[%s],[%s] Error![%s]:[%s]",
                 stHdiDaySel.caInDataObject, stHdiDaySel.lInDataId,
-                stHdiDaySel.caInDataDateBegin, stHdiDaySel.caInDataDateEnd);
+                stHdiDaySel.caInDataDateBegin, stHdiDaySel.caInDataDateEnd,
+                dbsenv->sqlstate, dbsenv->sqlerrmsg);
         return -1;
     }
     
@@ -169,11 +169,11 @@ int kr_hdi_aggr_mon(T_KRHDI *krhdi, T_KRContext *krcontext, char *object)
     kr_ttime_to_date(tEndTime, caDataDate);
     memcpy(stHdiMonSel.caInDataMonthEnd, caDataDate, 6);
     iResult = dbsHdiMonSel(dbsenv, KR_DBSELECT, &stHdiMonSel);
-    if (iResult != KR_DBOK && iResult != KR_DBNOTFOUND)
-    {
-        KR_LOG(KR_LOGERROR, "dbsHdiMonSel [%s],[%ld],[%s],[%s] Error!",\
+    if (iResult != KR_DBOK && iResult != KR_DBNOTFOUND) {
+        KR_LOG(KR_LOGERROR, "dbsHdiMonSel [%s],[%ld],[%s],[%s] Error![%s]:[%s]",
                 stHdiMonSel.caInDataObject, stHdiMonSel.lInDataId,
-                stHdiMonSel.caInDataMonthBegin, stHdiMonSel.caInDataMonthEnd);
+                stHdiMonSel.caInDataMonthBegin, stHdiMonSel.caInDataMonthEnd,
+                dbsenv->sqlstate, dbsenv->sqlerrmsg);
         return -1;
     }
     
@@ -232,10 +232,10 @@ int kr_hdi_aggr_flag(T_KRHDI *krhdi, T_KRContext *krcontext, char *object)
     strcpy(stHdiFlagSel.caInDataObject, object);
     stHdiFlagSel.lInDataId = krhdi->lHDIId;
     iResult = dbsHdiFlagSel(dbsenv, KR_DBSELECT, &stHdiFlagSel);
-    if (iResult != KR_DBOK && iResult != KR_DBNOTFOUND)
-    {
-        KR_LOG(KR_LOGERROR, "dbsHdiFlagSel [%s],[%ld] Error!",\
-               stHdiFlagSel.caInDataObject, stHdiFlagSel.lInDataId);
+    if (iResult != KR_DBOK && iResult != KR_DBNOTFOUND) {
+        KR_LOG(KR_LOGERROR, "dbsHdiFlagSel [%s],[%ld] Error![%s]:[%s]",\
+               stHdiFlagSel.caInDataObject, stHdiFlagSel.lInDataId,
+               dbsenv->sqlstate, dbsenv->sqlerrmsg);
         return -1;
     }
         
@@ -262,3 +262,4 @@ int kr_hdi_aggr_flag(T_KRHDI *krhdi, T_KRContext *krcontext, char *object)
     krhdi->eValueInd = KR_VALUE_SETED;
     return 0;
 }
+

@@ -5,13 +5,7 @@ extern int kr_ddi_aggr_func(T_KRDDI *krddi, T_KRContext *krcontext);
 int kr_ddi_compute(T_KRDDI *krddi, void *param)
 {
     /*initialize first*/
-    krddi->eValueInd == KR_VALUE_UNSET;
-    kr_hashtable_remove_all(krddi->ptRelated);
-
-    /*string comes from kr_strdup, need kr_free*/
-    if (krddi->eValueType == KR_TYPE_STRING)
-        kr_free(krddi->uValue.s);
-    memset(&krddi->uValue, 0x00, sizeof(krddi->uValue));
+    kr_ddi_init(krddi);
     
     T_KRShmDDIDef *ptDDIDef = krddi->ptShmDDIDef;
     T_KRContext *ptContext = (T_KRContext *)param;
@@ -30,7 +24,8 @@ int kr_ddi_compute(T_KRDDI *krddi, void *param)
     ptContext->ptRecList = \
         kr_get_record_list(ptIndex, ptContext->pKeyValue);
 
-    krddi->DDIAggrFunc=krddi->DDIAggrFunc?krddi->DDIAggrFunc:kr_ddi_aggr_func;
+    if (krddi->DDIAggrFunc == NULL) 
+        krddi->DDIAggrFunc = (KRDDIAggrFunc )kr_ddi_aggr_func;
     if (krddi->DDIAggrFunc(krddi, ptContext) != 0) {
         KR_LOG(KR_LOGERROR, "Run DDI[%ld] AggrFunc failed!", krddi->lDDIId);
         return -1;
@@ -64,7 +59,7 @@ void *kr_ddi_get_value(int did, T_KRContext *krcontext)
     if (krddi->ptCurrRec != krcontext->ptCurrRec) {
         kr_ddi_compute(krddi, krcontext);
         if (krddi->eValueInd != KR_VALUE_SETED) {
-            KR_LOG(KR_LOGERROR, "kr_ddi_compute [%d] failed!", did);
+            KR_LOG(KR_LOGDEBUG, "kr_ddi_compute [%d] unset!", did);
             return NULL;
         }
         krddi->ptCurrRec = krcontext->ptCurrRec;

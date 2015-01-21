@@ -1,245 +1,376 @@
-#include "krutils/kr_utils.h"
-#include "krutils/kr_json.h"
-#include "krutils/kr_message.h"
+#include <stdio.h>
+#include <stdarg.h>
+#include <string.h>
+#include <malloc.h>
 #include <time.h>
+#include <unistd.h>
 #include <errno.h>
-#include <signal.h>
+#include <sys/socket.h>
 
-#define TCP_IP "127.0.0.1"
-#define TCP_PORT 7251
-#define CLIENT_ID "krclient1"
-#define SERVER_ID "krserver1"
+#include "kr_alloc.h"
+#include "kr_net.h"
+#include "kr_json.h"
+#include "kr_message.h"
+#include "kr_client.h"
 
-char caNetErr[KR_NET_ERR_LEN] = {0};
 
-int kr_client_on(int fd)
+void kr_client_disconnect(T_KRClient *krclient)
 {
-    T_KRMessage stCliOn = {0};
-    stCliOn.msgtype = KR_MSGTYPE_CLION;
-    strcpy(stCliOn.msgid, CLIENT_ID);
-    strcpy(stCliOn.clientid, CLIENT_ID);
-
-    if (kr_message_write(caNetErr, fd, &stCliOn) <= 0) {
-        fprintf(stderr, "kr_message_write clion error[%s]!\n", caNetErr);
-        return -1;
-    }
-
-    return 0;
-}
-
-int kr_client_apply_struct(T_KRMessage *krmsg, int fd, int i)
-{
-    krmsg->datasrc = 1;
-    char buf[1024] = {0};
-    typedef struct _kr_tradflow_t{
-        char     caOutCustNo[20+1];
-        char     caOutTransDate[8+1];
-        char     caOutTransTime[6+1];
-        char     caOutFlowNo[15+1];
-        char     caOutTransType[2+1];
-        double   dOutTransAmt;
-        char     caOutTransLoc[100+1];
-    } T_KRTradFlow;
-
-    srandom((unsigned int)(time(NULL)+i));
-
-    T_KRTradFlow *msgbody = kr_calloc(sizeof(T_KRTradFlow));
-    memset(buf, 0x00, sizeof(buf));
-    sprintf(buf, "%s%04d", "6223000000000000", (int )(random()%10));
-    strcpy(krmsg->objectkey, buf); //set krmsg objectkey
-    memcpy(msgbody->caOutCustNo, buf, sizeof(msgbody->caOutCustNo));
-
-    memset(buf, 0x00, sizeof(buf));
-    sprintf(buf, "20130219");
-    memcpy(msgbody->caOutTransDate, buf, sizeof(msgbody->caOutTransDate));
-
-    memset(buf, 0x00, sizeof(buf));
-    sprintf(buf, "0919%02d", i%60);
-    memcpy(msgbody->caOutTransTime, buf, sizeof(msgbody->caOutTransTime));
-
-    memset(buf, 0x00, sizeof(buf));
-    sprintf(buf, "%015d", i);
-    strcpy(krmsg->msgid, buf); //set krmsg msgid
-    memcpy(msgbody->caOutFlowNo, buf, sizeof(msgbody->caOutFlowNo));
-
-    memset(buf, 0x00, sizeof(buf));
-    sprintf(buf, "%02d", i%2);
-    memcpy(msgbody->caOutTransType, buf, sizeof(msgbody->caOutTransType));
-
-    msgbody->dOutTransAmt = random()%10000;
-
-    memset(buf, 0x00, sizeof(buf));
-    sprintf(buf, "TRANS_LOCATION:%02d", i);
-    memcpy(msgbody->caOutTransLoc, buf, sizeof(msgbody->caOutTransLoc));
-
-    krmsg->msglen = sizeof(*msgbody);
-    memcpy(krmsg->msgbuf, msgbody, krmsg->msglen);
-    if (kr_message_write(caNetErr, fd, krmsg) != krmsg->msglen) {
-        fprintf(stderr, "kr_message_write apply error[%s]!\n", caNetErr);
-        return -1;
-    }
-
-    return 0;
-}
-
-
-int kr_client_apply_json(T_KRMessage *krmsg, int fd, int i)
-{
-    krmsg->datasrc = 1;
-    char buf[1024] = {0};
-
-    srandom((unsigned int)(time(NULL)+i));
-    /*Write Apply message */
-    cJSON *msgbody =cJSON_CreateObject();
-    memset(buf, 0x00, sizeof(buf));
-    sprintf(buf, "%s%04d", "6223000000000000", (int )(random()%10));
-    strcpy(krmsg->objectkey, buf); //set krmsg objectkey
-    cJSON_AddStringToObject(msgbody, "custno", buf);
-    memset(buf, 0x00, sizeof(buf));
-    sprintf(buf, "20130219");
-    cJSON_AddStringToObject(msgbody, "txndate", buf);
-    memset(buf, 0x00, sizeof(buf));
-    sprintf(buf, "0919%02d", i%60);
-    cJSON_AddStringToObject(msgbody, "txntime", buf);
-    memset(buf, 0x00, sizeof(buf));
-    sprintf(buf, "%015d", i);
-    strcpy(krmsg->msgid, buf); //set krmsg msgid
-    cJSON_AddStringToObject(msgbody, "flowno", buf);
-    memset(buf, 0x00, sizeof(buf));
-    sprintf(buf, "%02d", i%2);
-    cJSON_AddStringToObject(msgbody, "txntype", buf);
-    cJSON_AddNumberToObject(msgbody, "txnamt", i*9.8);
-    memset(buf, 0x00, sizeof(buf));
-    sprintf(buf, "TRANS_LOCATION:%02d", i);
-    cJSON_AddStringToObject(msgbody, "txnloc", buf);
-
-    char *jsonmsg = cJSON_PrintUnformatted(msgbody);
-    krmsg->msglen = strlen(jsonmsg);
-    memcpy(krmsg->msgbuf, jsonmsg, krmsg->msglen);
-    free(jsonmsg);
-    cJSON_Delete(msgbody);
-    if (kr_message_write(caNetErr, fd, krmsg) != krmsg->msglen) {
-        fprintf(stderr, "kr_message_write apply error[%s]!\n", caNetErr);
-        return -1;
-    }
-
-    return 0;
-}
-
-int kr_client_apply_weibo(T_KRMessage *krmsg, int fd, int i)
-{
-    krmsg->datasrc = 2;
-    strcpy(krmsg->objectkey, "1761437952"); //set krmsg objectkey
-    snprintf(krmsg->msgid, sizeof(krmsg->msgid), "%08d", i); //set krmsg msgid
-    strcpy(krmsg->msgbuf, "{\"reposts_count\": 0, \"truncated\": false, \"text\": \"haha \", \"visible\": {\"type\": 0, \"list_id\": 0}, \"in_reply_to_status_id\": \"\", \"created_at_time\": 1369899542.0, \"id\": 3583680788661581, \"mid\": \"3583680788661581\", \"source\": \"source\", \"attitudes_count\": 0, \"favorited\": false, \"user\": {\"bi_followers_count\": 110, \"domain\": \"\", \"avatar_large\": \"http://tp1.sinaimg.cn/1761437952/180/5602071810/0\", \"block_word\": 0, \"star\": 0, \"id\": 1761437952, \"city\": \"1000\", \"verified\": false, \"follow_me\": true, \"verified_reason\": \"\", \"followers_count\": 542, \"mbtype\": 0, \"statuses_count\": 3266, \"friends_count\": 273, \"online_status\": 0, \"mbrank\": 0, \"idstr\": \"1761437952\", \"geo_enabled\": false, \"name\": \"\u624b\u5fc3\u91cc\u7684\u5e78\u798f\u611f\", \"remark\": \"\", \"favourites_count\": 45, \"screen_name\": \"\u624b\u5fc3\u91cc\u7684\u5e78\u798f\u611f\", \"url\": \"\", \"gender\": \"f\", \"created_at\": \"Sun Jun 13 11:39:02 +0800 2010\", \"verified_type\": -1, \"following\": true}, \"geo\": null, \"created_at\": \"Thu May 30 15:39:02 +0800 2013\", \"comments_count\": 0}");
-    krmsg->msglen = strlen(krmsg->msgbuf);
-    printf("krclient send:%s %d\n", krmsg->msgbuf, krmsg->msglen);
-    if (kr_message_write(caNetErr, fd, krmsg) != krmsg->msglen) {
-        fprintf(stderr, "kr_message_write apply error[%s]!\n", caNetErr);
-        return -1;
-    }
-
-    return 0;
-}
-
-int kr_client_apply(int fd, char fmt)
-{
-    int ret = 0;
-    int i = 0;
-    char readbuf[4096] = {0};
-    size_t readlen = 0;
-    T_KRMessage stApply = {0};
-    stApply.msgtype = KR_MSGTYPE_APPLY;
-    strcpy(stApply.serverid, SERVER_ID);
-    strcpy(stApply.clientid, CLIENT_ID);
-    for (i=0; i<22; ++i) {
-        if (fmt == 'J') {
-            kr_client_apply_json(&stApply, fd, i);
-        } else if (fmt == 'W') {
-            kr_client_apply_weibo(&stApply, fd, i);
-        } else {
-            kr_client_apply_struct(&stApply, fd, i);
+    if (krclient) {
+        if (krclient->id) kr_free(krclient->id);
+        if (krclient->ip) kr_free(krclient->ip);
+        if (krclient->fd) {
+            close(krclient->fd);
+            shutdown(krclient->fd, SHUT_RDWR);
         }
+        kr_free(krclient);
+    }
+}
 
-printf("Send:fd:[%d], msgid[%s], msgtype[%d], serverid[%s], clientid[%s], "
-                "datasrc[%d], objectkey[%s], msglen[%d]\n", \
-            fd, stApply.msgid, stApply.msgtype, 
-            stApply.serverid, stApply.clientid, 
-            stApply.datasrc, stApply.objectkey, stApply.msglen);
+int kr_client_set_timeout(T_KRClient *krclient, int secs)
+{
+    struct timeval timeout = {secs, 0};
 
-        memset(&readbuf, 0, sizeof(readbuf));
-        readlen = read(fd, &readbuf, sizeof(readbuf));
-        if( readlen < 0) {
-            fprintf(stderr, "read fd failed[%s]!\n", strerror(errno));
+    if (setsockopt(krclient->fd, SOL_SOCKET, SO_RCVTIMEO, 
+                (char *)&timeout, sizeof(struct timeval)) != 0) {
+        fprintf(stderr, "setsockopt SO_RCVTIMEO failed![%s]", strerror(errno));
+        return -1;
+    }
+
+    if (setsockopt(krclient->fd, SOL_SOCKET, SO_SNDTIMEO, 
+                (char *)&timeout, sizeof(struct timeval)) != 0) {
+        fprintf(stderr, "setsockopt SO_SNDTIMEO failed![%s]", strerror(errno));
+        return -1;
+    }
+
+    return 0;
+}
+
+T_KRClient *kr_client_connect(char *ip, int port)
+{
+    T_KRClient *krclient = malloc(sizeof(*krclient));
+    if (krclient == NULL) {
+        fprintf(stderr, "malloc krclient failed!\n");
+        return NULL;
+    }
+
+    krclient->id = kr_strdup("krclient1");//FIXME
+    krclient->ip = kr_strdup(ip);
+    krclient->port = port;
+    krclient->fd = kr_net_tcp_connect(krclient->errmsg, 
+            krclient->ip, krclient->port);
+    if (krclient->fd <= 0) {
+        fprintf(stderr, "connect server [%s:%d] failed[%s]\n",
+                krclient->ip, krclient->port, krclient->errmsg);
+        kr_client_disconnect(krclient);
+        return NULL;
+    }
+    kr_net_nonblock(NULL, krclient->fd);
+    kr_net_tcp_nodelay(NULL, krclient->fd);
+
+    /*default timeout is 3 seconds*/
+    if (kr_client_set_timeout(krclient, 3) != 0) {
+        fprintf(stderr, "kr_client_set_timeout 3 failed!\n");
+        kr_client_disconnect(krclient);
+        return NULL;
+    }
+
+    return krclient;
+}
+
+int kr_client_reconnect(T_KRClient *krclient)
+{
+    /*close old*/
+    close(krclient->fd);
+    shutdown(krclient->fd, SHUT_RDWR);
+
+    /*reconnect*/
+    krclient->fd = kr_net_tcp_connect(krclient->errmsg, 
+            krclient->ip, krclient->port);
+    if (krclient->fd <= 0) {
+        fprintf(stderr, "reconnect server [%s:%d] failed[%s]\n",
+                krclient->ip, krclient->port, krclient->errmsg);
+        return -1;
+    }
+    kr_net_nonblock(NULL, krclient->fd);
+    kr_net_tcp_nodelay(NULL, krclient->fd);
+
+    /*default timeout is 3 seconds*/
+    if (kr_client_set_timeout(krclient, 3) != 0) {
+        fprintf(stderr, "kr_client_set_timeout 3 failed!\n");
+        return -1;
+    }
+
+    return 0;
+}
+
+T_KRMessage *kr_client_apply(T_KRClient *krclient, int msgtype, int datasrc, int msglen, void *msgbuf)
+{
+    /*if fd is not readable, reconnect it*/
+    /*
+    if (FD_ISSET(krclient->fd) ==0 ) {
+        if (kr_client_reconnect(krclient) != 0) {
+            fprintf(stderr, "kr_client_reconnect failed!\n");
+            return NULL;
+        }
+    }
+    */
+
+    /*alloc request*/
+    T_KRMessage *apply = kr_message_alloc();
+    if (apply == NULL) {
+        fprintf(stderr, "kr_message_alloc request failed!\n");
+        return NULL;
+    }
+
+    /*set request*/
+    apply->msgtype = msgtype;
+    apply->datasrc = datasrc;
+    apply->msglen = msglen;
+    apply->msgbuf = msgbuf;
+
+    /*send request*/
+    if (kr_message_write(krclient->fd, apply) <= 0) {
+        fprintf(stderr, "kr_message_write request failed!\n");
+        kr_message_free(apply);
+        return NULL;
+    }
+
+    /*get response*/
+    T_KRMessage *reply = kr_message_read(krclient->fd);
+    if (reply == NULL) {
+        fprintf(stderr, "kr_message_read response failed!\n");
+        kr_message_free(apply);
+        return NULL;
+    }
+
+    kr_message_free(apply);
+    return reply;
+}
+
+
+T_KRMessage *kr_client_info(T_KRClient *krclient)
+{
+    return kr_client_apply(krclient, KR_MSGTYPE_INFO, 0, 0, NULL);
+}
+
+T_KRMessage *kr_client_info_log(T_KRClient *krclient)
+{
+    return kr_client_apply(krclient, KR_MSGTYPE_INFO_LOG, 0, 0, NULL);
+}
+
+T_KRMessage *kr_client_set_logpath(T_KRClient *krclient, char *log_path)
+{
+    cJSON *json = cJSON_CreateObject();
+    cJSON_AddStringToObject(json, "log_path", log_path);
+    char *msgbuf = cJSON_PrintUnformatted(json);
+    cJSON_Delete(json);
+
+    return kr_client_apply(krclient, KR_MSGTYPE_SET_LOGPATH, 0, strlen(msgbuf), msgbuf);
+}
+
+T_KRMessage *kr_client_set_logname(T_KRClient *krclient, char *log_name)
+{
+    cJSON *json = cJSON_CreateObject();
+    cJSON_AddStringToObject(json, "log_name", log_name);
+    char *msgbuf = cJSON_PrintUnformatted(json);
+    cJSON_Delete(json);
+
+    return kr_client_apply(krclient, KR_MSGTYPE_SET_LOGNAME, 0, strlen(msgbuf), msgbuf);
+}
+
+T_KRMessage *kr_client_set_loglevel(T_KRClient *krclient, int log_level)
+{
+    cJSON *json = cJSON_CreateObject();
+    cJSON_AddNumberToObject(json, "log_level", log_level);
+    char *msgbuf = cJSON_PrintUnformatted(json);
+    cJSON_Delete(json);
+
+    return kr_client_apply(krclient, KR_MSGTYPE_SET_LOGLEVEL, 0, strlen(msgbuf), msgbuf);
+}
+
+T_KRMessage *kr_client_info_krdb(T_KRClient *krclient)
+{
+    return kr_client_apply(krclient, KR_MSGTYPE_INFO_KRDB, 0, 0, NULL);
+}
+
+T_KRMessage *kr_client_info_table(T_KRClient *krclient, int table_id)
+{
+    return kr_client_apply(krclient, KR_MSGTYPE_INFO_TABLE, table_id, 0, NULL);
+}
+
+T_KRMessage *kr_client_info_index(T_KRClient *krclient, int table_id, int index_id)
+{
+    cJSON *json = cJSON_CreateObject();
+    cJSON_AddNumberToObject(json, "index_id", index_id);
+    char *msgbuf = cJSON_PrintUnformatted(json);
+    cJSON_Delete(json);
+
+    return kr_client_apply(krclient, KR_MSGTYPE_INFO_INDEX, table_id, strlen(msgbuf), msgbuf);
+}
+
+T_KRMessage *kr_client_list_index_key(T_KRClient *krclient)
+{
+    return kr_client_apply(krclient, KR_MSGTYPE_LIST_INDEX_KEY, 0, 0, NULL);
+}
+
+T_KRMessage *kr_client_reload_param(T_KRClient *krclient)
+{
+    return kr_client_apply(krclient, KR_MSGTYPE_RELOAD_PARAM, 0, 0, NULL);
+}
+
+T_KRMessage *kr_client_info_param(T_KRClient *krclient)
+{
+    return kr_client_apply(krclient, KR_MSGTYPE_INFO_PARAM, 0, 0, NULL);
+}
+
+T_KRMessage *kr_client_info_group(T_KRClient *krclient, int group_id)
+{
+    cJSON *json = cJSON_CreateObject();
+    cJSON_AddNumberToObject(json, "group_id", group_id);
+    char *msgbuf = cJSON_PrintUnformatted(json);
+    cJSON_Delete(json);
+
+    return kr_client_apply(krclient, KR_MSGTYPE_INFO_GROUP, 0, strlen(msgbuf), msgbuf);
+}
+
+T_KRMessage *kr_client_info_group_rule(T_KRClient *krclient, int group_id, int rule_id)
+{
+    cJSON *json = cJSON_CreateObject();
+    cJSON_AddNumberToObject(json, "group_id", group_id);
+    cJSON_AddNumberToObject(json, "rule_id", rule_id);
+    char *msgbuf = cJSON_PrintUnformatted(json);
+    cJSON_Delete(json);
+
+    return kr_client_apply(krclient, KR_MSGTYPE_INFO_RULE, 0, strlen(msgbuf), msgbuf);
+}
+
+T_KRMessage *kr_client_info_set(T_KRClient *krclient, int set_id)
+{
+    cJSON *json = cJSON_CreateObject();
+    cJSON_AddNumberToObject(json, "set_id", set_id);
+    char *msgbuf = cJSON_PrintUnformatted(json);
+    cJSON_Delete(json);
+
+    return kr_client_apply(krclient, KR_MSGTYPE_INFO_SET, 0, strlen(msgbuf), msgbuf);
+}
+
+T_KRMessage *kr_client_info_sdi(T_KRClient *krclient, int sdi_id)
+{
+    cJSON *json = cJSON_CreateObject();
+    cJSON_AddNumberToObject(json, "sdi_id", sdi_id);
+    char *msgbuf = cJSON_PrintUnformatted(json);
+    cJSON_Delete(json);
+
+    return kr_client_apply(krclient, KR_MSGTYPE_INFO_SDI, 0, strlen(msgbuf), msgbuf);
+}
+
+T_KRMessage *kr_client_info_ddi(T_KRClient *krclient, int ddi_id)
+{
+    cJSON *json = cJSON_CreateObject();
+    cJSON_AddNumberToObject(json, "ddi_id", ddi_id);
+    char *msgbuf = cJSON_PrintUnformatted(json);
+    cJSON_Delete(json);
+
+    return kr_client_apply(krclient, KR_MSGTYPE_INFO_DDI, 0, strlen(msgbuf), msgbuf);
+}
+
+T_KRMessage *kr_client_info_hdi(T_KRClient *krclient, int hdi_id)
+{
+    cJSON *json = cJSON_CreateObject();
+    cJSON_AddNumberToObject(json, "hdi_id", hdi_id);
+    char *msgbuf = cJSON_PrintUnformatted(json);
+    cJSON_Delete(json);
+
+    return kr_client_apply(krclient, KR_MSGTYPE_INFO_HDI, 0, strlen(msgbuf), msgbuf);
+}
+
+T_KRMessage *kr_client_insert_event(T_KRClient *krclient, int table_id, char *event)
+{
+    char *msgbuf = strdup(event);
+    return kr_client_apply(krclient, KR_MSGTYPE_INSERT_EVENT, table_id, strlen(msgbuf), msgbuf);
+}
+
+T_KRMessage *kr_client_detect_event(T_KRClient *krclient, int table_id, char *event)
+{
+    char *msgbuf = strdup(event);
+    return kr_client_apply(krclient, KR_MSGTYPE_DETECT_EVENT, table_id, strlen(msgbuf), msgbuf);
+}
+
+static void kr_client_tick_time(char *memo)
+{
+    time_t tTime = time(NULL);
+    struct tm *ptmNow = localtime(&tTime);
+    char caTimeString[80] = {0};
+    strftime(caTimeString, sizeof(caTimeString), "%c", ptmNow);
+    printf("%s: time tick:[%s]!\n", memo, caTimeString);
+}
+
+int kr_client_apply_file(T_KRClient *krclient, int msgtype, int table_id, char *applyfile)
+{
+    int iCnt = 0;
+    char buff[1024] = {0};
+
+    FILE *fp = fopen(applyfile, "r");
+    if (fp == NULL) {
+        fprintf(stderr, "fopen applyfile [%s] failed!\n", applyfile);
+        return -1;
+    }
+
+    kr_client_tick_time("start");
+    while(fgets(buff, sizeof(buff), fp) != NULL)
+    {
+        if (buff[0] == ' ') continue;
+
+        /*apply this line*/
+        char *msgbuf = strdup(buff);
+        T_KRMessage *reply = kr_client_apply(krclient, \
+                msgtype, table_id, strlen(msgbuf), msgbuf);
+        if (reply == NULL) {
+            fprintf(stderr, "kr_client_apply [%zu] [%s] failed!\n", 
+                    strlen(msgbuf), msgbuf);
             return -1;
         }
-        printf("response:[%s]\n", readbuf);
-
-        if(i%1000 == 0) {
-            time_t tTime = time(NULL);
-            struct tm *ptmNow = localtime(&tTime);
-            char caTimeString[80] = {0};
-            strftime(caTimeString, sizeof(caTimeString), "%c", ptmNow);
-            printf("client sending [%d] records at [%s]!\n", i, caTimeString);
+        /*print reply*/
+        if (reply->msgtype == KR_MSGTYPE_SUCCESS) {
+            fprintf(stdout, "SUCCESS: %s\n", reply->msgbuf);
+        } else {
+            fprintf(stdout, "ERROR!\n");
         }
+        kr_message_free(reply);
+
+        if(iCnt%1000 == 0 && iCnt != 0) {
+            char caNum[20] = {0};
+            snprintf(caNum, sizeof(caNum), "Records:%010d", iCnt);
+            kr_client_tick_time(caNum);
+        }
+        iCnt++;
     }
+    kr_client_tick_time("stop");
+    fclose(fp);
 
     return 0;
 }
 
-
-int main(int argc, char *argv[])
-{  
-    int ch;
-    char ip[32];
-    int port;
-    int tcpfd;
-    char caNetErr[1024];
-    char msgfmt;
-
-    signal(SIGHUP, SIG_IGN);
-    signal(SIGPIPE, SIG_IGN);
-
-    msgfmt = 'C';
-    strcpy(ip, TCP_IP);
-    port = TCP_PORT;
-    while ((ch = getopt(argc, argv, "i:p:f:")) != -1)
-    {
-        switch (ch)
-        {
-            case 'i':
-                strcpy(ip, optarg);
-                break;
-            case 'p':
-                port = atoi(optarg);
-                break;
-            case 'f':
-                msgfmt = optarg[0];
-                break;
-            default:
-                break;
-        }
-    }
-    
-    /*connect to coordi/server*/
-    tcpfd = kr_net_tcp_connect(caNetErr, ip, port);
-    if (tcpfd <= 0) {
-        fprintf(stderr, "kr_net_tcp_connect [%s]:[%d] failed[%s]\n", 
-                TCP_IP, TCP_PORT, caNetErr);
-        return -1;
-    }
-    
-    /*client on*/    
-    if (kr_client_on(tcpfd) !=0) {
+int kr_client_insert_file(T_KRClient *krclient, int table_id, char *applyfile)
+{
+    if (access(applyfile, R_OK) != 0) {
+        fprintf(stderr, "file [%s] can not access!\n", applyfile);
         return -1;
     }
 
-    /*client apply*/    
-    if (kr_client_apply(tcpfd, msgfmt) !=0) {
+    return kr_client_apply_file(krclient, \
+            KR_MSGTYPE_INSERT_EVENT, table_id, applyfile);
+}
+
+int kr_client_detect_file(T_KRClient *krclient, int table_id, char *applyfile)
+{
+    if (access(applyfile, R_OK) != 0) {
+        fprintf(stderr, "file [%s] can not access!\n", applyfile);
         return -1;
     }
-    
-    close(tcpfd);
-    return 0;
+
+    return kr_client_apply_file(krclient, \
+            KR_MSGTYPE_DETECT_EVENT, table_id, applyfile);
 }
 

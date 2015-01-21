@@ -31,5 +31,6 @@ void kr_shm_destroy(T_KRShareMem *ptShmBuf);
 short kr_shm_switch(T_KRShareMem *ptShmBuf);
 short kr_shm_load(T_DbsEnv *dbsenv, T_KRShareMem *ptShmBuf);
 void kr_shm_dump(T_KRShareMem *ptShmBuf, FILE *fp);
+cJSON *kr_shm_info(T_KRShareMem *ptShmBuf);
 
 #endif  /*__KR_SHM_H__*/

@@ -31,11 +31,15 @@ typedef struct _kr_sdi_table_t
 }T_KRSDITable;
 
 /*static dataitem*/
-T_KRSDI *kr_sdi_construct(T_KRShmSDIDef *sdi_def, T_KRModule *datamodule);
+T_KRSDI *kr_sdi_construct(T_KRShmSDIDef *sdi_def, T_KRModule *datamodule,
+        KRGetTypeFunc get_type_func, KRGetValueFunc get_value_func);
 void kr_sdi_destruct(T_KRSDI *krsdi);
+void kr_sdi_init(T_KRSDI *krsdi);
+cJSON *kr_sdi_info(T_KRSDI *krsdi);
 
-T_KRSDITable *kr_sdi_table_construct(T_KRShmSDI *shm_sdi, T_KRModule *datamodule);
+T_KRSDITable *kr_sdi_table_construct(T_KRShmSDI *shm_sdi, T_KRModule *datamodule, KRGetTypeFunc get_type_func, KRGetValueFunc get_value_func);
 void kr_sdi_table_destruct(T_KRSDITable *krsditable);
-
+void kr_sdi_table_init(T_KRSDITable *krsditable);
+T_KRSDI *kr_sdi_lookup(T_KRSDITable *krsditable, int id);
 
 #endif /* __KR_SDI_H__ */

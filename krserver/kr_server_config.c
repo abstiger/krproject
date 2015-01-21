@@ -1,213 +1,140 @@
-#include "kr_server.h"
+#include "kr_server_config.h"
+#include "krutils/kr_utils.h"
 
-int kr_server_config_parse(char *configfile, T_KRServer *server)
+#define _dupenv(x) kr_string_dupenv(x)
+
+T_KRServerConfig *kr_server_config_parse(char *config_file)
 {
-    char buf[1024] = {0};
-    if (configfile == NULL) {
-        fprintf(stderr, "Start your krserver with specified configure file!\n");
-        return -1;
-    } else if (kr_config_setfile(configfile) != 0) {
-        fprintf(stderr, "kr_config_setfile [%s] failed!\n", configfile);
-        return -1;
+    FILE *f=fopen(config_file, "rb");
+    if (f == NULL) {
+        fprintf(stderr, "open configure file %s failed!\n", config_file);
+        goto fail;
     }
-    
-    memset(buf, 0x00, sizeof(buf));
-    if (kr_config_getstring("SYSTEM", "SERVERID", buf) != 0) {
-        printf("kr_config_getstring PIDFILE failure!");
-        return -1;
-    }
-    if (strlen(buf) != 0) server->serverid = kr_strdup(buf);
-printf("server->serverid=[%s]\n", server->serverid);
+    fseek(f,0,SEEK_END); long len=ftell(f); fseek(f,0,SEEK_SET);
+    char *data=(char *)kr_calloc(len+1); int n=fread(data,1,len,f); fclose(f);
 
-    memset(buf, 0x00, sizeof(buf));
-    if (kr_config_getstring("SYSTEM", "KRDBMODULE", buf) != 0) {
-        printf("kr_config_getstring KRDBMODULE failure!");
-        return -1;
-    }
-    if (strlen(buf) != 0) server->krdbmodule = kr_strdup(buf);
-printf("server->krdbmodule=[%s]\n", server->krdbmodule);
-
-    memset(buf, 0x00, sizeof(buf));
-    if (kr_config_getstring("SYSTEM", "DATAMODULE", buf) != 0) {
-        printf("kr_config_getstring DATAMODULE failure!");
-        return -1;
-    }
-    if (strlen(buf) != 0) server->datamodule = kr_strdup(buf);
-printf("server->datamodule=[%s]\n", server->datamodule);
-
-    memset(buf, 0x00, sizeof(buf));
-    if (kr_config_getstring("SYSTEM", "RULEMODULE", buf) != 0) {
-        printf("kr_config_getstring RULEMODULE failure!");
-        return -1;
-    }
-    if (strlen(buf) != 0) server->rulemodule = kr_strdup(buf);
-printf("server->rulemodule=[%s]\n", server->rulemodule);
-
-    if (kr_config_getint("SYSTEM", "DAEMONIZE", &server->daemonize) != 0) {
-        printf("kr_config_getint DAEMONIZE failure!");
-        return -1;
-    }
-    
-    memset(buf, 0x00, sizeof(buf));
-    if (kr_config_getstring("SYSTEM", "PIDFILE", buf) != 0) {
-        printf("kr_config_getstring PIDFILE failure!");
-        return -1;
-    }
-    if (strlen(buf) != 0) server->pidfile = kr_strdup(buf);
-    
-    if (kr_config_getint("SYSTEM", "MAXEVENTS", &server->maxevents) != 0) {
-        printf("kr_config_getint MAXEVENTS failure!");
-        return -1;
-    }
-    
-    if (kr_config_getint("SYSTEM", "DETECTMODE", &server->detectmode) != 0) {
-        printf("kr_config_getint DETECTMODE failure!");
-        return -1;
-    }
-    
-    memset(buf, 0x00, sizeof(buf));
-    if (kr_config_getstring("SYSTEM", "LOGPATH", buf) != 0) {
-        printf("kr_config_getstring LOGPATH failure!");
-        return -1;
-    }
-    if (strlen(buf) != 0) server->logpath = kr_strdup(buf);
-
-    if (kr_config_getint("SYSTEM", "LOGLEVEL", &server->loglevel) != 0) {
-        printf("kr_config_getint LOGLEVEL failure!");
-        return -1;
+    cJSON *krjson = cJSON_Parse(data); kr_free(data);
+    if (krjson == NULL) {
+        fprintf(stderr, "parse config_file %s failed[%s]!\n",
+                config_file, cJSON_GetErrorPtr());
+        goto fail;
     }
 
-    if (kr_config_getint("SYSTEM", "DUMPINFO", &server->dumpinfo) != 0) {
-        printf("kr_config_getint DUMPINFO failure!");
-        return -1;
-    }
-    
-    if (kr_config_getint("SYSTEM", "THREADCNT", &server->threadcnt) != 0) {
-        printf("kr_config_getint THREADCNT failure!");
-        return -1;
-    }
-printf("server->threadcnt=[%d]\n", server->threadcnt);
 
-    if (kr_config_getint("SYSTEM", "HIGHWATERMARK", &server->hwm) != 0) {
-        printf("kr_config_getint HIGHWATERMARK failure!");
-        return -1;
+    /*server config section*/
+    cJSON *server = cJSON_GetObjectItem(krjson, "server");
+    if (server == NULL) {
+        fprintf(stderr, "config_file %s miss server section!\n", config_file);
+        goto fail;
     }
-printf("server->hwm=[%d]\n", server->hwm);
+    T_KRServerConfig *krserver = kr_calloc(sizeof(*krserver));
+    krserver->serverid = _dupenv(cJSON_GetString(server, "serverid"));
+    krserver->daemonize = (int )cJSON_GetNumber(server, "daemonize");
+    krserver->pidfile = _dupenv(cJSON_GetString(server, "pidfile"));
 
-    if (kr_config_getint("SYSTEM", "HDICACHESIZE", &server->hdicachesize) != 0) {
-        printf("kr_config_getint HDICACHESIZE failure!");
-        return -1;
+    /*channels config section*/
+    cJSON *channels = cJSON_GetObjectItem(krjson, "channels");
+    if (channels == NULL) {
+        fprintf(stderr, "config_file %s miss channels section!\n", config_file);
+        goto fail;
     }
-printf("server->hdicachesize=[%d]\n", server->hdicachesize);
+    krserver->channel_count = cJSON_GetArraySize(channels);
+    krserver->channels = kr_calloc(sizeof(T_KRChannelConfig)*krserver->channel_count);
+    for (int i=0; i<krserver->channel_count; ++i) {
+        cJSON *channel = cJSON_GetArrayItem(channels, i);
+        T_KRChannelConfig *krchannel = krserver->channels[i];
 
-    memset(buf, 0x00, sizeof(buf));
-    if (kr_config_getstring("SYSTEM", "DBNAME", buf) != 0) {
-        printf("kr_config_getstring DBNAME failure!");
-        return -1;
-    }
-    if (strlen(buf) != 0) server->dbname = kr_strdup(buf);
-printf("server->dbname=[%s]\n", server->dbname);
-
-    memset(buf, 0x00, sizeof(buf));
-    if (kr_config_getstring("SYSTEM", "DBUSER", buf) != 0) {
-        printf("kr_config_getstring DBUSER failure!");
-        return -1;
-    }
-    if (strlen(buf) != 0) server->dbuser = kr_strdup(buf);
-printf("server->dbuser=[%s]\n", server->dbuser);
-
-    memset(buf, 0x00, sizeof(buf));
-    if (kr_config_getstring("SYSTEM", "DBPASS", buf) != 0) {
-        printf("kr_config_getstring DBPASS failure!");
-        return -1;
-    }
-    if (strlen(buf) != 0) server->dbpass = kr_strdup(buf);
-printf("server->dbpass=[%s]\n", server->dbpass);
-    
-    if (kr_config_getint("NETWORK", "TCPPORT", &server->tcpport) != 0) {
-        printf("kr_config_getint TCPPORT failure!");
-        return -1;
-    }
-    
-    memset(buf, 0x00, sizeof(buf));
-    if (kr_config_getstring("NETWORK", "TCPBINDADDR", buf) != 0) {
-        printf("kr_config_getstring TCPBINDADDR failure!");
-        return -1;
-    }
-    if (strlen(buf) != 0) server->tcpbindaddr = kr_strdup(buf);
-printf("server->tcpbindaddr=[%s]\n", server->tcpbindaddr);
-    
-    if (kr_config_getint("NETWORK", "CLUSTERMODE", &server->clustermode) != 0) {
-        printf("kr_config_getint CLUSTERMODE failure!");
-        return -1;
-    }
-    
-    if (kr_config_getint("NETWORK", "WEIGHTS", &server->weights) != 0) {
-        printf("kr_config_getint WEIGHTS failure!");
-        return -1;
+        //FIXME:moved it to transport layer
+        //krchannel->addr = _dupenv(cJSON_GetString(channel, "TCPBINDADDR"));
+        //krchannel->port = (int )cJSON_GetNumber(channel, "TCPPORT");
     }
 
-    if (kr_config_getint("NETWORK", "REPLICA", &server->replica) != 0) {
-        printf("kr_config_getint REPLICA failure!");
-        return -1;
+    /*engine config section*/
+    cJSON *engine = cJSON_GetObjectItem(krjson, "engine");
+    if (engine == NULL) {
+        fprintf(stderr, "config_file %s miss engine section!\n", config_file);
+        goto fail;
     }
-        
-    if (kr_config_getint("NETWORK", "COORDPORT", &server->coordport) != 0) {
-        printf("kr_config_getint COORDPORT failure!");
-        return -1;
-    }
+    T_KREngineConfig *krengine = kr_calloc(sizeof(*krengine));
+    krengine->dbname = _dupenv(cJSON_GetString(engine, "dbname"));
+    krengine->dbuser = _dupenv(cJSON_GetString(engine, "dbuser"));
+    krengine->dbpass = _dupenv(cJSON_GetString(engine, "dbpass"));
 
-    memset(buf, 0x00, sizeof(buf));
-    if (kr_config_getstring("NETWORK", "COORDIP", buf) != 0) {
-        printf("kr_config_getstring COORDIP failure!");
-        return -1;
+    krengine->logpath = _dupenv(cJSON_GetString(engine, "logpath"));
+    krengine->logname = _dupenv(cJSON_GetString(engine, "logname"));
+    krengine->loglevel = (int )cJSON_GetNumber(engine, "loglevel");
+
+    krengine->krdb_module = _dupenv(cJSON_GetString(engine, "krdb_module"));
+    krengine->data_module = _dupenv(cJSON_GetString(engine, "data_module"));
+    krengine->rule_module = _dupenv(cJSON_GetString(engine, "rule_module"));
+
+    krengine->thread_pool_size = (int )cJSON_GetNumber(engine, "thread_pool_size");
+    krengine->high_water_mark = (int )cJSON_GetNumber(engine, "high_water_mark");
+    krengine->hdi_cache_size = (int )cJSON_GetNumber(engine, "hdi_cache_size");
+    krserver->engine = krengine;
+
+    /*cluster config section*/
+    cJSON *cluster = cJSON_GetObjectItem(krjson, "cluster");
+    if (cluster == NULL) {
+        fprintf(stderr, "config_file %s miss cluster section!\n", config_file);
+        goto fail;
     }
-    if (strlen(buf) != 0) server->coordip = kr_strdup(buf);
+    T_KRClusterConfig *krcluster = kr_calloc(sizeof(*krcluster));
+    krcluster->clustermode = (int )cJSON_GetNumber(cluster, "clustermode");
+    krcluster->weights = (int )cJSON_GetNumber(cluster, "weights");
+    krcluster->replica = (int )cJSON_GetNumber(cluster, "replica");
+    krcluster->coordip = _dupenv(cJSON_GetString(cluster, "coordip"));
+    krcluster->coordport = (int )cJSON_GetNumber(cluster, "coordport");
+    krcluster->retrytimes = (int )cJSON_GetNumber(cluster, "retrytimes");
+    krcluster->retryinterval = (int )cJSON_GetNumber(cluster, "retryinterval");
+    krserver->cluster = krcluster;
     
-    if (kr_config_getint("NETWORK", "RETRYTIMES", &server->retrytimes) != 0) {
-        printf("kr_config_getint RETRYTIMES failure!");
-        return -1;
-    }
-    
-    if (kr_config_getint("NETWORK", "RETRYINTERVAL", &server->retryinterval) != 0) {
-        printf("kr_config_getint RETRYINTERVAL failure!");
-        return -1;
-    }
-    
-    return 0;
+    cJSON_Delete(krjson);
+    return krserver;
+
+fail:
+    if (krjson) cJSON_Delete(krjson); 
+    kr_server_config_free(krserver);
+    return NULL;
 }
 
 
-void kr_server_config_dump(T_KRServer *server, FILE *fp)
+void kr_server_config_free(T_KRServerConfig *server)
 {
-    fprintf(fp, "Dumping Server Configure...\n ");
-    fprintf(fp, "configfile[%s]\n serverid[%s]\n daemonize[%d]\n pidfile[%s]\n ", \
-        server->configfile, server->serverid, server->daemonize, server->pidfile);
-    fprintf(fp, "detectmode[%d]\n loglevel[%d]\n logpath[%s]", \
-        server->detectmode, server->loglevel, server->logpath);
-    fprintf(fp, "krdbmodule[%s]\n datamodule[%s]\n rulemodule[%s]\n", \
-        server->krdbmodule, server->datamodule, server->rulemodule);
-    fprintf(fp, "threadcnt[%d]\n hwm[%d]\n maxevents[%d]\n shutdown[%d]\n ", \
-        server->threadcnt, server->hwm, server->maxevents, server->shutdown);
-    fprintf(fp, "tcpport[%d]\n tcpbindaddr[%s]\n ", \
-        server->tcpport, server->tcpbindaddr);    
-    fprintf(fp, "clustermode[%d]\n weights[%d]\n coordport[%d]\n coordip[%s]", \
-        server->clustermode, server->weights, server->coordport, server->coordip);
-}
+    if (server == NULL) return;
 
-
-void kr_server_config_free(T_KRServer *server)
-{
-    if (server->configfile) kr_free(server->configfile);
+    /*server config section*/
     if (server->serverid) kr_free(server->serverid);
-    if (server->krdbmodule) kr_free(server->krdbmodule);
-    if (server->datamodule) kr_free(server->datamodule);
-    if (server->rulemodule) kr_free(server->rulemodule);
     if (server->pidfile) kr_free(server->pidfile);
-    if (server->logpath) kr_free(server->logpath);
-    if (server->dbname) kr_free(server->dbname);
-    if (server->dbuser) kr_free(server->dbuser);
-    if (server->dbpass) kr_free(server->dbpass);
-    if (server->tcpbindaddr) kr_free(server->tcpbindaddr);
-    if (server->coordip) kr_free(server->coordip);
+
+    /*channel config section*/
+    if (server->channel_count > 0) {
+        for (int i=0; i<server->channel_count; ++i) {
+            T_KRChannelConfig *channel = server->channels[i];
+
+            //FIXME:
+            //if (channel->addr) kr_free(channel->addr);
+        }
+
+    }
+    
+    /*engine config section*/
+    if (server->engine) {
+        T_KREngineConfig *engine = server->engine;
+        if (engine->logpath) kr_free(engine->logpath);
+        if (engine->logname) kr_free(engine->logname);
+        if (engine->dbname) kr_free(engine->dbname);
+        if (engine->dbuser) kr_free(engine->dbuser);
+        if (engine->dbpass) kr_free(engine->dbpass);
+        if (engine->krdb_module) kr_free(engine->krdb_module);
+        if (engine->data_module) kr_free(engine->data_module);
+        if (engine->rule_module) kr_free(engine->rule_module);
+    }
+
+    /*cluster config section*/
+    if (server->cluster) {
+        T_KRClusterConfig *cluster = server->cluster;
+        if (cluster->coordip) kr_free(cluster->coordip);
+    }
 }
+

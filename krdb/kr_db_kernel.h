@@ -40,8 +40,8 @@ typedef struct _kr_field_def_t
 /*record stored in krdb*/
 typedef struct _kr_record_t
 {
-    void        *ptTable;
-    char        *pRecBuf;
+    void          *ptTable;
+    char          *pRecBuf;
 }T_KRRecord;
 
 /*hash table index definition*/
@@ -57,14 +57,12 @@ typedef struct _kr_index_t
 
 typedef struct _kr_table_t
 {
+    pthread_mutex_t  tLock;
     int              iTableId;
     char             caTableName[30+1];
     KRMapFuncPre     pMapFuncPre;       /* pre handle message */
     KRMapFunc        pMapFunc;          /* assign field value */
     KRMapFuncPost    pMapFuncPost;      /* post handle message */
-    char             caMMapFile[100+1];
-    unsigned int     uiMMapSize;
-    void             *pMMapAddr;
     E_KRSizeKeepMode eSizeKeepMode;
     long             lSizeKeepValue;
     int              iFieldCnt;         /* field count of this table */
@@ -90,6 +88,11 @@ static inline char* kr_get_field_name(T_KRRecord *krrecord, int ifldid)
     return ((T_KRTable *) krrecord->ptTable)->ptFieldDef[ifldid].name;
 }
 
+static inline int kr_get_field_length(T_KRRecord *krrecord, int ifldid)
+{ 
+    return ((T_KRTable *) krrecord->ptTable)->ptFieldDef[ifldid].length;
+}
+
 static inline E_KRType kr_get_field_type(T_KRRecord *krrecord, int ifldid)
 { 
     return ((T_KRTable *) krrecord->ptTable)->ptFieldDef[ifldid].type;
@@ -102,8 +105,16 @@ static inline void* kr_get_field_value(T_KRRecord *krrecord, int ifldid)
     return &krrecord->pRecBuf[field_offset];
 }
 
+static inline time_t kr_get_transtime(T_KRRecord *ptRecord)
+{
+    time_t tTransTime;
+    tTransTime = (time_t )*(long *)kr_get_field_value(\
+            ptRecord, KR_FIELDNO_TRANSTIME);
+    return tTransTime;
+}
+
+
 T_KRRecord*   kr_create_record_from_data(T_KRTable *krtable, void *source);
-T_KRRecord*   kr_create_record_from_mmap(T_KRTable *krtable, void *mmaprec);
 void          kr_destroy_record(T_KRRecord *krrecord);
 
 int           kr_insert_record(T_KRRecord *krrecord, T_KRTable *krtable);
@@ -114,8 +125,7 @@ T_KRIndex*    kr_create_index(T_KRDB *krdb, T_KRTable *krtable, int index_id,
                 int index_field_id, int sort_field_id);
 void          kr_drop_table_index(T_KRIndex *krindex, T_KRTable *krtable);
 
-T_KRTable*    kr_create_table(T_KRDB *krdb, int table_id, 
-                char *table_name, char *mmap_file, 
+T_KRTable*    kr_create_table(T_KRDB *krdb, int table_id, char *table_name, 
                 E_KRSizeKeepMode keep_mode, long keep_value, int field_cnt, 
                 KRLoadDefFunc load_field_def_func, 
                 KRMapFuncPre map_func_pre,
@@ -123,6 +133,8 @@ T_KRTable*    kr_create_table(T_KRDB *krdb, int table_id,
                 KRMapFuncPost map_func_post,
                 void *param);
 void          kr_drop_table(T_KRTable *krtable, T_KRDB *krdb);
+void          kr_lock_table(T_KRTable *krtable);
+void          kr_unlock_table(T_KRTable *krtable);
 
 T_KRTable*    kr_get_table(T_KRDB *krdb, int id);
 T_KRIndex*    kr_get_table_index(T_KRTable *krtable, int id);
@@ -132,6 +144,5 @@ T_KRList*     kr_get_record_list(T_KRIndex *krindex, void *key);
 T_KRDB*       kr_create_db(char *db_name, T_KRModule *krdbmodule);
 void          kr_drop_db_index(T_KRIndex *krindex, T_KRDB *krdb);
 void          kr_drop_db(T_KRDB *krdb);
-
 
 #endif /* __KR_DB_KERNEL_H__ */

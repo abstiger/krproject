@@ -17,13 +17,17 @@
 #endif
 
 /*types defined in krproject*/
-typedef int        kr_bool;
-typedef int8_t     kr_char;
-typedef int32_t    kr_int;
-typedef int64_t    kr_long;
-typedef double     kr_double;
-typedef char*      kr_string;
-typedef void*      kr_pointer;
+typedef int            kr_bool;
+typedef uint8_t        kr_uchar;
+typedef int8_t         kr_char;
+typedef uint32_t       kr_uint;
+typedef int32_t        kr_int;
+typedef uint64_t       kr_ulong;
+typedef int64_t        kr_long;
+typedef double         kr_double;
+typedef char*          kr_string;
+typedef void*          kr_pointer;
+typedef const void*    kr_constpointer;
 
 /*types used in krproject*/
 typedef enum {
@@ -50,8 +54,8 @@ typedef union {
 
 /*value indicator*/
 typedef enum {
-    KR_VALUE_UNSET     = '0', /*未设置*/
-    KR_VALUE_SETED     = '1'  /*已设置*/
+    KR_VALUE_UNSET     = '0',
+    KR_VALUE_SETED     = '1'  
 }E_KRValueInd;
 
 /*external definitions*/
@@ -68,6 +72,7 @@ typedef void *(*KRDupFunc)(void *data);
 typedef void (*KRForEachFunc)(void *value, void *data);
 typedef int (*KRCompareFunc)(const void *a, const void *b);
 typedef int (*KRCompareDataFunc)(const void *a, const void *b, void *data);
+typedef void (*KRDestroyNotify)(void *data);
 
 
 /* Various kinds of Hash Functions */

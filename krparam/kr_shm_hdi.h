@@ -32,8 +32,9 @@ typedef struct _kr_shm_hdi_t
 }T_KRShmHDI;
 
 
-extern int LoadShmHDI(T_DbsEnv *dbsenv, T_KRShmHDI *ptShmHDI);
-extern int DumpShmHDI(T_KRShmHDI *ptShmHDI, FILE *fp);
+int kr_shm_hdi_load(T_DbsEnv *dbsenv, T_KRShmHDI *ptShmHDI);
+int kr_shm_hdi_dump(T_KRShmHDI *ptShmHDI, FILE *fp);
+cJSON *kr_shm_hdi_info(T_KRShmHDIDef *ptShmHDIDef); 
 
 
 #endif  /*__KR_SHM_HDI_H__*/
