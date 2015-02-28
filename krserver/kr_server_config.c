@@ -31,26 +31,11 @@ T_KRServerConfig *kr_server_config_parse(char *config_file)
     krserver->serverid = _dupenv(cJSON_GetString(server, "serverid"));
     krserver->daemonize = (int )cJSON_GetNumber(server, "daemonize");
     krserver->pidfile = _dupenv(cJSON_GetString(server, "pidfile"));
-
-    /*channels config section*/
-    cJSON *channels = cJSON_GetObjectItem(krjson, "channels");
-    if (channels == NULL) {
-        fprintf(stderr, "config_file %s miss channels section!\n", config_file);
-        goto fail;
-    }
-    krserver->channel_count = cJSON_GetArraySize(channels);
-    krserver->channels = kr_calloc(sizeof(T_KRChannelConfig)*krserver->channel_count);
-    for (int i=0; i<krserver->channel_count; ++i) {
-        cJSON *channel = cJSON_GetArrayItem(channels, i);
-        T_KRChannelConfig *krchannel = krserver->channels[i];
-
-        //FIXME:moved it to transport layer
-        //krchannel->addr = _dupenv(cJSON_GetString(channel, "TCPBINDADDR"));
-        //krchannel->port = (int )cJSON_GetNumber(channel, "TCPPORT");
-    }
+    krserver->tcpport = (int )cJSON_GetNumber(server, "tcpport");
+    krserver->tcpbindaddr = _dupenv(cJSON_GetString(server, "tcpbindaddr"));
 
     /*engine config section*/
-    cJSON *engine = cJSON_GetObjectItem(krjson, "engine");
+    cJSON *engine = cJSON_GetObjectItem(server, "engine");
     if (engine == NULL) {
         fprintf(stderr, "config_file %s miss engine section!\n", config_file);
         goto fail;
@@ -74,7 +59,7 @@ T_KRServerConfig *kr_server_config_parse(char *config_file)
     krserver->engine = krengine;
 
     /*cluster config section*/
-    cJSON *cluster = cJSON_GetObjectItem(krjson, "cluster");
+    cJSON *cluster = cJSON_GetObjectItem(server, "cluster");
     if (cluster == NULL) {
         fprintf(stderr, "config_file %s miss cluster section!\n", config_file);
         goto fail;
@@ -106,17 +91,7 @@ void kr_server_config_free(T_KRServerConfig *server)
     /*server config section*/
     if (server->serverid) kr_free(server->serverid);
     if (server->pidfile) kr_free(server->pidfile);
-
-    /*channel config section*/
-    if (server->channel_count > 0) {
-        for (int i=0; i<server->channel_count; ++i) {
-            T_KRChannelConfig *channel = server->channels[i];
-
-            //FIXME:
-            //if (channel->addr) kr_free(channel->addr);
-        }
-
-    }
+    if (server->tcpbindaddr) kr_free(server->tcpbindaddr);
     
     /*engine config section*/
     if (server->engine) {

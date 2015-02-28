@@ -1,4 +1,4 @@
-lib_LTLIBRARIES        = libkrcalc.la
+noinst_LTLIBRARIES     = libkrcalc.la
 libkrcalc_la_SOURCES   = \
 						 kr_calc_parser_flex.c   \
 						 kr_calc_parser_bison.c   \
@@ -18,7 +18,7 @@ libkrcalc_la_SOURCES   = \
 						 kr_calc.c \
 						 kr_calc.h 
      
-libkrcalc_la_LIBADD    = $(top_srcdir)/krutils/libkrutils.la
+#libkrcalc_la_LIBADD    = $(top_srcdir)/krutils/libkrutils.la
 libkrcalc_la_LDFLAGS   =
 libkrcalc_la_CPPFLAGS  =
 EXTRA_DIST = kr_calc_parser_flex.l kr_calc_parser_bison.y

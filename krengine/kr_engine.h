@@ -41,7 +41,7 @@ typedef struct _kr_engine_t T_KREngine;
 /* basic functions of krengine */
 T_KREngine *kr_engine_startup(T_KREngineConfig *arg, void *data);
 void kr_engine_shutdown(T_KREngine *engine);
-int kr_engine_run(T_KREngine *engine, T_KRMessage *apply, T_KRMessage *reply, KRCBFunc cb_func, void *data);
+int kr_engine_run(T_KREngine *engine, T_KREngineArg *arg);
 int kr_engine_register(T_KREngine *engine, char *method, KRHandleFunc func);
 
 #endif  /*__KR_ENGINE_H__*/

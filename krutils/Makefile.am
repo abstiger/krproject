@@ -1,4 +1,4 @@
-lib_LTLIBRARIES         = libkrutils.la
+noinst_LTLIBRARIES      = libkrutils.la
 libkrutils_la_SOURCES   = \
 						  kr_macros.h \
 						  kr_types.h \

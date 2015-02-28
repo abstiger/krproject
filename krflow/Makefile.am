@@ -1,4 +1,4 @@
-lib_LTLIBRARIES      = libkrflow.la
+noinst_LTLIBRARIES     = libkrflow.la
 libkrflow_la_SOURCES   = kr_flow.h
 
 libkrflow_la_LIBADD    = $(top_srcdir)/krutils/libkrutils.la

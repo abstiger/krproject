@@ -1,4 +1,4 @@
-lib_LTLIBRARIES        = libkrdata.la
+noinst_LTLIBRARIES     = libkrdata.la
 libkrdata_la_SOURCES   = \
 						 kr_data.h \
 						 kr_data.c \
@@ -14,10 +14,10 @@ libkrdata_la_SOURCES   = \
 						 kr_hdi_cache.h \
 						 kr_hdi_cache.c 
 
-libkrdata_la_LIBADD    = $(top_srcdir)/krutils/libkrutils.la
-libkrdata_la_LIBADD   += $(top_srcdir)/dbs/dbs/libdbsdbs.la
-libkrdata_la_LIBADD   += $(top_srcdir)/krparam/libkrparam.la
-libkrdata_la_LIBADD   += $(top_srcdir)/krcalc/libkrcalc.la
-libkrdata_la_LIBADD   += $(top_srcdir)/krdb/libkrdb.la
+#libkrdata_la_LIBADD    = $(top_srcdir)/krutils/libkrutils.la
+#libkrdata_la_LIBADD   += $(top_srcdir)/dbs/dbs/libdbsdbs.la
+#libkrdata_la_LIBADD   += $(top_srcdir)/krparam/libkrparam.la
+#libkrdata_la_LIBADD   += $(top_srcdir)/krcalc/libkrcalc.la
+#libkrdata_la_LIBADD   += $(top_srcdir)/krdb/libkrdb.la
 libkrdata_la_LDFLAGS   = 
 libkrdata_la_CPPFLAGS  = 

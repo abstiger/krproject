@@ -1,6 +1,6 @@
 SUBDIRS  = . dbs
 
-lib_LTLIBRARIES        = libdbsbas.la 
+noinst_LTLIBRARIES     = libdbsbas.la 
 libdbsbas_la_SOURCES   = dbs_basopr.h \
                          dbs_basopr.c  
 libdbsbas_la_CPPFLAGS  = 

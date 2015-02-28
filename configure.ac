@@ -94,7 +94,6 @@ krdb/Makefile
 krdata/Makefile 
 krflow/Makefile 
 krengine/Makefile 
-krchannel/Makefile 
 krserver/Makefile
 krcoordi/Makefile
 krtools/Makefile

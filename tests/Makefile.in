@@ -72,30 +72,21 @@ kr_cache_test_OBJECTS = $(am_kr_cache_test_OBJECTS)
 kr_cache_test_DEPENDENCIES = $(progs_ldadd)
 am_kr_calc_test_OBJECTS = kr_calc_test-kr_calc_test.$(OBJEXT)
 kr_calc_test_OBJECTS = $(am_kr_calc_test_OBJECTS)
-kr_calc_test_DEPENDENCIES = $(progs_ldadd) \
-	$(top_srcdir)/krcalc/libkrcalc.la
+kr_calc_test_DEPENDENCIES = $(progs_ldadd)
 am_kr_conhash_test_OBJECTS =  \
 	kr_conhash_test-kr_conhash_test.$(OBJEXT)
 kr_conhash_test_OBJECTS = $(am_kr_conhash_test_OBJECTS)
 kr_conhash_test_DEPENDENCIES = $(progs_ldadd)
 am_kr_data_test_OBJECTS = kr_data_test-kr_data_test.$(OBJEXT)
 kr_data_test_OBJECTS = $(am_kr_data_test_OBJECTS)
-kr_data_test_DEPENDENCIES = $(progs_ldadd) \
-	$(top_srcdir)/dbs/libdbsbas.la \
-	$(top_srcdir)/dbs/dbs/libdbsdbs.la \
-	$(top_srcdir)/krdb/libkrdb.la \
-	$(top_srcdir)/krparam/libkrparam.la \
-	$(top_srcdir)/krcalc/libkrcalc.la \
-	$(top_srcdir)/krdata/libkrdata.la
+kr_data_test_DEPENDENCIES = $(progs_ldadd)
 am_kr_datetime_test_OBJECTS =  \
 	kr_datetime_test-kr_datetime_test.$(OBJEXT)
 kr_datetime_test_OBJECTS = $(am_kr_datetime_test_OBJECTS)
 kr_datetime_test_DEPENDENCIES = $(progs_ldadd)
 am_kr_db_test_OBJECTS = kr_db_test-kr_db_test.$(OBJEXT)
 kr_db_test_OBJECTS = $(am_kr_db_test_OBJECTS)
-kr_db_test_DEPENDENCIES = $(progs_ldadd) \
-	$(top_srcdir)/dbs/dbs/libdbsdbs.la \
-	$(top_srcdir)/dbs/libdbsbas.la $(top_srcdir)/krdb/libkrdb.la
+kr_db_test_DEPENDENCIES = $(progs_ldadd)
 am_kr_hashtable_test_OBJECTS =  \
 	kr_hashtable_test-kr_hashtable_test.$(OBJEXT)
 kr_hashtable_test_OBJECTS = $(am_kr_hashtable_test_OBJECTS)
@@ -108,9 +99,7 @@ kr_log_test_OBJECTS = $(am_kr_log_test_OBJECTS)
 kr_log_test_DEPENDENCIES = $(progs_ldadd)
 am_kr_odbc_test_OBJECTS = kr_odbc_test-kr_odbc_test.$(OBJEXT)
 kr_odbc_test_OBJECTS = $(am_kr_odbc_test_OBJECTS)
-kr_odbc_test_DEPENDENCIES = $(progs_ldadd) \
-	$(top_srcdir)/dbs/dbs/libdbsdbs.la \
-	$(top_srcdir)/dbs/libdbsbas.la
+kr_odbc_test_DEPENDENCIES = $(progs_ldadd)
 am_kr_queue_test_OBJECTS = kr_queue_test-kr_queue_test.$(OBJEXT)
 kr_queue_test_OBJECTS = $(am_kr_queue_test_OBJECTS)
 kr_queue_test_DEPENDENCIES = $(progs_ldadd)
@@ -302,7 +291,7 @@ TEST_PROGS = kr_alloc_test kr_string_test kr_datetime_test kr_log_test \
 	kr_threadpool_test kr_skiplist_test kr_conhash_test \
 	kr_cache_test kr_calc_test kr_odbc_test kr_db_test \
 	kr_data_test
-progs_ldadd = $(top_srcdir)/krutils/libkrutils.la
+progs_ldadd = $(top_srcdir)/krengine/libkrengine.la
 kr_alloc_test_SOURCES = kr_alloc_test.c
 kr_alloc_test_LDADD = $(progs_ldadd)
 kr_alloc_test_CPPFLAGS = -g 
@@ -337,23 +326,16 @@ kr_cache_test_SOURCES = kr_cache_test.c
 kr_cache_test_LDADD = $(progs_ldadd)
 kr_cache_test_CPPFLAGS = -g 
 kr_calc_test_SOURCES = kr_calc_test.c
-kr_calc_test_LDADD = $(progs_ldadd) $(top_srcdir)/krcalc/libkrcalc.la
+kr_calc_test_LDADD = $(progs_ldadd)
 kr_calc_test_CPPFLAGS = -g 
 kr_odbc_test_SOURCES = kr_odbc_test.c
-kr_odbc_test_LDADD = $(progs_ldadd) $(top_srcdir)/dbs/dbs/libdbsdbs.la \
-	$(top_srcdir)/dbs/libdbsbas.la
+kr_odbc_test_LDADD = $(progs_ldadd)
 kr_odbc_test_CPPFLAGS = -g 
 kr_db_test_SOURCES = kr_db_test.c
-kr_db_test_LDADD = $(progs_ldadd) $(top_srcdir)/dbs/dbs/libdbsdbs.la \
-	$(top_srcdir)/dbs/libdbsbas.la $(top_srcdir)/krdb/libkrdb.la
+kr_db_test_LDADD = $(progs_ldadd)
 kr_db_test_CPPFLAGS = -g 
 kr_data_test_SOURCES = kr_data_test.c
-kr_data_test_LDADD = $(progs_ldadd) $(top_srcdir)/dbs/libdbsbas.la \
-	$(top_srcdir)/dbs/dbs/libdbsdbs.la \
-	$(top_srcdir)/krdb/libkrdb.la \
-	$(top_srcdir)/krparam/libkrparam.la \
-	$(top_srcdir)/krcalc/libkrcalc.la \
-	$(top_srcdir)/krdata/libkrdata.la
+kr_data_test_LDADD = $(progs_ldadd)
 kr_data_test_CPPFLAGS = -g 
 all: all-am
 

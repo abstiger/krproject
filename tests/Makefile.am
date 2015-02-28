@@ -1,7 +1,7 @@
 TEST_PROGS                      = 
 
 noinst_PROGRAMS                 = $(TEST_PROGS)
-progs_ldadd                     = $(top_srcdir)/krutils/libkrutils.la
+progs_ldadd                     = $(top_srcdir)/krengine/libkrengine.la
 
 TEST_PROGS                     += kr_alloc_test
 kr_alloc_test_SOURCES           = kr_alloc_test.c
@@ -61,32 +61,20 @@ kr_cache_test_CPPFLAGS          = -g
 TEST_PROGS                     += kr_calc_test
 kr_calc_test_SOURCES            = kr_calc_test.c
 kr_calc_test_LDADD              = $(progs_ldadd)
-kr_calc_test_LDADD             += $(top_srcdir)/krcalc/libkrcalc.la
 kr_calc_test_CPPFLAGS           = -g 
 
 TEST_PROGS                     += kr_odbc_test
 kr_odbc_test_SOURCES            = kr_odbc_test.c
 kr_odbc_test_LDADD              = $(progs_ldadd)
-kr_odbc_test_LDADD             += $(top_srcdir)/dbs/dbs/libdbsdbs.la
-kr_odbc_test_LDADD             += $(top_srcdir)/dbs/libdbsbas.la
 kr_odbc_test_CPPFLAGS           = -g 
 
 TEST_PROGS                     += kr_db_test
 kr_db_test_SOURCES              = kr_db_test.c
 kr_db_test_LDADD                = $(progs_ldadd)
-kr_db_test_LDADD               += $(top_srcdir)/dbs/dbs/libdbsdbs.la
-kr_db_test_LDADD               += $(top_srcdir)/dbs/libdbsbas.la
-kr_db_test_LDADD               += $(top_srcdir)/krdb/libkrdb.la
 kr_db_test_CPPFLAGS             = -g 
 
 TEST_PROGS                     += kr_data_test
 kr_data_test_SOURCES            = kr_data_test.c
 kr_data_test_LDADD              = $(progs_ldadd)
-kr_data_test_LDADD             += $(top_srcdir)/dbs/libdbsbas.la
-kr_data_test_LDADD             += $(top_srcdir)/dbs/dbs/libdbsdbs.la
-kr_data_test_LDADD             += $(top_srcdir)/krdb/libkrdb.la
-kr_data_test_LDADD             += $(top_srcdir)/krparam/libkrparam.la
-kr_data_test_LDADD             += $(top_srcdir)/krcalc/libkrcalc.la
-kr_data_test_LDADD             += $(top_srcdir)/krdata/libkrdata.la
 kr_data_test_CPPFLAGS           = -g 
 

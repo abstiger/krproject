@@ -191,7 +191,7 @@ static int kr_traversal_datasrc(char *file_code)
             iFlag = -1; 
             break;
         } else if (iResult == KR_DBNOTFOUND) {
-            fprintf(stdout, "Create [%d] Tables Totally!\n", iCnt);
+            fprintf(stdout, "Generated [%d] Tables Totally!\n", iCnt);
             break;
         }
         kr_string_rtrim(stDatasrcCur.caOutDatasrcName);

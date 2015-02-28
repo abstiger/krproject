@@ -2,7 +2,6 @@
 #define __KR_SERVER_CONFIG_H__
 
 #include "krengine/kr_engine.h"
-#include "krchannel/kr_channel.h"
 
 typedef struct _kr_cluster_config_t
 {
@@ -19,14 +18,13 @@ typedef struct _kr_cluster_config_t
 typedef struct _kr_server_config_t
 {
     /* server config section */
-    char              *serverid;                /* server identifier */
-    int                daemonize;               /* True if running as a daemon */
-    char              *pidfile;                 /* PID file path */
+    char   *serverid;            /* server identifier */
+    int     daemonize;           /* True if running as a daemon */
+    char   *pidfile;             /* PID file path */
+    int     tcpport;             /* TCP listening port */
+    char   *tcpbindaddr;         /* Bind address or NULL */
 
-    /* channel config section */
-    int                channel_count;
-    T_KRChannelConfig **channels;
-    
+
     /* engine config section */
     T_KREngineConfig  *engine;
 

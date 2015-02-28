@@ -61,18 +61,18 @@ T_KREngine *kr_engine_startup(T_KREngineConfig *cfg, void *data)
     if (cfg->krdb_module) {
         ctx_env->krdbModule = kr_module_open(cfg->krdb_module, RTLD_LAZY);
         if (ctx_env->krdbModule == NULL) {
-            KR_LOG(KR_LOGERROR, "kr_module_open %s failed!\n", cfg->krdb_module);
+            KR_LOG(KR_LOGERROR, "kr_module_open %s failed!", cfg->krdb_module);
             goto FAILED;
         }
     } else {
-        KR_LOG(KR_LOGERROR, "krdb-module-file not cfgured!\n");
+        KR_LOG(KR_LOGERROR, "krdb-module-file not configured!");
         goto FAILED;
     }
 
     if (cfg->data_module) {
         ctx_env->dataModule = kr_module_open(cfg->data_module, RTLD_LAZY);
         if (ctx_env->dataModule == NULL) {
-            KR_LOG(KR_LOGERROR, "kr_module_open %s failed!\n", cfg->data_module);
+            KR_LOG(KR_LOGERROR, "kr_module_open %s failed!", cfg->data_module);
             goto FAILED;
         }
     }
@@ -81,12 +81,12 @@ T_KREngine *kr_engine_startup(T_KREngineConfig *cfg, void *data)
     if (cfg->dbname) {
         ctx_env->ptDbs = dbsConnect(cfg->dbname, cfg->dbuser, cfg->dbpass);
         if (ctx_env->ptDbs == NULL) {
-            KR_LOG(KR_LOGERROR, "dbsConnect [%s] [%s] [%s] failed!\n",
+            KR_LOG(KR_LOGERROR, "dbsConnect [%s] [%s] [%s] failed!",
                     cfg->dbname, cfg->dbuser, cfg->dbpass);
             goto FAILED;
         }
     } else {
-        KR_LOG(KR_LOGERROR, "db-name not cfgured!\n");
+        KR_LOG(KR_LOGERROR, "db-name not configured!");
         goto FAILED;
     }
 
@@ -188,15 +188,12 @@ void kr_engine_shutdown(T_KREngine *engine)
 }
 
 
-int kr_engine_run(T_KREngine *engine, T_KRMessage *apply, 
-        T_KRMessage *reply, KRCBFunc cb_func, void *data)
+int kr_engine_run(T_KREngine *engine, T_KREngineArg *arg)
 {
-    T_KREngineArg stEngineArg = {apply, reply, cb_func, data};
     if (engine->ctx) {
-        kr_engine_handle(engine->ctx, &stEngineArg);
+        kr_engine_handle(engine->ctx, arg);
     } else {
-        T_KRThreadPoolTask stTask = \
-        {kr_engine_handle, &stEngineArg, sizeof(stEngineArg)};
+        T_KRThreadPoolTask stTask = {kr_engine_handle, arg, sizeof(*arg)};
         if (kr_threadpool_add_task(engine->tp, &stTask) != 0) {
             KR_LOG(KR_LOGERROR, "kr_threadpool_add_task failed!");
             return -1;

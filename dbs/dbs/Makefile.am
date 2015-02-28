@@ -1,4 +1,4 @@
-lib_LTLIBRARIES          = libdbsdbs.la
+noinst_LTLIBRARIES       = libdbsdbs.la
 libdbsdbs_la_SOURCES     = t_dbs101_datasrc_cur.cfg \
                            t_dbs102_datasrc_index_cur.cfg \
                            t_dbs103_datasrc_field_cur.cfg \

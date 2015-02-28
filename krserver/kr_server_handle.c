@@ -38,7 +38,7 @@ int kr_server_register_default(T_KRServer *krserver)
     kr_engine_register(krengine, "cli_on", (KRHandleFunc )kr_server_clion);
     kr_engine_register(krengine, "cli_off", (KRHandleFunc )kr_server_clioff);
 
-    kr_engine_register(krengine, "heart", (KRHandleFunc )kr_server_heart);
+    kr_engine_register(krengine, "heart_beat", (KRHandleFunc )kr_server_heart);
 
     return 0;
 };
