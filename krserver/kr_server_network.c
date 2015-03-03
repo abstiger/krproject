@@ -78,11 +78,12 @@ kr_server_process_input_buffer(T_KRBuffer *krbuf, T_KRClient *krclient)
     while(krbuf->size) {
         /** alloc inmsg */
         if (krclient->inmsg == NULL) {
+            KR_LOG(KR_LOGDEBUG, "alloc new inmsg! %d", krbuf->size);
             krclient->inmsg = kr_message_alloc();
         }
 
         /** parse request message */
-        ret = kr_message_parse(krclient->inbuf, krclient->inmsg);
+        ret = kr_message_parse(&krclient->inbuf, krclient->inmsg);
         if (ret < 0) {
             KR_LOG(KR_LOGERROR, "kr_message_parse error:%d", ret);
             kr_client_free(krclient);
@@ -102,7 +103,7 @@ kr_server_on_read(T_KREventLoop *el, int fd, void *privdata, int mask)
 {
     T_KRClient *krclient = (T_KRClient *)privdata;
     T_KRServer *krserver = krclient->krserver;
-    T_KRBuffer *krbuf = krclient->inbuf;
+    T_KRBuffer *krbuf = &krclient->inbuf;
     int ret, nread, readlen;
 
     readlen = KR_BUFFER_MAX_LEN-krbuf->size;
@@ -213,7 +214,6 @@ int kr_server_network_startup(T_KRServer *krserver)
 
     /*create client list*/
     krserver->clients = kr_list_new();
-    kr_list_set_free(krserver->clients, kr_client_free);
     kr_list_set_match(krserver->clients, kr_client_match);
     
     return 0;

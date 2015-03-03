@@ -1,7 +1,7 @@
+#include "kr_engine.h"
 #include "krutils/kr_utils.h"
-#include "kr_message.h"
 
-uint32_t kr_get_u32(const uint8_t *buf)
+static inline uint32_t kr_get_u32(const uint8_t *buf)
 {
     return (((uint32_t) buf [0]) << 24) |
         (((uint32_t) buf [1]) << 16) |
@@ -10,7 +10,7 @@ uint32_t kr_get_u32(const uint8_t *buf)
 }
 
 
-void kr_put_u32(uint8_t *buf, uint32_t val)
+static inline void kr_put_u32(uint8_t *buf, uint32_t val)
 {
     buf [0] = (uint8_t) (((val) >> 24) & 0xff);
     buf [1] = (uint8_t) (((val) >> 16) & 0xff);
@@ -72,8 +72,10 @@ int kr_message_parse(T_KRBuffer *krbuf, T_KRMessage *krmsg)
     p = p + krmsg->msglen;
 
     char buff[KR_BUFFER_MAX_LEN] = {0};
-    memcpy(buff, p, krbuf->size-KR_MSGHEADER_LEN-msglen);
+    memcpy(buff, p, krbuf->size-KR_MSGHEADER_LEN-krmsg->msglen);
     memcpy(krbuf->data, buff, KR_BUFFER_MAX_LEN);
+
+    krbuf->size = krbuf->size-KR_MSGHEADER_LEN-krmsg->msglen;
 
     return 0;
 }

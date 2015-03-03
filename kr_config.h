@@ -26,7 +26,7 @@
 #define HAVE_MEMORY_H 1
 
 /* If available, contains the Python version number currently in use. */
-/* #undef HAVE_PYTHON */
+#define HAVE_PYTHON "2.7"
 
 /* Define to 1 if you have the <readline.h> header file. */
 /* #undef HAVE_READLINE_H */

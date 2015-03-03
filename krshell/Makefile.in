@@ -57,9 +57,10 @@ CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 am__installdirs = "$(DESTDIR)$(bindir)"
 PROGRAMS = $(bin_PROGRAMS)
-am_krshell_OBJECTS = krshell-kr_shell.$(OBJEXT)
+am_krshell_OBJECTS = krshell-kr_shell.$(OBJEXT) \
+	krshell-kr_client.$(OBJEXT)
 krshell_OBJECTS = $(am_krshell_OBJECTS)
-krshell_DEPENDENCIES = $(top_srcdir)/krclient/libkrclient.la
+krshell_DEPENDENCIES = $(top_srcdir)/krengine/libkrengine.la
 krshell_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
 	--mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(krshell_LDFLAGS) \
 	$(LDFLAGS) -o $@
@@ -221,8 +222,11 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-krshell_SOURCES = kr_shell.c
-krshell_LDADD = $(top_srcdir)/krclient/libkrclient.la
+krshell_SOURCES = kr_shell.c \
+					kr_client.h \
+					kr_client.c 
+
+krshell_LDADD = $(top_srcdir)/krengine/libkrengine.la
 krshell_LDFLAGS = 
 krshell_CPPFLAGS = 
 all: all-am
@@ -312,6 +316,7 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/krshell-kr_client.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/krshell-kr_shell.Po@am__quote@
 
 .c.o:
@@ -348,6 +353,20 @@ krshell-kr_shell.obj: kr_shell.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='kr_shell.c' object='krshell-kr_shell.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(krshell_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o krshell-kr_shell.obj `if test -f 'kr_shell.c'; then $(CYGPATH_W) 'kr_shell.c'; else $(CYGPATH_W) '$(srcdir)/kr_shell.c'; fi`
+
+krshell-kr_client.o: kr_client.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(krshell_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT krshell-kr_client.o -MD -MP -MF $(DEPDIR)/krshell-kr_client.Tpo -c -o krshell-kr_client.o `test -f 'kr_client.c' || echo '$(srcdir)/'`kr_client.c
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/krshell-kr_client.Tpo $(DEPDIR)/krshell-kr_client.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='kr_client.c' object='krshell-kr_client.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(krshell_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o krshell-kr_client.o `test -f 'kr_client.c' || echo '$(srcdir)/'`kr_client.c
+
+krshell-kr_client.obj: kr_client.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(krshell_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT krshell-kr_client.obj -MD -MP -MF $(DEPDIR)/krshell-kr_client.Tpo -c -o krshell-kr_client.obj `if test -f 'kr_client.c'; then $(CYGPATH_W) 'kr_client.c'; else $(CYGPATH_W) '$(srcdir)/kr_client.c'; fi`
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/krshell-kr_client.Tpo $(DEPDIR)/krshell-kr_client.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='kr_client.c' object='krshell-kr_client.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(krshell_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o krshell-kr_client.obj `if test -f 'kr_client.c'; then $(CYGPATH_W) 'kr_client.c'; else $(CYGPATH_W) '$(srcdir)/kr_client.c'; fi`
 
 mostlyclean-libtool:
 	-rm -f *.lo

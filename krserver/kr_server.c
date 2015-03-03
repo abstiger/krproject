@@ -183,7 +183,8 @@ static void kr_server_shutdown(T_KRServer *krserver)
     kr_engine_shutdown(krserver->krengine);
 
     /* event loop delete */
-    kr_event_loop_delete(krserver->krel);
+    kr_event_loop_stop(krserver->krel);
+    //kr_event_loop_delete(krserver->krel);
 
     /* Server config free */
     if (krserver->config) {

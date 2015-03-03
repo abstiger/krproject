@@ -13819,7 +13819,7 @@ fi
 
 
 
-ac_config_files="$ac_config_files Makefile dbs/Makefile dbs/dbs/Makefile krutils/Makefile krcalc/Makefile krparam/Makefile krdb/Makefile krdata/Makefile krflow/Makefile krengine/Makefile krserver/Makefile krcoordi/Makefile krtools/Makefile tests/Makefile examples/Makefile examples/antifraud/Makefile examples/playweibo/Makefile etc/Makefile doc/Makefile krclient/Makefile krclient/bindings/python/Makefile krclient/bindings/java/Makefile krshell/Makefile krweb/Makefile"
+ac_config_files="$ac_config_files Makefile dbs/Makefile dbs/dbs/Makefile krutils/Makefile krcalc/Makefile krparam/Makefile krdb/Makefile krdata/Makefile krflow/Makefile krengine/Makefile krserver/Makefile krcoordi/Makefile krtools/Makefile krshell/Makefile krweb/Makefile bindings/python/Makefile bindings/java/Makefile etc/Makefile doc/Makefile tests/Makefile examples/Makefile examples/antifraud/Makefile examples/playweibo/Makefile"
 
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
@@ -14852,17 +14852,16 @@ do
     "krserver/Makefile") CONFIG_FILES="$CONFIG_FILES krserver/Makefile" ;;
     "krcoordi/Makefile") CONFIG_FILES="$CONFIG_FILES krcoordi/Makefile" ;;
     "krtools/Makefile") CONFIG_FILES="$CONFIG_FILES krtools/Makefile" ;;
+    "krshell/Makefile") CONFIG_FILES="$CONFIG_FILES krshell/Makefile" ;;
+    "krweb/Makefile") CONFIG_FILES="$CONFIG_FILES krweb/Makefile" ;;
+    "bindings/python/Makefile") CONFIG_FILES="$CONFIG_FILES bindings/python/Makefile" ;;
+    "bindings/java/Makefile") CONFIG_FILES="$CONFIG_FILES bindings/java/Makefile" ;;
+    "etc/Makefile") CONFIG_FILES="$CONFIG_FILES etc/Makefile" ;;
+    "doc/Makefile") CONFIG_FILES="$CONFIG_FILES doc/Makefile" ;;
     "tests/Makefile") CONFIG_FILES="$CONFIG_FILES tests/Makefile" ;;
     "examples/Makefile") CONFIG_FILES="$CONFIG_FILES examples/Makefile" ;;
     "examples/antifraud/Makefile") CONFIG_FILES="$CONFIG_FILES examples/antifraud/Makefile" ;;
     "examples/playweibo/Makefile") CONFIG_FILES="$CONFIG_FILES examples/playweibo/Makefile" ;;
-    "etc/Makefile") CONFIG_FILES="$CONFIG_FILES etc/Makefile" ;;
-    "doc/Makefile") CONFIG_FILES="$CONFIG_FILES doc/Makefile" ;;
-    "krclient/Makefile") CONFIG_FILES="$CONFIG_FILES krclient/Makefile" ;;
-    "krclient/bindings/python/Makefile") CONFIG_FILES="$CONFIG_FILES krclient/bindings/python/Makefile" ;;
-    "krclient/bindings/java/Makefile") CONFIG_FILES="$CONFIG_FILES krclient/bindings/java/Makefile" ;;
-    "krshell/Makefile") CONFIG_FILES="$CONFIG_FILES krshell/Makefile" ;;
-    "krweb/Makefile") CONFIG_FILES="$CONFIG_FILES krweb/Makefile" ;;
 
   *) as_fn_error $? "invalid argument: \`$ac_config_target'" "$LINENO" 5;;
   esac

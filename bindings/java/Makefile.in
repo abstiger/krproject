@@ -15,6 +15,7 @@
 
 @SET_MAKE@
 
+
 VPATH = @srcdir@
 pkgdatadir = $(datadir)/@PACKAGE@
 pkgincludedir = $(includedir)/@PACKAGE@
@@ -34,9 +35,8 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
-subdir = krclient/bindings/python
-DIST_COMMON = $(pkgpython_PYTHON) $(srcdir)/Makefile.am \
-	$(srcdir)/Makefile.in
+subdir = bindings/java
+DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/ax_jni_include_dir.m4 \
 	$(top_srcdir)/m4/ax_lib_readline.m4 \
@@ -82,19 +82,15 @@ am__uninstall_files_from_dir = { \
     || { echo " ( cd '$$dir' && rm -f" $$files ")"; \
          $(am__cd) "$$dir" && rm -f $$files; }; \
   }
-am__installdirs = "$(DESTDIR)$(pkgpyexecdir)" \
-	"$(DESTDIR)$(pkgpythondir)"
-LTLIBRARIES = $(pkgpyexec_LTLIBRARIES)
-am__DEPENDENCIES_1 =
-_krclient_la_DEPENDENCIES = $(top_srcdir)/krclient/libkrclient.la \
-	$(am__DEPENDENCIES_1)
-am__krclient_la_OBJECTS =
-nodist__krclient_la_OBJECTS = _krclient_la-krclient_wrap.lo
-_krclient_la_OBJECTS = $(am__krclient_la_OBJECTS) \
-	$(nodist__krclient_la_OBJECTS)
-_krclient_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
-	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
-	$(_krclient_la_LDFLAGS) $(LDFLAGS) -o $@
+am__installdirs = "$(DESTDIR)$(libdir)" "$(DESTDIR)$(krenginejardir)"
+LTLIBRARIES = $(lib_LTLIBRARIES)
+libkrengine_java_la_DEPENDENCIES =  \
+	$(top_srcdir)/krengine/libkrengine.la
+am_libkrengine_java_la_OBJECTS =
+nodist_libkrengine_java_la_OBJECTS =  \
+	libkrengine_java_la-krengine_wrap.lo
+libkrengine_java_la_OBJECTS = $(am_libkrengine_java_la_OBJECTS) \
+	$(nodist_libkrengine_java_la_OBJECTS)
 DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
@@ -108,10 +104,10 @@ CCLD = $(CC)
 LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
 	--mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) \
 	$(LDFLAGS) -o $@
-SOURCES = $(_krclient_la_SOURCES) $(nodist__krclient_la_SOURCES)
-DIST_SOURCES = $(_krclient_la_SOURCES)
-am__py_compile = PYTHON=$(PYTHON) $(SHELL) $(py_compile)
-py_compile = $(top_srcdir)/py-compile
+SOURCES = $(libkrengine_java_la_SOURCES) \
+	$(nodist_libkrengine_java_la_SOURCES)
+DIST_SOURCES = $(libkrengine_java_la_SOURCES)
+DATA = $(krenginejar_DATA)
 ETAGS = etags
 CTAGS = ctags
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
@@ -255,14 +251,14 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-pkgpython_PYTHON = __init__.py krclient.py
-pkgpyexec_LTLIBRARIES = _krclient.la
-nodist__krclient_la_SOURCES = krclient_wrap.c 
-_krclient_la_SOURCES = krclient.i
-_krclient_la_LIBADD = $(top_srcdir)/krclient/libkrclient.la \
-	$(PYTHON_EXTRA_LDFLAGS)
-_krclient_la_CPPFLAGS = $(PYTHON_CPPFLAGS) 
-_krclient_la_LDFLAGS = -module $(PYTHON_LDFLAGS) $(PYTHON_EXTRA_LDFLAGS)
+krenginejardir = $(libdir)
+krenginejar_DATA = $(krengine_jarfile)
+lib_LTLIBRARIES = libkrengine_java.la
+nodist_libkrengine_java_la_SOURCES = krengine_wrap.c
+libkrengine_java_la_SOURCES = krengine.i
+libkrengine_java_la_LIBADD = $(top_srcdir)/krengine/libkrengine.la
+libkrengine_java_la_CPPFLAGS = $(JNI_CPPFLAGS) 
+krengine_jarfile = krengine-$(VERSION).jar
 all: all-am
 
 .SUFFIXES:
@@ -276,9 +272,9 @@ $(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign krclient/bindings/python/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign bindings/java/Makefile'; \
 	$(am__cd) $(top_srcdir) && \
-	  $(AUTOMAKE) --foreign krclient/bindings/python/Makefile
+	  $(AUTOMAKE) --foreign bindings/java/Makefile
 .PRECIOUS: Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \
@@ -297,39 +293,39 @@ $(top_srcdir)/configure:  $(am__configure_deps)
 $(ACLOCAL_M4):  $(am__aclocal_m4_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
 $(am__aclocal_m4_deps):
-install-pkgpyexecLTLIBRARIES: $(pkgpyexec_LTLIBRARIES)
+install-libLTLIBRARIES: $(lib_LTLIBRARIES)
 	@$(NORMAL_INSTALL)
-	test -z "$(pkgpyexecdir)" || $(MKDIR_P) "$(DESTDIR)$(pkgpyexecdir)"
-	@list='$(pkgpyexec_LTLIBRARIES)'; test -n "$(pkgpyexecdir)" || list=; \
+	test -z "$(libdir)" || $(MKDIR_P) "$(DESTDIR)$(libdir)"
+	@list='$(lib_LTLIBRARIES)'; test -n "$(libdir)" || list=; \
 	list2=; for p in $$list; do \
 	  if test -f $$p; then \
 	    list2="$$list2 $$p"; \
 	  else :; fi; \
 	done; \
 	test -z "$$list2" || { \
-	  echo " $(LIBTOOL) $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=install $(INSTALL) $(INSTALL_STRIP_FLAG) $$list2 '$(DESTDIR)$(pkgpyexecdir)'"; \
-	  $(LIBTOOL) $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=install $(INSTALL) $(INSTALL_STRIP_FLAG) $$list2 "$(DESTDIR)$(pkgpyexecdir)"; \
+	  echo " $(LIBTOOL) $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=install $(INSTALL) $(INSTALL_STRIP_FLAG) $$list2 '$(DESTDIR)$(libdir)'"; \
+	  $(LIBTOOL) $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=install $(INSTALL) $(INSTALL_STRIP_FLAG) $$list2 "$(DESTDIR)$(libdir)"; \
 	}
 
-uninstall-pkgpyexecLTLIBRARIES:
+uninstall-libLTLIBRARIES:
 	@$(NORMAL_UNINSTALL)
-	@list='$(pkgpyexec_LTLIBRARIES)'; test -n "$(pkgpyexecdir)" || list=; \
+	@list='$(lib_LTLIBRARIES)'; test -n "$(libdir)" || list=; \
 	for p in $$list; do \
 	  $(am__strip_dir) \
-	  echo " $(LIBTOOL) $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=uninstall rm -f '$(DESTDIR)$(pkgpyexecdir)/$$f'"; \
-	  $(LIBTOOL) $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=uninstall rm -f "$(DESTDIR)$(pkgpyexecdir)/$$f"; \
+	  echo " $(LIBTOOL) $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=uninstall rm -f '$(DESTDIR)$(libdir)/$$f'"; \
+	  $(LIBTOOL) $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=uninstall rm -f "$(DESTDIR)$(libdir)/$$f"; \
 	done
 
-clean-pkgpyexecLTLIBRARIES:
-	-test -z "$(pkgpyexec_LTLIBRARIES)" || rm -f $(pkgpyexec_LTLIBRARIES)
-	@list='$(pkgpyexec_LTLIBRARIES)'; for p in $$list; do \
+clean-libLTLIBRARIES:
+	-test -z "$(lib_LTLIBRARIES)" || rm -f $(lib_LTLIBRARIES)
+	@list='$(lib_LTLIBRARIES)'; for p in $$list; do \
 	  dir="`echo $$p | sed -e 's|/[^/]*$$||'`"; \
 	  test "$$dir" != "$$p" || dir=.; \
 	  echo "rm -f \"$${dir}/so_locations\""; \
 	  rm -f "$${dir}/so_locations"; \
 	done
-_krclient.la: $(_krclient_la_OBJECTS) $(_krclient_la_DEPENDENCIES) $(EXTRA__krclient_la_DEPENDENCIES) 
-	$(_krclient_la_LINK) -rpath $(pkgpyexecdir) $(_krclient_la_OBJECTS) $(_krclient_la_LIBADD) $(LIBS)
+libkrengine_java.la: $(libkrengine_java_la_OBJECTS) $(libkrengine_java_la_DEPENDENCIES) $(EXTRA_libkrengine_java_la_DEPENDENCIES) 
+	$(LINK) -rpath $(libdir) $(libkrengine_java_la_OBJECTS) $(libkrengine_java_la_LIBADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -337,7 +333,7 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/_krclient_la-krclient_wrap.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkrengine_java_la-krengine_wrap.Plo@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
@@ -360,53 +356,36 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LTCOMPILE) -c -o $@ $<
 
-_krclient_la-krclient_wrap.lo: krclient_wrap.c
-@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(_krclient_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT _krclient_la-krclient_wrap.lo -MD -MP -MF $(DEPDIR)/_krclient_la-krclient_wrap.Tpo -c -o _krclient_la-krclient_wrap.lo `test -f 'krclient_wrap.c' || echo '$(srcdir)/'`krclient_wrap.c
-@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/_krclient_la-krclient_wrap.Tpo $(DEPDIR)/_krclient_la-krclient_wrap.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='krclient_wrap.c' object='_krclient_la-krclient_wrap.lo' libtool=yes @AMDEPBACKSLASH@
+libkrengine_java_la-krengine_wrap.lo: krengine_wrap.c
+@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libkrengine_java_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libkrengine_java_la-krengine_wrap.lo -MD -MP -MF $(DEPDIR)/libkrengine_java_la-krengine_wrap.Tpo -c -o libkrengine_java_la-krengine_wrap.lo `test -f 'krengine_wrap.c' || echo '$(srcdir)/'`krengine_wrap.c
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/libkrengine_java_la-krengine_wrap.Tpo $(DEPDIR)/libkrengine_java_la-krengine_wrap.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='krengine_wrap.c' object='libkrengine_java_la-krengine_wrap.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(_krclient_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o _krclient_la-krclient_wrap.lo `test -f 'krclient_wrap.c' || echo '$(srcdir)/'`krclient_wrap.c
+@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libkrengine_java_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libkrengine_java_la-krengine_wrap.lo `test -f 'krengine_wrap.c' || echo '$(srcdir)/'`krengine_wrap.c
 
 mostlyclean-libtool:
 	-rm -f *.lo
 
 clean-libtool:
 	-rm -rf .libs _libs
-install-pkgpythonPYTHON: $(pkgpython_PYTHON)
+install-krenginejarDATA: $(krenginejar_DATA)
 	@$(NORMAL_INSTALL)
-	test -z "$(pkgpythondir)" || $(MKDIR_P) "$(DESTDIR)$(pkgpythondir)"
-	@list='$(pkgpython_PYTHON)'; dlist=; list2=; test -n "$(pkgpythondir)" || list=; \
+	test -z "$(krenginejardir)" || $(MKDIR_P) "$(DESTDIR)$(krenginejardir)"
+	@list='$(krenginejar_DATA)'; test -n "$(krenginejardir)" || list=; \
 	for p in $$list; do \
-	  if test -f "$$p"; then b=; else b="$(srcdir)/"; fi; \
-	  if test -f $$b$$p; then \
-	    $(am__strip_dir) \
-	    dlist="$$dlist $$f"; \
-	    list2="$$list2 $$b$$p"; \
-	  else :; fi; \
-	done; \
-	for file in $$list2; do echo $$file; done | $(am__base_list) | \
+	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
+	  echo "$$d$$p"; \
+	done | $(am__base_list) | \
 	while read files; do \
-	  echo " $(INSTALL_DATA) $$files '$(DESTDIR)$(pkgpythondir)'"; \
-	  $(INSTALL_DATA) $$files "$(DESTDIR)$(pkgpythondir)" || exit $$?; \
-	done || exit $$?; \
-	if test -n "$$dlist"; then \
-	  $(am__py_compile) --destdir "$(DESTDIR)" \
-	                    --basedir "$(pkgpythondir)" $$dlist; \
-	else :; fi
+	  echo " $(INSTALL_DATA) $$files '$(DESTDIR)$(krenginejardir)'"; \
+	  $(INSTALL_DATA) $$files "$(DESTDIR)$(krenginejardir)" || exit $$?; \
+	done
 
-uninstall-pkgpythonPYTHON:
+uninstall-krenginejarDATA:
 	@$(NORMAL_UNINSTALL)
-	@list='$(pkgpython_PYTHON)'; test -n "$(pkgpythondir)" || list=; \
+	@list='$(krenginejar_DATA)'; test -n "$(krenginejardir)" || list=; \
 	files=`for p in $$list; do echo $$p; done | sed -e 's|^.*/||'`; \
-	test -n "$$files" || exit 0; \
-	dir='$(DESTDIR)$(pkgpythondir)'; \
-	filesc=`echo "$$files" | sed 's|$$|c|'`; \
-	fileso=`echo "$$files" | sed 's|$$|o|'`; \
-	st=0; \
-	for files in "$$files" "$$filesc" "$$fileso"; do \
-	  $(am__uninstall_files_from_dir) || st=$$?; \
-	done; \
-	exit $$st
+	dir='$(DESTDIR)$(krenginejardir)'; $(am__uninstall_files_from_dir)
 
 ID: $(HEADERS) $(SOURCES) $(LISP) $(TAGS_FILES)
 	list='$(SOURCES) $(HEADERS) $(LISP) $(TAGS_FILES)'; \
@@ -492,9 +471,9 @@ distdir: $(DISTFILES)
 	done
 check-am: all-am
 check: check-am
-all-am: Makefile $(LTLIBRARIES)
+all-am: Makefile $(LTLIBRARIES) $(DATA)
 installdirs:
-	for dir in "$(DESTDIR)$(pkgpyexecdir)" "$(DESTDIR)$(pkgpythondir)"; do \
+	for dir in "$(DESTDIR)$(libdir)" "$(DESTDIR)$(krenginejardir)"; do \
 	  test -z "$$dir" || $(MKDIR_P) "$$dir"; \
 	done
 install: install-am
@@ -529,8 +508,8 @@ maintainer-clean-generic:
 	@echo "it deletes files that may require special tools to rebuild."
 clean: clean-am
 
-clean-am: clean-generic clean-libtool clean-local \
-	clean-pkgpyexecLTLIBRARIES mostlyclean-am
+clean-am: clean-generic clean-libLTLIBRARIES clean-libtool clean-local \
+	mostlyclean-am
 
 distclean: distclean-am
 	-rm -rf ./$(DEPDIR)
@@ -550,13 +529,13 @@ info: info-am
 
 info-am:
 
-install-data-am: install-pkgpythonPYTHON
+install-data-am: install-krenginejarDATA
 
 install-dvi: install-dvi-am
 
 install-dvi-am:
 
-install-exec-am: install-pkgpyexecLTLIBRARIES
+install-exec-am: install-libLTLIBRARIES
 
 install-html: install-html-am
 
@@ -596,33 +575,39 @@ ps: ps-am
 
 ps-am:
 
-uninstall-am: uninstall-pkgpyexecLTLIBRARIES uninstall-pkgpythonPYTHON
+uninstall-am: uninstall-krenginejarDATA uninstall-libLTLIBRARIES
 
 .MAKE: install-am install-strip
 
 .PHONY: CTAGS GTAGS all all-am check check-am clean clean-generic \
-	clean-libtool clean-local clean-pkgpyexecLTLIBRARIES ctags \
-	distclean distclean-compile distclean-generic \
-	distclean-libtool distclean-tags distdir dvi dvi-am html \
-	html-am info info-am install install-am install-data \
-	install-data-am install-dvi install-dvi-am install-exec \
-	install-exec-am install-html install-html-am install-info \
-	install-info-am install-man install-pdf install-pdf-am \
-	install-pkgpyexecLTLIBRARIES install-pkgpythonPYTHON \
-	install-ps install-ps-am install-strip installcheck \
-	installcheck-am installdirs maintainer-clean \
-	maintainer-clean-generic mostlyclean mostlyclean-compile \
-	mostlyclean-generic mostlyclean-libtool pdf pdf-am ps ps-am \
-	tags uninstall uninstall-am uninstall-pkgpyexecLTLIBRARIES \
-	uninstall-pkgpythonPYTHON
+	clean-libLTLIBRARIES clean-libtool clean-local ctags distclean \
+	distclean-compile distclean-generic distclean-libtool \
+	distclean-tags distdir dvi dvi-am html html-am info info-am \
+	install install-am install-data install-data-am install-dvi \
+	install-dvi-am install-exec install-exec-am install-html \
+	install-html-am install-info install-info-am \
+	install-krenginejarDATA install-libLTLIBRARIES install-man \
+	install-pdf install-pdf-am install-ps install-ps-am \
+	install-strip installcheck installcheck-am installdirs \
+	maintainer-clean maintainer-clean-generic mostlyclean \
+	mostlyclean-compile mostlyclean-generic mostlyclean-libtool \
+	pdf pdf-am ps ps-am tags uninstall uninstall-am \
+	uninstall-krenginejarDATA uninstall-libLTLIBRARIES
 
 
-krclient_wrap.c: krclient.i 
-	${SWIG} -I${top_srcdir} -python -o $@ $<
-	@touch __init__.py
+krengine_wrap.c: krengine.i 
+	@mkdir -p org/krproject
+	${SWIG} -I${top_srcdir} -java -outdir org/krproject -package org.krproject -o $@ $<
+
+krengine-java.stamp: krengine_wrap.c
+	@${JAVAC} org/krproject/*.java
+	@date > $@
+
+$(krengine_jarfile): krengine-java.stamp
+	@$(JAR) cvf $(JARFLAGS) $(krengine_jarfile) org/krproject/*.class org/krproject/*java
 
 clean-local:
-	-rm -f krclient_wrap.c krclient.py
+	-rm -fr krengine_wrap.c *.jar *.stamp org
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

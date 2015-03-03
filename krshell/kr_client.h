@@ -1,7 +1,7 @@
 #ifndef __KR_CLIENT_H__
 #define __KR_CLIENT_H__
 
-#include "kr_message.h"
+#include "krengine/kr_engine.h"
 
 typedef struct _kr_client_t {
     char         *id;
@@ -16,7 +16,7 @@ T_KRClient *kr_client_connect(char *ip, int port);
 void kr_client_disconnect(T_KRClient *krclient);
 int kr_client_set_timeout(T_KRClient *krclient, int secs);
 
-T_KRMessage *kr_client_apply(T_KRClient *krclient, int msgtype, int datasrc, int msglen, void *msgbuf);
+T_KRMessage *kr_client_apply(T_KRClient *krclient, char *method, int datasrc, int msglen, void *msgbuf);
 T_KRMessage *kr_client_info(T_KRClient *krclient);
 T_KRMessage *kr_client_info_log(T_KRClient *krclient);
 T_KRMessage *kr_client_set_logpath(T_KRClient *krclient, char *log_path);
@@ -37,7 +37,7 @@ T_KRMessage *kr_client_info_hdi(T_KRClient *krclient, int hdi_id);
 T_KRMessage *kr_client_insert_event(T_KRClient *krclient, int table_id, char *event);
 T_KRMessage *kr_client_detect_event(T_KRClient *krclient, int table_id, char *event);
 
-int kr_client_apply_file(T_KRClient *krclient, int msgtype, int table_id, char *applyfile);
+int kr_client_apply_file(T_KRClient *krclient, char *method, int table_id, char *applyfile);
 int kr_client_insert_file(T_KRClient *krclient, int table_id, char *applyfile);
 int kr_client_detect_file(T_KRClient *krclient, int table_id, char *applyfile);
 

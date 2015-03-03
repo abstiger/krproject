@@ -215,7 +215,7 @@ static int kr_engine_handle(void *ctx, void *arg)
     if (kr_context_set(krctx, krarg) != 0) {
         KR_LOG(KR_LOGERROR, "kr_context_set [%p] failed!", krarg);
         //FIXME:set error code
-        //krarg->reply->msgtype = KR_MSGTYPE_ERROR;
+        //reply->msgtype = KR_MSGTYPE_ERROR;
         goto RESP;
     }
 
@@ -225,7 +225,7 @@ static int kr_engine_handle(void *ctx, void *arg)
     if (handle_func == NULL) {
         KR_LOG(KR_LOGERROR, "unsupported method[%d]!", apply->method);
         //FIXME:set error code
-        //krarg->reply->msgtype = KR_MSGTYPE_ERROR;
+        //reply->msgtype = KR_MSGTYPE_ERROR;
         goto RESP;
     }
 

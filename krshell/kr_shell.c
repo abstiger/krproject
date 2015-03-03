@@ -6,8 +6,7 @@
 #include <errno.h>
 #include <signal.h>
 #include "kr_config.h"
-#include "krclient/kr_client.h"
-#include "krclient/kr_json.h"
+#include "kr_client.h"
 
 #ifdef HAVE_LIBREADLINE                                   
 #  if defined(HAVE_READLINE_READLINE_H)                   

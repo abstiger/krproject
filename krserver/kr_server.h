@@ -4,7 +4,6 @@
 #include "krutils/kr_utils.h"
 #include "krutils/kr_event.h"
 #include "krengine/kr_engine.h"
-#include "krengine/kr_message.h"
 #include "kr_server_config.h"
 
 
@@ -16,7 +15,7 @@ struct _kr_client_t
 {
     int               fd;
 
-    T_KRBuffer       *inbuf;
+    T_KRBuffer        inbuf;
     T_KRMessage      *inmsg;
     
     T_KRServer       *krserver;

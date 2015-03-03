@@ -36,14 +36,14 @@ static time_t kr_time_to_ttime(char *pcaTime)
 	return mktime(&tTime);
 }
 
-void *map_func_pre_2(void *msg)
+void *map_pre_func_2(void *msg)
 {
     JSON_Value *jsonval = json_parse_string((char *)msg);
     return jsonval;
 }
 
 
-void map_func_post_2(void *data)
+void map_post_func_2(void *data)
 {
     json_value_free(data);
 }
@@ -98,6 +98,18 @@ void map_func_2(void *fldval, int fldno, int fldlen, void *data)
         default:
             break;
     }
+}
+
+
+void *map_pre_func_1(void *msg)
+{
+    return msg;
+}
+
+
+void map_post_func_1(void *data)
+{
+
 }
 
 void map_func_1(void *fldval, int fldno, int fldlen, void *data)

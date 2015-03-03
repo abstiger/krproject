@@ -1,16 +1,16 @@
-%module krclient
+%module krengine
 %{
-#include "krclient/kr_client.h"
+#include "krengine/kr_engine.h"
 %}
 
-%include "krclient/kr_client.h"
+%include "krengine/kr_engine.h"
 
 %pragma(java) jniclasscode=%{
     static {
         System.out.println("jni"+System.getProperty("java.library.path"));
         try {
-            System.loadLibrary("krclient");
-            System.loadLibrary("krclient_java");
+            System.loadLibrary("krengine");
+            System.loadLibrary("krengine_java");
         } catch (UnsatisfiedLinkError e) {
             System.err.println("Native code library failed to load. \n" + e);
             System.exit(1);
