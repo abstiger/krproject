@@ -37,7 +37,7 @@ host_triplet = @host@
 @ENABLE_PYTHON_BINDING_TRUE@am__append_1 = bindings/python
 @ENABLE_JAVA_BINDING_TRUE@am__append_2 = bindings/java
 subdir = .
-DIST_COMMON = README $(am__configure_deps) $(include_HEADERS) \
+DIST_COMMON = $(am__configure_deps) $(include_HEADERS) \
 	$(srcdir)/Makefile.am $(srcdir)/Makefile.in \
 	$(srcdir)/kr_config.h.in $(top_srcdir)/configure compile \
 	config.guess config.sub depcomp install-sh ltmain.sh missing \
@@ -290,13 +290,13 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
+include_HEADERS = kr_config.h
 ACLOCAL_AMFLAGS = -I m4
+AM_CPPFLAGS = -g -I$(includedir) -L$(libdir)
 SUBDIRS = dbs krutils krcalc krparam krdb krdata krflow krengine \
 	krserver krcoordi krshell krtools krweb tests examples etc doc \
 	$(am__append_1) $(am__append_2)
-AM_CPPFLAGS = -g -I$(includedir) -L$(libdir)
-include_HEADERS = kr_config.h
-EXTRA_DIST = README LICENSE 
+EXTRA_DIST = README.md LICENSE 
 all: kr_config.h
 	$(MAKE) $(AM_MAKEFLAGS) all-recursive
 

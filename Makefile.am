@@ -1,4 +1,7 @@
+include_HEADERS = kr_config.h
+
 ACLOCAL_AMFLAGS = -I m4
+AM_CPPFLAGS = -g -I$(includedir) -L$(libdir)
 
 SUBDIRS  = dbs krutils krcalc krparam krdb krdata krflow krengine \
 		   krserver krcoordi krshell krtools krweb \
@@ -11,9 +14,5 @@ if ENABLE_JAVA_BINDING
 SUBDIRS += bindings/java
 endif
 
-AM_CPPFLAGS = -g -I$(includedir) -L$(libdir)
-
-include_HEADERS          = kr_config.h
-
-EXTRA_DIST = README LICENSE 
+EXTRA_DIST = README.md LICENSE 
 
