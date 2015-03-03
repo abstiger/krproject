@@ -3,16 +3,13 @@
 krproject is a **real-time streaming data analysis** system.
 
 This project is designed to be a powerful tool of bigdata's computation,
-which now consist of:
+it is consist of:
 
 * __krengine__: the core process engine of this project
 * __krserver__: the tcp server, an wrapper of krengine
 * __krcoordi__: the coordinator, associated with krserver
 * __krshell__: the command line processor of krserver
 
-Special thanks to Jennifer who named this, :)  
-
-Have fun with it~ :P
 
 # Build and Install
 
@@ -46,8 +43,14 @@ Have fun with it~ :P
     > to `configure`. Various other options are also supported – pass
     > `--help` for more information on them.
 
-## License
+# License
 
-krproject is primarily distributed under the terms of the MIT license.
+krproject is distributed under the terms of the MIT license.
 
 see LICENSE for details.
+
+# Thanks
+
+Special thanks to Jennifer who named it, :)  
+
+Have fun with it~ :P
