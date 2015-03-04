@@ -3,7 +3,6 @@ include_HEADERS          = kr_engine.h
 
 libkrengine_la_SOURCES   = kr_engine.h         \
 						   kr_engine.c         \
-                           kr_engine_message.c \
 						   kr_engine_detect.c  \
 						   kr_engine_handle.c 
      

@@ -59,8 +59,8 @@ am__installdirs = "$(DESTDIR)$(bindir)"
 PROGRAMS = $(bin_PROGRAMS)
 am_krserver_OBJECTS = krserver-kr_server.$(OBJEXT) \
 	krserver-kr_server_config.$(OBJEXT) \
+	krserver-kr_server_protocol.$(OBJEXT) \
 	krserver-kr_server_network.$(OBJEXT) \
-	krserver-kr_server_coordi.$(OBJEXT) \
 	krserver-kr_server_handle.$(OBJEXT)
 krserver_OBJECTS = $(am_krserver_OBJECTS)
 krserver_DEPENDENCIES = $(top_srcdir)/krengine/libkrengine.la
@@ -229,8 +229,10 @@ krserver_SOURCES = kr_server.h \
                      kr_server.c \
                      kr_server_config.h \
                      kr_server_config.c \
+                     kr_server_protocol.h \
+                     kr_server_protocol.c \
+                     kr_server_network.h \
                      kr_server_network.c \
-                     kr_server_coordi.c \
                      kr_server_handle.c 
 
 krserver_LDADD = $(top_srcdir)/krengine/libkrengine.la
@@ -325,9 +327,9 @@ distclean-compile:
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/krserver-kr_server.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/krserver-kr_server_config.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/krserver-kr_server_coordi.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/krserver-kr_server_handle.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/krserver-kr_server_network.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/krserver-kr_server_protocol.Po@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
@@ -378,6 +380,20 @@ krserver-kr_server_config.obj: kr_server_config.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(krserver_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o krserver-kr_server_config.obj `if test -f 'kr_server_config.c'; then $(CYGPATH_W) 'kr_server_config.c'; else $(CYGPATH_W) '$(srcdir)/kr_server_config.c'; fi`
 
+krserver-kr_server_protocol.o: kr_server_protocol.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(krserver_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT krserver-kr_server_protocol.o -MD -MP -MF $(DEPDIR)/krserver-kr_server_protocol.Tpo -c -o krserver-kr_server_protocol.o `test -f 'kr_server_protocol.c' || echo '$(srcdir)/'`kr_server_protocol.c
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/krserver-kr_server_protocol.Tpo $(DEPDIR)/krserver-kr_server_protocol.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='kr_server_protocol.c' object='krserver-kr_server_protocol.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(krserver_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o krserver-kr_server_protocol.o `test -f 'kr_server_protocol.c' || echo '$(srcdir)/'`kr_server_protocol.c
+
+krserver-kr_server_protocol.obj: kr_server_protocol.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(krserver_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT krserver-kr_server_protocol.obj -MD -MP -MF $(DEPDIR)/krserver-kr_server_protocol.Tpo -c -o krserver-kr_server_protocol.obj `if test -f 'kr_server_protocol.c'; then $(CYGPATH_W) 'kr_server_protocol.c'; else $(CYGPATH_W) '$(srcdir)/kr_server_protocol.c'; fi`
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/krserver-kr_server_protocol.Tpo $(DEPDIR)/krserver-kr_server_protocol.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='kr_server_protocol.c' object='krserver-kr_server_protocol.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(krserver_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o krserver-kr_server_protocol.obj `if test -f 'kr_server_protocol.c'; then $(CYGPATH_W) 'kr_server_protocol.c'; else $(CYGPATH_W) '$(srcdir)/kr_server_protocol.c'; fi`
+
 krserver-kr_server_network.o: kr_server_network.c
 @am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(krserver_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT krserver-kr_server_network.o -MD -MP -MF $(DEPDIR)/krserver-kr_server_network.Tpo -c -o krserver-kr_server_network.o `test -f 'kr_server_network.c' || echo '$(srcdir)/'`kr_server_network.c
 @am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/krserver-kr_server_network.Tpo $(DEPDIR)/krserver-kr_server_network.Po
@@ -391,20 +407,6 @@ krserver-kr_server_network.obj: kr_server_network.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='kr_server_network.c' object='krserver-kr_server_network.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(krserver_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o krserver-kr_server_network.obj `if test -f 'kr_server_network.c'; then $(CYGPATH_W) 'kr_server_network.c'; else $(CYGPATH_W) '$(srcdir)/kr_server_network.c'; fi`
-
-krserver-kr_server_coordi.o: kr_server_coordi.c
-@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(krserver_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT krserver-kr_server_coordi.o -MD -MP -MF $(DEPDIR)/krserver-kr_server_coordi.Tpo -c -o krserver-kr_server_coordi.o `test -f 'kr_server_coordi.c' || echo '$(srcdir)/'`kr_server_coordi.c
-@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/krserver-kr_server_coordi.Tpo $(DEPDIR)/krserver-kr_server_coordi.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='kr_server_coordi.c' object='krserver-kr_server_coordi.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(krserver_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o krserver-kr_server_coordi.o `test -f 'kr_server_coordi.c' || echo '$(srcdir)/'`kr_server_coordi.c
-
-krserver-kr_server_coordi.obj: kr_server_coordi.c
-@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(krserver_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT krserver-kr_server_coordi.obj -MD -MP -MF $(DEPDIR)/krserver-kr_server_coordi.Tpo -c -o krserver-kr_server_coordi.obj `if test -f 'kr_server_coordi.c'; then $(CYGPATH_W) 'kr_server_coordi.c'; else $(CYGPATH_W) '$(srcdir)/kr_server_coordi.c'; fi`
-@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/krserver-kr_server_coordi.Tpo $(DEPDIR)/krserver-kr_server_coordi.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='kr_server_coordi.c' object='krserver-kr_server_coordi.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(krserver_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o krserver-kr_server_coordi.obj `if test -f 'kr_server_coordi.c'; then $(CYGPATH_W) 'kr_server_coordi.c'; else $(CYGPATH_W) '$(srcdir)/kr_server_coordi.c'; fi`
 
 krserver-kr_server_handle.o: kr_server_handle.c
 @am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(krserver_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT krserver-kr_server_handle.o -MD -MP -MF $(DEPDIR)/krserver-kr_server_handle.Tpo -c -o krserver-kr_server_handle.o `test -f 'kr_server_handle.c' || echo '$(srcdir)/'`kr_server_handle.c

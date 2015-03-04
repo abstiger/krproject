@@ -1,7 +1,7 @@
-#ifndef __KR_CLIENT_H__
-#define __KR_CLIENT_H__
+#ifndef __KR_SHELL_CLIENT_H__
+#define __KR_SHELL_CLIENT_H__
 
-#include "krengine/kr_engine.h"
+#include "kr_shell_protocol.h"
 
 typedef struct _kr_client_t {
     char         *id;
@@ -41,4 +41,4 @@ int kr_client_apply_file(T_KRClient *krclient, char *method, int table_id, char 
 int kr_client_insert_file(T_KRClient *krclient, int table_id, char *applyfile);
 int kr_client_detect_file(T_KRClient *krclient, int table_id, char *applyfile);
 
-#endif /* __KR_CLIENT_H__ */
+#endif /* __KR_SHELL_CLIENT_H__ */

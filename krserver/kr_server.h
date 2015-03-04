@@ -5,6 +5,7 @@
 #include "krutils/kr_event.h"
 #include "krengine/kr_engine.h"
 #include "kr_server_config.h"
+#include "kr_server_protocol.h"
 
 
 typedef struct _kr_client_t T_KRClient;

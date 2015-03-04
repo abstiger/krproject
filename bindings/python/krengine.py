@@ -67,35 +67,8 @@ except AttributeError:
     _newclass = 0
 
 
-KR_MSGID_LEN = _krengine.KR_MSGID_LEN
-KR_METHOD_LEN = _krengine.KR_METHOD_LEN
-KR_DATASRC_LEN = _krengine.KR_DATASRC_LEN
-KR_MSGLEN_LEN = _krengine.KR_MSGLEN_LEN
-KR_MSGHEADER_LEN = _krengine.KR_MSGHEADER_LEN
-KR_MSGTYPE_ERROR = _krengine.KR_MSGTYPE_ERROR
 KR_MSGTYPE_SUCCESS = _krengine.KR_MSGTYPE_SUCCESS
-KR_BUFFER_MAX_LEN = _krengine.KR_BUFFER_MAX_LEN
-class T_KRBuffer(_object):
-    __swig_setmethods__ = {}
-    __setattr__ = lambda self, name, value: _swig_setattr(self, T_KRBuffer, name, value)
-    __swig_getmethods__ = {}
-    __getattr__ = lambda self, name: _swig_getattr(self, T_KRBuffer, name)
-    __repr__ = _swig_repr
-    __swig_setmethods__["size"] = _krengine.T_KRBuffer_size_set
-    __swig_getmethods__["size"] = _krengine.T_KRBuffer_size_get
-    if _newclass:size = _swig_property(_krengine.T_KRBuffer_size_get, _krengine.T_KRBuffer_size_set)
-    __swig_setmethods__["data"] = _krengine.T_KRBuffer_data_set
-    __swig_getmethods__["data"] = _krengine.T_KRBuffer_data_get
-    if _newclass:data = _swig_property(_krengine.T_KRBuffer_data_get, _krengine.T_KRBuffer_data_set)
-    def __init__(self): 
-        this = _krengine.new_T_KRBuffer()
-        try: self.this.append(this)
-        except: self.this = this
-    __swig_destroy__ = _krengine.delete_T_KRBuffer
-    __del__ = lambda self : None;
-T_KRBuffer_swigregister = _krengine.T_KRBuffer_swigregister
-T_KRBuffer_swigregister(T_KRBuffer)
-
+KR_MSGTYPE_ERROR = _krengine.KR_MSGTYPE_ERROR
 class T_KRMessage(_object):
     __swig_setmethods__ = {}
     __setattr__ = lambda self, name, value: _swig_setattr(self, T_KRMessage, name, value)
@@ -208,37 +181,21 @@ T_KREngineArg_swigregister = _krengine.T_KREngineArg_swigregister
 T_KREngineArg_swigregister(T_KREngineArg)
 
 
-def kr_message_alloc():
-  return _krengine.kr_message_alloc()
-kr_message_alloc = _krengine.kr_message_alloc
-
-def kr_message_free(*args):
-  return _krengine.kr_message_free(*args)
-kr_message_free = _krengine.kr_message_free
-
-def kr_message_parse(*args):
-  return _krengine.kr_message_parse(*args)
-kr_message_parse = _krengine.kr_message_parse
-
-def kr_message_dump(*args):
-  return _krengine.kr_message_dump(*args)
-kr_message_dump = _krengine.kr_message_dump
-
 def kr_engine_startup(*args):
   return _krengine.kr_engine_startup(*args)
 kr_engine_startup = _krengine.kr_engine_startup
 
-def kr_engine_shutdown(*args):
-  return _krengine.kr_engine_shutdown(*args)
-kr_engine_shutdown = _krengine.kr_engine_shutdown
+def kr_engine_register(*args):
+  return _krengine.kr_engine_register(*args)
+kr_engine_register = _krengine.kr_engine_register
 
 def kr_engine_run(*args):
   return _krengine.kr_engine_run(*args)
 kr_engine_run = _krengine.kr_engine_run
 
-def kr_engine_register(*args):
-  return _krengine.kr_engine_register(*args)
-kr_engine_register = _krengine.kr_engine_register
+def kr_engine_shutdown(*args):
+  return _krengine.kr_engine_shutdown(*args)
+kr_engine_shutdown = _krengine.kr_engine_shutdown
 # This file is compatible with both classic and new-style classes.
 
 

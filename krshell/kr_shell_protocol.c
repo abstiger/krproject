@@ -1,22 +1,5 @@
-#include "kr_engine.h"
+#include "kr_shell_protocol.h"
 #include "krutils/kr_utils.h"
-
-static inline uint32_t kr_get_u32(const uint8_t *buf)
-{
-    return (((uint32_t) buf [0]) << 24) |
-        (((uint32_t) buf [1]) << 16) |
-        (((uint32_t) buf [2]) << 8) |
-        ((uint32_t) buf [3]);
-}
-
-
-static inline void kr_put_u32(uint8_t *buf, uint32_t val)
-{
-    buf [0] = (uint8_t) (((val) >> 24) & 0xff);
-    buf [1] = (uint8_t) (((val) >> 16) & 0xff);
-    buf [2] = (uint8_t) (((val) >> 8) & 0xff);
-    buf [3] = (uint8_t) (val & 0xff);
-}
 
 
 T_KRMessage *kr_message_alloc(void)

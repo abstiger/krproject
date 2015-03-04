@@ -1,29 +1,12 @@
-#include "kr_client.h"
+#include "kr_shell_client.h"
 #include "krutils/kr_utils.h"
 #include "krutils/kr_net.h"
 #include <unistd.h>
 #include <errno.h>
 #include <sys/socket.h>
 
-uint32_t kr_get_u32(const uint8_t *buf)
-{
-    return (((uint32_t) buf [0]) << 24) |
-        (((uint32_t) buf [1]) << 16) |
-        (((uint32_t) buf [2]) << 8) |
-        ((uint32_t) buf [3]);
-}
 
-
-void kr_put_u32(uint8_t *buf, uint32_t val)
-{
-    buf [0] = (uint8_t) (((val) >> 24) & 0xff);
-    buf [1] = (uint8_t) (((val) >> 16) & 0xff);
-    buf [2] = (uint8_t) (((val) >> 8) & 0xff);
-    buf [3] = (uint8_t) (val & 0xff);
-}
-
-
-T_KRMessage *kr_message_read(int fd)
+static T_KRMessage *kr_client_read_message(int fd)
 {
     int readLen = 0;
     T_KRBuffer krbuf = {0};
@@ -32,6 +15,7 @@ T_KRMessage *kr_message_read(int fd)
     /*alloc message*/
     T_KRMessage *krmsg = kr_message_alloc();
     if (krmsg == NULL) {
+        fprintf(stderr, "kr_message_alloc failed!\n");
         return NULL;
     }
 
@@ -68,19 +52,21 @@ T_KRMessage *kr_message_read(int fd)
 }
 
 
-int kr_message_write(int fd, T_KRMessage *krmsg)
+static int kr_client_write_message(int fd, T_KRMessage *krmsg)
 {
     int writeLen = 0;
     T_KRBuffer krbuf = {0};
 
     /* dump message */
     if (kr_message_dump(krmsg, &krbuf) <= 0) {
+        fprintf(stderr, "kr_message_dump failed!\n");
         return -1;
     }
 
     /* write message */
     writeLen = kr_net_write(fd, krbuf.data, krbuf.size);
     if (writeLen < 0) {
+        fprintf(stderr, "kr_net_write failed! %d\n", writeLen);
         return -1;
     } else if (writeLen == 0) {
         return 0;
@@ -130,7 +116,7 @@ T_KRClient *kr_client_connect(char *ip, int port)
         return NULL;
     }
 
-    krclient->id = kr_strdup("krclient1");//FIXME
+    krclient->id = kr_strdup("krclient");//FIXME
     krclient->ip = kr_strdup(ip);
     krclient->port = port;
     krclient->fd = kr_net_tcp_connect(krclient->errmsg, 
@@ -200,7 +186,7 @@ T_KRMessage *kr_client_apply(T_KRClient *krclient, char *method, int datasrc, in
     }
 
     /*set request*/
-    char *msgid="0001";
+    char *msgid="0001";//FIXME
     strcpy(apply->msgid, msgid);
     strcpy(apply->method, method);
     apply->datasrc = datasrc;
@@ -208,16 +194,16 @@ T_KRMessage *kr_client_apply(T_KRClient *krclient, char *method, int datasrc, in
     apply->msgbuf = msgbuf;
 
     /*send request*/
-    if (kr_message_write(krclient->fd, apply) <= 0) {
-        fprintf(stderr, "kr_message_write request failed!\n");
+    if (kr_client_write_message(krclient->fd, apply) <= 0) {
+        fprintf(stderr, "kr_client_write_message request failed!\n");
         kr_message_free(apply);
         return NULL;
     }
 
     /*get response*/
-    T_KRMessage *reply = kr_message_read(krclient->fd);
+    T_KRMessage *reply = kr_client_read_message(krclient->fd);
     if (reply == NULL) {
-        fprintf(stderr, "kr_message_read response failed!\n");
+        fprintf(stderr, "kr_client_read_message response failed!\n");
         kr_message_free(apply);
         return NULL;
     }

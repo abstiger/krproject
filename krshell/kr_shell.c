@@ -6,7 +6,7 @@
 #include <errno.h>
 #include <signal.h>
 #include "kr_config.h"
-#include "kr_client.h"
+#include "kr_shell_client.h"
 
 #ifdef HAVE_LIBREADLINE                                   
 #  if defined(HAVE_READLINE_READLINE_H)                   
@@ -72,6 +72,7 @@ typedef struct _kr_cmd_t
     int            argc;
     char          *argv[10];
 }T_KRCmd;
+
 static T_KRCmd krcmdmap[] = {
     {kr_cmd_usage,             1, {"?"}},
     {kr_cmd_usage,             1, {"H"}},
