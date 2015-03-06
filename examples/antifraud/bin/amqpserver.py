@@ -56,28 +56,40 @@ def handle_delivery(channel, method_frame, header_frame, body):
            method_frame.delivery_tag,
            body)
     channel.basic_ack(delivery_tag=method_frame.delivery_tag)
+#    jsonmsg = json.loads(body);
+
     # Call krengine to handle this message
-    jsonmsg = json.loads(body);
-    kr_engine_run(engine, 1, 1, body, None)
+    arg = T_KREngineArg()
+    arg.apply = T_KRMessage()
+    arg.apply.method = 'detect_event'
+    arg.apply.datasrc = 2
+    arg.apply.msglen = len(body)
+    arg.apply.msgbuf = body
+
+    arg.reply = T_KRMessage()
+
+    kr_engine_run(engine, arg)
 
 
 if __name__ == '__main__':
     
-    # Startup krengine
-    engine = kr_engine_startup(os.environ.get('DBNAME'),  \
-                       os.environ.get('DBUSER'), \
-                       os.environ.get('DBPASS'), \
-                       '/home/tiger/krproject/log', \
-                       'antifraud', \
-                       5, \
-                       '/home/tiger/krproject/lib/antifraud.so', \
-                       '', \
-                       '', \
-                       0, \
-                       2, \
-                       1000, \
-                       None)
+    # krengine configuration
+    config = T_KREngineConfig()
+    config.logpath = os.environ.get('KRHOME')+'/log'
+    config.logname = 'antifraud'
+    config.loglevel = 5
+    config.dbname = os.environ.get('DBNAME')
+    config.dbuser = os.environ.get('DBUSER')
+    config.dbpass = os.environ.get('DBPASS')
+    config.krdb_module = os.environ.get('KRHOME')+'/lib/libkriface.so'
+    config.data_module = ''
+    config.rule_module = ''
+    config.thread_pool_size = 4
+    config.high_water_mark = 1000
     
+    # Startup krengine
+    engine = kr_engine_startup(config, None)
+
     # Connect to RabbitMQ
     host = (len(sys.argv) > 1) and sys.argv[1] or '127.0.0.1'
     connection = SelectConnection(ConnectionParameters(host),

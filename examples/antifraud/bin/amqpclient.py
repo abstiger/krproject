@@ -39,18 +39,18 @@ def on_channel_open(channel_):
 
 def on_queue_declared(frame):
     print "demo_send: Queue Declared"
-    for x in xrange(0, 22):
-        custno = "6223000000000000%04i" % (x%10)
-        txndate = "201205%02i" % (x%7)
-        txntime = "0919%02i" % (x%60)
-        flowno = "%015i" % x
-        txntype = "%02i" % (x%2)
-        txnamt = x*9.9
-        txnloc = "trans location:%02i" % x
+    for x in xrange(0, 2):
         
-        message = {'custno':custno, 'txndate':txndate, 'txntime':txntime, 'flowno':flowno, 'txntype':txntype, 'txnamt':txnamt, 'txnloc':txnloc}
-        jsonmsg = json.dumps(message, indent=2)
-        print jsonmsg;
+        # Construct request message with json format
+        msg = {}
+        msg['cust_no'] = "6223000000000000%04i" % (x%10)
+        msg['trans_date'] = "201205%02i" % (x%7)
+        msg['trans_time'] = "0919%02i" % (x%60)
+        msg['flow_no'] = "%015i" % x
+        msg['trans_type'] = "%02i" % (x%2)
+        msg['trans_amt'] = x*9.9
+        msg['trans_loc'] = "trans location:%02i" % x
+        jsonmsg = json.dumps(msg, indent=2)
 
         # Create properties with when we sent the message, the app_id
         # user we connected with, a content type and non persisted messages
@@ -66,10 +66,10 @@ def on_queue_declared(frame):
                               body=jsonmsg,
                               properties=properties)
 
-        print "demo_send: Sent %s" % message
+        print "demo_send:" + jsonmsg
 
     # Close our connection
-    print "demo_send: Closing"
+    print "Closing client"
     connection.close()
 
 

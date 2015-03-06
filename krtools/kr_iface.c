@@ -59,6 +59,7 @@ static int kr_parse_arguments(int argc, char *argv[]);
 static T_KRIfaceFormat *kr_search_format(char *format_name, char *file_code);
 static int kr_traversal_datasrc(char *file_code);
 static int kr_traversal_fields(T_DatasrcCur *ptDatasrcCur, T_KRIfaceFormat *iface_format);
+static void kr_generate_makefile(void);
 
 
 int main(int argc, char *argv[])
@@ -98,6 +99,7 @@ int main(int argc, char *argv[])
     }
 
     /* Create Makefile */
+    kr_generate_makefile();
 
 clean:
     /*Disconnect database*/
@@ -208,7 +210,7 @@ static int kr_traversal_datasrc(char *file_code)
         T_KRIfaceFormat *iface_format = \
             kr_search_format(stDatasrcCur.caOutDatasrcFormat, file_code);
         if (iface_format == NULL) {
-            fprintf(stderr, "unsupported datasrc iface format %s !\n", \
+            fprintf(stderr, "unsupported datasrc iface format [%s]!\n", \
                     stDatasrcCur.caOutDatasrcFormat);
             iFlag = -1; 
             break;
@@ -297,3 +299,57 @@ kr_traversal_fields(T_DatasrcCur *ptDatasrcCur, T_KRIfaceFormat *iface_format)
     return iFlag;
 }
 
+static void kr_generate_makefile(void)
+{
+    FILE *fp = fopen("Makefile", "w");
+    if (fp == NULL) {
+        fprintf(stdout, "open Makefile failed\n");
+        return ;
+    }
+
+    fprintf(fp, "MYLIB = libkriface.so\n");
+
+    fprintf(fp, "CC = gcc\n");
+    fprintf(fp, "CFLAGS = -Wall -fPIC -DPIC -g -O2\n");
+    fprintf(fp, "LDFLAGS = -shared\n");
+
+    fprintf(fp, "\n");
+    fprintf(fp, "CFLAGS += $(shell pkg-config --cflags jansson)\n");
+    fprintf(fp, "LIBS += $(shell pkg-config --libs jansson)\n");
+
+    fprintf(fp, "\n");
+    fprintf(fp, "CFLAGS += $(shell pkg-config --cflags avro-c)\n");
+    fprintf(fp, "LIBS += $(shell pkg-config --libs avro-c)\n");
+
+    fprintf(fp, "\n");
+    fprintf(fp, "all:$(MYLIB)\n");
+
+    fprintf(fp, "\n");
+    fprintf(fp, "%%.o:%%.c\n");
+    fprintf(fp, "\t$(CC) $(CFLAGS) -c $<\n");
+
+    fprintf(fp, "\n");
+    fprintf(fp, "$(MYLIB):*.o\n");
+    fprintf(fp, "\t$(CC) $(CFLAGS) $(LDFLAGS) $^ $(LIBS) -o $@\n");
+    fprintf(fp, "\t@echo \"build finished!\"\n");
+
+    fprintf(fp, "\n");
+    fprintf(fp, "install:$(MYLIB)\n");
+    fprintf(fp, "\t@mv -f $(MYLIB) $(KRHOME)/lib\n");
+    fprintf(fp, "\t@echo \"install finished!\"\n");
+
+    fprintf(fp, "\n");
+    fprintf(fp, "uninstall:\n");
+    fprintf(fp, "\t@rm -f $(KRHOME)/lib/$(MYLIB)\n");
+    fprintf(fp, "\t@echo \"uninstall finished!\"\n");
+
+    fprintf(fp, "\n");
+    fprintf(fp, "clean:\n");
+    fprintf(fp, "\t@rm -f $(MYLIB) *.o\n");
+    fprintf(fp, "\t@echo \"clean finished!\"\n");
+
+    fprintf(fp, "\n");
+    fprintf(fp, ".PHONY: all install uninstall clean");
+
+    fclose(fp);
+}

@@ -3,7 +3,7 @@
 
 static int kr_rule_detect(T_KRRule *krrule, void *krcontext)
 {
-    KR_LOG(KR_LOGDEBUG, "kr_rule_detect rule[%ld]... !", krrule->lRuleId);
+    KR_LOG(KR_LOGDEBUG, "kr_rule_detect rule[%ld]... ", krrule->lRuleId);
 
     /*initialize first*/
     kr_rule_init(krrule);
@@ -90,7 +90,7 @@ static int kr_group_match(T_KRGroup *krgroup, void *krcontext)
     if (kr_calc_ind(krgroup->ptGroupCalc) == KR_VALUE_SETED &&
         kr_calc_type(krgroup->ptGroupCalc) == KR_TYPE_BOOL &&
         kr_calc_value(krgroup->ptGroupCalc)->b) {
-        KR_LOG(KR_LOGDEBUG, "kr_group_match [%ld]!", krgroup->lGroupId);
+        KR_LOG(KR_LOGDEBUG, "kr_group_match [%ld]", krgroup->lGroupId);
         return 1;
     }
 
