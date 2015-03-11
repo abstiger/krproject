@@ -48,7 +48,7 @@ typedef struct _kr_iface_args_t
     int gen_source;
     int gen_makefile;
     int datasrc_id;
-    char format[100];
+    char format_name[20];
     char output_path[1024];
 }T_KRIfaceArgs;
 
@@ -100,7 +100,7 @@ int main(int argc, char *argv[])
     }
 
     /* Create Makefile */
-    if (gstArgs.gen_source) {
+    if (gstArgs.gen_makefile) {
         ret = kr_generate_makefile();
         if (ret != 0) {
             fprintf(stderr, "kr_generate_makefile failed!\n");
@@ -121,9 +121,9 @@ static void kr_usage(int argc, char *argv[])
             "  -d                     Generate Define File \n"
             "  -s                     Generate Source File \n"
             "  -m                     Generate Make File \n"
-            "  -i <datasrc id>        Specify Datasrc Id \n"
-            "  -f <format>            Specify Format \n"
-            "  -o <output path>       Specify Output Directory \n"
+            "  -i <datasrc id>        Specify Datasrc Id(default all) \n"
+            "  -f <format name>       Specify Format Name(default all) \n"
+            "  -o <output path>       Specify Output Directory(default .) \n"
             "  -h                     Show this usage\n"
             "\n");
     return;
@@ -133,6 +133,7 @@ static void kr_usage(int argc, char *argv[])
 static int kr_parse_arguments(int argc, char *argv[])
 {
     int opt;
+
     while ((opt = getopt(argc, argv, "dsmi:f:o:h")) != -1)
     {
         switch (opt)
@@ -150,7 +151,7 @@ static int kr_parse_arguments(int argc, char *argv[])
                 gstArgs.datasrc_id = atoi(optarg);
                 break;
             case 'f':
-                strcpy(gstArgs.format, optarg);
+                strcpy(gstArgs.format_name, optarg);
                 break;
             case 'o':
                 strcpy(gstArgs.output_path, optarg);
@@ -218,31 +219,35 @@ static int kr_traversal_datasrc(char *file_code)
         kr_string_rtrim(stDatasrcCur.caOutDatasrcDesc);
         kr_string_rtrim(stDatasrcCur.caOutDatasrcFormat);
 
-        /* Judge If this matched */
+        /* Judge If datasrc matched */
         if (gstArgs.datasrc_id != 0 && 
             gstArgs.datasrc_id != stDatasrcCur.lOutDatasrcId) {
             continue;
         }
 
-        /* Get Format handle */
-        T_KRIfaceFormat *iface_format = \
-            kr_search_format(stDatasrcCur.caOutDatasrcFormat, file_code);
-        if (iface_format == NULL) {
-            fprintf(stderr, "unsupported datasrc iface format [%s]!\n", \
-                    stDatasrcCur.caOutDatasrcFormat);
-            iFlag = -1; 
-            break;
-        }
+        for (int i=0; i<sizeof(gptIfaceFormat)/sizeof(T_KRIfaceFormat); ++i) {
+            T_KRIfaceFormat *iface_format = &gptIfaceFormat[i];
+            /* Judge If file code matched */
+            if (strcasecmp(file_code, iface_format->file_code) != 0) {
+                continue;
+            }
 
-        /* Traversal Fields */
-        iFlag = kr_traversal_fields(&stDatasrcCur, 
-                iface_format->datasrc_field_pre_func,
-                iface_format->datasrc_field_func,
-                iface_format->datasrc_field_post_func);
-        if (iFlag != 0) {
-            fprintf(stderr, "kr_traversal_fields [%ld] failed!\n", \
-                    stDatasrcCur.lOutDatasrcId);
-            break;
+            /* Judge If format name matched */
+            if (gstArgs.format_name[0] != '\0' &&
+                strcasecmp(gstArgs.format_name, iface_format->format_name)) {
+                continue;
+            }
+
+            /* Traversal Fields */
+            iFlag = kr_traversal_fields(&stDatasrcCur, 
+                    iface_format->datasrc_field_pre_func,
+                    iface_format->datasrc_field_func,
+                    iface_format->datasrc_field_post_func);
+            if (iFlag != 0) {
+                fprintf(stderr, "kr_traversal_fields [%ld] failed!\n", \
+                        stDatasrcCur.lOutDatasrcId);
+                break;
+            }
         }
 
         iCnt++;
@@ -331,6 +336,8 @@ static int kr_generate_makefile(void)
     }
 
     fprintf(fp, "MYLIB = libkriface.so\n");
+    fprintf(fp, "SOURCES = $(wildcard *.c)\n");
+    fprintf(fp, "OBJECTS = $(SOURCES:.c=.o)\n");
 
     fprintf(fp, "CC = gcc\n");
     fprintf(fp, "CFLAGS = -Wall -fPIC -DPIC -g -O2\n");
@@ -352,7 +359,7 @@ static int kr_generate_makefile(void)
     fprintf(fp, "\t$(CC) $(CFLAGS) -c $<\n");
 
     fprintf(fp, "\n");
-    fprintf(fp, "$(MYLIB):*.o\n");
+    fprintf(fp, "$(MYLIB):$(OBJECTS)\n");
     fprintf(fp, "\t$(CC) $(CFLAGS) $(LDFLAGS) $^ $(LIBS) -o $@\n");
     fprintf(fp, "\t@echo \"build finished!\"\n");
 

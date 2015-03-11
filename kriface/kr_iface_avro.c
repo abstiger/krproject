@@ -7,6 +7,7 @@ typedef struct _kr_iface_avro_data_t
     char filename[1024];
     FILE *fp;
 }T_KRIfaceAvroData;
+T_KRIfaceAvroData *avro_data = NULL;
 
 /*avro format*/
 void *avro_define_pre_func(T_DatasrcCur *ptDatasrcCur)
@@ -80,40 +81,39 @@ int avro_define_func(T_DatasrcFieldCur *ptDatasrcFieldCur, void *data)
 }
 
 
+static inline void *pre_func(T_DatasrcCur *ptDatasrcCur)
+{
+    /* Create Schema json */
+    avro_data->schema = cJSON_CreateObject();
+    cJSON_AddStringToObject(avro_data->schema, "type", "record");
+    cJSON_AddStringToObject(avro_data->schema, "name", ptDatasrcCur->caOutDatasrcName);
+    cJSON *fields = cJSON_CreateArray();
+    cJSON_AddItemToObject(avro_data->schema, "fields", fields);
+
+    return avro_data;
+}
+
+static inline void post_func(void *data, int flag)
+{
+    
+}
 /*avro format source*/
 void *avro_source_pre_func(T_DatasrcCur *ptDatasrcCur)
 {
-    T_KRIfaceAvroData *avro_data = kr_calloc(sizeof(*avro_data));
-    /* Create Schema json */
-    char schema_file[1024] = {0};
-    snprintf(schema_file, sizeof(schema_file), \
-            "%s.avsc", ptDatasrcCur->caOutDatasrcName);
-    FILE *f=fopen(schema_file, "rb");
-    if (f == NULL) {
-        fprintf(stderr, "open schema_file %s failed!\n", schema_file);
-        return NULL;
-    }
-    fseek(f,0,SEEK_END); long len=ftell(f); fseek(f,0,SEEK_SET);
-    char *data=(char *)kr_calloc(len+1); int n=fread(data,1,len,f); fclose(f);
-
-    avro_data->schema = cJSON_Parse(data); kr_free(data);
-    if (avro_data->schema == NULL) {
-        fprintf(stderr, "parse schema_file %s failed[%s]!\n",
-                schema_file, cJSON_GetErrorPtr());
-        return NULL;
-    }
+    avro_data = kr_calloc(sizeof(*avro_data));
 
     /* Open Source File */
     avro_data->datasrc_id = ptDatasrcCur->lOutDatasrcId;
     snprintf(avro_data->filename, sizeof(avro_data->filename), \
-            "%s.c", ptDatasrcCur->caOutDatasrcName);
+            "%s_avro.c", ptDatasrcCur->caOutDatasrcName);
     avro_data->fp = fopen(avro_data->filename, "w");
     if (avro_data->fp == NULL) {
         fprintf(stdout, "open output file: %s failed\n", avro_data->filename);
-        cJSON_Delete(avro_data->schema);
         kr_free(avro_data);
         return NULL;
     }
+    /* Create Schema json */
+    kr_traversal_fields(ptDatasrcCur, pre_func, avro_define_func, post_func);
 
     /*generate pre&post function*/
     FILE *fp = avro_data->fp;
@@ -127,7 +127,7 @@ void *avro_source_pre_func(T_DatasrcCur *ptDatasrcCur)
     fprintf(fp, "\n\n");
     /* map_pre_func */
     char *schema_string = cJSON_Print(avro_data->schema);
-    fprintf(fp, "void *map_pre_func_%d(void *msg)\n", avro_data->datasrc_id);
+    fprintf(fp, "void *avro_map_pre_func_%d(void *msg)\n", avro_data->datasrc_id);
     fprintf(fp, "{ \n");
     fprintf(fp, "    static const char SCHEMA_JSON[] = STR(%s); \n", schema_string);
     fprintf(fp, "    avro_schema_t  record_schema = NULL; \n");
@@ -156,7 +156,7 @@ void *avro_source_pre_func(T_DatasrcCur *ptDatasrcCur)
     fprintf(fp, "} \n");
     fprintf(fp, "\n\n");
     /* map_func_post */
-    fprintf(fp, "void map_post_func_%d(void *data)\n", avro_data->datasrc_id);
+    fprintf(fp, "void avro_map_post_func_%d(void *data)\n", avro_data->datasrc_id);
     fprintf(fp, "{ \n");
     fprintf(fp, "    avro_value_t *pval = (avro_value_t *)data; \n");
     fprintf(fp, "    avro_value_decref(pval); \n");
@@ -164,7 +164,7 @@ void *avro_source_pre_func(T_DatasrcCur *ptDatasrcCur)
     fprintf(fp, "} \n");
     fprintf(fp, "\n\n");
     /* map_func header */
-    fprintf(fp, "void map_func_%d(void *fldval, int fldno, int fldlen, void *data)\n", avro_data->datasrc_id);
+    fprintf(fp, "void avro_map_func_%d(void *fldval, int fldno, int fldlen, void *data)\n", avro_data->datasrc_id);
     fprintf(fp, "{ \n");
     fprintf(fp, "    avro_value_t *pval = (avro_value_t *)data; \n");
     fprintf(fp, "    memset(fldval, 0x00, fldlen); \n");
