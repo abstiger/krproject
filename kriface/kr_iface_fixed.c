@@ -8,6 +8,8 @@ typedef struct _kr_iface_fixed_data_t
     FILE *fp;
 }T_KRIfaceFixedData;
 
+T_KRIfaceFixedData *fixed_data = NULL;
+
 /*fixed format*/
 void *fixed_define_pre_func(T_DatasrcCur *ptDatasrcCur)
 {
@@ -28,6 +30,7 @@ void *fixed_define_pre_func(T_DatasrcCur *ptDatasrcCur)
     FILE *fp = fixed_data->fp;
     fprintf(fp, "#ifndef __KR_INTERFACE_%d_H__ \n", fixed_data->datasrc_id);
     fprintf(fp, "#define __KR_INTERFACE_%d_H__ \n", fixed_data->datasrc_id);
+    fprintf(fp, "#include <stdint.h> \n");
     fprintf(fp, "\n\n");
     fprintf(fp, "typedef struct _kr_interface_%d_t \n", fixed_data->datasrc_id);
     fprintf(fp, "{\n");
@@ -81,10 +84,26 @@ int fixed_define_func(T_DatasrcFieldCur *ptDatasrcFieldCur, void *data)
 }
 
 
+static inline void *pre_func(T_DatasrcCur *ptDatasrcCur)
+{
+    FILE *fp = fixed_data->fp;
+    fprintf(fp, "typedef struct _kr_interface_%d_t \n", fixed_data->datasrc_id);
+    fprintf(fp, "{\n");
+
+    return fixed_data;
+}
+
+static inline void post_func(void *data, int flag)
+{
+    FILE *fp = fixed_data->fp;
+    fprintf(fp, "}T_KRInterface%d;\n", fixed_data->datasrc_id);
+    fprintf(fp, "\n\n");
+}
+
 /*fixed format source*/
 void *fixed_source_pre_func(T_DatasrcCur *ptDatasrcCur)
 {
-    T_KRIfaceFixedData *fixed_data = kr_calloc(sizeof(*fixed_data));
+    fixed_data = kr_calloc(sizeof(*fixed_data));
 
     /* Open Source File */
     fixed_data->datasrc_id = ptDatasrcCur->lOutDatasrcId;
@@ -102,10 +121,12 @@ void *fixed_source_pre_func(T_DatasrcCur *ptDatasrcCur)
     FILE *fp = fixed_data->fp;
     fprintf(fp, "#include <stdio.h> \n");
     fprintf(fp, "#include <stdlib.h> \n");
+    fprintf(fp, "#include <stdint.h> \n");
     fprintf(fp, "#include <string.h> \n");
     fprintf(fp, "#include <time.h> \n");
-    fprintf(fp, "#include \"%s.h\" \n", ptDatasrcCur->caOutDatasrcName);
-    fprintf(fp, "\n\n");
+    fprintf(fp, "\n");
+    /*generate fixed struct definition */
+    kr_traversal_fields(ptDatasrcCur, pre_func, fixed_define_func, post_func);
     /* map_pre_func */
     fprintf(fp, "void *map_pre_func_%d(void *msg)\n", fixed_data->datasrc_id);
     fprintf(fp, "{ \n");
@@ -118,7 +139,7 @@ void *fixed_source_pre_func(T_DatasrcCur *ptDatasrcCur)
     fprintf(fp, "    return;\n");
     fprintf(fp, "} \n");
     fprintf(fp, "\n\n");
-    /* map_func header */
+    /* map_func */
     fprintf(fp, "void map_func_%d(void *fldval, int fldno, int fldlen, void *data)\n", fixed_data->datasrc_id);
     fprintf(fp, "{ \n");
     fprintf(fp, "    T_KRInterface%d *root = (T_KRInterface%d *)data; \n", \

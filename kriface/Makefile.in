@@ -35,7 +35,7 @@ POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
 bin_PROGRAMS = kriface$(EXEEXT)
-subdir = krtools
+subdir = kriface
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/ax_jni_include_dir.m4 \
@@ -62,9 +62,7 @@ am_kriface_OBJECTS = kriface-kr_iface.$(OBJEXT) \
 	kriface-kr_iface_json.$(OBJEXT) \
 	kriface-kr_iface_avro.$(OBJEXT)
 kriface_OBJECTS = $(am_kriface_OBJECTS)
-kriface_DEPENDENCIES = $(top_srcdir)/krutils/libkrutils.la \
-	$(top_srcdir)/dbs/libdbsbas.la \
-	$(top_srcdir)/dbs/dbs/libdbsdbs.la
+kriface_DEPENDENCIES = $(top_srcdir)/krengine/libkrengine.la
 kriface_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
 	--mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(kriface_LDFLAGS) \
 	$(LDFLAGS) -o $@
@@ -232,9 +230,7 @@ kriface_SOURCES = kr_iface.h \
 					kr_iface_json.c \
 					kr_iface_avro.c
 
-kriface_LDADD = $(top_srcdir)/krutils/libkrutils.la \
-	$(top_srcdir)/dbs/libdbsbas.la \
-	$(top_srcdir)/dbs/dbs/libdbsdbs.la
+kriface_LDADD = $(top_srcdir)/krengine/libkrengine.la
 kriface_LDFLAGS = 
 kriface_CPPFLAGS = 
 all: all-am
@@ -250,9 +246,9 @@ $(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign krtools/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign kriface/Makefile'; \
 	$(am__cd) $(top_srcdir) && \
-	  $(AUTOMAKE) --foreign krtools/Makefile
+	  $(AUTOMAKE) --foreign kriface/Makefile
 .PRECIOUS: Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \

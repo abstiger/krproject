@@ -84,6 +84,7 @@ AM_CONDITIONAL([ENABLE_PYTHON_BINDING], [test x"${enable_python_binding}" = xyes
 
 
 AC_CONFIG_FILES([
+krengine.pc
 Makefile 
 dbs/Makefile 
 dbs/dbs/Makefile 
@@ -94,9 +95,9 @@ krdb/Makefile
 krdata/Makefile 
 krflow/Makefile 
 krengine/Makefile 
+kriface/Makefile
 krserver/Makefile
 krcoordi/Makefile
-krtools/Makefile
 krshell/Makefile
 krweb/Makefile
 bindings/python/Makefile

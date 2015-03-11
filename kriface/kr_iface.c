@@ -46,9 +46,10 @@ typedef struct _kr_iface_args_t
 {
     int gen_define;
     int gen_source;
+    int gen_makefile;
     int datasrc_id;
+    char format[100];
     char output_path[1024];
-    
 }T_KRIfaceArgs;
 
 static T_DbsEnv *dbsenv = NULL;
@@ -58,8 +59,7 @@ static void kr_usage(int argc, char *argv[]);
 static int kr_parse_arguments(int argc, char *argv[]);
 static T_KRIfaceFormat *kr_search_format(char *format_name, char *file_code);
 static int kr_traversal_datasrc(char *file_code);
-static int kr_traversal_fields(T_DatasrcCur *ptDatasrcCur, T_KRIfaceFormat *iface_format);
-static void kr_generate_makefile(void);
+static int kr_generate_makefile(void);
 
 
 int main(int argc, char *argv[])
@@ -81,7 +81,7 @@ int main(int argc, char *argv[])
         return -1;
     }
 
-    /* Traversal datasrc */
+    /* generate define file */
     if (gstArgs.gen_define) {
         ret = kr_traversal_datasrc("define");
         if (ret != 0) {
@@ -90,6 +90,7 @@ int main(int argc, char *argv[])
         }
     }
 
+    /* generate source file */
     if (gstArgs.gen_source) {
         ret = kr_traversal_datasrc("source");
         if (ret != 0) {
@@ -99,7 +100,13 @@ int main(int argc, char *argv[])
     }
 
     /* Create Makefile */
-    kr_generate_makefile();
+    if (gstArgs.gen_source) {
+        ret = kr_generate_makefile();
+        if (ret != 0) {
+            fprintf(stderr, "kr_generate_makefile failed!\n");
+            goto clean;
+        }
+    }
 
 clean:
     /*Disconnect database*/
@@ -111,9 +118,12 @@ clean:
 static void kr_usage(int argc, char *argv[])
 {
     fprintf(stderr, "Usage: kriface [OPTIONS]\n"
+            "  -d                     Generate Define File \n"
             "  -s                     Generate Source File \n"
-            "  -i <datasrc id>        Datasrc Id (default: 0)\n"
-            "  -o <output path>       Output Directory Path\n"
+            "  -m                     Generate Make File \n"
+            "  -i <datasrc id>        Specify Datasrc Id \n"
+            "  -f <format>            Specify Format \n"
+            "  -o <output path>       Specify Output Directory \n"
             "  -h                     Show this usage\n"
             "\n");
     return;
@@ -123,16 +133,24 @@ static void kr_usage(int argc, char *argv[])
 static int kr_parse_arguments(int argc, char *argv[])
 {
     int opt;
-    gstArgs.gen_define = 1;/*this is default*/
-    while ((opt = getopt(argc, argv, "dsi:o:h")) != -1)
+    while ((opt = getopt(argc, argv, "dsmi:f:o:h")) != -1)
     {
         switch (opt)
         {
+            case 'd':
+                gstArgs.gen_define = 1;
+                break;
             case 's':
                 gstArgs.gen_source = 1;
                 break;
+            case 'm':
+                gstArgs.gen_makefile = 1;
+                break;
             case 'i':
                 gstArgs.datasrc_id = atoi(optarg);
+                break;
+            case 'f':
+                strcpy(gstArgs.format, optarg);
                 break;
             case 'o':
                 strcpy(gstArgs.output_path, optarg);
@@ -217,7 +235,10 @@ static int kr_traversal_datasrc(char *file_code)
         }
 
         /* Traversal Fields */
-        iFlag = kr_traversal_fields(&stDatasrcCur, iface_format);
+        iFlag = kr_traversal_fields(&stDatasrcCur, 
+                iface_format->datasrc_field_pre_func,
+                iface_format->datasrc_field_func,
+                iface_format->datasrc_field_post_func);
         if (iFlag != 0) {
             fprintf(stderr, "kr_traversal_fields [%ld] failed!\n", \
                     stDatasrcCur.lOutDatasrcId);
@@ -237,8 +258,10 @@ static int kr_traversal_datasrc(char *file_code)
 }
 
 
-static int 
-kr_traversal_fields(T_DatasrcCur *ptDatasrcCur, T_KRIfaceFormat *iface_format)
+int kr_traversal_fields(T_DatasrcCur *ptDatasrcCur, 
+        DatasrcFieldPreFunc pre_func, 
+        DatasrcFieldFunc func, 
+        DatasrcFieldPostFunc post_func)
 {
     int iResult = 0, iFlag = 0, iCnt = 0;
     T_DatasrcFieldCur stDatasrcFieldCur = {0};
@@ -253,8 +276,8 @@ kr_traversal_fields(T_DatasrcCur *ptDatasrcCur, T_KRIfaceFormat *iface_format)
     
     /* run datasrc_field_pre_func */
     void *data = NULL;
-    if (iface_format->datasrc_field_pre_func) {
-        data = iface_format->datasrc_field_pre_func(ptDatasrcCur);
+    if (pre_func) {
+        data = pre_func(ptDatasrcCur);
     }
 
     while(1)
@@ -273,11 +296,11 @@ kr_traversal_fields(T_DatasrcCur *ptDatasrcCur, T_KRIfaceFormat *iface_format)
         kr_string_rtrim(stDatasrcFieldCur.caOutFieldName);
 
         /* run datasrc_field_func */
-        if (iface_format->datasrc_field_func) {
-            iFlag = iface_format->datasrc_field_func(&stDatasrcFieldCur, data);
+        if (func) {
+            iFlag = func(&stDatasrcFieldCur, data);
             if (iFlag != 0) {
-                fprintf(stderr, "run [%s] datasrc_field_func failed!\n", 
-                        iface_format->format_name);
+                fprintf(stderr, "run [%ld] datasrc_field_func failed!\n", 
+                        stDatasrcFieldCur.lInDatasrcId);
                 break;
             }
         }
@@ -286,8 +309,8 @@ kr_traversal_fields(T_DatasrcCur *ptDatasrcCur, T_KRIfaceFormat *iface_format)
     }
 
     /* run datasrc_field_post_func */
-    if (iface_format->datasrc_field_post_func) {
-        iface_format->datasrc_field_post_func(data, iFlag);
+    if (post_func) {
+        post_func(data, iFlag);
     }
 
     iResult = dbsDatasrcFieldCur(dbsenv, KR_DBCURCLOSE, &stDatasrcFieldCur);
@@ -299,12 +322,12 @@ kr_traversal_fields(T_DatasrcCur *ptDatasrcCur, T_KRIfaceFormat *iface_format)
     return iFlag;
 }
 
-static void kr_generate_makefile(void)
+static int kr_generate_makefile(void)
 {
     FILE *fp = fopen("Makefile", "w");
     if (fp == NULL) {
         fprintf(stdout, "open Makefile failed\n");
-        return ;
+        return -1;
     }
 
     fprintf(fp, "MYLIB = libkriface.so\n");
@@ -352,4 +375,6 @@ static void kr_generate_makefile(void)
     fprintf(fp, ".PHONY: all install uninstall clean");
 
     fclose(fp);
+
+    return 0;
 }

@@ -5,9 +5,7 @@ kriface_SOURCES   = kr_iface.h \
 					kr_iface_json.c \
 					kr_iface_avro.c
      
-kriface_LDADD     = $(top_srcdir)/krutils/libkrutils.la
-kriface_LDADD    += $(top_srcdir)/dbs/libdbsbas.la
-kriface_LDADD    += $(top_srcdir)/dbs/dbs/libdbsdbs.la
+kriface_LDADD     = $(top_srcdir)/krengine/libkrengine.la
 kriface_LDFLAGS   = 
 kriface_CPPFLAGS  = 
 

@@ -4,7 +4,7 @@ ACLOCAL_AMFLAGS = -I m4
 AM_CPPFLAGS = -g -I$(includedir) -L$(libdir)
 
 SUBDIRS  = dbs krutils krcalc krparam krdb krdata krflow krengine \
-		   krserver krcoordi krshell krtools krweb \
+		   kriface krserver krcoordi krshell krweb \
 		   tests examples etc doc 
 
 if ENABLE_PYTHON_BINDING
@@ -16,3 +16,5 @@ endif
 
 EXTRA_DIST = README.md LICENSE 
 
+pkgconfigdir = $(libdir)/pkgconfig
+pkgconfig_DATA = krengine.pc

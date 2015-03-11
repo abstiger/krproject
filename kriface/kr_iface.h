@@ -48,4 +48,9 @@ typedef struct _kr_iface_format_t
     DatasrcFieldPostFunc datasrc_field_post_func;
 }T_KRIfaceFormat;
 
+int kr_traversal_fields(T_DatasrcCur *ptDatasrcCur, 
+        DatasrcFieldPreFunc pre_func,
+        DatasrcFieldFunc func,
+        DatasrcFieldPostFunc post_func);
+
 #endif /* __KR_IFACE_H__ */

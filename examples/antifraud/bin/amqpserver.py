@@ -100,12 +100,10 @@ if __name__ == '__main__':
         connection.ioloop.start()
 
     except KeyboardInterrupt:
-
+        print "Server Shutdown..."
         # Close the connection
         connection.close()
-         
         # Shutdown krengine
         kr_engine_shutdown(engine)
-
         # Loop until the conneciton is closed
-        connection.ioloop.start()
+        connection.ioloop.stop()

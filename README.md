@@ -11,7 +11,7 @@ it is consist of:
 * __krshell__: the command line processor of krserver
 
 
-# Install
+# Installation
 
 1. Make sure you have installed the dependencies:
 

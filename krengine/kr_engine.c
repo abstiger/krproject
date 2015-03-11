@@ -26,6 +26,8 @@ struct _kr_engine_t
 
 T_KREngine *kr_engine_startup(T_KREngineConfig *cfg, void *data)
 {
+    KR_LOG(KR_LOGDEBUG, "kr_engine_startup...");
+
     T_KREngine *engine = kr_calloc(sizeof(T_KREngine));
     if (engine == NULL) {
         KR_LOG(KR_LOGERROR, "kr_calloc engine failed!");
@@ -159,8 +161,9 @@ FAILED:
 
 void kr_engine_shutdown(T_KREngine *engine)
 {
+    KR_LOG(KR_LOGDEBUG, "kr_engine_shutdown...");
+    
     if (engine == NULL) return;
-
     if (engine->ctx) {
         /* destroy context */
         kr_context_fini(engine->ctx);
@@ -230,6 +233,7 @@ static int kr_engine_handle(void *ctx, void *arg)
     }
 
     /* excute handle function */
+    KR_LOG(KR_LOGDEBUG, "invoking handle for method [%s]...", apply->method);
     handle_func(krctx, krarg);
 
 RESP:
