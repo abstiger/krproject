@@ -1,5 +1,7 @@
 # Introduction
 
+[![Build Status](https://travis-ci.org/AbsoluteTiger/krproject.svg?branch=master)](https://github.com/AbsoluteTiger/krproject)
+
 krproject is a **real-time streaming data analysis** system.
 
 This project is designed to be a powerful tool of bigdata's computation,

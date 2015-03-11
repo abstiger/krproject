@@ -25,6 +25,7 @@ compile
 stamp-h1
 *.pyc
 *.pc
+tags
 /dbs/dbs/*.h
 /dbs/dbs/*.c
 bindings/java/krengine-1.0.0.jar

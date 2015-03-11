@@ -1,0 +1,20 @@
+language: c
+cache:
+  - apt
+compiler:
+  - clang
+  - gcc
+before_install:
+  - sudo apt-get update -qq
+  - sudo apt-get update
+  - sudo apt-get install valgrind
+  - sudo apt-get install unixodbc unixodbc-dev
+  - sudo apt-get install sqlite3 libsqlite3-dev
+install:
+  - sudo apt-get install -qq gcc-4.8-multilib g++-4.8-multilib
+env:
+  - ACTION="ci/build_autotools.sh" VERSION="cpp11" ARCH="64" LIBPATH="/usr/local/lib"
+  - ACTION="ci/build_autotools.sh" VERSION="cpp11" ARCH="32" LIBPATH="/usr/local/lib32"
+
+script:
+  - git clean -xdf && ${ACTION} ${VERSION} ${ARCH}
