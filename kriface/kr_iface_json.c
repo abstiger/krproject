@@ -83,7 +83,7 @@ void *json_source_pre_func(T_DatasrcCur *ptDatasrcCur)
     /* Open Source File */
     json_data->datasrc_id = ptDatasrcCur->lOutDatasrcId;
     snprintf(json_data->filename, sizeof(json_data->filename), \
-                "%s.c", ptDatasrcCur->caOutDatasrcName);
+                "%s_json.c", ptDatasrcCur->caOutDatasrcName);
     json_data->fp = fopen(json_data->filename, "w");
     if (json_data->fp == NULL) {
         fprintf(stdout, "open output file: %s failed\n", json_data->filename);
@@ -100,7 +100,7 @@ void *json_source_pre_func(T_DatasrcCur *ptDatasrcCur)
     fprintf(fp, "#include <jansson.h> \n");
     fprintf(fp, "\n\n");
     /* map_pre_func */
-    fprintf(fp, "void *map_pre_func_%d(void *msg)\n", json_data->datasrc_id);
+    fprintf(fp, "void *json_map_pre_func_%d(void *msg)\n", json_data->datasrc_id);
     fprintf(fp, "{ \n");
     fprintf(fp, "    json_t  *root; \n");
     fprintf(fp, "    json_error_t  json_error; \n");
@@ -109,14 +109,14 @@ void *json_source_pre_func(T_DatasrcCur *ptDatasrcCur)
     fprintf(fp, "} \n");
     fprintf(fp, "\n\n");
     /* map_func_post */
-    fprintf(fp, "void map_post_func_%d(void *data)\n", json_data->datasrc_id);
+    fprintf(fp, "void json_map_post_func_%d(void *data)\n", json_data->datasrc_id);
     fprintf(fp, "{ \n");
     fprintf(fp, "    json_t  *root = (json_t *)data; \n");
     fprintf(fp, "    json_decref(root); \n");
     fprintf(fp, "} \n");
     fprintf(fp, "\n\n");
     /* map_func header */
-    fprintf(fp, "void map_func_%d(void *fldval, int fldno, int fldlen, void *data)\n", json_data->datasrc_id);
+    fprintf(fp, "void json_map_func_%d(void *fldval, int fldno, int fldlen, void *data)\n", json_data->datasrc_id);
     fprintf(fp, "{ \n");
     fprintf(fp, "    json_t *root = (json_t *)data; \n");
     fprintf(fp, "    memset(fldval, 0x00, fldlen); \n");

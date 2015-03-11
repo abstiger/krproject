@@ -109,7 +109,7 @@ void *fixed_source_pre_func(T_DatasrcCur *ptDatasrcCur)
     fixed_data->datasrc_id = ptDatasrcCur->lOutDatasrcId;
     strcpy(fixed_data->datasrc_name, ptDatasrcCur->caOutDatasrcName);
     snprintf(fixed_data->filename, sizeof(fixed_data->filename), \
-                "%s.c", ptDatasrcCur->caOutDatasrcName);
+                "%s_fixed.c", ptDatasrcCur->caOutDatasrcName);
     fixed_data->fp = fopen(fixed_data->filename, "w");
     if (fixed_data->fp == NULL) {
         fprintf(stdout, "open output file: %s failed\n", fixed_data->filename);
@@ -128,19 +128,19 @@ void *fixed_source_pre_func(T_DatasrcCur *ptDatasrcCur)
     /*generate fixed struct definition */
     kr_traversal_fields(ptDatasrcCur, pre_func, fixed_define_func, post_func);
     /* map_pre_func */
-    fprintf(fp, "void *map_pre_func_%d(void *msg)\n", fixed_data->datasrc_id);
+    fprintf(fp, "void *fixed_map_pre_func_%d(void *msg)\n", fixed_data->datasrc_id);
     fprintf(fp, "{ \n");
     fprintf(fp, "    return msg;\n");
     fprintf(fp, "} \n");
     fprintf(fp, "\n\n");
     /* map_func_post */
-    fprintf(fp, "void map_post_func_%d(void *data)\n", fixed_data->datasrc_id);
+    fprintf(fp, "void fixed_map_post_func_%d(void *data)\n", fixed_data->datasrc_id);
     fprintf(fp, "{ \n");
     fprintf(fp, "    return;\n");
     fprintf(fp, "} \n");
     fprintf(fp, "\n\n");
     /* map_func */
-    fprintf(fp, "void map_func_%d(void *fldval, int fldno, int fldlen, void *data)\n", fixed_data->datasrc_id);
+    fprintf(fp, "void fixed_map_func_%d(void *fldval, int fldno, int fldlen, void *data)\n", fixed_data->datasrc_id);
     fprintf(fp, "{ \n");
     fprintf(fp, "    T_KRInterface%d *root = (T_KRInterface%d *)data; \n", \
             fixed_data->datasrc_id, fixed_data->datasrc_id);

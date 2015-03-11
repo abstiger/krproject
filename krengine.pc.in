@@ -4,7 +4,7 @@ libdir=@libdir@
 includedir=${prefix}/include
 
 Name: krengine
-Description: Library for reat-time streaming data analysis
+Description: Library for real-time streaming data analysis
 Version: @VERSION@
 Libs: -L${libdir} -lkrengine
 Cflags: -I${includedir}
