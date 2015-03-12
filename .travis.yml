@@ -1,20 +1,27 @@
 language: c
+
 cache:
   - apt
+
 compiler:
-  - clang
   - gcc
+  - clang
+
 before_install:
   - sudo apt-get update -qq
-  - sudo apt-get update
-  - sudo apt-get install valgrind
-  - sudo apt-get install unixodbc unixodbc-dev
-  - sudo apt-get install sqlite3 libsqlite3-dev
+
 install:
-  - sudo apt-get install -qq gcc-4.8-multilib g++-4.8-multilib
-env:
-  - ACTION="ci/build_autotools.sh" VERSION="cpp11" ARCH="64" LIBPATH="/usr/local/lib"
-  - ACTION="ci/build_autotools.sh" VERSION="cpp11" ARCH="32" LIBPATH="/usr/local/lib32"
+  - sudo apt-get -q install valgrind
+  - sudo apt-get -q install unixodbc unixodbc-dev libsqliteodbc
+
+before_script:
+  - source etc/krproject.env
+  - echo "[$DBNAME]\nDescription = SQLite database\n Driver = SQLite3\n Database = :memory:\n Timeout = 2000\n" >> ~/.odbc.ini
+  - isql -b $DBNAME $DBUSER $DBPASS < doc/krproject_sqlite3.sql
+  - mkdir -p _install
 
 script:
-  - git clean -xdf && ${ACTION} ${VERSION} ${ARCH}
+  - git clean -xdf
+  - ./configure && make distcheck VERBOSE=1 && make clean
+  - ./configure --prefix=`pwd`/_install && make VERBOSE=1 && make install
+
