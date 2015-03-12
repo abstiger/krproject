@@ -17,9 +17,9 @@ install:
 before_script:
   - git clean -xdf
   - source etc/krproject.env
-  - sh -c "if [ '$DB' = 'sqlite' ]; then echo -e '[$DBNAME]\nDescription = SQLite database\nDriver = SQLite3\nDatabase = `pwd`/krproject.sqlite3\nTimeout = 2000\n' > ~/.odbc.ini && sqlite3 `pwd`/krproject.sqlite3 < doc/krproject_sqlite3.sql; fi"
-  - sh -c "if [ '$DB' = 'mysql' ]; then echo -e '[$DBNAME]\nDescription = MySQL database\nDriver = MySQL\nDatabase = ${DBNAME}\n' > ~/.odbc.ini && mysql $DBNAME < doc/krproject_mysql.sql; fi"
-  - echo -e '[$DBNAME]\nDescription = SQLite database\nDriver = SQLite3\nDatabase = `pwd`/krproject.sqlite3\nTimeout = 2000\n' > ~/.odbc.ini && sqlite3 `pwd`/krproject.sqlite3 < doc/krproject_sqlite3.sql
+  - sh -c "if [ '$DB' = 'sqlite3' ]; then echo -e '[sqlite3]\nDescription = SQLite database\nDriver = SQLite3\nDatabase = `pwd`/krproject.sqlite3\nTimeout = 2000\n' > ~/.odbc.ini && sqlite3 `pwd`/krproject.sqlite3 < doc/krproject_sqlite3.sql; fi"
+  - sh -c "if [ '$DB' = 'mysql' ]; then echo -e '[mysql]\nDescription = MySQL database\nDriver = MySQL\nDatabase = ${DBNAME}\n' > ~/.odbc.ini && mysql $DBNAME < doc/krproject_mysql.sql; fi"
+#  - echo -e "[$DBNAME]\nDescription = SQLite database\nDriver = SQLite3\nDatabase = `pwd`/krproject.sqlite3\nTimeout = 2000\n" > ~/.odbc.ini && sqlite3 `pwd`/krproject.sqlite3 < doc/krproject_sqlite3.sql
   - cat ~/.odbc.ini && isql $DBNAME -v
 
 script:
