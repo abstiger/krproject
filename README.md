@@ -1,6 +1,6 @@
 # Introduction
 
-[![Build Status](https://travis-ci.org/AbsoluteTiger/krproject.svg?branch=master)](https://github.com/AbsoluteTiger/krproject)
+[![Build Status](https://travis-ci.org/AbsoluteTiger/krproject.svg?branch=master)](https://travis-ci.org/AbsoluteTiger/krproject)
 
 krproject is a **real-time streaming data analysis** system.
 
@@ -15,7 +15,7 @@ it is consist of:
 * __krweb__: the web frontend, editor for kengine
 
 
-# Installation
+# Install
 
 1. Make sure you have installed the dependencies:
 
