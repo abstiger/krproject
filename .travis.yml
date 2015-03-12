@@ -18,6 +18,8 @@ before_script:
   - git clean -xdf
   - source etc/krproject.env
   - echo "[$DBNAME]\nDescription = SQLite database\n Driver = SQLite3\n Database = `pwd`/krproject.sqlite3\n Timeout = 2000\n" > ~/.odbc.ini
+  - cat ~/.odbc.ini
+  - isql $DBNAME -v
   - sqlite3 `pwd`/krproject.sqlite3 < doc/krproject_sqlite3.sql
   - mkdir -p _install
   - autoreconf -i
