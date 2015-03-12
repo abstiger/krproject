@@ -11,17 +11,24 @@ before_install:
   - sudo apt-get update -qq
 
 install:
-  - sudo apt-get -q install valgrind
+#  - sudo apt-get -q install valgrind
   - sudo apt-get -q install unixodbc unixodbc-dev libsqliteodbc
 
 before_script:
   - git clean -xdf
   - source etc/krproject.env
-  - echo -e "[$DBNAME]\nDescription = SQLite database\nDriver = SQLite3\nDatabase = `pwd`/krproject.sqlite3\nTimeout = 2000\n" > ~/.odbc.ini
-  - sqlite3 `pwd`/krproject.sqlite3 < doc/krproject_sqlite3.sql
-  - mkdir -p _install
-  - autoreconf -i
+  - if [ '$DB' = 'sqlite3' ]; then 
+        echo -e '[$DBNAME]\nDescription = SQLite database\nDriver = SQLite3\nDatabase = `pwd`/krproject.sqlite3\nTimeout = 2000\n' > ~/.odbc.ini && 
+        sqlite3 `pwd`/krproject.sqlite3 < doc/krproject_sqlite3.sql;
+    fi
+  - if [ '$DB' = 'mysql' ]; then 
+        echo -e '[$DBNAME]\nDescription = MySQL database\nDriver = MySQL\nDatabase = ${DBNAME}\n' > ~/.odbc.ini && 
+        mysql $DBNAME < doc/krproject_mysql.sql;
+    fi
 
 script:
-  - ./configure --prefix=`pwd`/_install && make VERBOSE=1 && make install
+  - mkdir -p _install && chmod u+x ./configure && ./configure --prefix=`pwd`/_install && make VERBOSE=1 && make install
 
+env:
+  - DB=sqlite3
+#  - DB=mysql
