@@ -16,8 +16,8 @@ install:
 
 before_script:
   - source etc/krproject.env
-  - echo "[$DBNAME]\nDescription = SQLite database\n Driver = SQLite3\n Database = :memory:\n Timeout = 2000\n" >> ~/.odbc.ini
-  - isql -b $DBNAME $DBUSER $DBPASS < doc/krproject_sqlite3.sql
+  - echo "[$DBNAME]\nDescription = SQLite database\n Driver = SQLite3\n Database = `pwd`/krproject.sqlite3\n Timeout = 2000\n" >> ~/.odbc.ini
+  - sqlite3 `pwd`/krproject.sqlite3 < doc/krproject_sqlite3.sql
   - mkdir -p _install
 
 script:
