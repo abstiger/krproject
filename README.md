@@ -5,7 +5,7 @@
 krproject is a **real-time streaming data analysis** system.
 
 This project is designed to be a powerful tool of bigdata's computation,
-it is consist of:
+it is now consist of:
 
 * __krengine__: the core process engine of this project
 * __kriface__: the interface generator, helper for IO processing
@@ -21,7 +21,7 @@ it is consist of:
 
    * `git`
    * `gcc` 4.7 or later
-   * `make` 3.81 or later
+   * GNU `make` 3.81 or later
    * `unixodbc` and `unixodbc-dev` 2.2.14 or later
 
 2. Clone the [source] with `git`:
@@ -45,6 +45,14 @@ it is consist of:
     > install locations can be adjusted by passing a `--prefix` argument
     > to `configure`. Various other options are also supported. Pass 
     > `--help` for more information on them.
+
+4. Enable bindings: 
+
+    To enable bindings, you need install [swig] first. then you can add 
+    `--enable-python-binding` `--enable-java-binding` arguments to 
+    `configure`.
+
+[swig]:http://www.swig.org/
 
 # License
 
