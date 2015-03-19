@@ -9,6 +9,7 @@ compiler:
 
 before_install:
   - sudo apt-get update -qq
+  - automake --version && autoconf --verion
 
 install:
 #  - sudo apt-get -q install valgrind 

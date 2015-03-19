@@ -11,14 +11,7 @@ kr_config.h
 kr_config.h.in
 config.log
 config.status
-config.sub
-configure
-depcomp
-install-sh
 libtool
-ltmain.sh
-missing
-compile
 *.lo
 *.la
 stamp-h1
