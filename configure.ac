@@ -8,14 +8,15 @@ AC_CONFIG_SRCDIR([krutils])
 AC_CONFIG_MACRO_DIR([m4])
 AM_INIT_AUTOMAKE([foreign -Wall -Werror])
 
-LT_INIT(disable_static)
-
 # Checks for programs.
 AC_PROG_CC_C99
 AM_PROG_CC_C_O
+AM_PROG_AR
 AC_PROG_LIBTOOL
 AM_PROG_LEX
 AC_PROG_YACC
+
+LT_INIT(disable_static)
 
 # Checks for libraries.
 AX_LIB_READLINE
