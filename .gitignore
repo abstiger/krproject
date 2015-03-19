@@ -5,7 +5,6 @@
 .deps
 Makefile
 Makefile.in
-aclocal.m4
 autom4te.cache
 config.guess
 kr_config.h
