@@ -16,7 +16,7 @@ AC_PROG_LIBTOOL
 AM_PROG_LEX
 AC_PROG_YACC
 
-LT_INIT(disable_static)
+#LT_INIT(disable_static)
 
 # Checks for libraries.
 AX_LIB_READLINE

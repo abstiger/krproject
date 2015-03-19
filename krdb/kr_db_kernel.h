@@ -10,15 +10,15 @@ typedef void (*KRMapFuncPost)(void *data);
 
 /*the two public fieldno of krdb'field definition*/
 typedef enum {
-    KR_FIELDNO_KRDBTIME  = 0,    /*timestamp of krdb insertion*/
-    KR_FIELDNO_TRANSTIME = 1     /*timestamp of transaction*/
+    KR_FIELDNO_KRDBTIME    = 0,   /*timestamp of krdb insertion*/
+    KR_FIELDNO_TRANSTIME   = 1    /*timestamp of transaction*/
 }E_KRFieldNo;
 
 
 /*krdb's index type*/
 typedef enum {
     KR_INDEXTYPE_TABLE     = 'S', /*only for this table*/ 
-    KR_INDEXTYPE_DB   = 'M'  /*a multiple table index*/
+    KR_INDEXTYPE_DB        = 'M'  /*a multiple table index*/
 }E_KRIndexType;
 
 /*krdb table size keep mode*/

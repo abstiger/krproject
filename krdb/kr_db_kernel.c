@@ -2,32 +2,30 @@
 
 #define KR_MEMALIGN(size)   (((size) + 0xf) & ~(size_t) 0xf)
 
-static inline int kr_db_field_compare(void *p1, void *p2, void *sort_field)
+static inline int 
+kr_db_field_compare(T_KRRecord *ptRec1, T_KRRecord *ptRec2, int iFldId)
 {
-    int iFldId = *(int *)sort_field;
-    T_KRRecord *ptRec1 = (T_KRRecord *)p1;
-    T_KRRecord *ptRec2 = (T_KRRecord *)p2;
-    
+	/*compare field type*/
     E_KRType eType1 = kr_get_field_type(ptRec1, iFldId);
     E_KRType eType2 = kr_get_field_type(ptRec1, iFldId);
     if (eType1 != eType2) return 0;
         
+	/*compare field value*/
     void *pVal1 = kr_get_field_value(ptRec1, iFldId);
     void *pVal2 = kr_get_field_value(ptRec2, iFldId);
-    
-    switch(eType1)
-    {
-        case KR_TYPE_INT:
-            return (int )(*(int *)pVal1 - *(int *)pVal2);
-        case KR_TYPE_LONG:
-            return (int )(*(long *)pVal1 - *(long *)pVal2);
-        case KR_TYPE_DOUBLE:
-            return (int )(*(double *)pVal1 - *(double *)pVal2);
-        case KR_TYPE_STRING:
-            return strcmp((char *)pVal1, (char *)pVal2);
-        case KR_TYPE_POINTER:
-            return (int )(*(int *)pVal1 - *(int *)pVal2);
+    switch(eType1) {
+		case KR_TYPE_INT:
+			return (int )(*(int *)pVal1 - *(int *)pVal2);
+		case KR_TYPE_LONG:
+			return (int )(*(long *)pVal1 - *(long *)pVal2);
+		case KR_TYPE_DOUBLE:
+			return (int )(*(double *)pVal1 - *(double *)pVal2);
+		case KR_TYPE_STRING:
+			return strcmp((char *)pVal1, (char *)pVal2);
+		case KR_TYPE_POINTER:
+			return (int )(*(int *)pVal1 - *(int *)pVal2);
     }
+
     return 0;
 }
 
