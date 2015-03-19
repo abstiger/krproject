@@ -25,6 +25,7 @@ bindings/java/krengine-java.stamp
 bindings/java/krengine_wrap.c
 bindings/java/org/
 bindings/python/krengine_wrap.c
+bindings/python/krengine.py
 /dbs/rapodbc
 /kriface/kriface
 /krserver/krserver

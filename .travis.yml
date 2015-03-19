@@ -9,14 +9,14 @@ compiler:
 
 before_install:
   - sudo apt-get update -qq
-  - automake --version && autoconf --verion
+  - automake --version && autoconf --version
 
 install:
 #  - sudo apt-get -q install valgrind 
   - sudo apt-get -q install swig unixodbc unixodbc-dev libsqliteodbc
 
 before_script:
-  - git clean -xdf
+#  - git clean -xdf
   - source etc/krproject.env
 #  - sh -c "if [ '$DB' = 'sqlite3' ]; then echo -e '[$DBNAME]\nDescription = SQLite database\nDriver = SQLite3\nDatabase = `pwd`/krproject.sqlite3\nTimeout = 2000\n' > ~/.odbc.ini && sqlite3 `pwd`/krproject.sqlite3 < doc/krproject_sqlite3.sql; fi"
 #  - sh -c "if [ '$DB' = 'mysql' ]; then echo -e '[$DBNAME]\nDescription = MySQL database\nDriver = MySQL\nDatabase = ${DBNAME}\n' > ~/.odbc.ini && mysql $DBNAME < doc/krproject_mysql.sql; fi"
