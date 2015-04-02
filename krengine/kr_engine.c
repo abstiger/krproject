@@ -6,6 +6,8 @@
 #include "krcalc/kr_calc.h"
 #include "krdb/kr_db.h"
 #include "krdata/kr_data.h"
+#include "krflow/kr_flow.h"
+#include "kr_engine_context.h"
 #include "kr_engine.h"
 #include "assert.h"
 
@@ -37,12 +39,12 @@ T_KREngine *kr_engine_startup(T_KREngineConfig *cfg, void *data)
     char caInfo[1024] = {0};
     engine->version = kr_strdup(VERSION);
     snprintf(caInfo, sizeof(caInfo), \
-            "Welcome to %s !\n", 
-            "This is Version %s.\n",
-            "If you find any bug or you'd like an enhancement,\n",
-            "Please feel free to contact me: %s \n",
+            "Welcome to %s !\n"
+            "This is Version %s.\n"
+            "If you find any bug or you'd like an enhancement,\n"
+            "Please feel free to contact me: %s \n"
             "Check %s for details.\n",
-            PACKAGE, PACKAGE_VERSION, PACKAGE_BUGREPORT, PACKAGE_URL);
+            PACKAGE_NAME, PACKAGE_VERSION, PACKAGE_BUGREPORT, PACKAGE_URL);
     engine->info = kr_strdup(caInfo);
 
     /* Set log file and level */
@@ -57,7 +59,7 @@ T_KREngine *kr_engine_startup(T_KREngineConfig *cfg, void *data)
         goto FAILED;
     }
     engine->ctx_env = ctx_env;
-    ctx_env->data = data;
+    ctx_env->extra = data;
 
     /* load pludge-in modules */
     if (cfg->krdb_module) {
@@ -81,8 +83,8 @@ T_KREngine *kr_engine_startup(T_KREngineConfig *cfg, void *data)
 
     /* Connect to database */
     if (cfg->dbname) {
-        ctx_env->ptDbs = dbsConnect(cfg->dbname, cfg->dbuser, cfg->dbpass);
-        if (ctx_env->ptDbs == NULL) {
+        ctx_env->ptDbsEnv = dbsConnect(cfg->dbname, cfg->dbuser, cfg->dbpass);
+        if (ctx_env->ptDbsEnv == NULL) {
             KR_LOG(KR_LOGERROR, "dbsConnect [%s] [%s] [%s] failed!",
                     cfg->dbname, cfg->dbuser, cfg->dbpass);
             goto FAILED;
@@ -92,17 +94,16 @@ T_KREngine *kr_engine_startup(T_KREngineConfig *cfg, void *data)
         goto FAILED;
     }
 
-    /* Create share memory */
-    ctx_env->ptShm = kr_shm_create(ctx_env->ptDbs);
-    if (ctx_env->ptShm == NULL) {
-        KR_LOG(KR_LOGERROR, "kr_shm_create failed!");
+    /* Create parameter memory */
+    ctx_env->ptParam = kr_param_create(ctx_env->ptDbsEnv);
+    if (ctx_env->ptParam == NULL) {
+        KR_LOG(KR_LOGERROR, "kr_param_create failed!");
         goto FAILED;
     }
 
     /* Start up krdb */
-    ctx_env->ptKRDB = kr_db_startup(\
-            ctx_env->ptDbs, "KRDB", ctx_env->krdbModule);
-    if (ctx_env->ptKRDB == NULL) {
+    ctx_env->ptDB = kr_db_new("KRDB", ctx_env->ptDbsEnv, ctx_env->krdbModule);
+    if (ctx_env->ptDB == NULL) {
         KR_LOG(KR_LOGERROR, "kr_db_startup failed!");
         goto FAILED;
     }
@@ -177,9 +178,9 @@ void kr_engine_shutdown(T_KREngine *engine)
         T_KRContextEnv *ctx_env=engine->ctx_env;
         if (ctx_env->krdbModule) kr_module_close(ctx_env->krdbModule);
         if (ctx_env->dataModule) kr_module_close(ctx_env->dataModule);
-        if (ctx_env->ptDbs) dbsDisconnect(ctx_env->ptDbs);
-        if (ctx_env->ptShm) kr_shm_destroy(ctx_env->ptShm);
-        if (ctx_env->ptKRDB) kr_db_shutdown(ctx_env->ptKRDB);
+        if (ctx_env->ptDbsEnv) dbsDisconnect(ctx_env->ptDbsEnv);
+        if (ctx_env->ptParam) kr_param_destroy(ctx_env->ptParam);
+        if (ctx_env->ptDB) kr_db_free(ctx_env->ptDB);
         if (ctx_env->ptHDICache) kr_hdi_cache_destroy(ctx_env->ptHDICache);
         if (ctx_env->ptFuncTable) kr_functable_destroy(ctx_env->ptFuncTable);
         kr_free(engine->ctx_env);

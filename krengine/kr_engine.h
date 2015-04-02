@@ -5,7 +5,7 @@
 
 /* forward declaration */
 typedef struct _kr_engine_t T_KREngine;
-
+typedef struct _kr_context_t T_KRContext;
 
 /*reply msgtype*/
 typedef enum _kr_msgtype_t

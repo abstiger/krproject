@@ -1,7 +1,10 @@
 #include "kr_engine.h"
-#include "krdata/kr_data.h"
+#include "kr_engine_context.h"
 
-extern int kr_engine_detect(T_KRContext *krctx);
+#include "krparam/kr_param_api.h"
+#include "krdb/kr_db_api.h"
+#include "krdata/kr_data_api.h"
+#include "krflow/kr_flow_api.h"
 
 static void kr_engine_info(T_KRContext *krctx, T_KREngineArg *krarg);
 static void kr_engine_info_log(T_KRContext *krctx, T_KREngineArg *krarg);
@@ -181,7 +184,7 @@ static void kr_engine_info_krdb(T_KRContext *krctx, T_KREngineArg *krarg)
     T_KRMessage *apply = krarg->apply;
     T_KRMessage *reply = krarg->reply;
 
-    cJSON *json = kr_db_info(krctx->ptEnv->ptKRDB);
+    cJSON *json = kr_db_info(krctx->ptEnv->ptDB);
     reply->msgbuf = cJSON_PrintUnformatted(json);
     reply->msglen = strlen(reply->msgbuf)+1;
     reply->msgtype = KR_MSGTYPE_SUCCESS;
@@ -193,7 +196,7 @@ static void kr_engine_info_table(T_KRContext *krctx, T_KREngineArg *krarg)
     T_KRMessage *apply = krarg->apply;
     T_KRMessage *reply = krarg->reply;
 
-    T_KRTable *ptTable = kr_get_table(krctx->ptEnv->ptKRDB, apply->datasrc);
+    T_KRTable *ptTable = kr_table_get(krctx->ptEnv->ptDB, apply->datasrc);
     if (ptTable == NULL) {
         KR_LOG(KR_LOGERROR, "invalid datasrc [%d]!", apply->datasrc);
         reply->msgtype = KR_MSGTYPE_ERROR;
@@ -220,13 +223,13 @@ static void kr_engine_info_index(T_KRContext *krctx, T_KREngineArg *krarg)
     }
     int index_id = (int )cJSON_GetNumber(apply_json, "index_id");
 
-    T_KRTable *ptTable = kr_get_table(krctx->ptEnv->ptKRDB, apply->datasrc);
+    T_KRTable *ptTable = kr_table_get(krctx->ptEnv->ptDB, apply->datasrc);
     if (ptTable == NULL) {
         KR_LOG(KR_LOGERROR, "invalid datasrc [%d]!", apply->datasrc);
         reply->msgtype = KR_MSGTYPE_ERROR;
         return;
     }
-    T_KRIndex *ptIndex = kr_get_table_index(ptTable, index_id);
+    T_KRIndex *ptIndex = kr_index_get(krctx->ptEnv->ptDB, index_id);
     if (ptIndex == NULL) {
         KR_LOG(KR_LOGERROR, "invalid index_id [%d]!", index_id);
         reply->msgtype = KR_MSGTYPE_ERROR;
@@ -259,16 +262,16 @@ static void kr_engine_reload_param(T_KRContext *krctx, T_KREngineArg *krarg)
     T_KRMessage *apply = krarg->apply;
     T_KRMessage *reply = krarg->reply;
 
-    if (kr_shm_load(krctx->ptEnv->ptDbs, krctx->ptEnv->ptShm) < 0) {
-        KR_LOG(KR_LOGERROR, "kr_shm_load failed!");
+    if (kr_param_load(krctx->ptEnv->ptParam) < 0) {
+        KR_LOG(KR_LOGERROR, "kr_param_load failed!");
         reply->msgtype = KR_MSGTYPE_ERROR;
         return;
     }
     
     cJSON *json = cJSON_CreateObject();
-    cJSON *shm = kr_shm_info(krctx->ptEnv->ptShm);
+    cJSON *shm = kr_param_info(krctx->ptEnv->ptParam);
     cJSON_AddItemToObject(json, "shm", shm);
-    cJSON *dym = kr_dym_info(krctx->ptDym);
+    cJSON *dym = kr_data_info(krctx->ptData);
     cJSON_AddItemToObject(json, "dym", dym);
     
     reply->msgbuf = cJSON_PrintUnformatted(json);
@@ -283,9 +286,9 @@ static void kr_engine_info_param(T_KRContext *krctx, T_KREngineArg *krarg)
     T_KRMessage *reply = krarg->reply;
 
     cJSON *json = cJSON_CreateObject();
-    cJSON *shm = kr_shm_info(krctx->ptEnv->ptShm);
+    cJSON *shm = kr_param_info(krctx->ptEnv->ptParam);
     cJSON_AddItemToObject(json, "shm", shm);
-    cJSON *dym = kr_dym_info(krctx->ptDym);
+    cJSON *dym = kr_data_info(krctx->ptData);
     cJSON_AddItemToObject(json, "dym", dym);
     
     reply->msgbuf = cJSON_PrintUnformatted(json);
@@ -306,7 +309,7 @@ static void kr_engine_info_group(T_KRContext *krctx, T_KREngineArg *krarg)
         return;
     }
     int id = (int )cJSON_GetNumber(apply_json, "group_id");
-    T_KRGroup *krgroup = kr_group_lookup(krctx->ptDym->grouplist, id);
+    T_KRGroup *krgroup = kr_group_lookup(krctx->ptFlow->ptGroupList, id);
     if (krgroup == NULL) {
         KR_LOG(KR_LOGERROR, "Group %d not found!", id);
         reply->msgtype = KR_MSGTYPE_ERROR;
@@ -332,7 +335,7 @@ static void kr_engine_info_rule(T_KRContext *krctx, T_KREngineArg *krarg)
         return;
     }
     int group_id = (int )cJSON_GetNumber(apply_json, "group_id");
-    T_KRGroup *krgroup = kr_group_lookup(krctx->ptDym->grouplist, group_id);
+    T_KRGroup *krgroup = kr_group_lookup(krctx->ptFlow->ptGroupList, group_id);
     if (krgroup == NULL) {
         KR_LOG(KR_LOGERROR, "Group %d not found!", group_id);
         reply->msgtype = KR_MSGTYPE_ERROR;
@@ -365,7 +368,7 @@ static void kr_engine_info_set(T_KRContext *krctx, T_KREngineArg *krarg)
         return;
     }
     int id = (int )cJSON_GetNumber(apply_json, "set_id");
-    T_KRSet *krset = kr_set_lookup(krctx->ptDym->settable, id);
+    T_KRSet *krset = kr_set_lookup(krctx->ptData->ptSetTable, id);
     if (krset == NULL) {
         KR_LOG(KR_LOGERROR, "Set %d not found!", id);
         reply->msgtype = KR_MSGTYPE_ERROR;
@@ -391,7 +394,7 @@ static void kr_engine_info_sdi(T_KRContext *krctx, T_KREngineArg *krarg)
         return;
     }
     int id = (int )cJSON_GetNumber(apply_json, "sdi_id");
-    T_KRSDI *krsdi = kr_sdi_lookup(krctx->ptDym->sditable, id);
+    T_KRSDI *krsdi = kr_sdi_lookup(krctx->ptData->ptSdiTable, id);
     if (krsdi == NULL) {
         KR_LOG(KR_LOGERROR, "SDI %d not found!", id);
         reply->msgtype = KR_MSGTYPE_ERROR;
@@ -417,7 +420,7 @@ static void kr_engine_info_ddi(T_KRContext *krctx, T_KREngineArg *krarg)
         return;
     }
     int id = (int )cJSON_GetNumber(apply_json, "ddi_id");
-    T_KRDDI *krddi = kr_ddi_lookup(krctx->ptDym->dditable, id);
+    T_KRDDI *krddi = kr_ddi_lookup(krctx->ptData->ptDdiTable, id);
     if (krddi == NULL) {
         KR_LOG(KR_LOGERROR, "DDI %d not found!", id);
         reply->msgtype = KR_MSGTYPE_ERROR;
@@ -443,7 +446,7 @@ static void kr_engine_info_hdi(T_KRContext *krctx, T_KREngineArg *krarg)
         return;
     }
     int id = (int )cJSON_GetNumber(apply_json, "hdi_id");
-    T_KRHDI *krhdi = kr_hdi_lookup(krctx->ptDym->hditable, id);
+    T_KRHDI *krhdi = kr_hdi_lookup(krctx->ptData->ptHdiTable, id);
     if (krhdi == NULL) {
         KR_LOG(KR_LOGERROR, "DDI %d not found!", id);
         reply->msgtype = KR_MSGTYPE_ERROR;
@@ -464,14 +467,16 @@ static void kr_engine_insert_event(T_KRContext *krctx, T_KREngineArg *krarg)
     T_KRMessage *reply = krarg->reply;
 
     /* insert event into krdb */
+    /*FIXME:convert message to record first
     krctx->ptCurrRec = kr_db_insert(
-            krctx->ptEnv->ptKRDB, apply->datasrc, apply->msgbuf);
+            krctx->ptEnv->ptDB, apply->datasrc, apply->msgbuf);
     if (krctx->ptCurrRec == NULL) {
         KR_LOG(KR_LOGERROR, "kr_db_insert [%d] [%s] failed!", 
                 apply->datasrc, apply->msgbuf);
         reply->msgtype = KR_MSGTYPE_ERROR;
         return;
     }
+    */
 
     reply->msgtype = KR_MSGTYPE_SUCCESS;
 }
@@ -482,21 +487,23 @@ static void kr_engine_detect_event(T_KRContext *krctx, T_KREngineArg *krarg)
     T_KRMessage *reply = krarg->reply;
 
     /* insert event into krdb */
+    /*FIXME:convert message to record first
     krctx->ptCurrRec = kr_db_insert(
-            krctx->ptEnv->ptKRDB, apply->datasrc, apply->msgbuf);
+            krctx->ptEnv->ptDB, apply->datasrc, apply->msgbuf);
     if (krctx->ptCurrRec == NULL) {
         KR_LOG(KR_LOGERROR, "kr_db_insert [%d] [%s] failed!", 
                 apply->datasrc, apply->msgbuf);
         reply->msgtype = KR_MSGTYPE_ERROR;
         return;
     }
+    */
 
     /* group route and rule detect */
-    if (kr_engine_detect(krctx) != 0) {
+    if (kr_flow_detect(krctx->ptFlow, krctx->ptCurrRec) != 0) {
         KR_LOG(KR_LOGERROR, "kr_engine_detect failed!");
         reply->msgtype = KR_MSGTYPE_ERROR;
         return;
-    } 
+    }
 
     cJSON *json = kr_context_dump_json(krctx);
     reply->msgbuf = cJSON_PrintUnformatted(json);
