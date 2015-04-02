@@ -1,4 +1,4 @@
-#include "kr_hdi_cache.h"
+#include "kr_data_hdi_cache.h"
 
 
 static T_KRHDICacheValue *kr_hdi_cache_value_new(long hid)
