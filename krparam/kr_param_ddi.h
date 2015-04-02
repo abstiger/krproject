@@ -1,5 +1,5 @@
-#ifndef __KR_SHM_DDI_H__
-#define __KR_SHM_DDI_H__
+#ifndef __KR_PARAM_DDI_H__
+#define __KR_PARAM_DDI_H__
 
 #include <stdio.h>
 #include <time.h>
@@ -8,7 +8,7 @@
 #define N_MAX_DDI_NUM  500
 
 
-typedef struct _kr_shm_ddi_def_t
+typedef struct _kr_param_ddi_def_t
 {
     long        lDdiId;
     char        caDdiName[30+1];
@@ -26,18 +26,17 @@ typedef struct _kr_shm_ddi_def_t
     char        caStatisticsMethod[1+1];
     char        caDdiFilterFormat[1+1];
     char        caDdiFilterString[500+1];
-}T_KRShmDDIDef;
+}T_KRParamDDIDef;
 
-typedef struct _kr_shm_ddi_t
+typedef struct _kr_param_ddi_t
 {
-    long             lDDIDefCnt;
-    T_KRShmDDIDef    stShmDDIDef[N_MAX_DDI_NUM];
-    time_t           tLastLoadTime;           /*share memory last loaded time*/
-}T_KRShmDDI;
+    long               lDDIDefCnt;
+    T_KRParamDDIDef    stParamDDIDef[N_MAX_DDI_NUM];
+    time_t             tLastLoadTime;           /*share memory last loaded time*/
+}T_KRParamDDI;
 
 
-int kr_shm_ddi_load(T_DbsEnv *dbsenv, T_KRShmDDI *ptShmDDI);
-int kr_shm_ddi_dump(T_KRShmDDI *ptShmDDI, FILE *fp);
-cJSON *kr_shm_ddi_info(T_KRShmDDIDef *ptShmDDIDef);
+int kr_param_ddi_load(T_DbsEnv *ptDbsEnv, T_KRParamDDI *ptParamDDI);
+int kr_param_ddi_dump(T_KRParamDDI *ptParamDDI, FILE *fp);
 
-#endif  /*__KR_SHM_DDI_H__*/
+#endif  /*__KR_PARAM_DDI_H__*/

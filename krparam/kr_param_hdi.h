@@ -1,5 +1,5 @@
-#ifndef __KR_SHM_HDI_H__
-#define __KR_SHM_HDI_H__
+#ifndef __KR_PARAM_HDI_H__
+#define __KR_PARAM_HDI_H__
 
 #include <stdio.h>
 #include <time.h>
@@ -7,7 +7,7 @@
 
 #define N_MAX_HDI_NUM  500
 
-typedef struct _kr_shm_hdi_def_t
+typedef struct _kr_param_hdi_def_t
 {
     long        lHdiId;
     char        caHdiName[30+1];
@@ -21,20 +21,19 @@ typedef struct _kr_shm_hdi_def_t
     char        caStatisticsType[1+1];
     long        lStatisticsValue;
     char        caStatisticsMethod[1+1];
-}T_KRShmHDIDef;
+}T_KRParamHDIDef;
 
 
-typedef struct _kr_shm_hdi_t
+typedef struct _kr_param_hdi_t
 {
-    long             lHDIDefCnt;
-    T_KRShmHDIDef    stShmHDIDef[N_MAX_HDI_NUM];
-    time_t           tLastLoadTime;           /*share memory last loaded time*/
-}T_KRShmHDI;
+    long               lHDIDefCnt;
+    T_KRParamHDIDef    stParamHDIDef[N_MAX_HDI_NUM];
+    time_t             tLastLoadTime;           /*share memory last loaded time*/
+}T_KRParamHDI;
 
 
-int kr_shm_hdi_load(T_DbsEnv *dbsenv, T_KRShmHDI *ptShmHDI);
-int kr_shm_hdi_dump(T_KRShmHDI *ptShmHDI, FILE *fp);
-cJSON *kr_shm_hdi_info(T_KRShmHDIDef *ptShmHDIDef); 
+int kr_param_hdi_load(T_DbsEnv *ptDbsEnv, T_KRParamHDI *ptParamHDI);
+int kr_param_hdi_dump(T_KRParamHDI *ptParamHDI, FILE *fp);
 
 
-#endif  /*__KR_SHM_HDI_H__*/
+#endif  /*__KR_PARAM_HDI_H__*/
