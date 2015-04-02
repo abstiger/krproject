@@ -454,7 +454,7 @@ kr_hashtable_new_full (KRHashFunc       hash_func,
     kr_hashtable_set_shift(hash_table, HASH_TABLE_MIN_SHIFT);
     hash_table->nnodes             = 0;
     hash_table->noccupied          = 0;
-    hash_table->hash_func          = hash_func ? hash_func : kr_pointer_hash;
+    hash_table->hash_func          = hash_func;
     hash_table->key_equal_func     = key_equal_func;
     hash_table->ref_count          = 1;
     hash_table->key_destroy_func   = key_destroy_func;

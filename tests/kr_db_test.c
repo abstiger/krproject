@@ -38,13 +38,11 @@ int main(int argc,char *argv[])
     
     //Step 1:kr_db_startup
     T_KRModule *dbmod = kr_module_open("/home/tiger/krproject/lib/antifraud.so", RTLD_LAZY);
-    gptKRDB = kr_db_startup(dbsenv, "KRDB", dbmod);
+    gptKRDB = kr_db_new("KRDB", dbsenv, dbmod);
     if (gptKRDB == NULL) {
         KR_LOG(KR_LOGERROR, "kr_db_startup Failed!");
         return -1;
     }
-
-    kr_db_load(gptKRDB);
     
     //Step 2:FraudDetect
     /*
@@ -105,17 +103,9 @@ int main(int argc,char *argv[])
         return -1;
     }
     fclose(fpDump);
-    kr_db_dump_field_def(gptKRDB, 1, stdout);
-    kr_db_dump(gptKRDB, 0, stdout);
-    //kr_db_dump(gptKRDB, 1, stdout);
     
     //Step 3:kr_db_shutdown
-    iResult = kr_db_shutdown(gptKRDB);
-    if (iResult != 0)
-    {
-        KR_LOG(KR_LOGERROR, "kr_db_shutdown Failed!");
-        return -1;
-    }
+    kr_db_free(gptKRDB);
     
     kr_module_close(dbmod);
     dbsDisconnect(dbsenv);
@@ -132,7 +122,7 @@ static int MyPrintRecord(T_KRRecord *ptRecord, void *user_data)
     fprintf(fp, "    Record: FieldCnt[%d] \n", ptTable->iFieldCnt);
     for (i = 0; i<ptTable->iFieldCnt; i++)
     {
-        pFieldVal = kr_get_field_value(ptRecord, i);
+        pFieldVal = kr_field_get_value(ptRecord, i);
         switch(ptTable->ptFieldDef[i].type)
         {
             case KR_TYPE_INT:

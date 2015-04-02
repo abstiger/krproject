@@ -4,8 +4,7 @@
 #include <assert.h>
 #include <unistd.h>
 
-#include "krutils/kr_alloc.h"
-#include "krutils/kr_hashtable.h"
+#include "krutils/kr_utils.h"
 
 #define RECORD_NUMBER 100
 

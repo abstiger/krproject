@@ -27,7 +27,7 @@ bindings/java/org/
 bindings/python/krengine_wrap.c
 bindings/python/krengine.py
 /dbs/rapodbc
-/kriface/kriface
+/krtools/kriface/kriface
 /krserver/krserver
 /krshell/krshell
 /krcoordi/krcoordi

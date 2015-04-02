@@ -1,5 +1,4 @@
 #include "kr_server.h"
-#include "krdata/kr_data.h"
 
 //TODO:add handler for server layer
 

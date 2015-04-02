@@ -95,11 +95,13 @@ krparam/Makefile
 krdb/Makefile 
 krdata/Makefile 
 krflow/Makefile 
-krengine/Makefile 
 kriface/Makefile
+krengine/Makefile 
 krserver/Makefile
 krcoordi/Makefile
 krshell/Makefile
+krtools/Makefile
+krtools/kriface/Makefile
 krweb/Makefile
 bindings/python/Makefile
 bindings/java/Makefile

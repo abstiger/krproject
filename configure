@@ -13997,7 +13997,7 @@ fi
 
 
 
-ac_config_files="$ac_config_files krengine.pc Makefile dbs/Makefile dbs/dbs/Makefile krutils/Makefile krcalc/Makefile krparam/Makefile krdb/Makefile krdata/Makefile krflow/Makefile krengine/Makefile kriface/Makefile krserver/Makefile krcoordi/Makefile krshell/Makefile krweb/Makefile bindings/python/Makefile bindings/java/Makefile etc/Makefile doc/Makefile tests/Makefile examples/Makefile examples/antifraud/Makefile examples/playweibo/Makefile"
+ac_config_files="$ac_config_files krengine.pc Makefile dbs/Makefile dbs/dbs/Makefile krutils/Makefile krcalc/Makefile krparam/Makefile krdb/Makefile krdata/Makefile krflow/Makefile kriface/Makefile krengine/Makefile krserver/Makefile krcoordi/Makefile krshell/Makefile krtools/Makefile krtools/kriface/Makefile krweb/Makefile bindings/python/Makefile bindings/java/Makefile etc/Makefile doc/Makefile tests/Makefile examples/Makefile examples/antifraud/Makefile examples/playweibo/Makefile"
 
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
@@ -15015,11 +15015,13 @@ do
     "krdb/Makefile") CONFIG_FILES="$CONFIG_FILES krdb/Makefile" ;;
     "krdata/Makefile") CONFIG_FILES="$CONFIG_FILES krdata/Makefile" ;;
     "krflow/Makefile") CONFIG_FILES="$CONFIG_FILES krflow/Makefile" ;;
-    "krengine/Makefile") CONFIG_FILES="$CONFIG_FILES krengine/Makefile" ;;
     "kriface/Makefile") CONFIG_FILES="$CONFIG_FILES kriface/Makefile" ;;
+    "krengine/Makefile") CONFIG_FILES="$CONFIG_FILES krengine/Makefile" ;;
     "krserver/Makefile") CONFIG_FILES="$CONFIG_FILES krserver/Makefile" ;;
     "krcoordi/Makefile") CONFIG_FILES="$CONFIG_FILES krcoordi/Makefile" ;;
     "krshell/Makefile") CONFIG_FILES="$CONFIG_FILES krshell/Makefile" ;;
+    "krtools/Makefile") CONFIG_FILES="$CONFIG_FILES krtools/Makefile" ;;
+    "krtools/kriface/Makefile") CONFIG_FILES="$CONFIG_FILES krtools/kriface/Makefile" ;;
     "krweb/Makefile") CONFIG_FILES="$CONFIG_FILES krweb/Makefile" ;;
     "bindings/python/Makefile") CONFIG_FILES="$CONFIG_FILES bindings/python/Makefile" ;;
     "bindings/java/Makefile") CONFIG_FILES="$CONFIG_FILES bindings/java/Makefile" ;;

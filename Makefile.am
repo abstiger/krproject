@@ -3,8 +3,8 @@ include_HEADERS = kr_config.h
 ACLOCAL_AMFLAGS = -I m4
 AM_CPPFLAGS = -g -I$(includedir) -L$(libdir)
 
-SUBDIRS  = dbs krutils krcalc krparam krdb krdata krflow krengine \
-		   kriface krserver krcoordi krshell krweb \
+SUBDIRS  = dbs krutils krcalc krparam krdb krdata krflow kriface krengine \
+		   krserver krcoordi krshell krtools krweb \
 		   tests examples etc doc 
 
 if ENABLE_PYTHON_BINDING
