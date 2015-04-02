@@ -49,23 +49,6 @@ DATASRC_ID ASC,
 FIELD_ID ASC
 );
 
-create table KR_TBL_DATASRC_INDEX (
-REC_ID               INTEGER                        not null,
-DATASRC_ID           INTEGER                        not null,
-INDEX_ID             INTEGER                        not null,
-INDEX_NAME           VARCHAR(30)                    not null,
-INDEX_DESC           VARCHAR(100)                   not null,
-INDEX_TYPE           CHAR(1)                        not null,
-INDEX_FIELD_ID       INTEGER                        not null,
-SORT_FIELD_ID        INTEGER                        not null,
-primary key (REC_ID)
-);
-
-create unique index IDX_DATASRC_INDEX on KR_TBL_DATASRC_INDEX (
-DATASRC_ID ASC,
-INDEX_ID ASC
-);
-
 create table KR_TBL_DDI (
 DDI_ID               INTEGER                        not null,
 DDI_NAME             VARCHAR(30)                    not null,
@@ -167,6 +150,42 @@ REC_CRET_DTTM        TIMESTAMP                      not null,
 LST_UPD_DTTM         TIMESTAMP                      not null,
 LST_UPD_USER_ID      VARCHAR(15)                    not null,
 primary key (HDI_ID)
+);
+
+create table KR_TBL_INDEX (
+INDEX_ID             INTEGER                        not null,
+INDEX_NAME           VARCHAR(30)                    not null,
+INDEX_DESC           VARCHAR(100)                   not null,
+INDEX_FIELD_TYPE     CHAR(1)                        not null,
+primary key (INDEX_ID)
+);
+
+create unique index IDX_DATASRC_INDEX on KR_TBL_INDEX (
+INDEX_ID ASC
+);
+
+create table KR_TBL_INDEX_TABLE (
+REC_ID               INTEGER                        not null,
+INDEX_ID             INTEGER                        not null,
+DATASRC_ID           INTEGER                        not null,
+INDEX_FIELD_ID       INTEGER                        not null,
+SORT_FIELD_ID        INTEGER                        not null,
+primary key (REC_ID)
+);
+
+create unique index IDX_DATASRC_INDEX2 on KR_TBL_INDEX_TABLE (
+DATASRC_ID ASC,
+INDEX_ID ASC
+);
+
+create table KR_TBL_RECORD (
+REC_ID               INTEGER                        not null,
+DATASRC_ID           INTEGER                        not null,
+PROC_TIME            TIMESTAMP                      not null,
+TRANS_TIME           TIMESTAMP                      not null,
+RECORD_LENGTH        INTEGER,
+RECORD_BUFFER        VARCHAR(4096),
+primary key (REC_ID)
 );
 
 create table KR_TBL_RULE (

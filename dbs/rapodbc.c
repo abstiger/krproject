@@ -520,7 +520,6 @@ static int RetrieveOutputParams(void)
         {
             case SQL_CHAR:
             case SQL_VARCHAR:
-            case SQL_DATETIME:
                 tColDesc.iType = KR_SQL_TYPE_CHAR;
                 strcpy(tColDesc.caColType, "char");
                 strcpy(tColDesc.caSqlType, "SQL_C_CHAR");
@@ -554,22 +553,18 @@ static int RetrieveOutputParams(void)
                 strcpy(tColDesc.caPrefix, "l");
                 strcat(tColDesc.caPrefix, "Out");
                 break;
-            case -1: /*sqlite let varchar(500) field type  -1...*/
-                if (tColDef.iLength == 500) {
-                    tColDesc.iType = KR_SQL_TYPE_CHAR;
-                    strcpy(tColDesc.caColType, "char");
-                    strcpy(tColDesc.caSqlType, "SQL_C_CHAR");
-                    strcpy(tColDesc.caPrefix, "ca");    
-                    strcat(tColDesc.caPrefix, "Out");
-                    break;
-                }
             case -5: /* mysql let count field type -5...*/
+            case SQL_DATETIME:
+            case SQL_TYPE_DATE:
+            case SQL_TYPE_TIME:
+            case SQL_TYPE_TIMESTAMP:
                 tColDesc.iType = KR_SQL_TYPE_LONG;     
                 strcpy(tColDesc.caColType, "long");
                 strcpy(tColDesc.caSqlType, "SQL_C_LONG");
                 strcpy(tColDesc.caPrefix, "l");
                 strcat(tColDesc.caPrefix, "Out");
                 break;
+            case -1: /*sqlite let varchar(>500) field type -1...*/
             case -8: /* mysql let char field type -8...*/
             case -9: /* mysql let varchar field type -9...*/
                 tColDesc.iType = KR_SQL_TYPE_CHAR;

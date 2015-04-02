@@ -16,8 +16,8 @@ cJSON *kr_db_table_info(T_KRTable *krtable)
 	cJSON *table = cJSON_CreateObject();
 	cJSON_AddNumberToObject(table, "id", krtable->iTableId);
 	cJSON_AddStringToObject(table, "name", krtable->caTableName);
-	cJSON_AddNumberToObject(table, "size_keep_mode", krtable->eSizeKeepMode);
-	cJSON_AddNumberToObject(table, "size_keep_value", krtable->lSizeKeepValue);
+	cJSON_AddNumberToObject(table, "keep_mode", krtable->eKeepMode);
+	cJSON_AddNumberToObject(table, "keep_value", krtable->lKeepValue);
 	cJSON_AddNumberToObject(table, "field_count", krtable->iFieldCnt);
 	cJSON_AddNumberToObject(table, "record_size", krtable->iRecordSize);
 	cJSON_AddNumberToObject(table, "record_number", krtable->uiRecordNum);
@@ -42,9 +42,7 @@ cJSON *kr_db_index_info(T_KRIndex *krindex)
 	cJSON *index = cJSON_CreateObject();
 	cJSON_AddNumberToObject(index, "id", krindex->iIndexId);
 	cJSON_AddStringToObject(index, "name", krindex->caIndexName);
-	cJSON_AddNumberToObject(index, "type", krindex->eIndexType);
-	cJSON_AddNumberToObject(index, "index_field_id", krindex->iIndexFieldId);
-	cJSON_AddNumberToObject(index, "sort_field_id", krindex->iSortFieldId);
+	cJSON_AddNumberToObject(index, "field_type", krindex->eIndexFieldType);
 	return index;
 }
 
@@ -58,7 +56,7 @@ cJSON *kr_db_record_info(T_KRRecord *krrecord)
 		cJSON *field = cJSON_CreateObject();
 		cJSON_AddNumberToObject(field, "id", ptTable->ptFieldDef[i].id);
 		cJSON_AddStringToObject(field, "name", ptTable->ptFieldDef[i].name);
-		void *pFieldVal = kr_get_field_value(krrecord, i);
+		void *pFieldVal = kr_field_get_value(krrecord, i);
 		switch(ptTable->ptFieldDef[i].type)
 		{
 			case KR_TYPE_INT:

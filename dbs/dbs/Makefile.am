@@ -1,9 +1,13 @@
 noinst_LTLIBRARIES       = libdbsdbs.la
 libdbsdbs_la_SOURCES     = t_dbs101_datasrc_cur.cfg \
-                           t_dbs102_datasrc_index_cur.cfg \
                            t_dbs103_datasrc_field_cur.cfg \
                            t_dbs104_datasrc_field_cnt_sel.cfg \
                            t_dbs105_datasrc_field_def_sel.cfg \
+                           t_dbs110_index_cur.cfg \
+                           t_dbs111_index_table_cur.cfg \
+                           t_dbs120_record_ins.cfg \
+                           t_dbs121_record_proctime_cur.cfg \
+                           t_dbs122_record_transtime_cur.cfg \
                            t_dbs201_set_def_cur.cfg \
                            t_dbs202_set_cfg_cur.cfg \
                            t_dbs299_set_cfg_ins.cfg \
