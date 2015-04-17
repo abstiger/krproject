@@ -1,65 +1,65 @@
-#include "kr_iface.h"
+#include "kr_io.h"
 
-T_KRInputHandle* kr_input_handle_new(int iTableId, char *psFormat, T_KRModule *ptModule)
+T_KROutputHandle* kr_output_handle_new(int iTableId, char *psFormat, T_KRModule *ptModule)
 {
     KR_LOG(KR_LOGDEBUG, "loading iface handle[%s],[%d]!", psFormat, iTableId);
 
-    T_KRInputHandle *ptInputHandle = kr_calloc(sizeof(*ptInputHandle));
-    if (ptInputHandle == NULL) {
-        KR_LOG(KR_LOGERROR, "kr_calloc ptInputHandle error!");
+    T_KROutputHandle *ptOutputHandle = kr_calloc(sizeof(*ptOutputHandle));
+    if (ptOutputHandle == NULL) {
+        KR_LOG(KR_LOGERROR, "kr_calloc ptOutputHandle error!");
         return NULL;
     }
-    ptInputHandle->iTableId = iTableId;
-    strncpy(ptInputHandle->caFormat, psFormat, sizeof(ptInputHandle->caFormat));
+    ptOutputHandle->iTableId = iTableId;
+    strncpy(ptOutputHandle->caFormat, psFormat, sizeof(ptOutputHandle->caFormat));
     
     char caFuncName[100] = {0};
     memset(caFuncName, 0x00, sizeof(caFuncName));
     snprintf(caFuncName, sizeof(caFuncName), \
             "%s_map_pre_func_%d", psFormat, iTableId);
-    ptInputHandle->pfMapPre = 
+    ptOutputHandle->pfMapPre = 
         (KRDBMapFuncPre )kr_module_symbol(ptModule, caFuncName);
-    if (ptInputHandle->pfMapPre == NULL) {
+    if (ptOutputHandle->pfMapPre == NULL) {
         KR_LOG(KR_LOGERROR, "kr_module_symbol [%s] error!", caFuncName);
-        kr_free(ptInputHandle);
+        kr_free(ptOutputHandle);
         return NULL;
     }
 
     memset(caFuncName, 0x00, sizeof(caFuncName));
     snprintf(caFuncName, sizeof(caFuncName), \
             "%s_map_func_%d", psFormat, iTableId);
-    ptInputHandle->pfMap = 
+    ptOutputHandle->pfMap = 
         (KRDBMapFunc )kr_module_symbol(ptModule, caFuncName);
-    if (ptInputHandle->pfMap == NULL) {
+    if (ptOutputHandle->pfMap == NULL) {
         KR_LOG(KR_LOGERROR, "kr_module_symbol [%s] error!", caFuncName);
-        kr_free(ptInputHandle);
+        kr_free(ptOutputHandle);
         return NULL;
     }
 
     memset(caFuncName, 0x00, sizeof(caFuncName));
     snprintf(caFuncName, sizeof(caFuncName), \
             "%s_map_post_func_%d", psFormat, iTableId);
-    ptInputHandle->pfMapPost = 
+    ptOutputHandle->pfMapPost = 
         (KRDBMapFuncPost )kr_module_symbol(ptModule, caFuncName);
-    if (ptInputHandle->pfMapPost == NULL) {
+    if (ptOutputHandle->pfMapPost == NULL) {
         KR_LOG(KR_LOGERROR, "kr_module_symbol [%s] error!", caFuncName);
-        kr_free(ptInputHandle);
+        kr_free(ptOutputHandle);
         return NULL;
     }
 
-    return ptInputHandle;
+    return ptOutputHandle;
 }
 
 
-void kr_input_handle_free(T_KRInputHandle* ptInputHandle)
+void kr_output_handle_free(T_KROutputHandle* ptOutputHandle)
 {
-    kr_free(ptInputHandle);
+    kr_free(ptOutputHandle);
 }
 
 
-int kr_input_handle_match(void *ptr, void *key)
+int kr_output_handle_match(void *ptr, void *key)
 {
-    T_KRInputHandle *pt1 = (T_KRInputHandle *)ptr;
-    T_KRInputHandle *pt2 = (T_KRInputHandle *)key;
+    T_KROutputHandle *pt1 = (T_KROutputHandle *)ptr;
+    T_KROutputHandle *pt2 = (T_KROutputHandle *)key;
     int iCmpTableId = pt1->iTableId - pt2->iTableId;
     int iCmpFormat = strcmp(pt1->caFormat, pt2->caFormat);
     if (iCmpTableId != 0) {
@@ -70,44 +70,44 @@ int kr_input_handle_match(void *ptr, void *key)
 
 
 
-T_KRInputHandle* kr_input_handle_get(T_KRIface *ptIface, int iTableId, char *psFormat)
+T_KROutputHandle* kr_output_handle_get(T_KRIface *ptIface, int iTableId, char *psFormat)
 {
-    T_KRInputHandle stCompare = {0};
+    T_KROutputHandle stCompare = {0};
     stCompare.iTableId = iTableId;
     strncpy(stCompare.caFormat, psFormat, sizeof(stCompare.caFormat));
     
     T_KRListNode *ptListNode = \
-        kr_list_search(ptIface->pInputHandleList, &stCompare);
+        kr_list_search(ptIface->pOutputHandleList, &stCompare);
     if (ptListNode != NULL) {
-        return (T_KRInputHandle *)kr_list_value(ptListNode);
+        return (T_KROutputHandle *)kr_list_value(ptListNode);
     }
     
     /*load iface handle*/
-    T_KRInputHandle *ptInputHandle = \
-        kr_input_handle_new(iTableId, psFormat, ptIface->ptModule);
-    if (ptInputHandle != NULL) {
+    T_KROutputHandle *ptOutputHandle = \
+        kr_output_handle_new(iTableId, psFormat, ptIface->ptModule);
+    if (ptOutputHandle != NULL) {
         /*add to table's interface handle list*/
-        kr_list_add_sorted(ptIface->pInputHandleList, 
-                ptInputHandle, &stCompare);
-        return ptInputHandle;
+        kr_list_add_sorted(ptIface->pOutputHandleList, 
+                ptOutputHandle, &stCompare);
+        return ptOutputHandle;
     }
     
     return NULL;
 }
 
 
-int kr_input_handle_process(T_KRInputHandle *ptInputHandle, size_t size, void *buff, T_KRRecord *ptRecord)
+int kr_output_handle_process(T_KROutputHandle *ptOutputHandle, size_t size, void *buff, T_KRRecord *ptRecord)
 {
     void *data = buff;
 
-    if (ptInputHandle->pfMapPre) data=ptInputHandle->pfMapPre(buff);
+    if (ptOutputHandle->pfMapPre) data=ptOutputHandle->pfMapPre(buff);
     for (int fldno=0; fldno<ptRecord->ptTable->iFieldCnt; fldno++) {
         int fldlen = kr_field_get_length(ptRecord, fldno);
         void *fldval = kr_field_get_value(ptRecord, fldno);
 
-        ptInputHandle->pfMap(fldval, fldno, fldlen, data);
+        ptOutputHandle->pfMap(fldval, fldno, fldlen, data);
     }
-    if (ptInputHandle->pfMapPost) ptInputHandle->pfMapPost(data);
+    if (ptOutputHandle->pfMapPost) ptOutputHandle->pfMapPost(data);
 
     return 0;
 }

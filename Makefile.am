@@ -3,7 +3,7 @@ include_HEADERS = kr_config.h
 ACLOCAL_AMFLAGS = -I m4
 AM_CPPFLAGS = -g -I$(includedir) -L$(libdir)
 
-SUBDIRS  = dbs krutils krcalc krparam krdb krdata krflow kriface krengine \
+SUBDIRS  = dbs krutils krcalc krparam krdb krdata krflow krio krengine \
 		   krserver krcoordi krshell krtools krweb \
 		   tests examples etc doc 
 

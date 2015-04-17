@@ -31,7 +31,7 @@ T_KRContext *kr_context_init(T_KRContextEnv *ptEnv)
         return NULL;
     }
     
-    /* construct flow */
+    /*TODO: construct flow */
     
     return ptContext;
 }
@@ -55,8 +55,11 @@ int kr_context_set(T_KRContext *ptContext, void *ptArg)
 
 void kr_context_clean(T_KRContext *ptContext)
 {
-    /*initialize dynamic memory*/
+    /*initialize dynamic data memory*/
     kr_data_init(ptContext->ptData);
+
+    /*initialize dynamic flow memory*/
+    //kr_flow_init(ptContext->ptFlow);
 
     /*initialize others*/
     ptContext->ptArg = NULL;
@@ -66,6 +69,7 @@ void kr_context_clean(T_KRContext *ptContext)
 void kr_context_fini(T_KRContext *ptContext)
 {
     if (ptContext) {
+        //kr_flow_destruct(ptContext->ptFlow);
         kr_data_destruct(ptContext->ptData);
         dbsDisconnect(ptContext->ptDbsEnv);
         kr_free(ptContext);

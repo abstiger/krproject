@@ -1,6 +1,6 @@
-#include "kr_iface.h"
+#include "kr_io.h"
 
-T_KRIface *kr_iface_create(T_KRModule *ptModule)
+T_KRIface *kr_iface_create(T_KRModule *ptModule, T_DbsEnv *ptDbsEnv)
 {
     T_KRIface *ptIface = kr_calloc(sizeof(*ptIface));
     if (ptIface == NULL) {

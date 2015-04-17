@@ -51,7 +51,7 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
-subdir = kriface
+subdir = krio
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/ax_jni_include_dir.m4 \
@@ -72,14 +72,13 @@ CONFIG_HEADER = $(top_builddir)/kr_config.h
 CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 LTLIBRARIES = $(noinst_LTLIBRARIES)
-libkriface_la_LIBADD =
-am_libkriface_la_OBJECTS = libkriface_la-kr_iface.lo \
-	libkriface_la-kr_iface_input.lo \
-	libkriface_la-kr_iface_output.lo
-libkriface_la_OBJECTS = $(am_libkriface_la_OBJECTS)
-libkriface_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
+libkrio_la_LIBADD =
+am_libkrio_la_OBJECTS = libkrio_la-kr_io.lo libkrio_la-kr_io_input.lo \
+	libkrio_la-kr_io_output.lo
+libkrio_la_OBJECTS = $(am_libkrio_la_OBJECTS)
+libkrio_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
-	$(libkriface_la_LDFLAGS) $(LDFLAGS) -o $@
+	$(libkrio_la_LDFLAGS) $(LDFLAGS) -o $@
 DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
@@ -93,8 +92,8 @@ CCLD = $(CC)
 LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
 	--mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) \
 	$(LDFLAGS) -o $@
-SOURCES = $(libkriface_la_SOURCES)
-DIST_SOURCES = $(libkriface_la_SOURCES)
+SOURCES = $(libkrio_la_SOURCES)
+DIST_SOURCES = $(libkrio_la_SOURCES)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -243,24 +242,24 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-noinst_LTLIBRARIES = libkriface.la
-libkriface_la_SOURCES = kr_iface.h \
-							kr_iface.c \
-							kr_iface_input.h \
-							kr_iface_input.c \
-							kr_iface_output.h \
-							kr_iface_output.c 
+noinst_LTLIBRARIES = libkrio.la
+libkrio_la_SOURCES = kr_io.h \
+                         kr_io.c \
+                         kr_io_input.h \
+                         kr_io_input.c \
+                         kr_io_output.h \
+                         kr_io_output.c 
 
 
-#libkriface_la_LIBADD    = $(top_srcdir)/krutils/libkrutils.la
-#libkriface_la_LIBADD   += $(top_srcdir)/dbs/libdbsbas.la
-#libkriface_la_LIBADD   += $(top_srcdir)/dbs/dbs/libdbsdbs.la
-#libkriface_la_LIBADD   += $(top_srcdir)/krcalc/libkrcalc.la
-#libkriface_la_LIBADD   += $(top_srcdir)/krparam/libkrparam.la
-#libkriface_la_LIBADD   += $(top_srcdir)/krdb/libkrdb.la
-#libkriface_la_LIBADD   += $(top_srcdir)/krdata/libkrdata.la
-libkriface_la_LDFLAGS = 
-libkriface_la_CPPFLAGS = 
+#libkrio_la_LIBADD    = $(top_srcdir)/krutils/libkrutils.la
+#libkrio_la_LIBADD   += $(top_srcdir)/dbs/libdbsbas.la
+#libkrio_la_LIBADD   += $(top_srcdir)/dbs/dbs/libdbsdbs.la
+#libkrio_la_LIBADD   += $(top_srcdir)/krcalc/libkrcalc.la
+#libkrio_la_LIBADD   += $(top_srcdir)/krparam/libkrparam.la
+#libkrio_la_LIBADD   += $(top_srcdir)/krdb/libkrdb.la
+#libkrio_la_LIBADD   += $(top_srcdir)/krdata/libkrdata.la
+libkrio_la_LDFLAGS = 
+libkrio_la_CPPFLAGS = 
 all: all-am
 
 .SUFFIXES:
@@ -274,9 +273,9 @@ $(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign kriface/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign krio/Makefile'; \
 	$(am__cd) $(top_srcdir) && \
-	  $(AUTOMAKE) --foreign kriface/Makefile
+	  $(AUTOMAKE) --foreign krio/Makefile
 .PRECIOUS: Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \
@@ -304,8 +303,8 @@ clean-noinstLTLIBRARIES:
 	  echo "rm -f \"$${dir}/so_locations\""; \
 	  rm -f "$${dir}/so_locations"; \
 	done
-libkriface.la: $(libkriface_la_OBJECTS) $(libkriface_la_DEPENDENCIES) $(EXTRA_libkriface_la_DEPENDENCIES) 
-	$(libkriface_la_LINK)  $(libkriface_la_OBJECTS) $(libkriface_la_LIBADD) $(LIBS)
+libkrio.la: $(libkrio_la_OBJECTS) $(libkrio_la_DEPENDENCIES) $(EXTRA_libkrio_la_DEPENDENCIES) 
+	$(libkrio_la_LINK)  $(libkrio_la_OBJECTS) $(libkrio_la_LIBADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -313,9 +312,9 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkriface_la-kr_iface.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkriface_la-kr_iface_input.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkriface_la-kr_iface_output.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkrio_la-kr_io.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkrio_la-kr_io_input.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkrio_la-kr_io_output.Plo@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
@@ -338,26 +337,26 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LTCOMPILE) -c -o $@ $<
 
-libkriface_la-kr_iface.lo: kr_iface.c
-@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libkriface_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libkriface_la-kr_iface.lo -MD -MP -MF $(DEPDIR)/libkriface_la-kr_iface.Tpo -c -o libkriface_la-kr_iface.lo `test -f 'kr_iface.c' || echo '$(srcdir)/'`kr_iface.c
-@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/libkriface_la-kr_iface.Tpo $(DEPDIR)/libkriface_la-kr_iface.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='kr_iface.c' object='libkriface_la-kr_iface.lo' libtool=yes @AMDEPBACKSLASH@
+libkrio_la-kr_io.lo: kr_io.c
+@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libkrio_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libkrio_la-kr_io.lo -MD -MP -MF $(DEPDIR)/libkrio_la-kr_io.Tpo -c -o libkrio_la-kr_io.lo `test -f 'kr_io.c' || echo '$(srcdir)/'`kr_io.c
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/libkrio_la-kr_io.Tpo $(DEPDIR)/libkrio_la-kr_io.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='kr_io.c' object='libkrio_la-kr_io.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libkriface_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libkriface_la-kr_iface.lo `test -f 'kr_iface.c' || echo '$(srcdir)/'`kr_iface.c
+@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libkrio_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libkrio_la-kr_io.lo `test -f 'kr_io.c' || echo '$(srcdir)/'`kr_io.c
 
-libkriface_la-kr_iface_input.lo: kr_iface_input.c
-@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libkriface_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libkriface_la-kr_iface_input.lo -MD -MP -MF $(DEPDIR)/libkriface_la-kr_iface_input.Tpo -c -o libkriface_la-kr_iface_input.lo `test -f 'kr_iface_input.c' || echo '$(srcdir)/'`kr_iface_input.c
-@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/libkriface_la-kr_iface_input.Tpo $(DEPDIR)/libkriface_la-kr_iface_input.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='kr_iface_input.c' object='libkriface_la-kr_iface_input.lo' libtool=yes @AMDEPBACKSLASH@
+libkrio_la-kr_io_input.lo: kr_io_input.c
+@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libkrio_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libkrio_la-kr_io_input.lo -MD -MP -MF $(DEPDIR)/libkrio_la-kr_io_input.Tpo -c -o libkrio_la-kr_io_input.lo `test -f 'kr_io_input.c' || echo '$(srcdir)/'`kr_io_input.c
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/libkrio_la-kr_io_input.Tpo $(DEPDIR)/libkrio_la-kr_io_input.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='kr_io_input.c' object='libkrio_la-kr_io_input.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libkriface_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libkriface_la-kr_iface_input.lo `test -f 'kr_iface_input.c' || echo '$(srcdir)/'`kr_iface_input.c
+@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libkrio_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libkrio_la-kr_io_input.lo `test -f 'kr_io_input.c' || echo '$(srcdir)/'`kr_io_input.c
 
-libkriface_la-kr_iface_output.lo: kr_iface_output.c
-@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libkriface_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libkriface_la-kr_iface_output.lo -MD -MP -MF $(DEPDIR)/libkriface_la-kr_iface_output.Tpo -c -o libkriface_la-kr_iface_output.lo `test -f 'kr_iface_output.c' || echo '$(srcdir)/'`kr_iface_output.c
-@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/libkriface_la-kr_iface_output.Tpo $(DEPDIR)/libkriface_la-kr_iface_output.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='kr_iface_output.c' object='libkriface_la-kr_iface_output.lo' libtool=yes @AMDEPBACKSLASH@
+libkrio_la-kr_io_output.lo: kr_io_output.c
+@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libkrio_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libkrio_la-kr_io_output.lo -MD -MP -MF $(DEPDIR)/libkrio_la-kr_io_output.Tpo -c -o libkrio_la-kr_io_output.lo `test -f 'kr_io_output.c' || echo '$(srcdir)/'`kr_io_output.c
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/libkrio_la-kr_io_output.Tpo $(DEPDIR)/libkrio_la-kr_io_output.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='kr_io_output.c' object='libkrio_la-kr_io_output.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libkriface_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libkriface_la-kr_iface_output.lo `test -f 'kr_iface_output.c' || echo '$(srcdir)/'`kr_iface_output.c
+@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libkrio_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libkrio_la-kr_io_output.lo `test -f 'kr_io_output.c' || echo '$(srcdir)/'`kr_io_output.c
 
 mostlyclean-libtool:
 	-rm -f *.lo

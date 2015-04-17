@@ -7,7 +7,7 @@
 #include "krdb/kr_db.h"
 #include "krdata/kr_data.h"
 #include "krflow/kr_flow.h"
-#include "kriface/kr_iface.h"
+#include "krio/kr_io.h"
 
 /* static environment, set while init */
 typedef struct _kr_context_env_t

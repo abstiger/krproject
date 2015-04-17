@@ -95,7 +95,7 @@ krparam/Makefile
 krdb/Makefile 
 krdata/Makefile 
 krflow/Makefile 
-kriface/Makefile
+krio/Makefile
 krengine/Makefile 
 krserver/Makefile
 krcoordi/Makefile

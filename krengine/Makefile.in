@@ -110,7 +110,7 @@ libkrengine_la_DEPENDENCIES = $(top_srcdir)/dbs/libdbsbas.la \
 	$(top_srcdir)/krdb/libkrdb.la \
 	$(top_srcdir)/krdata/libkrdata.la \
 	$(top_srcdir)/krflow/libkrflow.la \
-	$(top_srcdir)/kriface/libkriface.la
+	$(top_srcdir)/krio/libkrio.la
 am_libkrengine_la_OBJECTS = libkrengine_la-kr_engine.lo \
 	libkrengine_la-kr_engine_context.lo \
 	libkrengine_la-kr_engine_handle.lo
@@ -298,7 +298,7 @@ libkrengine_la_LIBADD = $(top_srcdir)/dbs/libdbsbas.la \
 	$(top_srcdir)/krdb/libkrdb.la \
 	$(top_srcdir)/krdata/libkrdata.la \
 	$(top_srcdir)/krflow/libkrflow.la \
-	$(top_srcdir)/kriface/libkriface.la
+	$(top_srcdir)/krio/libkrio.la
 libkrengine_la_CPPFLAGS = 
 libkrengine_la_LDFLAGS = 
 all: all-am

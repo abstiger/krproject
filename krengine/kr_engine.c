@@ -238,6 +238,8 @@ static int kr_engine_handle(void *ctx, void *arg)
     handle_func(krctx, krarg);
 
 RESP:
+    /*TODO: call interface module to construct reply message */
+
     /* run user's callback function */
     if (krarg->cb_func) {
         krarg->cb_func(apply, reply, krarg->data);

@@ -15,6 +15,6 @@ libkrengine_la_LIBADD   += $(top_srcdir)/krcalc/libkrcalc.la
 libkrengine_la_LIBADD   += $(top_srcdir)/krdb/libkrdb.la
 libkrengine_la_LIBADD   += $(top_srcdir)/krdata/libkrdata.la
 libkrengine_la_LIBADD   += $(top_srcdir)/krflow/libkrflow.la
-libkrengine_la_LIBADD   += $(top_srcdir)/kriface/libkriface.la
+libkrengine_la_LIBADD   += $(top_srcdir)/krio/libkrio.la
 libkrengine_la_CPPFLAGS  = 
 libkrengine_la_LDFLAGS   = 
