@@ -1,23 +1,23 @@
 noinst_LTLIBRARIES     = libkrdata.la
 libkrdata_la_SOURCES   = kr_data.h \
 						 kr_data.c \
-						 kr_data_calc.c \
-						 kr_data_set.h \
-						 kr_data_set.c \
-						 kr_data_set_calc.c \
-						 kr_data_sdi.h \
-						 kr_data_sdi.c \
-						 kr_data_sdi_calc.c \
-						 kr_data_ddi.h \
-						 kr_data_ddi.c \
-						 kr_data_ddi_calc.c \
-						 kr_data_hdi.h \
-						 kr_data_hdi.c \
-						 kr_data_hdi_calc.c \
-						 kr_data_hdi_cache.h \
-						 kr_data_hdi_cache.c \
-						 kr_data_api.h \
-						 kr_data_api.c 
+						 kr_data_temp.h \
+						 kr_data_temp.c \
+						 kr_data_item.h \
+						 kr_data_item.c \
+						 kr_data_item_set.h \
+						 kr_data_item_set.c \
+						 kr_data_item_sdi.h \
+						 kr_data_item_sdi.c \
+						 kr_data_item_ddi.h \
+						 kr_data_item_ddi.c \
+						 kr_data_item_hdi.h \
+						 kr_data_item_hdi.c \
+						 kr_data_item_hdi_flag.c \
+						 kr_data_item_hdi_day.c \
+						 kr_data_item_hdi_mon.c \
+						 kr_data_item_hdi_cache.h \
+						 kr_data_item_hdi_cache.c 
 
 #libkrdata_la_LIBADD    = $(top_srcdir)/krutils/libkrutils.la
 #libkrdata_la_LIBADD   += $(top_srcdir)/dbs/dbs/libdbsdbs.la

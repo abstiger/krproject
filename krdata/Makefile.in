@@ -74,12 +74,15 @@ CONFIG_CLEAN_VPATH_FILES =
 LTLIBRARIES = $(noinst_LTLIBRARIES)
 libkrdata_la_LIBADD =
 am_libkrdata_la_OBJECTS = libkrdata_la-kr_data.lo \
-	libkrdata_la-kr_data_calc.lo libkrdata_la-kr_data_set.lo \
-	libkrdata_la-kr_data_set_calc.lo libkrdata_la-kr_data_sdi.lo \
-	libkrdata_la-kr_data_sdi_calc.lo libkrdata_la-kr_data_ddi.lo \
-	libkrdata_la-kr_data_ddi_calc.lo libkrdata_la-kr_data_hdi.lo \
-	libkrdata_la-kr_data_hdi_calc.lo \
-	libkrdata_la-kr_data_hdi_cache.lo libkrdata_la-kr_data_api.lo
+	libkrdata_la-kr_data_temp.lo libkrdata_la-kr_data_item.lo \
+	libkrdata_la-kr_data_item_set.lo \
+	libkrdata_la-kr_data_item_sdi.lo \
+	libkrdata_la-kr_data_item_ddi.lo \
+	libkrdata_la-kr_data_item_hdi.lo \
+	libkrdata_la-kr_data_item_hdi_flag.lo \
+	libkrdata_la-kr_data_item_hdi_day.lo \
+	libkrdata_la-kr_data_item_hdi_mon.lo \
+	libkrdata_la-kr_data_item_hdi_cache.lo
 libkrdata_la_OBJECTS = $(am_libkrdata_la_OBJECTS)
 libkrdata_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
@@ -250,23 +253,23 @@ top_srcdir = @top_srcdir@
 noinst_LTLIBRARIES = libkrdata.la
 libkrdata_la_SOURCES = kr_data.h \
 						 kr_data.c \
-						 kr_data_calc.c \
-						 kr_data_set.h \
-						 kr_data_set.c \
-						 kr_data_set_calc.c \
-						 kr_data_sdi.h \
-						 kr_data_sdi.c \
-						 kr_data_sdi_calc.c \
-						 kr_data_ddi.h \
-						 kr_data_ddi.c \
-						 kr_data_ddi_calc.c \
-						 kr_data_hdi.h \
-						 kr_data_hdi.c \
-						 kr_data_hdi_calc.c \
-						 kr_data_hdi_cache.h \
-						 kr_data_hdi_cache.c \
-						 kr_data_api.h \
-						 kr_data_api.c 
+						 kr_data_temp.h \
+						 kr_data_temp.c \
+						 kr_data_item.h \
+						 kr_data_item.c \
+						 kr_data_item_set.h \
+						 kr_data_item_set.c \
+						 kr_data_item_sdi.h \
+						 kr_data_item_sdi.c \
+						 kr_data_item_ddi.h \
+						 kr_data_item_ddi.c \
+						 kr_data_item_hdi.h \
+						 kr_data_item_hdi.c \
+						 kr_data_item_hdi_flag.c \
+						 kr_data_item_hdi_day.c \
+						 kr_data_item_hdi_mon.c \
+						 kr_data_item_hdi_cache.h \
+						 kr_data_item_hdi_cache.c 
 
 
 #libkrdata_la_LIBADD    = $(top_srcdir)/krutils/libkrutils.la
@@ -329,17 +332,16 @@ distclean-compile:
 	-rm -f *.tab.c
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkrdata_la-kr_data.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkrdata_la-kr_data_api.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkrdata_la-kr_data_calc.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkrdata_la-kr_data_ddi.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkrdata_la-kr_data_ddi_calc.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkrdata_la-kr_data_hdi.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkrdata_la-kr_data_hdi_cache.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkrdata_la-kr_data_hdi_calc.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkrdata_la-kr_data_sdi.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkrdata_la-kr_data_sdi_calc.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkrdata_la-kr_data_set.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkrdata_la-kr_data_set_calc.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkrdata_la-kr_data_item.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkrdata_la-kr_data_item_ddi.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkrdata_la-kr_data_item_hdi.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkrdata_la-kr_data_item_hdi_cache.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkrdata_la-kr_data_item_hdi_day.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkrdata_la-kr_data_item_hdi_flag.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkrdata_la-kr_data_item_hdi_mon.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkrdata_la-kr_data_item_sdi.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkrdata_la-kr_data_item_set.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkrdata_la-kr_data_temp.Plo@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
@@ -369,82 +371,75 @@ libkrdata_la-kr_data.lo: kr_data.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libkrdata_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libkrdata_la-kr_data.lo `test -f 'kr_data.c' || echo '$(srcdir)/'`kr_data.c
 
-libkrdata_la-kr_data_calc.lo: kr_data_calc.c
-@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libkrdata_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libkrdata_la-kr_data_calc.lo -MD -MP -MF $(DEPDIR)/libkrdata_la-kr_data_calc.Tpo -c -o libkrdata_la-kr_data_calc.lo `test -f 'kr_data_calc.c' || echo '$(srcdir)/'`kr_data_calc.c
-@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/libkrdata_la-kr_data_calc.Tpo $(DEPDIR)/libkrdata_la-kr_data_calc.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='kr_data_calc.c' object='libkrdata_la-kr_data_calc.lo' libtool=yes @AMDEPBACKSLASH@
+libkrdata_la-kr_data_temp.lo: kr_data_temp.c
+@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libkrdata_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libkrdata_la-kr_data_temp.lo -MD -MP -MF $(DEPDIR)/libkrdata_la-kr_data_temp.Tpo -c -o libkrdata_la-kr_data_temp.lo `test -f 'kr_data_temp.c' || echo '$(srcdir)/'`kr_data_temp.c
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/libkrdata_la-kr_data_temp.Tpo $(DEPDIR)/libkrdata_la-kr_data_temp.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='kr_data_temp.c' object='libkrdata_la-kr_data_temp.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libkrdata_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libkrdata_la-kr_data_calc.lo `test -f 'kr_data_calc.c' || echo '$(srcdir)/'`kr_data_calc.c
+@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libkrdata_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libkrdata_la-kr_data_temp.lo `test -f 'kr_data_temp.c' || echo '$(srcdir)/'`kr_data_temp.c
 
-libkrdata_la-kr_data_set.lo: kr_data_set.c
-@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libkrdata_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libkrdata_la-kr_data_set.lo -MD -MP -MF $(DEPDIR)/libkrdata_la-kr_data_set.Tpo -c -o libkrdata_la-kr_data_set.lo `test -f 'kr_data_set.c' || echo '$(srcdir)/'`kr_data_set.c
-@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/libkrdata_la-kr_data_set.Tpo $(DEPDIR)/libkrdata_la-kr_data_set.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='kr_data_set.c' object='libkrdata_la-kr_data_set.lo' libtool=yes @AMDEPBACKSLASH@
+libkrdata_la-kr_data_item.lo: kr_data_item.c
+@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libkrdata_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libkrdata_la-kr_data_item.lo -MD -MP -MF $(DEPDIR)/libkrdata_la-kr_data_item.Tpo -c -o libkrdata_la-kr_data_item.lo `test -f 'kr_data_item.c' || echo '$(srcdir)/'`kr_data_item.c
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/libkrdata_la-kr_data_item.Tpo $(DEPDIR)/libkrdata_la-kr_data_item.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='kr_data_item.c' object='libkrdata_la-kr_data_item.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libkrdata_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libkrdata_la-kr_data_set.lo `test -f 'kr_data_set.c' || echo '$(srcdir)/'`kr_data_set.c
+@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libkrdata_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libkrdata_la-kr_data_item.lo `test -f 'kr_data_item.c' || echo '$(srcdir)/'`kr_data_item.c
 
-libkrdata_la-kr_data_set_calc.lo: kr_data_set_calc.c
-@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libkrdata_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libkrdata_la-kr_data_set_calc.lo -MD -MP -MF $(DEPDIR)/libkrdata_la-kr_data_set_calc.Tpo -c -o libkrdata_la-kr_data_set_calc.lo `test -f 'kr_data_set_calc.c' || echo '$(srcdir)/'`kr_data_set_calc.c
-@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/libkrdata_la-kr_data_set_calc.Tpo $(DEPDIR)/libkrdata_la-kr_data_set_calc.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='kr_data_set_calc.c' object='libkrdata_la-kr_data_set_calc.lo' libtool=yes @AMDEPBACKSLASH@
+libkrdata_la-kr_data_item_set.lo: kr_data_item_set.c
+@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libkrdata_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libkrdata_la-kr_data_item_set.lo -MD -MP -MF $(DEPDIR)/libkrdata_la-kr_data_item_set.Tpo -c -o libkrdata_la-kr_data_item_set.lo `test -f 'kr_data_item_set.c' || echo '$(srcdir)/'`kr_data_item_set.c
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/libkrdata_la-kr_data_item_set.Tpo $(DEPDIR)/libkrdata_la-kr_data_item_set.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='kr_data_item_set.c' object='libkrdata_la-kr_data_item_set.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libkrdata_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libkrdata_la-kr_data_set_calc.lo `test -f 'kr_data_set_calc.c' || echo '$(srcdir)/'`kr_data_set_calc.c
+@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libkrdata_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libkrdata_la-kr_data_item_set.lo `test -f 'kr_data_item_set.c' || echo '$(srcdir)/'`kr_data_item_set.c
 
-libkrdata_la-kr_data_sdi.lo: kr_data_sdi.c
-@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libkrdata_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libkrdata_la-kr_data_sdi.lo -MD -MP -MF $(DEPDIR)/libkrdata_la-kr_data_sdi.Tpo -c -o libkrdata_la-kr_data_sdi.lo `test -f 'kr_data_sdi.c' || echo '$(srcdir)/'`kr_data_sdi.c
-@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/libkrdata_la-kr_data_sdi.Tpo $(DEPDIR)/libkrdata_la-kr_data_sdi.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='kr_data_sdi.c' object='libkrdata_la-kr_data_sdi.lo' libtool=yes @AMDEPBACKSLASH@
+libkrdata_la-kr_data_item_sdi.lo: kr_data_item_sdi.c
+@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libkrdata_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libkrdata_la-kr_data_item_sdi.lo -MD -MP -MF $(DEPDIR)/libkrdata_la-kr_data_item_sdi.Tpo -c -o libkrdata_la-kr_data_item_sdi.lo `test -f 'kr_data_item_sdi.c' || echo '$(srcdir)/'`kr_data_item_sdi.c
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/libkrdata_la-kr_data_item_sdi.Tpo $(DEPDIR)/libkrdata_la-kr_data_item_sdi.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='kr_data_item_sdi.c' object='libkrdata_la-kr_data_item_sdi.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libkrdata_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libkrdata_la-kr_data_sdi.lo `test -f 'kr_data_sdi.c' || echo '$(srcdir)/'`kr_data_sdi.c
+@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libkrdata_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libkrdata_la-kr_data_item_sdi.lo `test -f 'kr_data_item_sdi.c' || echo '$(srcdir)/'`kr_data_item_sdi.c
 
-libkrdata_la-kr_data_sdi_calc.lo: kr_data_sdi_calc.c
-@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libkrdata_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libkrdata_la-kr_data_sdi_calc.lo -MD -MP -MF $(DEPDIR)/libkrdata_la-kr_data_sdi_calc.Tpo -c -o libkrdata_la-kr_data_sdi_calc.lo `test -f 'kr_data_sdi_calc.c' || echo '$(srcdir)/'`kr_data_sdi_calc.c
-@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/libkrdata_la-kr_data_sdi_calc.Tpo $(DEPDIR)/libkrdata_la-kr_data_sdi_calc.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='kr_data_sdi_calc.c' object='libkrdata_la-kr_data_sdi_calc.lo' libtool=yes @AMDEPBACKSLASH@
+libkrdata_la-kr_data_item_ddi.lo: kr_data_item_ddi.c
+@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libkrdata_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libkrdata_la-kr_data_item_ddi.lo -MD -MP -MF $(DEPDIR)/libkrdata_la-kr_data_item_ddi.Tpo -c -o libkrdata_la-kr_data_item_ddi.lo `test -f 'kr_data_item_ddi.c' || echo '$(srcdir)/'`kr_data_item_ddi.c
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/libkrdata_la-kr_data_item_ddi.Tpo $(DEPDIR)/libkrdata_la-kr_data_item_ddi.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='kr_data_item_ddi.c' object='libkrdata_la-kr_data_item_ddi.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libkrdata_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libkrdata_la-kr_data_sdi_calc.lo `test -f 'kr_data_sdi_calc.c' || echo '$(srcdir)/'`kr_data_sdi_calc.c
+@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libkrdata_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libkrdata_la-kr_data_item_ddi.lo `test -f 'kr_data_item_ddi.c' || echo '$(srcdir)/'`kr_data_item_ddi.c
 
-libkrdata_la-kr_data_ddi.lo: kr_data_ddi.c
-@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libkrdata_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libkrdata_la-kr_data_ddi.lo -MD -MP -MF $(DEPDIR)/libkrdata_la-kr_data_ddi.Tpo -c -o libkrdata_la-kr_data_ddi.lo `test -f 'kr_data_ddi.c' || echo '$(srcdir)/'`kr_data_ddi.c
-@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/libkrdata_la-kr_data_ddi.Tpo $(DEPDIR)/libkrdata_la-kr_data_ddi.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='kr_data_ddi.c' object='libkrdata_la-kr_data_ddi.lo' libtool=yes @AMDEPBACKSLASH@
+libkrdata_la-kr_data_item_hdi.lo: kr_data_item_hdi.c
+@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libkrdata_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libkrdata_la-kr_data_item_hdi.lo -MD -MP -MF $(DEPDIR)/libkrdata_la-kr_data_item_hdi.Tpo -c -o libkrdata_la-kr_data_item_hdi.lo `test -f 'kr_data_item_hdi.c' || echo '$(srcdir)/'`kr_data_item_hdi.c
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/libkrdata_la-kr_data_item_hdi.Tpo $(DEPDIR)/libkrdata_la-kr_data_item_hdi.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='kr_data_item_hdi.c' object='libkrdata_la-kr_data_item_hdi.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libkrdata_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libkrdata_la-kr_data_ddi.lo `test -f 'kr_data_ddi.c' || echo '$(srcdir)/'`kr_data_ddi.c
+@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libkrdata_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libkrdata_la-kr_data_item_hdi.lo `test -f 'kr_data_item_hdi.c' || echo '$(srcdir)/'`kr_data_item_hdi.c
 
-libkrdata_la-kr_data_ddi_calc.lo: kr_data_ddi_calc.c
-@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libkrdata_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libkrdata_la-kr_data_ddi_calc.lo -MD -MP -MF $(DEPDIR)/libkrdata_la-kr_data_ddi_calc.Tpo -c -o libkrdata_la-kr_data_ddi_calc.lo `test -f 'kr_data_ddi_calc.c' || echo '$(srcdir)/'`kr_data_ddi_calc.c
-@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/libkrdata_la-kr_data_ddi_calc.Tpo $(DEPDIR)/libkrdata_la-kr_data_ddi_calc.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='kr_data_ddi_calc.c' object='libkrdata_la-kr_data_ddi_calc.lo' libtool=yes @AMDEPBACKSLASH@
+libkrdata_la-kr_data_item_hdi_flag.lo: kr_data_item_hdi_flag.c
+@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libkrdata_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libkrdata_la-kr_data_item_hdi_flag.lo -MD -MP -MF $(DEPDIR)/libkrdata_la-kr_data_item_hdi_flag.Tpo -c -o libkrdata_la-kr_data_item_hdi_flag.lo `test -f 'kr_data_item_hdi_flag.c' || echo '$(srcdir)/'`kr_data_item_hdi_flag.c
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/libkrdata_la-kr_data_item_hdi_flag.Tpo $(DEPDIR)/libkrdata_la-kr_data_item_hdi_flag.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='kr_data_item_hdi_flag.c' object='libkrdata_la-kr_data_item_hdi_flag.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libkrdata_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libkrdata_la-kr_data_ddi_calc.lo `test -f 'kr_data_ddi_calc.c' || echo '$(srcdir)/'`kr_data_ddi_calc.c
+@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libkrdata_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libkrdata_la-kr_data_item_hdi_flag.lo `test -f 'kr_data_item_hdi_flag.c' || echo '$(srcdir)/'`kr_data_item_hdi_flag.c
 
-libkrdata_la-kr_data_hdi.lo: kr_data_hdi.c
-@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libkrdata_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libkrdata_la-kr_data_hdi.lo -MD -MP -MF $(DEPDIR)/libkrdata_la-kr_data_hdi.Tpo -c -o libkrdata_la-kr_data_hdi.lo `test -f 'kr_data_hdi.c' || echo '$(srcdir)/'`kr_data_hdi.c
-@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/libkrdata_la-kr_data_hdi.Tpo $(DEPDIR)/libkrdata_la-kr_data_hdi.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='kr_data_hdi.c' object='libkrdata_la-kr_data_hdi.lo' libtool=yes @AMDEPBACKSLASH@
+libkrdata_la-kr_data_item_hdi_day.lo: kr_data_item_hdi_day.c
+@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libkrdata_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libkrdata_la-kr_data_item_hdi_day.lo -MD -MP -MF $(DEPDIR)/libkrdata_la-kr_data_item_hdi_day.Tpo -c -o libkrdata_la-kr_data_item_hdi_day.lo `test -f 'kr_data_item_hdi_day.c' || echo '$(srcdir)/'`kr_data_item_hdi_day.c
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/libkrdata_la-kr_data_item_hdi_day.Tpo $(DEPDIR)/libkrdata_la-kr_data_item_hdi_day.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='kr_data_item_hdi_day.c' object='libkrdata_la-kr_data_item_hdi_day.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libkrdata_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libkrdata_la-kr_data_hdi.lo `test -f 'kr_data_hdi.c' || echo '$(srcdir)/'`kr_data_hdi.c
+@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libkrdata_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libkrdata_la-kr_data_item_hdi_day.lo `test -f 'kr_data_item_hdi_day.c' || echo '$(srcdir)/'`kr_data_item_hdi_day.c
 
-libkrdata_la-kr_data_hdi_calc.lo: kr_data_hdi_calc.c
-@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libkrdata_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libkrdata_la-kr_data_hdi_calc.lo -MD -MP -MF $(DEPDIR)/libkrdata_la-kr_data_hdi_calc.Tpo -c -o libkrdata_la-kr_data_hdi_calc.lo `test -f 'kr_data_hdi_calc.c' || echo '$(srcdir)/'`kr_data_hdi_calc.c
-@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/libkrdata_la-kr_data_hdi_calc.Tpo $(DEPDIR)/libkrdata_la-kr_data_hdi_calc.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='kr_data_hdi_calc.c' object='libkrdata_la-kr_data_hdi_calc.lo' libtool=yes @AMDEPBACKSLASH@
+libkrdata_la-kr_data_item_hdi_mon.lo: kr_data_item_hdi_mon.c
+@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libkrdata_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libkrdata_la-kr_data_item_hdi_mon.lo -MD -MP -MF $(DEPDIR)/libkrdata_la-kr_data_item_hdi_mon.Tpo -c -o libkrdata_la-kr_data_item_hdi_mon.lo `test -f 'kr_data_item_hdi_mon.c' || echo '$(srcdir)/'`kr_data_item_hdi_mon.c
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/libkrdata_la-kr_data_item_hdi_mon.Tpo $(DEPDIR)/libkrdata_la-kr_data_item_hdi_mon.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='kr_data_item_hdi_mon.c' object='libkrdata_la-kr_data_item_hdi_mon.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libkrdata_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libkrdata_la-kr_data_hdi_calc.lo `test -f 'kr_data_hdi_calc.c' || echo '$(srcdir)/'`kr_data_hdi_calc.c
+@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libkrdata_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libkrdata_la-kr_data_item_hdi_mon.lo `test -f 'kr_data_item_hdi_mon.c' || echo '$(srcdir)/'`kr_data_item_hdi_mon.c
 
-libkrdata_la-kr_data_hdi_cache.lo: kr_data_hdi_cache.c
-@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libkrdata_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libkrdata_la-kr_data_hdi_cache.lo -MD -MP -MF $(DEPDIR)/libkrdata_la-kr_data_hdi_cache.Tpo -c -o libkrdata_la-kr_data_hdi_cache.lo `test -f 'kr_data_hdi_cache.c' || echo '$(srcdir)/'`kr_data_hdi_cache.c
-@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/libkrdata_la-kr_data_hdi_cache.Tpo $(DEPDIR)/libkrdata_la-kr_data_hdi_cache.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='kr_data_hdi_cache.c' object='libkrdata_la-kr_data_hdi_cache.lo' libtool=yes @AMDEPBACKSLASH@
+libkrdata_la-kr_data_item_hdi_cache.lo: kr_data_item_hdi_cache.c
+@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libkrdata_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libkrdata_la-kr_data_item_hdi_cache.lo -MD -MP -MF $(DEPDIR)/libkrdata_la-kr_data_item_hdi_cache.Tpo -c -o libkrdata_la-kr_data_item_hdi_cache.lo `test -f 'kr_data_item_hdi_cache.c' || echo '$(srcdir)/'`kr_data_item_hdi_cache.c
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/libkrdata_la-kr_data_item_hdi_cache.Tpo $(DEPDIR)/libkrdata_la-kr_data_item_hdi_cache.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='kr_data_item_hdi_cache.c' object='libkrdata_la-kr_data_item_hdi_cache.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libkrdata_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libkrdata_la-kr_data_hdi_cache.lo `test -f 'kr_data_hdi_cache.c' || echo '$(srcdir)/'`kr_data_hdi_cache.c
-
-libkrdata_la-kr_data_api.lo: kr_data_api.c
-@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libkrdata_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libkrdata_la-kr_data_api.lo -MD -MP -MF $(DEPDIR)/libkrdata_la-kr_data_api.Tpo -c -o libkrdata_la-kr_data_api.lo `test -f 'kr_data_api.c' || echo '$(srcdir)/'`kr_data_api.c
-@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/libkrdata_la-kr_data_api.Tpo $(DEPDIR)/libkrdata_la-kr_data_api.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='kr_data_api.c' object='libkrdata_la-kr_data_api.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libkrdata_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libkrdata_la-kr_data_api.lo `test -f 'kr_data_api.c' || echo '$(srcdir)/'`kr_data_api.c
+@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libkrdata_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libkrdata_la-kr_data_item_hdi_cache.lo `test -f 'kr_data_item_hdi_cache.c' || echo '$(srcdir)/'`kr_data_item_hdi_cache.c
 
 mostlyclean-libtool:
 	-rm -f *.lo
