@@ -58,6 +58,11 @@ kr_cache_test_SOURCES           = kr_cache_test.c
 kr_cache_test_LDADD             = $(progs_ldadd)
 kr_cache_test_CPPFLAGS          = -g 
 
+TEST_PROGS                     += kr_param_test
+kr_param_test_SOURCES           = kr_param_test.c
+kr_param_test_LDADD             = $(progs_ldadd)
+kr_param_test_CPPFLAGS          = -g 
+
 TEST_PROGS                     += kr_calc_test
 kr_calc_test_SOURCES            = kr_calc_test.c
 kr_calc_test_LDADD              = $(progs_ldadd)
