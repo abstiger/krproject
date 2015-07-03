@@ -13997,7 +13997,7 @@ fi
 
 
 
-ac_config_files="$ac_config_files krengine.pc Makefile dbs/Makefile dbs/dbs/Makefile krutils/Makefile krcalc/Makefile krparam/Makefile krdb/Makefile krdata/Makefile krflow/Makefile krio/Makefile krengine/Makefile krserver/Makefile krcoordi/Makefile krshell/Makefile krtools/Makefile krtools/kriface/Makefile krweb/Makefile bindings/python/Makefile bindings/java/Makefile etc/Makefile doc/Makefile tests/Makefile examples/Makefile examples/antifraud/Makefile examples/playweibo/Makefile"
+ac_config_files="$ac_config_files krengine.pc Makefile dbs/Makefile dbs/dbs/Makefile krutils/Makefile krcalc/Makefile krparam/Makefile krinput/Makefile krdb/Makefile krdata/Makefile krflow/Makefile kroutput/Makefile krengine/Makefile krserver/Makefile krcoordi/Makefile krshell/Makefile krtools/Makefile krtools/kriface/Makefile krweb/Makefile bindings/python/Makefile bindings/java/Makefile etc/Makefile doc/Makefile tests/Makefile examples/Makefile examples/antifraud/Makefile examples/playweibo/Makefile"
 
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
@@ -15012,10 +15012,11 @@ do
     "krutils/Makefile") CONFIG_FILES="$CONFIG_FILES krutils/Makefile" ;;
     "krcalc/Makefile") CONFIG_FILES="$CONFIG_FILES krcalc/Makefile" ;;
     "krparam/Makefile") CONFIG_FILES="$CONFIG_FILES krparam/Makefile" ;;
+    "krinput/Makefile") CONFIG_FILES="$CONFIG_FILES krinput/Makefile" ;;
     "krdb/Makefile") CONFIG_FILES="$CONFIG_FILES krdb/Makefile" ;;
     "krdata/Makefile") CONFIG_FILES="$CONFIG_FILES krdata/Makefile" ;;
     "krflow/Makefile") CONFIG_FILES="$CONFIG_FILES krflow/Makefile" ;;
-    "krio/Makefile") CONFIG_FILES="$CONFIG_FILES krio/Makefile" ;;
+    "kroutput/Makefile") CONFIG_FILES="$CONFIG_FILES kroutput/Makefile" ;;
     "krengine/Makefile") CONFIG_FILES="$CONFIG_FILES krengine/Makefile" ;;
     "krserver/Makefile") CONFIG_FILES="$CONFIG_FILES krserver/Makefile" ;;
     "krcoordi/Makefile") CONFIG_FILES="$CONFIG_FILES krcoordi/Makefile" ;;

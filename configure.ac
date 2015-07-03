@@ -92,10 +92,11 @@ dbs/dbs/Makefile
 krutils/Makefile 
 krcalc/Makefile 
 krparam/Makefile 
+krinput/Makefile
 krdb/Makefile 
 krdata/Makefile 
 krflow/Makefile 
-krio/Makefile
+kroutput/Makefile
 krengine/Makefile 
 krserver/Makefile
 krcoordi/Makefile
