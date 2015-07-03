@@ -74,10 +74,17 @@ CONFIG_CLEAN_VPATH_FILES =
 LTLIBRARIES = $(noinst_LTLIBRARIES)
 libkrparam_la_LIBADD =
 am_libkrparam_la_OBJECTS = libkrparam_la-kr_param.lo \
-	libkrparam_la-kr_param_set.lo libkrparam_la-kr_param_sdi.lo \
-	libkrparam_la-kr_param_ddi.lo libkrparam_la-kr_param_hdi.lo \
-	libkrparam_la-kr_param_rule.lo libkrparam_la-kr_param_group.lo \
-	libkrparam_la-kr_param_api.lo
+	libkrparam_la-kr_param_persist.lo \
+	libkrparam_la-kr_param_persist_odbc.lo \
+	libkrparam_la-kr_param_persist_file.lo \
+	libkrparam_la-kr_param_class.lo \
+	libkrparam_la-kr_param_class_input.lo \
+	libkrparam_la-kr_param_class_output.lo \
+	libkrparam_la-kr_param_class_index.lo \
+	libkrparam_la-kr_param_class_set.lo \
+	libkrparam_la-kr_param_class_sdi.lo \
+	libkrparam_la-kr_param_class_ddi.lo \
+	libkrparam_la-kr_param_class_hdi.lo
 libkrparam_la_OBJECTS = $(am_libkrparam_la_OBJECTS)
 libkrparam_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
@@ -248,20 +255,26 @@ top_srcdir = @top_srcdir@
 noinst_LTLIBRARIES = libkrparam.la
 libkrparam_la_SOURCES = kr_param.h      \
 						 kr_param.c      \
-						 kr_param_set.h    \
-						 kr_param_set.c    \
-						 kr_param_sdi.h    \
-						 kr_param_sdi.c    \
-						 kr_param_ddi.h    \
-						 kr_param_ddi.c    \
-						 kr_param_hdi.h    \
-						 kr_param_hdi.c    \
-						 kr_param_rule.h   \
-						 kr_param_rule.c   \
-						 kr_param_group.h  \
-						 kr_param_group.c  \
-						 kr_param_api.h  \
-						 kr_param_api.c  
+						 kr_param_persist.h \
+						 kr_param_persist.c \
+						 kr_param_persist_odbc.c \
+						 kr_param_persist_file.c \
+						 kr_param_class.h \
+						 kr_param_class.c \
+						 kr_param_class_input.h  \
+						 kr_param_class_input.c  \
+						 kr_param_class_output.h   \
+						 kr_param_class_output.c   \
+						 kr_param_class_index.h  \
+						 kr_param_class_index.c  \
+						 kr_param_class_set.h    \
+						 kr_param_class_set.c    \
+						 kr_param_class_sdi.h    \
+						 kr_param_class_sdi.c    \
+						 kr_param_class_ddi.h    \
+						 kr_param_class_ddi.c    \
+						 kr_param_class_hdi.h    \
+						 kr_param_class_hdi.c    
 
 
 #libkrparam_la_LIBADD    = $(top_srcdir)/krutils/libkrutils.la
@@ -322,13 +335,17 @@ distclean-compile:
 	-rm -f *.tab.c
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkrparam_la-kr_param.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkrparam_la-kr_param_api.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkrparam_la-kr_param_ddi.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkrparam_la-kr_param_group.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkrparam_la-kr_param_hdi.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkrparam_la-kr_param_rule.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkrparam_la-kr_param_sdi.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkrparam_la-kr_param_set.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkrparam_la-kr_param_class.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkrparam_la-kr_param_class_ddi.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkrparam_la-kr_param_class_hdi.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkrparam_la-kr_param_class_index.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkrparam_la-kr_param_class_input.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkrparam_la-kr_param_class_output.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkrparam_la-kr_param_class_sdi.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkrparam_la-kr_param_class_set.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkrparam_la-kr_param_persist.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkrparam_la-kr_param_persist_file.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkrparam_la-kr_param_persist_odbc.Plo@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
@@ -358,54 +375,82 @@ libkrparam_la-kr_param.lo: kr_param.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libkrparam_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libkrparam_la-kr_param.lo `test -f 'kr_param.c' || echo '$(srcdir)/'`kr_param.c
 
-libkrparam_la-kr_param_set.lo: kr_param_set.c
-@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libkrparam_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libkrparam_la-kr_param_set.lo -MD -MP -MF $(DEPDIR)/libkrparam_la-kr_param_set.Tpo -c -o libkrparam_la-kr_param_set.lo `test -f 'kr_param_set.c' || echo '$(srcdir)/'`kr_param_set.c
-@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/libkrparam_la-kr_param_set.Tpo $(DEPDIR)/libkrparam_la-kr_param_set.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='kr_param_set.c' object='libkrparam_la-kr_param_set.lo' libtool=yes @AMDEPBACKSLASH@
+libkrparam_la-kr_param_persist.lo: kr_param_persist.c
+@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libkrparam_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libkrparam_la-kr_param_persist.lo -MD -MP -MF $(DEPDIR)/libkrparam_la-kr_param_persist.Tpo -c -o libkrparam_la-kr_param_persist.lo `test -f 'kr_param_persist.c' || echo '$(srcdir)/'`kr_param_persist.c
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/libkrparam_la-kr_param_persist.Tpo $(DEPDIR)/libkrparam_la-kr_param_persist.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='kr_param_persist.c' object='libkrparam_la-kr_param_persist.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libkrparam_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libkrparam_la-kr_param_set.lo `test -f 'kr_param_set.c' || echo '$(srcdir)/'`kr_param_set.c
+@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libkrparam_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libkrparam_la-kr_param_persist.lo `test -f 'kr_param_persist.c' || echo '$(srcdir)/'`kr_param_persist.c
 
-libkrparam_la-kr_param_sdi.lo: kr_param_sdi.c
-@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libkrparam_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libkrparam_la-kr_param_sdi.lo -MD -MP -MF $(DEPDIR)/libkrparam_la-kr_param_sdi.Tpo -c -o libkrparam_la-kr_param_sdi.lo `test -f 'kr_param_sdi.c' || echo '$(srcdir)/'`kr_param_sdi.c
-@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/libkrparam_la-kr_param_sdi.Tpo $(DEPDIR)/libkrparam_la-kr_param_sdi.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='kr_param_sdi.c' object='libkrparam_la-kr_param_sdi.lo' libtool=yes @AMDEPBACKSLASH@
+libkrparam_la-kr_param_persist_odbc.lo: kr_param_persist_odbc.c
+@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libkrparam_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libkrparam_la-kr_param_persist_odbc.lo -MD -MP -MF $(DEPDIR)/libkrparam_la-kr_param_persist_odbc.Tpo -c -o libkrparam_la-kr_param_persist_odbc.lo `test -f 'kr_param_persist_odbc.c' || echo '$(srcdir)/'`kr_param_persist_odbc.c
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/libkrparam_la-kr_param_persist_odbc.Tpo $(DEPDIR)/libkrparam_la-kr_param_persist_odbc.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='kr_param_persist_odbc.c' object='libkrparam_la-kr_param_persist_odbc.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libkrparam_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libkrparam_la-kr_param_sdi.lo `test -f 'kr_param_sdi.c' || echo '$(srcdir)/'`kr_param_sdi.c
+@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libkrparam_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libkrparam_la-kr_param_persist_odbc.lo `test -f 'kr_param_persist_odbc.c' || echo '$(srcdir)/'`kr_param_persist_odbc.c
 
-libkrparam_la-kr_param_ddi.lo: kr_param_ddi.c
-@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libkrparam_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libkrparam_la-kr_param_ddi.lo -MD -MP -MF $(DEPDIR)/libkrparam_la-kr_param_ddi.Tpo -c -o libkrparam_la-kr_param_ddi.lo `test -f 'kr_param_ddi.c' || echo '$(srcdir)/'`kr_param_ddi.c
-@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/libkrparam_la-kr_param_ddi.Tpo $(DEPDIR)/libkrparam_la-kr_param_ddi.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='kr_param_ddi.c' object='libkrparam_la-kr_param_ddi.lo' libtool=yes @AMDEPBACKSLASH@
+libkrparam_la-kr_param_persist_file.lo: kr_param_persist_file.c
+@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libkrparam_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libkrparam_la-kr_param_persist_file.lo -MD -MP -MF $(DEPDIR)/libkrparam_la-kr_param_persist_file.Tpo -c -o libkrparam_la-kr_param_persist_file.lo `test -f 'kr_param_persist_file.c' || echo '$(srcdir)/'`kr_param_persist_file.c
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/libkrparam_la-kr_param_persist_file.Tpo $(DEPDIR)/libkrparam_la-kr_param_persist_file.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='kr_param_persist_file.c' object='libkrparam_la-kr_param_persist_file.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libkrparam_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libkrparam_la-kr_param_ddi.lo `test -f 'kr_param_ddi.c' || echo '$(srcdir)/'`kr_param_ddi.c
+@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libkrparam_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libkrparam_la-kr_param_persist_file.lo `test -f 'kr_param_persist_file.c' || echo '$(srcdir)/'`kr_param_persist_file.c
 
-libkrparam_la-kr_param_hdi.lo: kr_param_hdi.c
-@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libkrparam_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libkrparam_la-kr_param_hdi.lo -MD -MP -MF $(DEPDIR)/libkrparam_la-kr_param_hdi.Tpo -c -o libkrparam_la-kr_param_hdi.lo `test -f 'kr_param_hdi.c' || echo '$(srcdir)/'`kr_param_hdi.c
-@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/libkrparam_la-kr_param_hdi.Tpo $(DEPDIR)/libkrparam_la-kr_param_hdi.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='kr_param_hdi.c' object='libkrparam_la-kr_param_hdi.lo' libtool=yes @AMDEPBACKSLASH@
+libkrparam_la-kr_param_class.lo: kr_param_class.c
+@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libkrparam_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libkrparam_la-kr_param_class.lo -MD -MP -MF $(DEPDIR)/libkrparam_la-kr_param_class.Tpo -c -o libkrparam_la-kr_param_class.lo `test -f 'kr_param_class.c' || echo '$(srcdir)/'`kr_param_class.c
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/libkrparam_la-kr_param_class.Tpo $(DEPDIR)/libkrparam_la-kr_param_class.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='kr_param_class.c' object='libkrparam_la-kr_param_class.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libkrparam_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libkrparam_la-kr_param_hdi.lo `test -f 'kr_param_hdi.c' || echo '$(srcdir)/'`kr_param_hdi.c
+@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libkrparam_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libkrparam_la-kr_param_class.lo `test -f 'kr_param_class.c' || echo '$(srcdir)/'`kr_param_class.c
 
-libkrparam_la-kr_param_rule.lo: kr_param_rule.c
-@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libkrparam_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libkrparam_la-kr_param_rule.lo -MD -MP -MF $(DEPDIR)/libkrparam_la-kr_param_rule.Tpo -c -o libkrparam_la-kr_param_rule.lo `test -f 'kr_param_rule.c' || echo '$(srcdir)/'`kr_param_rule.c
-@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/libkrparam_la-kr_param_rule.Tpo $(DEPDIR)/libkrparam_la-kr_param_rule.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='kr_param_rule.c' object='libkrparam_la-kr_param_rule.lo' libtool=yes @AMDEPBACKSLASH@
+libkrparam_la-kr_param_class_input.lo: kr_param_class_input.c
+@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libkrparam_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libkrparam_la-kr_param_class_input.lo -MD -MP -MF $(DEPDIR)/libkrparam_la-kr_param_class_input.Tpo -c -o libkrparam_la-kr_param_class_input.lo `test -f 'kr_param_class_input.c' || echo '$(srcdir)/'`kr_param_class_input.c
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/libkrparam_la-kr_param_class_input.Tpo $(DEPDIR)/libkrparam_la-kr_param_class_input.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='kr_param_class_input.c' object='libkrparam_la-kr_param_class_input.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libkrparam_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libkrparam_la-kr_param_rule.lo `test -f 'kr_param_rule.c' || echo '$(srcdir)/'`kr_param_rule.c
+@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libkrparam_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libkrparam_la-kr_param_class_input.lo `test -f 'kr_param_class_input.c' || echo '$(srcdir)/'`kr_param_class_input.c
 
-libkrparam_la-kr_param_group.lo: kr_param_group.c
-@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libkrparam_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libkrparam_la-kr_param_group.lo -MD -MP -MF $(DEPDIR)/libkrparam_la-kr_param_group.Tpo -c -o libkrparam_la-kr_param_group.lo `test -f 'kr_param_group.c' || echo '$(srcdir)/'`kr_param_group.c
-@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/libkrparam_la-kr_param_group.Tpo $(DEPDIR)/libkrparam_la-kr_param_group.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='kr_param_group.c' object='libkrparam_la-kr_param_group.lo' libtool=yes @AMDEPBACKSLASH@
+libkrparam_la-kr_param_class_output.lo: kr_param_class_output.c
+@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libkrparam_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libkrparam_la-kr_param_class_output.lo -MD -MP -MF $(DEPDIR)/libkrparam_la-kr_param_class_output.Tpo -c -o libkrparam_la-kr_param_class_output.lo `test -f 'kr_param_class_output.c' || echo '$(srcdir)/'`kr_param_class_output.c
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/libkrparam_la-kr_param_class_output.Tpo $(DEPDIR)/libkrparam_la-kr_param_class_output.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='kr_param_class_output.c' object='libkrparam_la-kr_param_class_output.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libkrparam_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libkrparam_la-kr_param_group.lo `test -f 'kr_param_group.c' || echo '$(srcdir)/'`kr_param_group.c
+@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libkrparam_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libkrparam_la-kr_param_class_output.lo `test -f 'kr_param_class_output.c' || echo '$(srcdir)/'`kr_param_class_output.c
 
-libkrparam_la-kr_param_api.lo: kr_param_api.c
-@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libkrparam_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libkrparam_la-kr_param_api.lo -MD -MP -MF $(DEPDIR)/libkrparam_la-kr_param_api.Tpo -c -o libkrparam_la-kr_param_api.lo `test -f 'kr_param_api.c' || echo '$(srcdir)/'`kr_param_api.c
-@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/libkrparam_la-kr_param_api.Tpo $(DEPDIR)/libkrparam_la-kr_param_api.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='kr_param_api.c' object='libkrparam_la-kr_param_api.lo' libtool=yes @AMDEPBACKSLASH@
+libkrparam_la-kr_param_class_index.lo: kr_param_class_index.c
+@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libkrparam_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libkrparam_la-kr_param_class_index.lo -MD -MP -MF $(DEPDIR)/libkrparam_la-kr_param_class_index.Tpo -c -o libkrparam_la-kr_param_class_index.lo `test -f 'kr_param_class_index.c' || echo '$(srcdir)/'`kr_param_class_index.c
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/libkrparam_la-kr_param_class_index.Tpo $(DEPDIR)/libkrparam_la-kr_param_class_index.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='kr_param_class_index.c' object='libkrparam_la-kr_param_class_index.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libkrparam_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libkrparam_la-kr_param_api.lo `test -f 'kr_param_api.c' || echo '$(srcdir)/'`kr_param_api.c
+@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libkrparam_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libkrparam_la-kr_param_class_index.lo `test -f 'kr_param_class_index.c' || echo '$(srcdir)/'`kr_param_class_index.c
+
+libkrparam_la-kr_param_class_set.lo: kr_param_class_set.c
+@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libkrparam_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libkrparam_la-kr_param_class_set.lo -MD -MP -MF $(DEPDIR)/libkrparam_la-kr_param_class_set.Tpo -c -o libkrparam_la-kr_param_class_set.lo `test -f 'kr_param_class_set.c' || echo '$(srcdir)/'`kr_param_class_set.c
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/libkrparam_la-kr_param_class_set.Tpo $(DEPDIR)/libkrparam_la-kr_param_class_set.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='kr_param_class_set.c' object='libkrparam_la-kr_param_class_set.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libkrparam_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libkrparam_la-kr_param_class_set.lo `test -f 'kr_param_class_set.c' || echo '$(srcdir)/'`kr_param_class_set.c
+
+libkrparam_la-kr_param_class_sdi.lo: kr_param_class_sdi.c
+@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libkrparam_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libkrparam_la-kr_param_class_sdi.lo -MD -MP -MF $(DEPDIR)/libkrparam_la-kr_param_class_sdi.Tpo -c -o libkrparam_la-kr_param_class_sdi.lo `test -f 'kr_param_class_sdi.c' || echo '$(srcdir)/'`kr_param_class_sdi.c
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/libkrparam_la-kr_param_class_sdi.Tpo $(DEPDIR)/libkrparam_la-kr_param_class_sdi.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='kr_param_class_sdi.c' object='libkrparam_la-kr_param_class_sdi.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libkrparam_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libkrparam_la-kr_param_class_sdi.lo `test -f 'kr_param_class_sdi.c' || echo '$(srcdir)/'`kr_param_class_sdi.c
+
+libkrparam_la-kr_param_class_ddi.lo: kr_param_class_ddi.c
+@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libkrparam_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libkrparam_la-kr_param_class_ddi.lo -MD -MP -MF $(DEPDIR)/libkrparam_la-kr_param_class_ddi.Tpo -c -o libkrparam_la-kr_param_class_ddi.lo `test -f 'kr_param_class_ddi.c' || echo '$(srcdir)/'`kr_param_class_ddi.c
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/libkrparam_la-kr_param_class_ddi.Tpo $(DEPDIR)/libkrparam_la-kr_param_class_ddi.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='kr_param_class_ddi.c' object='libkrparam_la-kr_param_class_ddi.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libkrparam_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libkrparam_la-kr_param_class_ddi.lo `test -f 'kr_param_class_ddi.c' || echo '$(srcdir)/'`kr_param_class_ddi.c
+
+libkrparam_la-kr_param_class_hdi.lo: kr_param_class_hdi.c
+@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libkrparam_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libkrparam_la-kr_param_class_hdi.lo -MD -MP -MF $(DEPDIR)/libkrparam_la-kr_param_class_hdi.Tpo -c -o libkrparam_la-kr_param_class_hdi.lo `test -f 'kr_param_class_hdi.c' || echo '$(srcdir)/'`kr_param_class_hdi.c
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/libkrparam_la-kr_param_class_hdi.Tpo $(DEPDIR)/libkrparam_la-kr_param_class_hdi.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='kr_param_class_hdi.c' object='libkrparam_la-kr_param_class_hdi.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libkrparam_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libkrparam_la-kr_param_class_hdi.lo `test -f 'kr_param_class_hdi.c' || echo '$(srcdir)/'`kr_param_class_hdi.c
 
 mostlyclean-libtool:
 	-rm -f *.lo

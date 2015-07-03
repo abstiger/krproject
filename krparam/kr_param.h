@@ -1,36 +1,41 @@
 #ifndef __KR_PARAM_H__
 #define __KR_PARAM_H__
 
-#include <stdio.h>
-#include <time.h>
-#include "kr_param_set.h"
-#include "kr_param_sdi.h"
-#include "kr_param_ddi.h"
-#include "kr_param_hdi.h"
-#include "kr_param_rule.h"
-#include "kr_param_group.h"
-#include "dbs/dbs_basopr.h"
+typedef struct _kr_param_t T_KRParam;
 
-#define N_MAX_SEC  2
-
-/*struct definition of share memory*/
-typedef struct _kr_param_t
+typedef struct _kr_param_persist_config_t 
 {
-    short              nSecId;                  /*current section indicator*/
-    time_t             tLastLoadTime;           /*share memory last loaded time*/
-    T_DbsEnv           *ptDbsEnv;
-    T_KRParamSet       stParamSet[N_MAX_SEC];
-    T_KRParamSDI       stParamSDI[N_MAX_SEC];
-    T_KRParamDDI       stParamDDI[N_MAX_SEC];
-    T_KRParamHDI       stParamHDI[N_MAX_SEC];
-    T_KRParamGroup     stParamGroup[N_MAX_SEC];
-}T_KRParam;
+    char    type;   /* 'O' for odbc, 'F' for file */
+    char   *version;            
+    union {
+        struct {
+            char *name;
+            char *user;
+            char *pass;
+        }odbc;
+        
+        char *file;
+    }value;
+}T_KRParamPersistConfig;
 
 
-T_KRParam *kr_param_create(T_DbsEnv *ptDbsEnv);
+/*param function declaration*/
+T_KRParam *kr_param_create(void);
 void kr_param_destroy(T_KRParam *ptParam);
+long kr_param_load_time(T_KRParam *ptParam);
+char *kr_param_version_get(T_KRParam *ptParam);
+void kr_param_version_set(T_KRParam *ptParam, char *version);
 short kr_param_switch(T_KRParam *ptParam);
-short kr_param_load(T_KRParam *ptParam);
-void kr_param_dump(T_KRParam *ptParam, FILE *fp);
+
+/*param persist function declaration*/
+short kr_param_load(T_KRParam *ptParam, T_KRParamPersistConfig *ptConfig);
+short kr_param_dump(T_KRParam *ptParam, T_KRParamPersistConfig *ptConfig);
+
+/*param object function declaration*/
+typedef int (*KRParamObjectForEachFunc)(char *psParamClassName, char *psParamObjectKey, char *psParamObjectString, void *ptParamObject, void *data);
+int kr_param_object_foreach(T_KRParam *ptParam, char *psParamClassName, KRParamObjectForEachFunc pfParamObjectForEach, void *data);
+void *kr_param_object_get(T_KRParam *ptParam, char *psParamClassName, char *psParamObjectKey);
+int kr_param_object_add(T_KRParam *ptParam, char *psParamClassName, char *psParamObjectKey, char *ptParamObjectString);
+void kr_param_object_del(T_KRParam *ptParam, char *psParamClassName, char *psParamObjectKey);
 
 #endif  /*__KR_PARAM_H__*/

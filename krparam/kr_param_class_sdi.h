@@ -1,13 +1,10 @@
-#ifndef __KR_PARAM_SDI_H__
+﻿#ifndef __KR_PARAM_SDI_H__
 #define __KR_PARAM_SDI_H__
 
-#include <stdio.h>
-#include <time.h>
-#include "dbs/dbs_basopr.h"
+#define KR_PARAM_SDI "sdi"
 
-#define N_MAX_SDI_NUM  500
 
-typedef struct _kr_param_sdi_def_t
+typedef struct _kr_param_sdi_t
 {
     long        lSdiId;
     char        caSdiName[30+1];
@@ -23,17 +20,14 @@ typedef struct _kr_param_sdi_def_t
     char        caLocationProperty[1+1];
     char        caSdiFilterFormat[1+1];
     char        caSdiFilterString[500+1];
-}T_KRParamSDIDef;
+}T_KRParamSdi;
 
-typedef struct _kr_param_sdi_t
-{
-    long               lSDIDefCnt;
-    T_KRParamSDIDef    stParamSDIDef[N_MAX_SDI_NUM];
-    time_t             tLastLoadTime;           /*share memory last loaded time*/
-}T_KRParamSDI;
+char *kr_param_sdi_serialize(T_KRParamSdi *ptParamSdi);
+void kr_param_sdi_serialize_free(char *ptParamSdiString);
+
+T_KRParamSdi *kr_param_sdi_deserialize(char *ptParamSdiString);
+void kr_param_sdi_deserialize_free(T_KRParamSdi *ptParamSdi);
 
 
-int kr_param_sdi_load(T_DbsEnv *ptDbsEnv, T_KRParamSDI *ptParamSDI);
-int kr_param_sdi_dump(T_KRParamSDI *ptParamSDI, FILE *fp);
 
 #endif  /*__KR_PARAM_SDI_H__*/
