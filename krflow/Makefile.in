@@ -73,9 +73,7 @@ CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 LTLIBRARIES = $(noinst_LTLIBRARIES)
 libkrflow_la_LIBADD =
-am_libkrflow_la_OBJECTS = libkrflow_la-kr_flow.lo \
-	libkrflow_la-kr_flow_group.lo libkrflow_la-kr_flow_rule.lo \
-	libkrflow_la-kr_flow_api.lo
+am_libkrflow_la_OBJECTS = libkrflow_la-kr_flow.lo
 libkrflow_la_OBJECTS = $(am_libkrflow_la_OBJECTS)
 libkrflow_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
@@ -245,13 +243,7 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 noinst_LTLIBRARIES = libkrflow.la
 libkrflow_la_SOURCES = kr_flow.h \
-						 kr_flow.c \
-						 kr_flow_group.h \
-						 kr_flow_group.c \
-						 kr_flow_rule.h \
-						 kr_flow_rule.c \
-						 kr_flow_api.h \
-						 kr_flow_api.c 
+						 kr_flow.c 
 
 
 #libkrflow_la_LIBADD    = $(top_srcdir)/krutils/libkrutils.la
@@ -315,9 +307,6 @@ distclean-compile:
 	-rm -f *.tab.c
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkrflow_la-kr_flow.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkrflow_la-kr_flow_api.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkrflow_la-kr_flow_group.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkrflow_la-kr_flow_rule.Plo@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
@@ -346,27 +335,6 @@ libkrflow_la-kr_flow.lo: kr_flow.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='kr_flow.c' object='libkrflow_la-kr_flow.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libkrflow_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libkrflow_la-kr_flow.lo `test -f 'kr_flow.c' || echo '$(srcdir)/'`kr_flow.c
-
-libkrflow_la-kr_flow_group.lo: kr_flow_group.c
-@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libkrflow_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libkrflow_la-kr_flow_group.lo -MD -MP -MF $(DEPDIR)/libkrflow_la-kr_flow_group.Tpo -c -o libkrflow_la-kr_flow_group.lo `test -f 'kr_flow_group.c' || echo '$(srcdir)/'`kr_flow_group.c
-@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/libkrflow_la-kr_flow_group.Tpo $(DEPDIR)/libkrflow_la-kr_flow_group.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='kr_flow_group.c' object='libkrflow_la-kr_flow_group.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libkrflow_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libkrflow_la-kr_flow_group.lo `test -f 'kr_flow_group.c' || echo '$(srcdir)/'`kr_flow_group.c
-
-libkrflow_la-kr_flow_rule.lo: kr_flow_rule.c
-@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libkrflow_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libkrflow_la-kr_flow_rule.lo -MD -MP -MF $(DEPDIR)/libkrflow_la-kr_flow_rule.Tpo -c -o libkrflow_la-kr_flow_rule.lo `test -f 'kr_flow_rule.c' || echo '$(srcdir)/'`kr_flow_rule.c
-@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/libkrflow_la-kr_flow_rule.Tpo $(DEPDIR)/libkrflow_la-kr_flow_rule.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='kr_flow_rule.c' object='libkrflow_la-kr_flow_rule.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libkrflow_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libkrflow_la-kr_flow_rule.lo `test -f 'kr_flow_rule.c' || echo '$(srcdir)/'`kr_flow_rule.c
-
-libkrflow_la-kr_flow_api.lo: kr_flow_api.c
-@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libkrflow_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libkrflow_la-kr_flow_api.lo -MD -MP -MF $(DEPDIR)/libkrflow_la-kr_flow_api.Tpo -c -o libkrflow_la-kr_flow_api.lo `test -f 'kr_flow_api.c' || echo '$(srcdir)/'`kr_flow_api.c
-@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/libkrflow_la-kr_flow_api.Tpo $(DEPDIR)/libkrflow_la-kr_flow_api.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='kr_flow_api.c' object='libkrflow_la-kr_flow_api.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libkrflow_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libkrflow_la-kr_flow_api.lo `test -f 'kr_flow_api.c' || echo '$(srcdir)/'`kr_flow_api.c
 
 mostlyclean-libtool:
 	-rm -f *.lo
