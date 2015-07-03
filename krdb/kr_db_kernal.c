@@ -1,5 +1,4 @@
-#include "kr_db_internal.h"
-
+#include "kr_db_kernal.h"
 
 
 int kr_record_compare(T_KRRecord *ptRec1, T_KRRecord *ptRec2, int iFieldId)
@@ -218,7 +217,8 @@ static inline int kr_index_tableid_match(void *ptr, void *key)
 
 T_KRTable* kr_table_create(T_KRDB *ptDB,
         int iTableId, char *psTableName, 
-        E_KRSizeKeepMode eKeepMode, long lKeepValue)
+        E_KRSizeKeepMode eKeepMode, long lKeepValue, 
+        int iFieldCnt, T_KRFieldDef *ptFieldDef)
 {
     T_KRTable *ptTable = kr_calloc(sizeof(T_KRTable));
     if (ptTable == NULL) {
@@ -231,6 +231,11 @@ T_KRTable* kr_table_create(T_KRDB *ptDB,
     strncpy(ptTable->caTableName, psTableName, sizeof(ptTable->caTableName));
     ptTable->eKeepMode = eKeepMode;
     ptTable->lKeepValue = lKeepValue;
+    ptTable->iFieldCnt = iFieldCnt;
+    //hard copy field define
+    ptTable->ptFieldDef = kr_calloc(ptTable->iFieldCnt*sizeof(T_KRFieldDef));
+    memcpy(ptTable->ptFieldDef, ptFieldDef, ptTable->iFieldCnt*sizeof(T_KRFieldDef));
+    
     ptTable->uiRecordNum = 0;
     ptTable->uiRecordLoc = 0;
 
@@ -341,15 +346,15 @@ static inline int kr_index_table_match(void *ptr, void *key)
     }
 }
 
-T_KRDB* kr_db_create(char *psDBName, T_DbsEnv *ptDbsEnv, T_KRModule *ptModule)
+T_KRDB* kr_db_create(char *name, T_KRParam *ptParam)
 {
     T_KRDB *ptDB = (T_KRDB *)kr_calloc(sizeof(T_KRDB));
     if (ptDB == NULL) {
         fprintf(stderr, "kr_calloc ptDB failed!\n");
         return NULL;
     }
-    strncpy(ptDB->caDBName, psDBName, sizeof(ptDB->caDBName));
-    ptDB->dbsenv = ptDbsEnv;
+    strncpy(ptDB->caDBName, name, sizeof(ptDB->caDBName));
+    ptDB->ptParam = ptParam;
 
     ptDB->pTableList = kr_list_new();
     kr_list_set_match(ptDB->pTableList, (KRCompareFunc )kr_tableid_match);

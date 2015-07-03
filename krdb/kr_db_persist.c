@@ -1,5 +1,5 @@
-#include "kr_db_external.h"
-
+#include "kr_db_persist.h"
+/*
 #include "dbs/dbs_basopr.h"
 #include "dbs/dbs/record_ins.h"
 #include "dbs/dbs/record_proctime_cur.h"
@@ -47,7 +47,7 @@ static int kr_db_external_select_with_transtime(T_KRList *pRecList,
         memcpy(ptRecord->pRecBuf, stRecordTranstimeCur.caOutRecordBuffer, 
                 stRecordTranstimeCur.lOutRecordLength);
 
-        /*append to record list*/
+        //append to record list
         if (iSortFieldId >= 0) {
             kr_list_add_sorted(pRecList, ptRecord, &iSortFieldId);
         } else {
@@ -108,7 +108,7 @@ static int kr_db_external_select_with_proctime(T_KRList *pRecList,
         memcpy(ptRecord->pRecBuf, stRecordProctimeCur.caOutRecordBuffer, 
                 stRecordProctimeCur.lOutRecordLength);
 
-        /*append to record list*/
+        //append to record list
         if (iSortFieldId >= 0) {
             kr_list_add_sorted(pRecList, ptRecord, &iSortFieldId);
         } else {
@@ -174,3 +174,5 @@ int kr_db_external_select(T_KRList *pRecList, T_KRTable *ptTable,
 
     return iRet;
 }
+
+*/

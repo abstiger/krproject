@@ -2,6 +2,7 @@
 #define __KR_DB_API_H__
 
 #include "kr_db.h"
+#include "kr_db_kernal.h"
 
 extern cJSON *kr_db_info(T_KRDB *krdb);
 extern cJSON *kr_db_table_info(T_KRTable *krtable);

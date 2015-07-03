@@ -73,9 +73,8 @@ CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 LTLIBRARIES = $(noinst_LTLIBRARIES)
 libkrdb_la_LIBADD =
-am_libkrdb_la_OBJECTS = libkrdb_la-kr_db.lo libkrdb_la-kr_db_define.lo \
-	libkrdb_la-kr_db_internal.lo libkrdb_la-kr_db_external.lo \
-	libkrdb_la-kr_db_api.lo
+am_libkrdb_la_OBJECTS = libkrdb_la-kr_db.lo libkrdb_la-kr_db_kernal.lo \
+	libkrdb_la-kr_db_persist.lo libkrdb_la-kr_db_api.lo
 libkrdb_la_OBJECTS = $(am_libkrdb_la_OBJECTS)
 libkrdb_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
@@ -246,18 +245,17 @@ top_srcdir = @top_srcdir@
 noinst_LTLIBRARIES = libkrdb.la
 libkrdb_la_SOURCES = kr_db.h \
 					   kr_db.c \
-					   kr_db_define.h \
-					   kr_db_define.c \
-					   kr_db_internal.h \
-					   kr_db_internal.c \
-					   kr_db_external.h \
-					   kr_db_external.c \
+					   kr_db_kernal.h \
+					   kr_db_kernal.c \
+					   kr_db_persist.h \
+					   kr_db_persist.c \
 					   kr_db_api.h \
 					   kr_db_api.c 
 
 
-#libkrdb_la_LIBADD    = $(top_srcdir)/krutils/libkrutils.la
 #libkrdb_la_LIBADD   += $(top_srcdir)/dbs/dbs/libdbsdbs.la
+#libkrdb_la_LIBADD    = $(top_srcdir)/krutils/libkrutils.la
+#libkrdb_la_LIBADD    = $(top_srcdir)/krparam/libkrparam.la
 libkrdb_la_LDFLAGS = 
 libkrdb_la_CPPFLAGS = 
 all: all-am
@@ -314,9 +312,8 @@ distclean-compile:
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkrdb_la-kr_db.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkrdb_la-kr_db_api.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkrdb_la-kr_db_define.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkrdb_la-kr_db_external.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkrdb_la-kr_db_internal.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkrdb_la-kr_db_kernal.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkrdb_la-kr_db_persist.Plo@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
@@ -346,26 +343,19 @@ libkrdb_la-kr_db.lo: kr_db.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libkrdb_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libkrdb_la-kr_db.lo `test -f 'kr_db.c' || echo '$(srcdir)/'`kr_db.c
 
-libkrdb_la-kr_db_define.lo: kr_db_define.c
-@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libkrdb_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libkrdb_la-kr_db_define.lo -MD -MP -MF $(DEPDIR)/libkrdb_la-kr_db_define.Tpo -c -o libkrdb_la-kr_db_define.lo `test -f 'kr_db_define.c' || echo '$(srcdir)/'`kr_db_define.c
-@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/libkrdb_la-kr_db_define.Tpo $(DEPDIR)/libkrdb_la-kr_db_define.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='kr_db_define.c' object='libkrdb_la-kr_db_define.lo' libtool=yes @AMDEPBACKSLASH@
+libkrdb_la-kr_db_kernal.lo: kr_db_kernal.c
+@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libkrdb_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libkrdb_la-kr_db_kernal.lo -MD -MP -MF $(DEPDIR)/libkrdb_la-kr_db_kernal.Tpo -c -o libkrdb_la-kr_db_kernal.lo `test -f 'kr_db_kernal.c' || echo '$(srcdir)/'`kr_db_kernal.c
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/libkrdb_la-kr_db_kernal.Tpo $(DEPDIR)/libkrdb_la-kr_db_kernal.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='kr_db_kernal.c' object='libkrdb_la-kr_db_kernal.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libkrdb_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libkrdb_la-kr_db_define.lo `test -f 'kr_db_define.c' || echo '$(srcdir)/'`kr_db_define.c
+@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libkrdb_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libkrdb_la-kr_db_kernal.lo `test -f 'kr_db_kernal.c' || echo '$(srcdir)/'`kr_db_kernal.c
 
-libkrdb_la-kr_db_internal.lo: kr_db_internal.c
-@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libkrdb_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libkrdb_la-kr_db_internal.lo -MD -MP -MF $(DEPDIR)/libkrdb_la-kr_db_internal.Tpo -c -o libkrdb_la-kr_db_internal.lo `test -f 'kr_db_internal.c' || echo '$(srcdir)/'`kr_db_internal.c
-@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/libkrdb_la-kr_db_internal.Tpo $(DEPDIR)/libkrdb_la-kr_db_internal.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='kr_db_internal.c' object='libkrdb_la-kr_db_internal.lo' libtool=yes @AMDEPBACKSLASH@
+libkrdb_la-kr_db_persist.lo: kr_db_persist.c
+@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libkrdb_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libkrdb_la-kr_db_persist.lo -MD -MP -MF $(DEPDIR)/libkrdb_la-kr_db_persist.Tpo -c -o libkrdb_la-kr_db_persist.lo `test -f 'kr_db_persist.c' || echo '$(srcdir)/'`kr_db_persist.c
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/libkrdb_la-kr_db_persist.Tpo $(DEPDIR)/libkrdb_la-kr_db_persist.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='kr_db_persist.c' object='libkrdb_la-kr_db_persist.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libkrdb_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libkrdb_la-kr_db_internal.lo `test -f 'kr_db_internal.c' || echo '$(srcdir)/'`kr_db_internal.c
-
-libkrdb_la-kr_db_external.lo: kr_db_external.c
-@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libkrdb_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libkrdb_la-kr_db_external.lo -MD -MP -MF $(DEPDIR)/libkrdb_la-kr_db_external.Tpo -c -o libkrdb_la-kr_db_external.lo `test -f 'kr_db_external.c' || echo '$(srcdir)/'`kr_db_external.c
-@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/libkrdb_la-kr_db_external.Tpo $(DEPDIR)/libkrdb_la-kr_db_external.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='kr_db_external.c' object='libkrdb_la-kr_db_external.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libkrdb_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libkrdb_la-kr_db_external.lo `test -f 'kr_db_external.c' || echo '$(srcdir)/'`kr_db_external.c
+@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libkrdb_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libkrdb_la-kr_db_persist.lo `test -f 'kr_db_persist.c' || echo '$(srcdir)/'`kr_db_persist.c
 
 libkrdb_la-kr_db_api.lo: kr_db_api.c
 @am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libkrdb_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libkrdb_la-kr_db_api.lo -MD -MP -MF $(DEPDIR)/libkrdb_la-kr_db_api.Tpo -c -o libkrdb_la-kr_db_api.lo `test -f 'kr_db_api.c' || echo '$(srcdir)/'`kr_db_api.c

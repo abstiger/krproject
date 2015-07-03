@@ -1,23 +1,15 @@
 #ifndef __KR_DB_INTERNAL_H__
 #define __KR_DB_INTERNAL_H__
 
+#include "krdb/kr_db.h"
 #include "krutils/kr_utils.h"
-#include "dbs/dbs_basopr.h"
 
-typedef struct _kr_db_t T_KRDB;
 typedef struct _kr_table_t T_KRTable;
 typedef struct _kr_index_t T_KRIndex;
 typedef struct _kr_index_table_t T_KRIndexTable;
 typedef struct _kr_index_slot_t T_KRIndexSolt;
 
 typedef struct _kr_field_def_t T_KRFieldDef;
-typedef struct _kr_record_t T_KRRecord;
-
-/*the two public fieldno of ptDB'field definition*/
-typedef enum {
-    KR_FIELDID_PROCTIME    = 0,   /*timestamp of processing*/
-    KR_FIELDID_TRANSTIME   = 1    /*timestamp of transaction*/
-}E_KRPublicFieldId;
 
 /*ptDB table size keep mode*/
 typedef enum {
@@ -96,7 +88,7 @@ struct _kr_index_table_t
 struct _kr_db_t
 {
     char             caDBName[30+1];       /* name of this db */
-    T_DbsEnv         *dbsenv;
+    T_KRParam        *ptParam;
     T_KRList         *pTableList;          /* tables in this db */
     T_KRList         *pIndexList;          /* indexes of this db */
     T_KRList         *pIndexTableList;     /* indexes of this db */
@@ -155,7 +147,8 @@ extern T_KRIndex* kr_index_get(T_KRDB *ptDB, int iIndexId);
 
 extern T_KRTable* kr_table_create(T_KRDB *ptDB,
         int iTableId, char *psTableName, 
-        E_KRSizeKeepMode eKeepMode, long lKeepValue);
+        E_KRSizeKeepMode eKeepMode, long lKeepValue,
+        int iFieldCnt, T_KRFieldDef *ptFieldDef);
 extern void kr_table_drop(T_KRTable *ptTable);
 extern T_KRTable* kr_table_get(T_KRDB *ptDB, int iTableId);
 
@@ -165,7 +158,7 @@ extern T_KRIndexTable* kr_index_table_create(T_KRDB *ptDB,
 extern void kr_index_table_drop(T_KRIndexTable *ptIndexTable);
 extern T_KRIndexTable* kr_index_table_get(T_KRDB *ptDB, int iIndexId, int iTableId);
 
-extern T_KRDB* kr_db_create(char *psDBName, T_DbsEnv *ptDbsEnv, T_KRModule *ptModule);
+extern T_KRDB* kr_db_create(char *name, T_KRParam *ptParam);
 extern void kr_db_drop(T_KRDB *ptDB);
 
 #endif /* __KR_DB_INTERNAL_H__ */
