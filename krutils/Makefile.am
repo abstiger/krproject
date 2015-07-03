@@ -33,6 +33,8 @@ libkrutils_la_SOURCES   = \
 						  kr_conhash.c \
 						  kr_queue.h \
 						  kr_queue.c \
+                          kr_context.h \
+                          kr_context.c \
 						  kr_threadpool.h \
 						  kr_threadpool.c \
 						  kr_net.h \

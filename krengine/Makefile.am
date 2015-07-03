@@ -3,9 +3,10 @@ include_HEADERS          = kr_engine.h
 
 libkrengine_la_SOURCES   = kr_engine.h \
 						   kr_engine.c \
-						   kr_engine_context.h \
-						   kr_engine_context.c \
-						   kr_engine_handle.c 
+						   kr_engine_env.h \
+						   kr_engine_env.c \
+						   kr_engine_ctx.h \
+						   kr_engine_ctx.c 
      
 libkrengine_la_LIBADD    = $(top_srcdir)/dbs/libdbsbas.la
 libkrengine_la_LIBADD   += $(top_srcdir)/dbs/dbs/libdbsdbs.la

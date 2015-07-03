@@ -21,6 +21,7 @@
 #include "kr_regex.h"
 #include "kr_module.h"
 #include "kr_log.h"
+#include "kr_context.h"
 #include "kr_net.h"
 
 

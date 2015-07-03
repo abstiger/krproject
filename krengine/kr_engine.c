@@ -1,14 +1,9 @@
 #include "kr_config.h"
 #include "krutils/kr_utils.h"
 #include "krutils/kr_threadpool.h"
-#include "krutils/kr_cache.h"
-#include "krparam/kr_param.h"
-#include "krcalc/kr_calc.h"
-#include "krdb/kr_db.h"
-#include "krdata/kr_data.h"
-#include "krflow/kr_flow.h"
-#include "kr_engine_context.h"
 #include "kr_engine.h"
+#include "kr_engine_env.h"
+#include "kr_engine_ctx.h"
 #include "assert.h"
 
 extern int kr_engine_register_default(T_KREngine *engine);
@@ -18,16 +13,21 @@ static int kr_engine_handle(void *ctx, void *arg);
 /* engine inner declaration */
 struct _kr_engine_t
 {
-    char             *version;      /* version of engine */
-    char             *info;         /* information of engine */
+    char                *version;      /* version of engine */
+    char                *info;         /* information of engine */
 
-    T_KRContextEnv   *ctx_env;      /* environment of the context */
-    T_KRContext      *ctx;          /* dynamic memory address */
-    T_KRThreadPool   *tp;           /* thread pool */
+    T_KREngineEnv       *env;          /* environment of this engine */
+    T_KREngineCtx       *ctx;          /* context of this engine */
+    T_KRThreadPool      *tp;           /* thread pool */
 };
 
 T_KREngine *kr_engine_startup(T_KREngineConfig *cfg, void *data)
 {
+    /* Set log file and level first*/
+    if (cfg->logpath) kr_log_set_path(cfg->logpath);
+    if (cfg->logname) kr_log_set_name(cfg->logname);
+    if (cfg->loglevel) kr_log_set_level(cfg->loglevel);
+
     KR_LOG(KR_LOGDEBUG, "kr_engine_startup...");
 
     T_KREngine *engine = kr_calloc(sizeof(T_KREngine));
@@ -47,88 +47,17 @@ T_KREngine *kr_engine_startup(T_KREngineConfig *cfg, void *data)
             PACKAGE_NAME, PACKAGE_VERSION, PACKAGE_BUGREPORT, PACKAGE_URL);
     engine->info = kr_strdup(caInfo);
 
-    /* Set log file and level */
-    if (cfg->logpath) kr_log_set_path(cfg->logpath);
-    if (cfg->logname) kr_log_set_name(cfg->logname);
-    if (cfg->loglevel) kr_log_set_level(cfg->loglevel);
-
-    /* set engine's context environment */
-    T_KRContextEnv *ctx_env = kr_calloc(sizeof(T_KRContextEnv));
-    if (ctx_env == NULL) {
-        KR_LOG(KR_LOGERROR, "kr_calloc ctx_env failed!");
-        goto FAILED;
-    }
-    engine->ctx_env = ctx_env;
-    ctx_env->extra = data;
-
-    /* load pludge-in modules */
-    if (cfg->krdb_module) {
-        ctx_env->krdbModule = kr_module_open(cfg->krdb_module, RTLD_LAZY);
-        if (ctx_env->krdbModule == NULL) {
-            KR_LOG(KR_LOGERROR, "kr_module_open %s failed!", cfg->krdb_module);
-            goto FAILED;
-        }
-    } else {
-        KR_LOG(KR_LOGERROR, "krdb-module-file not configured!");
-        goto FAILED;
-    }
-
-    if (cfg->data_module) {
-        ctx_env->dataModule = kr_module_open(cfg->data_module, RTLD_LAZY);
-        if (ctx_env->dataModule == NULL) {
-            KR_LOG(KR_LOGERROR, "kr_module_open %s failed!", cfg->data_module);
-            goto FAILED;
-        }
-    }
-
-    /* Connect to database */
-    if (cfg->dbname) {
-        ctx_env->ptDbsEnv = dbsConnect(cfg->dbname, cfg->dbuser, cfg->dbpass);
-        if (ctx_env->ptDbsEnv == NULL) {
-            KR_LOG(KR_LOGERROR, "dbsConnect [%s] [%s] [%s] failed!",
-                    cfg->dbname, cfg->dbuser, cfg->dbpass);
-            goto FAILED;
-        }
-    } else {
-        KR_LOG(KR_LOGERROR, "db-name not configured!");
-        goto FAILED;
-    }
-
-    /* Create parameter memory */
-    ctx_env->ptParam = kr_param_create(ctx_env->ptDbsEnv);
-    if (ctx_env->ptParam == NULL) {
-        KR_LOG(KR_LOGERROR, "kr_param_create failed!");
-        goto FAILED;
-    }
-
-    /* Start up krdb */
-    ctx_env->ptDB = kr_db_new("KRDB", ctx_env->ptDbsEnv, ctx_env->krdbModule);
-    if (ctx_env->ptDB == NULL) {
-        KR_LOG(KR_LOGERROR, "kr_db_startup failed!");
-        goto FAILED;
-    }
-
-    /* Create hdi cache */
-    if (cfg->hdi_cache_size > 0) {
-        ctx_env->ptHDICache = kr_hdi_cache_create(cfg->hdi_cache_size);
-        if (ctx_env->ptHDICache == NULL) {
-            KR_LOG(KR_LOGERROR, "kr_hdi_cache_create [%d] failed!", \
-                    cfg->hdi_cache_size);
-            goto FAILED;
-        }
-    }
-
-    /* Create function table */
-    ctx_env->ptFuncTable = kr_functable_create("engine");
-    if (ctx_env->ptFuncTable == NULL) {
-        KR_LOG(KR_LOGERROR, "kr_functable_create engine failed!");
+    /*create environment*/
+    engine->env = kr_engine_env_create(cfg);
+    if (engine->env == NULL) {
+        KR_LOG(KR_LOGERROR, "kr_engine_env_create failed!");
         goto FAILED;
     }
     
-    /* initialize engine's context */
+    /* if no thread pool, initialize engine's context */
     if (cfg->thread_pool_size <= 0) {
         /* if no threadpool, initialize rule detecting context */
-        engine->ctx = kr_context_init(engine->ctx_env);
+        engine->ctx = kr_engine_ctx_create(engine->env);
         if (engine->ctx == NULL) {
             KR_LOG(KR_LOGERROR, "kr_context_init failed!");
             goto FAILED;
@@ -136,9 +65,9 @@ T_KREngine *kr_engine_startup(T_KREngineConfig *cfg, void *data)
     } else { 
         /* else create and run thread pool */
         engine->tp = kr_threadpool_create(
-                cfg->thread_pool_size, cfg->high_water_mark, ctx_env,
-                (KRThdInitFunc )kr_context_init, 
-                (KRThdFiniFunc )kr_context_fini);
+                cfg->thread_pool_size, cfg->high_water_mark, engine->env,
+                (KRThdInitFunc )kr_engine_ctx_create, 
+                (KRThdFiniFunc )kr_engine_ctx_destroy);
         if (engine->tp == NULL) {
             KR_LOG(KR_LOGERROR, "kr_threadpool_create failed!");
             goto FAILED;
@@ -167,24 +96,14 @@ void kr_engine_shutdown(T_KREngine *engine)
     if (engine == NULL) return;
     if (engine->ctx) {
         /* destroy context */
-        kr_context_fini(engine->ctx);
+        kr_engine_ctx_destroy(engine->ctx);
     } else { 
         /* destroy threadpool */
         kr_threadpool_destroy(engine->tp);
     }
 
-    /* destroy rule detecting environment */
-    if (engine->ctx_env) {
-        T_KRContextEnv *ctx_env=engine->ctx_env;
-        if (ctx_env->krdbModule) kr_module_close(ctx_env->krdbModule);
-        if (ctx_env->dataModule) kr_module_close(ctx_env->dataModule);
-        if (ctx_env->ptDbsEnv) dbsDisconnect(ctx_env->ptDbsEnv);
-        if (ctx_env->ptParam) kr_param_destroy(ctx_env->ptParam);
-        if (ctx_env->ptDB) kr_db_free(ctx_env->ptDB);
-        if (ctx_env->ptHDICache) kr_hdi_cache_destroy(ctx_env->ptHDICache);
-        if (ctx_env->ptFuncTable) kr_functable_destroy(ctx_env->ptFuncTable);
-        kr_free(engine->ctx_env);
-    }
+    /* destroy environment */
+    kr_engine_env_destroy(engine->env);
 
     if (engine->version) kr_free(engine->version);
     if (engine->info) kr_free(engine->info);
@@ -210,20 +129,27 @@ int kr_engine_run(T_KREngine *engine, T_KREngineArg *arg)
 
 static int kr_engine_handle(void *ctx, void *arg)
 {
-    T_KRContext *krctx = (T_KRContext *)ctx;
+    T_KREngineCtx *krctx = (T_KREngineCtx *)ctx;
     T_KREngineArg *krarg = (T_KREngineArg *)arg;
     T_KRMessage *apply = (T_KRMessage *)krarg->apply;
     T_KRMessage *reply = (T_KRMessage *)krarg->reply;
 
+    //check context, reload if parameter changed
+    
+    /*TODO: call interface module to process apply message */
+
     /* set context with arg */
+    /*
     if (kr_context_set(krctx, krarg) != 0) {
         KR_LOG(KR_LOGERROR, "kr_context_set [%p] failed!", krarg);
         //FIXME:set error code
         //reply->msgtype = KR_MSGTYPE_ERROR;
         goto RESP;
     }
+    */
 
     /* search handle for this apply message */
+    /*
     KRFunc handle_func = kr_functable_search(\
             krctx->ptEnv->ptFuncTable, apply->method);
     if (handle_func == NULL) {
@@ -232,13 +158,16 @@ static int kr_engine_handle(void *ctx, void *arg)
         //reply->msgtype = KR_MSGTYPE_ERROR;
         goto RESP;
     }
+    */
 
     /* excute handle function */
+    /*
     KR_LOG(KR_LOGDEBUG, "invoking handle for method [%s]...", apply->method);
     handle_func(krctx, krarg);
+    */
 
 RESP:
-    /*TODO: call interface module to construct reply message */
+    /*TODO: call interface module to genrate reply message */
 
     /* run user's callback function */
     if (krarg->cb_func) {
@@ -246,14 +175,14 @@ RESP:
     }
 
     /* clean context */
-    kr_context_clean(krctx);
+    //kr_context_clean(krctx);
     return 0;
 }
 
 
 int kr_engine_register(T_KREngine *engine, char *method, KRFunc func)
 {
-    kr_functable_register(engine->ctx_env->ptFuncTable, method, func);
+    kr_functable_register(engine->env->ptFuncTable, method, func);
     return 0;
 }
 
