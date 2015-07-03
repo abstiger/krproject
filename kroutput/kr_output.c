@@ -1,8 +1,8 @@
-#include "kr_io.h"
+#include "kr_output.h"
 
 T_KROutputHandle* kr_output_handle_new(int iTableId, char *psFormat, T_KRModule *ptModule)
 {
-    KR_LOG(KR_LOGDEBUG, "loading iface handle[%s],[%d]!", psFormat, iTableId);
+    KR_LOG(KR_LOGDEBUG, "loading io handle[%s],[%d]!", psFormat, iTableId);
 
     T_KROutputHandle *ptOutputHandle = kr_calloc(sizeof(*ptOutputHandle));
     if (ptOutputHandle == NULL) {
@@ -70,24 +70,24 @@ int kr_output_handle_match(void *ptr, void *key)
 
 
 
-T_KROutputHandle* kr_output_handle_get(T_KRIface *ptIface, int iTableId, char *psFormat)
+T_KROutputHandle* kr_output_handle_get(T_KRIO *ptIO, int iTableId, char *psFormat)
 {
     T_KROutputHandle stCompare = {0};
     stCompare.iTableId = iTableId;
     strncpy(stCompare.caFormat, psFormat, sizeof(stCompare.caFormat));
     
     T_KRListNode *ptListNode = \
-        kr_list_search(ptIface->pOutputHandleList, &stCompare);
+        kr_list_search(ptIO->pOutputHandleList, &stCompare);
     if (ptListNode != NULL) {
         return (T_KROutputHandle *)kr_list_value(ptListNode);
     }
     
-    /*load iface handle*/
+    /*load io handle*/
     T_KROutputHandle *ptOutputHandle = \
-        kr_output_handle_new(iTableId, psFormat, ptIface->ptModule);
+        kr_output_handle_new(iTableId, psFormat, ptIO->ptModule);
     if (ptOutputHandle != NULL) {
         /*add to table's interface handle list*/
-        kr_list_add_sorted(ptIface->pOutputHandleList, 
+        kr_list_add_sorted(ptIO->pOutputHandleList, 
                 ptOutputHandle, &stCompare);
         return ptOutputHandle;
     }
