@@ -1,6 +1,8 @@
 noinst_LTLIBRARIES = libkrinput.la
 libkrinput_la_SOURCES    =  kr_input.h \
 							kr_input.c \
+							kr_record.h \
+							kr_record.c \
 							kr_input_define.h \
 							kr_input_define.c \
 							kr_input_handle.h \

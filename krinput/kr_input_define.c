@@ -8,27 +8,27 @@ T_KRInputDefine *kr_input_define_new(T_KRParamInput *ptParamInput)
         KR_LOG(KR_LOGERROR, "kr_calloc ptInputDefine failed!");
         return NULL;
     }
-    ptInputDefine->iInputId = ptParamInput->lOutInputId;
-    strncpy(ptInputDefine->caInputName, ptParamInput->caOutInputName, 
+    ptInputDefine->iInputId = ptParamInput->lInputId;
+    strncpy(ptInputDefine->caInputName, ptParamInput->caInputName, 
             sizeof(ptInputDefine->caInputName)-1);
-    strncpy(ptInputDefine->caInputDesc, ptParamInput->caOutInputDesc, 
+    strncpy(ptInputDefine->caInputDesc, ptParamInput->caInputDesc, 
             sizeof(ptInputDefine->caInputDesc)-1);
     
     // load fields define
     size_t ulFieldOffset = 0;
     for (int i=0; i<ptParamInput->lFieldCnt; ++i) {
         T_KRParamInputField *ptParamInputField = &ptParamInput->ptFieldDef[i];
-        T_KRInputFieldDef *ptFieldDef = &ptInputDefine->ptFieldDef[iCnt];
+        T_KRInputFieldDef *ptFieldDef = &ptInputDefine->ptFieldDef[i];
         
-        ptFieldDef->id = ptParamInputField->lOutFieldId;
-        strncpy(ptFieldDef->name, ptParamInputField->caOutFieldName, \
+        ptFieldDef->id = ptParamInputField->lFieldId;
+        strncpy(ptFieldDef->name, ptParamInputField->caFieldName, \
                 sizeof(ptFieldDef->name));
-        ptFieldDef->type = ptParamInputField->caOutFieldType[0];
-        ptFieldDef->length = ptParamInputField->lOutFieldLength;
+        ptFieldDef->type = ptParamInputField->caFieldType[0];
+        ptFieldDef->length = ptParamInputField->lFieldLength;
         ptFieldDef->offset = ulFieldOffset;
         ulFieldOffset += ptFieldDef->length;
         /* String terminated with '\0' */
-        if (ptFieldDef[iCnt].type == KR_TYPE_STRING) {
+        if (ptFieldDef->type == KR_TYPE_STRING) {
             ulFieldOffset += 1;
         }
     }
@@ -56,27 +56,24 @@ void kr_input_define_free(T_KRInputDefine *ptInputDefine)
 
 int kr_input_define_match(T_KRInputDefine *ptInputDefine, int *piInputId)
 {
-    return (ptInputDefine->piInputId == *piInputId));
+    return (ptInputDefine->iInputId == *piInputId);
 }
 
 
 T_KRInputHandle* kr_input_define_get_handle(T_KRInputDefine *ptInputDefine, char *psFormat, T_KRModule *ptModule)
 {
-    T_KRListNode *ptListNode = kr_list_search(ptInputDefine->pInputHandleList, psFormat);
+    T_KRListNode *ptListNode = kr_list_search(ptInputDefine->ptInputHandleList, psFormat);
     if (ptListNode != NULL) {
         return (T_KRInputHandle *)kr_list_value(ptListNode);
     }
     
     /*load io handle*/
-    pthread_mutex_lock(ptInputDefine->tLock);
     T_KRInputHandle *ptInputHandle = \
         kr_input_handle_new(ptInputDefine->iInputId, psFormat, ptModule);
     if (ptInputHandle != NULL) {
         /*add to table's interface handle list*/
-        kr_list_add_sorted(ptInputDefine->pInputHandleList, 
-                ptInputHandle, &stCompare);
+        kr_list_add_sorted(ptInputDefine->ptInputHandleList, ptInputHandle, psFormat);
     }
-    pthread_mutex_unlock(ptInputDefine->tLock);
     
     return ptInputHandle;
 }

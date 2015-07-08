@@ -74,7 +74,7 @@ CONFIG_CLEAN_VPATH_FILES =
 LTLIBRARIES = $(noinst_LTLIBRARIES)
 libkrinput_la_LIBADD =
 am_libkrinput_la_OBJECTS = libkrinput_la-kr_input.lo \
-	libkrinput_la-kr_input_define.lo \
+	libkrinput_la-kr_record.lo libkrinput_la-kr_input_define.lo \
 	libkrinput_la-kr_input_handle.lo
 libkrinput_la_OBJECTS = $(am_libkrinput_la_OBJECTS)
 libkrinput_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
@@ -246,6 +246,8 @@ top_srcdir = @top_srcdir@
 noinst_LTLIBRARIES = libkrinput.la
 libkrinput_la_SOURCES = kr_input.h \
 							kr_input.c \
+							kr_record.h \
+							kr_record.c \
 							kr_input_define.h \
 							kr_input_define.c \
 							kr_input_handle.h \
@@ -313,6 +315,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkrinput_la-kr_input.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkrinput_la-kr_input_define.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkrinput_la-kr_input_handle.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkrinput_la-kr_record.Plo@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
@@ -341,6 +344,13 @@ libkrinput_la-kr_input.lo: kr_input.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='kr_input.c' object='libkrinput_la-kr_input.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libkrinput_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libkrinput_la-kr_input.lo `test -f 'kr_input.c' || echo '$(srcdir)/'`kr_input.c
+
+libkrinput_la-kr_record.lo: kr_record.c
+@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libkrinput_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libkrinput_la-kr_record.lo -MD -MP -MF $(DEPDIR)/libkrinput_la-kr_record.Tpo -c -o libkrinput_la-kr_record.lo `test -f 'kr_record.c' || echo '$(srcdir)/'`kr_record.c
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/libkrinput_la-kr_record.Tpo $(DEPDIR)/libkrinput_la-kr_record.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='kr_record.c' object='libkrinput_la-kr_record.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libkrinput_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libkrinput_la-kr_record.lo `test -f 'kr_record.c' || echo '$(srcdir)/'`kr_record.c
 
 libkrinput_la-kr_input_define.lo: kr_input_define.c
 @am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libkrinput_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libkrinput_la-kr_input_define.lo -MD -MP -MF $(DEPDIR)/libkrinput_la-kr_input_define.Tpo -c -o libkrinput_la-kr_input_define.lo `test -f 'kr_input_define.c' || echo '$(srcdir)/'`kr_input_define.c

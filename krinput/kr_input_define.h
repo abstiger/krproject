@@ -3,7 +3,7 @@
 
 #include "krparam/kr_param_class_input.h"
 #include "kr_input_handle.h"
-
+#include "krutils/kr_utils.h"
 
 typedef struct _kr_dict_value_t
 {
@@ -34,13 +34,14 @@ typedef struct _kr_input_field_def_t
 }T_KRInputFieldDef;
 
 
-typedef struct _kr_input_def_t
+typedef struct _kr_input_define_t
 {
     int                iInputId;
     char               caInputName[30+1];
     char               caInputDesc[100+1];
     int                iFieldCnt;         /* field count of this table */
     T_KRInputFieldDef  *ptFieldDef;       /* field define of this table */
+    int                iRecordSize;       /* record size needed to allocated */
     
     T_KRList           *ptInputHandleList;
 }T_KRInputDefine;
@@ -49,5 +50,6 @@ typedef struct _kr_input_def_t
 T_KRInputDefine *kr_input_define_new(T_KRParamInput *ptParamInput);
 void kr_input_define_free(T_KRInputDefine *ptInputDefine);
 int kr_input_define_match(T_KRInputDefine *ptInputDefine, int *piInputId);
+T_KRInputHandle* kr_input_define_get_handle(T_KRInputDefine *ptInputDefine, char *psFormat, T_KRModule *ptModule);
 
 #endif /* __KR_INPUT_DEFINE_H__ */
