@@ -15,7 +15,6 @@ typedef struct _kr_tradflow_t{
     char     caOutTransLoc[100+1];
 } T_KRTradFlow_1;
 
-static int MyPrintRecord(T_KRRecord *ptRecord, void *user_data);
 
 int main(int argc,char *argv[])
 {
@@ -38,6 +37,7 @@ int main(int argc,char *argv[])
     
     //Step 1:kr_db_startup
     T_KRModule *dbmod = kr_module_open("/home/tiger/krproject/lib/antifraud.so", RTLD_LAZY);
+    /*
     gptKRDB = kr_db_new("KRDB", dbsenv, dbmod);
     if (gptKRDB == NULL) {
         KR_LOG(KR_LOGERROR, "kr_db_startup Failed!");
@@ -45,7 +45,6 @@ int main(int argc,char *argv[])
     }
     
     //Step 2:FraudDetect
-    /*
     for (i=0; i<22; i++)
     {
         memset(&stTradFlow1, 0x00, sizeof(T_KRTradFlow_1));
@@ -112,49 +111,4 @@ int main(int argc,char *argv[])
 
     return 0;
 }
-
-static int MyPrintRecord(T_KRRecord *ptRecord, void *user_data)
-{
-    T_KRTable  *ptTable = (T_KRTable *)ptRecord->ptTable;
-    FILE       *fp = stdout;
-    void *pFieldVal = NULL;
-    int i = 0;
-    fprintf(fp, "    Record: FieldCnt[%d] \n", ptTable->iFieldCnt);
-    for (i = 0; i<ptTable->iFieldCnt; i++)
-    {
-        pFieldVal = kr_field_get_value(ptRecord, i);
-        switch(ptTable->ptFieldDef[i].type)
-        {
-            case KR_TYPE_INT:
-                fprintf(fp, "      Field:id[%3d], name[%30s], value[%d]\n", \
-                        ptTable->ptFieldDef[i].id, ptTable->ptFieldDef[i].name, \
-                        *(int *)pFieldVal);
-                break;
-            case KR_TYPE_LONG:
-                fprintf(fp, "      Field:id[%3d], name[%30s], value[%ld]\n", \
-                        ptTable->ptFieldDef[i].id, ptTable->ptFieldDef[i].name, \
-                        *(long *)pFieldVal);
-                break;    
-            case KR_TYPE_DOUBLE:
-                fprintf(fp, "      Field:id[%3d], name[%30s], value[%f]\n", \
-                        ptTable->ptFieldDef[i].id, ptTable->ptFieldDef[i].name, \
-                        *(double *)pFieldVal);
-                break;
-            case KR_TYPE_STRING:
-                fprintf(fp, "      Field:id[%3d], name[%30s], value[%s]\n", \
-                        ptTable->ptFieldDef[i].id, ptTable->ptFieldDef[i].name, \
-                        (char *)pFieldVal);
-                break;
-            case KR_TYPE_POINTER:
-                fprintf(fp, "      Field:id[%3d], name[%30s], value[%p]\n", \
-                        ptTable->ptFieldDef[i].id, ptTable->ptFieldDef[i].name, \
-                        pFieldVal);
-                break;
-            default:
-                break;           
-        }
-    }
-    return 0;
-}
-
 

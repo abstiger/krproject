@@ -1,6 +1,5 @@
 #include "krutils/kr_utils.h"
 #include "dbs/dbs_basopr.h"
-#include "dbs/dbs/set_cfg_ins.h"
 
 int main(int argc,char *argv[])
 {
@@ -11,6 +10,7 @@ int main(int argc,char *argv[])
         return -1;
     }
 
+    /*
     int ret = 0;
     T_SetCfgIns stSetCfgIns = {0};
     stSetCfgIns.lInSetId = 1;
@@ -25,6 +25,7 @@ int main(int argc,char *argv[])
     }
     dbsCommit(dbsenv);
     fprintf(stdout, "insert bad merchant[%s]\n", stSetCfgIns.caInElementValue);
+    */
     
     dbsDisconnect(dbsenv);
     return 0;
