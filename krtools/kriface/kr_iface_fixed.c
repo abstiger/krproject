@@ -11,15 +11,15 @@ typedef struct _kr_iface_fixed_data_t
 T_KRIfaceFixedData *fixed_data = NULL;
 
 /*fixed format*/
-void *fixed_define_pre_func(T_DatasrcCur *ptDatasrcCur)
+void *fixed_define_pre_func(T_KRParamInput *ptParamInput)
 {
     T_KRIfaceFixedData *fixed_data = kr_calloc(sizeof(*fixed_data));
 
     /* Open Define File */
-    fixed_data->datasrc_id = ptDatasrcCur->lOutDatasrcId;
-    strcpy(fixed_data->datasrc_name, ptDatasrcCur->caOutDatasrcName);
+    fixed_data->datasrc_id = ptParamInput->lInputId;
+    strcpy(fixed_data->datasrc_name, ptParamInput->caInputName);
     snprintf(fixed_data->filename, sizeof(fixed_data->filename), \
-                "%s.h", ptDatasrcCur->caOutDatasrcName);
+                "%s.h", ptParamInput->caInputName);
     fixed_data->fp = fopen(fixed_data->filename, "w");
     if (fixed_data->fp == NULL) {
         fprintf(stdout, "open output file: %s failed\n", fixed_data->filename);
@@ -55,14 +55,14 @@ clean:
     kr_free(fixed_data);
 }
 
-int fixed_define_func(T_DatasrcFieldCur *ptDatasrcFieldCur, void *data)
+int fixed_define_func(T_KRParamInputField *ptParamInputField, void *data)
 {
     T_KRIfaceFixedData *fixed_data = (T_KRIfaceFixedData *)data;
     FILE *fp = fixed_data->fp;
 
-    char *name = ptDatasrcFieldCur->caOutFieldName;
-    int length = ptDatasrcFieldCur->lOutFieldLength;
-    switch(ptDatasrcFieldCur->caOutFieldType[0])
+    char *name = ptParamInputField->caFieldName;
+    int length = ptParamInputField->lFieldLength;
+    switch(ptParamInputField->caFieldType[0])
     {
         case KR_TYPE_INT:
             fprintf(fp, "    int %s; \n", name);
@@ -84,7 +84,7 @@ int fixed_define_func(T_DatasrcFieldCur *ptDatasrcFieldCur, void *data)
 }
 
 
-static inline void *pre_func(T_DatasrcCur *ptDatasrcCur)
+static inline void *pre_func(T_KRParamInput *ptParamInput)
 {
     FILE *fp = fixed_data->fp;
     fprintf(fp, "typedef struct _kr_interface_%d_t \n", fixed_data->datasrc_id);
@@ -101,15 +101,15 @@ static inline void post_func(void *data, int flag)
 }
 
 /*fixed format source*/
-void *fixed_source_pre_func(T_DatasrcCur *ptDatasrcCur)
+void *fixed_source_pre_func(T_KRParamInput *ptParamInput)
 {
     fixed_data = kr_calloc(sizeof(*fixed_data));
 
     /* Open Source File */
-    fixed_data->datasrc_id = ptDatasrcCur->lOutDatasrcId;
-    strcpy(fixed_data->datasrc_name, ptDatasrcCur->caOutDatasrcName);
+    fixed_data->datasrc_id = ptParamInput->lInputId;
+    strcpy(fixed_data->datasrc_name, ptParamInput->caInputName);
     snprintf(fixed_data->filename, sizeof(fixed_data->filename), \
-                "%s_fixed.c", ptDatasrcCur->caOutDatasrcName);
+                "%s_fixed.c", ptParamInput->caInputName);
     fixed_data->fp = fopen(fixed_data->filename, "w");
     if (fixed_data->fp == NULL) {
         fprintf(stdout, "open output file: %s failed\n", fixed_data->filename);
@@ -126,7 +126,7 @@ void *fixed_source_pre_func(T_DatasrcCur *ptDatasrcCur)
     fprintf(fp, "#include <time.h> \n");
     fprintf(fp, "\n");
     /*generate fixed struct definition */
-    kr_traversal_fields(ptDatasrcCur, pre_func, fixed_define_func, post_func);
+    kr_traversal_fields(ptParamInput, pre_func, fixed_define_func, post_func);
     /* map_pre_func */
     fprintf(fp, "void *fixed_map_pre_func_%d(void *msg)\n", fixed_data->datasrc_id);
     fprintf(fp, "{ \n");
@@ -166,16 +166,16 @@ clean:
     kr_free(fixed_data);
 }
 
-int fixed_source_func(T_DatasrcFieldCur *ptDatasrcFieldCur, void *data)
+int fixed_source_func(T_KRParamInputField *ptParamInputField, void *data)
 {
     T_KRIfaceFixedData *fixed_data = (T_KRIfaceFixedData *)data;
     FILE *fp = fixed_data->fp;
-    char *name = ptDatasrcFieldCur->caOutFieldName;
+    char *name = ptParamInputField->caFieldName;
     printf("processing field %s \n", name);
 
-    fprintf(fp, "    case %ld: \n", ptDatasrcFieldCur->lOutFieldId);
+    fprintf(fp, "    case %ld: \n", ptParamInputField->lFieldId);
     fprintf(fp, "    { \n");
-    switch(ptDatasrcFieldCur->caOutFieldType[0])
+    switch(ptParamInputField->caFieldType[0])
     {
         case KR_TYPE_INT:
             fprintf(fp, "        *(int *)fldval = (int )root->%s;\n", name);

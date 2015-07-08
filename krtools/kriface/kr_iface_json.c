@@ -9,16 +9,16 @@ typedef struct _kr_iface_json_data_t
 }T_KRIfaceJsonData;
 
 /*json format*/
-void *json_define_pre_func(T_DatasrcCur *ptDatasrcCur)
+void *json_define_pre_func(T_KRParamInput *ptParamInput)
 {
     T_KRIfaceJsonData *json_data = kr_calloc(sizeof(*json_data));
     /* Create Schema json */
     json_data->schema = cJSON_CreateObject();
 
     /* Open Schema File */
-    json_data->datasrc_id = ptDatasrcCur->lOutDatasrcId;
+    json_data->datasrc_id = ptParamInput->lInputId;
     snprintf(json_data->filename, sizeof(json_data->filename), \
-                "%s.json", ptDatasrcCur->caOutDatasrcName);
+                "%s.json", ptParamInput->caInputName);
     json_data->fp = fopen(json_data->filename, "w");
     if (json_data->fp == NULL) {
         fprintf(stdout, "open output file: %s failed\n", json_data->filename);
@@ -47,13 +47,13 @@ clean:
     kr_free(json_data);
 }
 
-int json_define_func(T_DatasrcFieldCur *ptDatasrcFieldCur, void *data)
+int json_define_func(T_KRParamInputField *ptParamInputField, void *data)
 {
     T_KRIfaceJsonData *json_data = (T_KRIfaceJsonData *)data;
     cJSON *schema = (cJSON *)json_data->schema;
 
-    char *name = ptDatasrcFieldCur->caOutFieldName;
-    switch(ptDatasrcFieldCur->caOutFieldType[0])
+    char *name = ptParamInputField->caFieldName;
+    switch(ptParamInputField->caFieldType[0])
     {
         case KR_TYPE_INT:
             cJSON_AddNumberToObject(schema, name, 0);
@@ -76,14 +76,14 @@ int json_define_func(T_DatasrcFieldCur *ptDatasrcFieldCur, void *data)
 
 
 /*json format source*/
-void *json_source_pre_func(T_DatasrcCur *ptDatasrcCur)
+void *json_source_pre_func(T_KRParamInput *ptParamInput)
 {
     T_KRIfaceJsonData *json_data = kr_calloc(sizeof(*json_data));
 
     /* Open Source File */
-    json_data->datasrc_id = ptDatasrcCur->lOutDatasrcId;
+    json_data->datasrc_id = ptParamInput->lInputId;
     snprintf(json_data->filename, sizeof(json_data->filename), \
-                "%s_json.c", ptDatasrcCur->caOutDatasrcName);
+                "%s_json.c", ptParamInput->caInputName);
     json_data->fp = fopen(json_data->filename, "w");
     if (json_data->fp == NULL) {
         fprintf(stdout, "open output file: %s failed\n", json_data->filename);
@@ -141,17 +141,17 @@ clean:
     kr_free(json_data);
 }
 
-int json_source_func(T_DatasrcFieldCur *ptDatasrcFieldCur, void *data)
+int json_source_func(T_KRParamInputField *ptParamInputField, void *data)
 {
     T_KRIfaceJsonData *json_data = (T_KRIfaceJsonData *)data;
     FILE *fp = json_data->fp;
-    char *name = ptDatasrcFieldCur->caOutFieldName;
+    char *name = ptParamInputField->caFieldName;
     printf("processing field %s \n", name);
 
-    fprintf(fp, "    case %ld: \n", ptDatasrcFieldCur->lOutFieldId);
+    fprintf(fp, "    case %ld: \n", ptParamInputField->lFieldId);
     fprintf(fp, "    { \n");
     fprintf(fp, "        json_t *field = json_object_get(root, \"%s\"); \n", name);
-    switch(ptDatasrcFieldCur->caOutFieldType[0])
+    switch(ptParamInputField->caFieldType[0])
     {
         case KR_TYPE_INT:
             fprintf(fp, "        *(int *)fldval = (int )json_integer_value(field);\n");

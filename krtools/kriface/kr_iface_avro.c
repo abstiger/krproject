@@ -10,20 +10,20 @@ typedef struct _kr_iface_avro_data_t
 T_KRIfaceAvroData *avro_data = NULL;
 
 /*avro format*/
-void *avro_define_pre_func(T_DatasrcCur *ptDatasrcCur)
+void *avro_define_pre_func(T_KRParamInput *ptParamInput)
 {
     T_KRIfaceAvroData *avro_data = kr_calloc(sizeof(*avro_data));
     /* Create Schema json */
     avro_data->schema = cJSON_CreateObject();
     cJSON_AddStringToObject(avro_data->schema, "type", "record");
-    cJSON_AddStringToObject(avro_data->schema, "name", ptDatasrcCur->caOutDatasrcName);
+    cJSON_AddStringToObject(avro_data->schema, "name", ptParamInput->caInputName);
     cJSON *fields = cJSON_CreateArray();
     cJSON_AddItemToObject(avro_data->schema, "fields", fields);
 
     /* Open Schema File */
-    avro_data->datasrc_id = ptDatasrcCur->lOutDatasrcId;
+    avro_data->datasrc_id = ptParamInput->lInputId;
     snprintf(avro_data->filename, sizeof(avro_data->filename), \
-            "%s.avsc", ptDatasrcCur->caOutDatasrcName);
+            "%s.avsc", ptParamInput->caInputName);
     avro_data->fp = fopen(avro_data->filename, "w");
     if (avro_data->fp == NULL) {
         fprintf(stdout, "open output file: %s failed\n", avro_data->filename);
@@ -52,14 +52,14 @@ clean:
     kr_free(avro_data);
 }
 
-int avro_define_func(T_DatasrcFieldCur *ptDatasrcFieldCur, void *data)
+int avro_define_func(T_KRParamInputField *ptParamInputField, void *data)
 {
     T_KRIfaceAvroData *avro_data = (T_KRIfaceAvroData *)data;
     cJSON *fields = cJSON_GetObjectItem(avro_data->schema, "fields");
 
     cJSON *field = cJSON_CreateObject();
-    cJSON_AddStringToObject(field, "name", ptDatasrcFieldCur->caOutFieldName);
-    switch(ptDatasrcFieldCur->caOutFieldType[0])
+    cJSON_AddStringToObject(field, "name", ptParamInputField->caFieldName);
+    switch(ptParamInputField->caFieldType[0])
     {
         case KR_TYPE_INT:
             cJSON_AddStringToObject(field, "type", "int");
@@ -76,17 +76,17 @@ int avro_define_func(T_DatasrcFieldCur *ptDatasrcFieldCur, void *data)
         default:
             break;
     }
-    cJSON_AddNumberToObject(field, "length", ptDatasrcFieldCur->lOutFieldLength);
+    cJSON_AddNumberToObject(field, "length", ptParamInputField->lFieldLength);
     cJSON_AddItemToArray(fields, field);
 }
 
 
-static inline void *pre_func(T_DatasrcCur *ptDatasrcCur)
+static inline void *pre_func(T_KRParamInput *ptParamInput)
 {
     /* Create Schema json */
     avro_data->schema = cJSON_CreateObject();
     cJSON_AddStringToObject(avro_data->schema, "type", "record");
-    cJSON_AddStringToObject(avro_data->schema, "name", ptDatasrcCur->caOutDatasrcName);
+    cJSON_AddStringToObject(avro_data->schema, "name", ptParamInput->caInputName);
     cJSON *fields = cJSON_CreateArray();
     cJSON_AddItemToObject(avro_data->schema, "fields", fields);
 
@@ -98,14 +98,14 @@ static inline void post_func(void *data, int flag)
     
 }
 /*avro format source*/
-void *avro_source_pre_func(T_DatasrcCur *ptDatasrcCur)
+void *avro_source_pre_func(T_KRParamInput *ptParamInput)
 {
     avro_data = kr_calloc(sizeof(*avro_data));
 
     /* Open Source File */
-    avro_data->datasrc_id = ptDatasrcCur->lOutDatasrcId;
+    avro_data->datasrc_id = ptParamInput->lInputId;
     snprintf(avro_data->filename, sizeof(avro_data->filename), \
-            "%s_avro.c", ptDatasrcCur->caOutDatasrcName);
+            "%s_avro.c", ptParamInput->caInputName);
     avro_data->fp = fopen(avro_data->filename, "w");
     if (avro_data->fp == NULL) {
         fprintf(stdout, "open output file: %s failed\n", avro_data->filename);
@@ -113,7 +113,7 @@ void *avro_source_pre_func(T_DatasrcCur *ptDatasrcCur)
         return NULL;
     }
     /* Create Schema json */
-    kr_traversal_fields(ptDatasrcCur, pre_func, avro_define_func, post_func);
+    kr_traversal_fields(ptParamInput, pre_func, avro_define_func, post_func);
 
     /*generate pre&post function*/
     FILE *fp = avro_data->fp;
@@ -189,19 +189,19 @@ clean:
     kr_free(avro_data);
 }
 
-int avro_source_func(T_DatasrcFieldCur *ptDatasrcFieldCur, void *data)
+int avro_source_func(T_KRParamInputField *ptParamInputField, void *data)
 {
     T_KRIfaceAvroData *avro_data = (T_KRIfaceAvroData *)data;
     FILE *fp = avro_data->fp;
-    int id = ptDatasrcFieldCur->lOutFieldId;
-    char *name = ptDatasrcFieldCur->caOutFieldName;
+    int id = ptParamInputField->lFieldId;
+    char *name = ptParamInputField->caFieldName;
     printf("processing field %s \n", name);
 
     fprintf(fp, "    case %d: \n", id);
     fprintf(fp, "    { \n");
     fprintf(fp, "        avro_value_t field; \n");
     fprintf(fp, "        avro_value_get_by_name(pval, \"%s\", &field, NULL); \n", name);
-    switch(ptDatasrcFieldCur->caOutFieldType[0])
+    switch(ptParamInputField->caFieldType[0])
     {
         case KR_TYPE_INT:
             fprintf(fp, "        avro_value_get_int(&field, fldval);\n");

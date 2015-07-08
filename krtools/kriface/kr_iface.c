@@ -1,6 +1,5 @@
 #include "kr_iface.h"
 #include <sys/stat.h>
-#include "dbs/dbs_basopr.h"
 
 T_KRIfaceFormat gptIfaceFormat[]= 
 {
@@ -52,7 +51,7 @@ typedef struct _kr_iface_args_t
     char output_path[1024];
 }T_KRIfaceArgs;
 
-static T_DbsEnv *dbsenv = NULL;
+static T_KRParam *gptParam = NULL;
 static T_KRIfaceArgs gstArgs = {0};
 
 static void kr_usage(int argc, char *argv[]);
@@ -73,13 +72,13 @@ int main(int argc, char *argv[])
         return -1;
     }
 
-    /* Connect database */
-    dbsenv = dbsConnect(getenv("DBNAME"), getenv("DBUSER"), getenv("DBPASS"));
-    if (dbsenv == NULL) {
-        fprintf(stderr, "dbsConnect [%s] [%s] [%s] failed!\n",
-                getenv("DBNAME"), getenv("DBUSER"), getenv("DBPASS"));
+    /* Create parameter memory */
+    gptParam = kr_param_create();
+    if (gptParam == NULL) {
+        KR_LOG(KR_LOGERROR, "kr_param_create failed!");
         return -1;
     }
+    //TODO: load parameter 
 
     /* generate define file */
     if (gstArgs.gen_define) {
@@ -109,8 +108,7 @@ int main(int argc, char *argv[])
     }
 
 clean:
-    /*Disconnect database*/
-    dbsDisconnect(dbsenv);
+    kr_param_destroy(gptParam);
     return ret;
 }
 
@@ -192,136 +190,86 @@ static T_KRIfaceFormat *kr_search_format(char *format_name, char *file_code)
 }
 
 
+static int _kr_input_define_new(char *psParamClassName, char *psParamObjectKey, char *psParamObjectString, void *ptParamObject, void *data)
+{
+    T_KRParamInput *ptParamInput = (T_KRParamInput *)ptParamObject;
+    char *file_code = (char *)data;
+
+    /* Judge If datasrc matched */
+    if (gstArgs.datasrc_id != 0 && 
+            gstArgs.datasrc_id != ptParamInput->lInputId) {
+        return 0;
+    }
+
+    for (int i=0; i<sizeof(gptIfaceFormat)/sizeof(T_KRIfaceFormat); ++i) {
+        T_KRIfaceFormat *iface_format = &gptIfaceFormat[i];
+        /* Judge If file code matched */
+        if (strcasecmp(file_code, iface_format->file_code) != 0) {
+            return 0;
+        }
+
+        /* Judge If format name matched */
+        if (gstArgs.format_name[0] != '\0' &&
+                strcasecmp(gstArgs.format_name, iface_format->format_name)) {
+            return 0;
+        }
+
+        /* Traversal Fields */
+        int iFlag = kr_traversal_fields(ptParamInput, 
+                iface_format->datasrc_field_pre_func,
+                iface_format->datasrc_field_func,
+                iface_format->datasrc_field_post_func);
+        if (iFlag != 0) {
+            fprintf(stderr, "kr_traversal_fields [%ld] failed!\n", \
+                    ptParamInput->lInputId);
+            return -1;
+        }
+    }
+
+    return 0;   
+}
+
 static int kr_traversal_datasrc(char *file_code)
 {
-    int iResult = 0, iFlag = 0, iCnt = 0;
-    T_DatasrcCur stDatasrcCur = {0};
-
-    iResult = dbsDatasrcCur(dbsenv, KR_DBCUROPEN, &stDatasrcCur);
-    if (iResult != KR_DBOK) {
-        fprintf(stderr, "dbsDatasrcCur Open Error[%d]!", iResult);
+    /*create input list*/
+    if (kr_param_object_foreach(gptParam, KR_PARAM_INPUT, 
+            _kr_input_define_new, file_code) != 0) {
+        KR_LOG(KR_LOGERROR, "_kr_db_build_table Error!");
         return -1;
     }
 
-    while(1)
-    {
-        iResult=dbsDatasrcCur(dbsenv, KR_DBCURFETCH, &stDatasrcCur);
-        if (iResult != KR_DBNOTFOUND && iResult != KR_DBOK) {
-            fprintf(stderr, "dbsDatasrcCur Fetch Error[%d]![%s]:[%s]",
-                    iResult, dbsenv->sqlstate, dbsenv->sqlerrmsg);
-            iFlag = -1; 
-            break;
-        } else if (iResult == KR_DBNOTFOUND) {
-            fprintf(stdout, "Generated [%d] Tables Totally!\n", iCnt);
-            break;
-        }
-        kr_string_rtrim(stDatasrcCur.caOutDatasrcName);
-        kr_string_rtrim(stDatasrcCur.caOutDatasrcDesc);
-        kr_string_rtrim(stDatasrcCur.caOutDatasrcFormat);
-
-        /* Judge If datasrc matched */
-        if (gstArgs.datasrc_id != 0 && 
-            gstArgs.datasrc_id != stDatasrcCur.lOutDatasrcId) {
-            continue;
-        }
-
-        for (int i=0; i<sizeof(gptIfaceFormat)/sizeof(T_KRIfaceFormat); ++i) {
-            T_KRIfaceFormat *iface_format = &gptIfaceFormat[i];
-            /* Judge If file code matched */
-            if (strcasecmp(file_code, iface_format->file_code) != 0) {
-                continue;
-            }
-
-            /* Judge If format name matched */
-            if (gstArgs.format_name[0] != '\0' &&
-                strcasecmp(gstArgs.format_name, iface_format->format_name)) {
-                continue;
-            }
-
-            /* Traversal Fields */
-            iFlag = kr_traversal_fields(&stDatasrcCur, 
-                    iface_format->datasrc_field_pre_func,
-                    iface_format->datasrc_field_func,
-                    iface_format->datasrc_field_post_func);
-            if (iFlag != 0) {
-                fprintf(stderr, "kr_traversal_fields [%ld] failed!\n", \
-                        stDatasrcCur.lOutDatasrcId);
-                break;
-            }
-        }
-
-        iCnt++;
-    }
-
-    iResult = dbsDatasrcCur(dbsenv, KR_DBCURCLOSE, &stDatasrcCur);
-    if (iResult != KR_DBOK) {
-        fprintf(stderr, "dbsDatasrcCur Close Error!");
-        return -1;
-    }
-
-    return iFlag;
+    return 0;
 }
 
 
-int kr_traversal_fields(T_DatasrcCur *ptDatasrcCur, 
+int kr_traversal_fields(T_KRParamInput *ptParamInput, 
         DatasrcFieldPreFunc pre_func, 
         DatasrcFieldFunc func, 
         DatasrcFieldPostFunc post_func)
 {
-    int iResult = 0, iFlag = 0, iCnt = 0;
-    T_DatasrcFieldCur stDatasrcFieldCur = {0};
-    
-    stDatasrcFieldCur.lInDatasrcId = ptDatasrcCur->lOutDatasrcId;
-    iResult = dbsDatasrcFieldCur(dbsenv, KR_DBCUROPEN, &stDatasrcFieldCur);
-    if (iResult != KR_DBOK) {
-        fprintf(stderr, "dbsDatasrcFieldCur Open %ld Error!", \
-                ptDatasrcCur->lOutDatasrcId);
-        return -1;
-    }
+    int iFlag = 0;
     
     /* run datasrc_field_pre_func */
     void *data = NULL;
     if (pre_func) {
-        data = pre_func(ptDatasrcCur);
+        data = pre_func(ptParamInput);
     }
-
-    while(1)
-    {
-        iResult=dbsDatasrcFieldCur(dbsenv, KR_DBCURFETCH, &stDatasrcFieldCur);
-        if (iResult != KR_DBNOTFOUND && iResult != KR_DBOK) {
-            fprintf(stderr, "dbsDatasrcFieldCur Fetch Error[%d]![%s]:[%s]", 
-                    iResult, dbsenv->sqlstate, dbsenv->sqlerrmsg);
-            iFlag = -1;
-            break;
-        } else if (iResult == KR_DBNOTFOUND) {
-            fprintf(stdout, "Load [%d]Fields Of Table[%ld] Totally!\n", \
-                    iCnt, stDatasrcFieldCur.lInDatasrcId);
-            break;
-        }
-        kr_string_rtrim(stDatasrcFieldCur.caOutFieldName);
-
+    
+    for (int i=0; i<ptParamInput->lFieldCnt; ++i) {
         /* run datasrc_field_func */
         if (func) {
-            iFlag = func(&stDatasrcFieldCur, data);
+            iFlag = func(&ptParamInput->ptFieldDef[i], data);
             if (iFlag != 0) {
                 fprintf(stderr, "run [%ld] datasrc_field_func failed!\n", 
-                        stDatasrcFieldCur.lInDatasrcId);
+                        ptParamInput->lInputId);
                 break;
             }
         }
-
-        iCnt++;
     }
-
+   
     /* run datasrc_field_post_func */
     if (post_func) {
         post_func(data, iFlag);
-    }
-
-    iResult = dbsDatasrcFieldCur(dbsenv, KR_DBCURCLOSE, &stDatasrcFieldCur);
-    if (iResult != KR_DBOK) {
-        fprintf(stderr, "dbsDatasrcFieldCur Close Error!");
-        return -1;
     }
 
     return iFlag;
