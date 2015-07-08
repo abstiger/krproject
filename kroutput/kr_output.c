@@ -1,114 +1,113 @@
 #include "kr_output.h"
+#include "kr_output_define.h"
+#include "kr_output_handle.h"
 
-T_KROutputHandle* kr_output_handle_new(int iTableId, char *psFormat, T_KRModule *ptModule)
+
+static int _kr_output_define_new(char *psParamClassName, char *psParamObjectKey, char *psParamObjectString, void *ptParamObject, void *data)
 {
-    KR_LOG(KR_LOGDEBUG, "loading io handle[%s],[%d]!", psFormat, iTableId);
-
-    T_KROutputHandle *ptOutputHandle = kr_calloc(sizeof(*ptOutputHandle));
-    if (ptOutputHandle == NULL) {
-        KR_LOG(KR_LOGERROR, "kr_calloc ptOutputHandle error!");
-        return NULL;
-    }
-    ptOutputHandle->iTableId = iTableId;
-    strncpy(ptOutputHandle->caFormat, psFormat, sizeof(ptOutputHandle->caFormat));
+    T_KRParamOutput *ptParamOutput = (T_KRParamOutput *)ptParamObject;
+    T_KROutput *ptOutput = (T_KROutput *)data;
     
-    char caFuncName[100] = {0};
-    memset(caFuncName, 0x00, sizeof(caFuncName));
-    snprintf(caFuncName, sizeof(caFuncName), \
-            "%s_map_pre_func_%d", psFormat, iTableId);
-    ptOutputHandle->pfMapPre = 
-        (KRDBMapFuncPre )kr_module_symbol(ptModule, caFuncName);
-    if (ptOutputHandle->pfMapPre == NULL) {
-        KR_LOG(KR_LOGERROR, "kr_module_symbol [%s] error!", caFuncName);
-        kr_free(ptOutputHandle);
-        return NULL;
-    }
-
-    memset(caFuncName, 0x00, sizeof(caFuncName));
-    snprintf(caFuncName, sizeof(caFuncName), \
-            "%s_map_func_%d", psFormat, iTableId);
-    ptOutputHandle->pfMap = 
-        (KRDBMapFunc )kr_module_symbol(ptModule, caFuncName);
-    if (ptOutputHandle->pfMap == NULL) {
-        KR_LOG(KR_LOGERROR, "kr_module_symbol [%s] error!", caFuncName);
-        kr_free(ptOutputHandle);
-        return NULL;
-    }
-
-    memset(caFuncName, 0x00, sizeof(caFuncName));
-    snprintf(caFuncName, sizeof(caFuncName), \
-            "%s_map_post_func_%d", psFormat, iTableId);
-    ptOutputHandle->pfMapPost = 
-        (KRDBMapFuncPost )kr_module_symbol(ptModule, caFuncName);
-    if (ptOutputHandle->pfMapPost == NULL) {
-        KR_LOG(KR_LOGERROR, "kr_module_symbol [%s] error!", caFuncName);
-        kr_free(ptOutputHandle);
-        return NULL;
-    }
-
-    return ptOutputHandle;
-}
-
-
-void kr_output_handle_free(T_KROutputHandle* ptOutputHandle)
-{
-    kr_free(ptOutputHandle);
-}
-
-
-int kr_output_handle_match(void *ptr, void *key)
-{
-    T_KROutputHandle *pt1 = (T_KROutputHandle *)ptr;
-    T_KROutputHandle *pt2 = (T_KROutputHandle *)key;
-    int iCmpTableId = pt1->iTableId - pt2->iTableId;
-    int iCmpFormat = strcmp(pt1->caFormat, pt2->caFormat);
-    if (iCmpTableId != 0) {
-        return iCmpTableId;
-    }
-    return iCmpFormat;
-}
-
-
-
-T_KROutputHandle* kr_output_handle_get(T_KRIO *ptIO, int iTableId, char *psFormat)
-{
-    T_KROutputHandle stCompare = {0};
-    stCompare.iTableId = iTableId;
-    strncpy(stCompare.caFormat, psFormat, sizeof(stCompare.caFormat));
-    
-    T_KRListNode *ptListNode = \
-        kr_list_search(ptIO->pOutputHandleList, &stCompare);
-    if (ptListNode != NULL) {
-        return (T_KROutputHandle *)kr_list_value(ptListNode);
+    T_KROutputDefine *ptOutputDefine = kr_output_define_new(ptParamOutput);
+    if (ptOutputDefine == NULL) {
+        KR_LOG(KR_LOGERROR, "kr_output_define_new [%ld] error!", \
+            ptParamOutput->lOutputId);
+        return -1;
     }
     
-    /*load io handle*/
-    T_KROutputHandle *ptOutputHandle = \
-        kr_output_handle_new(iTableId, psFormat, ptIO->ptModule);
-    if (ptOutputHandle != NULL) {
-        /*add to table's interface handle list*/
-        kr_list_add_sorted(ptIO->pOutputHandleList, 
-                ptOutputHandle, &stCompare);
-        return ptOutputHandle;
-    }
+    kr_list_add_sorted(ptOutput->ptOutputDefineList, ptOutputDefine, NULL);
     
-    return NULL;
-}
-
-
-int kr_output_handle_process(T_KROutputHandle *ptOutputHandle, size_t size, void *buff, T_KRRecord *ptRecord)
-{
-    void *data = buff;
-
-    if (ptOutputHandle->pfMapPre) data=ptOutputHandle->pfMapPre(buff);
-    for (int fldno=0; fldno<ptRecord->ptTable->iFieldCnt; fldno++) {
-        int fldlen = kr_field_get_length(ptRecord, fldno);
-        void *fldval = kr_field_get_value(ptRecord, fldno);
-
-        ptOutputHandle->pfMap(fldval, fldno, fldlen, data);
-    }
-    if (ptOutputHandle->pfMapPost) ptOutputHandle->pfMapPost(data);
-
     return 0;
 }
 
+
+T_KROutput* kr_output_construct(T_KRParam *ptParam, T_KRModule *ptOutputModule)
+{
+    T_KROutput *ptOutput = kr_calloc(sizeof(*ptOutput));
+    if (ptOutput == NULL) {
+        KR_LOG(KR_LOGERROR, "kr_calloc ptOutput failed!");
+        return NULL;
+    }
+    
+    ptOutput->ptOutputModule = ptOutputModule;
+    
+    /*alloc output define list*/
+    ptOutput->ptOutputDefineList = kr_list_new();
+    kr_list_set_match(ptOutput->ptOutputDefineList, (KRListMatchFunc )kr_output_define_match);
+    kr_list_set_free(ptOutput->ptOutputDefineList, (KRListFreeFunc )kr_output_define_free);
+    
+    /*create output list*/
+    if (kr_param_object_foreach(ptParam, KR_PARAM_OUTPUT, 
+            _kr_output_define_new, ptOutput) != 0) {
+        KR_LOG(KR_LOGERROR, "_kr_db_build_table Error!");
+        return NULL;
+    }
+    
+    ptOutput->tConstructTime = kr_param_load_time(ptParam);
+    
+    return ptOutput;
+}
+
+
+void kr_output_destruct(T_KROutput* ptOutput)
+{
+    if (ptOutput) {
+        kr_list_destroy(ptOutput->ptOutputDefineList);
+        kr_free(ptOutput);
+    }
+}
+
+
+int kr_output_check(T_KROutput* ptOutput, T_KRParam *ptParam)
+{
+    /*check output param*/
+    if (ptOutput->tConstructTime != kr_param_load_time(ptParam)) {
+        KR_LOG(KR_LOGDEBUG, "reload ...[%ld][%ld]", 
+                ptOutput->tConstructTime, kr_param_load_time(ptParam));
+
+        //TODO:reconstruct ptOutput
+    }
+    return 0;
+}
+
+
+T_KROutputDefine* kr_output_get_define(T_KROutput *ptOutput, int iOutputId)
+{
+    T_KRListNode *ptListNode = kr_list_search(ptOutput->ptOutputDefineList, &iOutputId);
+    if (ptListNode == NULL) {
+        return NULL;
+    }
+    
+    return (T_KROutputDefine *)kr_list_value(ptListNode);
+}
+
+
+T_KRRecord *kr_output_process(T_KROutput *ptOutput, T_KRMessage *ptMessage)
+{
+    T_KROutputDefine *ptOutputDefine = kr_output_get_define(ptOutput, ptMessage->datasrc);
+    if (ptOutputDefine == NULL) {
+        KR_LOG(KR_LOGERROR, "kr_output_get_define [%d] error!", ptMessage->datasrc);
+        return NULL;
+    }
+    
+    T_KROutputHandle *ptOutputHandle = kr_output_define_get_handle(ptOutputDefine, ptMessage->msgfmt, ptOutput->ptOutputModule);
+    if (ptOutputHandle == NULL) {
+        KR_LOG(KR_LOGERROR, "kr_output_define_get_handle [%s] error!", ptMessage->msgfmt);
+        return NULL;
+    }
+    
+    T_KRRecord *ptRecord = kr_record_new(ptOutputDefine);
+    if (ptRecord == NULL) {
+        KR_LOG(KR_LOGERROR, "kr_record_new [%s] error!", ptOutputDefine->iOutputId);
+        return NULL;
+    }
+    
+    int iResult = kr_output_handle_process(ptOutputHandle, ptMessage->msglen, ptMessage->msgbuf, ptRecord);
+    if (iResult != 0) {
+        KR_LOG(KR_LOGERROR, "kr_output_handle_process [%s] error!", ptMessage->msgid);
+        kr_record_free(ptRecord);
+        return NULL;
+    }
+    
+    return ptRecord;
+}
