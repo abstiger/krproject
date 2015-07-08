@@ -15,7 +15,7 @@ int kr_hdi_aggr_mon(T_KRHdi *ptHdi, T_KRData *ptData, char *object)
     T_HdiMonSel stHdiMonSel = {0};
     strcpy(stHdiMonSel.caInDataObject, object);
     stHdiMonSel.lInDataId = ptHdi->lHdiId;
-    time_t tEndTime = kr_get_transtime(ptData->ptCurrRec);
+    time_t tEndTime = kr_record_get_transtime(ptData->ptCurrRec);
     time_t tBeginTime = tEndTime - ptHdi->ptParamHdiDef->lStatisticsValue;
     kr_ttime_to_date(tBeginTime, caDataDate);
     memcpy(stHdiMonSel.caInDataMonthBegin, caDataDate, 6);

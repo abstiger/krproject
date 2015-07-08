@@ -61,13 +61,15 @@ int kr_data_item_ddi_aggr(T_KRDataItem *ptDataItem, T_KRData *ptData)
     T_KRParamDdi *ptParamDdi = (T_KRParamDdi *)ptDataItem->ptDataItemDef;
     T_KRDdi *ptDdi = (T_KRDdi *)ptDataItem->ptPrivate;
 
-    //get record list 
+    //FIXME:get record list 
+    /*
     ptDdi->ptRecList = kr_db_select_by_record(ptData->ptCurrRec, 
         ptParamDdi->lStatisticsIndex, 
         ptParamDdi->lDdiId, //FIXME:tBeginTime
         ptParamDdi->lDdiId, //FIXME:tEndTime
         KR_FIELDID_TRANSTIME //FIXME:iSortFieldId
         );
+        */
 
     int iResult = -1, iAbsLoc = -1, iRelLoc = -1;
     
@@ -86,13 +88,13 @@ int kr_data_item_ddi_aggr(T_KRDataItem *ptDataItem, T_KRData *ptData)
         }
         
         if (ptParamDdi->lStatisticsDatasrc != \
-            kr_record_get_table_id(ptData->ptTravRec)) {
+            kr_record_get_input_id(ptData->ptTravRec)) {
             node = node->prev;
             continue;
         }
         
-        time_t tCurrTransTime = kr_get_transtime(ptData->ptCurrRec);
-        time_t tRecTransTime = kr_get_transtime(ptData->ptTravRec);
+        time_t tCurrTransTime = kr_record_get_transtime(ptData->ptCurrRec);
+        time_t tRecTransTime = kr_record_get_transtime(ptData->ptTravRec);
         if ((tCurrTransTime - tRecTransTime) > ptParamDdi->lStatisticsValue ) {
             node = node->prev;
             continue;
@@ -113,8 +115,8 @@ int kr_data_item_ddi_aggr(T_KRDataItem *ptDataItem, T_KRData *ptData)
     
         iRelLoc++; 
                         
-        E_KRType type = kr_field_get_type(ptData->ptTravRec, ptParamDdi->lStatisticsField);
-        void *val = kr_field_get_value(ptData->ptTravRec, ptParamDdi->lStatisticsField);
+        E_KRType type = kr_record_get_field_type(ptData->ptTravRec, ptParamDdi->lStatisticsField);
+        void *val = kr_record_get_field_value(ptData->ptTravRec, ptParamDdi->lStatisticsField);
         U_KRValue stValue = {0};
         switch(type)
         {

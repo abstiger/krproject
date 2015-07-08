@@ -68,10 +68,8 @@ void kr_data_destruct(T_KRData *ptData)
 }
 
 
-int kr_data_check(T_KRData *ptData)
+int kr_data_check(T_KRData *ptData, T_KRParam *ptParam)
 {  
-    T_KRParam *ptParam = ptData->ptParam;
-    
     /*check item table*/
     if (ptData->tConstructTime != kr_param_load_time(ptParam)) {
         KR_LOG(KR_LOGDEBUG, "reload ...[%ld][%ld]", 
@@ -93,10 +91,10 @@ E_KRType kr_data_get_type(char kind, int id, void *data)
     switch(kind) 
     {
         case KR_CALCKIND_CID:
-            return kr_field_get_type(ptData->ptCurrRec, id);
+            return kr_record_get_field_type(ptData->ptCurrRec, id);
             break;
         case KR_CALCKIND_FID:
-            return kr_field_get_type(ptData->ptTravRec, id);
+            return kr_record_get_field_type(ptData->ptTravRec, id);
             break;
         case KR_CALCKIND_SET:
         case KR_CALCKIND_SID:
@@ -116,10 +114,10 @@ void *kr_data_get_value(char kind, int id, void *data)
     switch(kind) 
     {
         case KR_CALCKIND_CID:
-            return kr_field_get_value(ptData->ptCurrRec, id);
+            return kr_record_get_field_value(ptData->ptCurrRec, id);
             break;
         case KR_CALCKIND_FID:
-            return kr_field_get_value(ptData->ptTravRec, id);
+            return kr_record_get_field_value(ptData->ptTravRec, id);
             break;
         case KR_CALCKIND_SET:
         case KR_CALCKIND_SID:

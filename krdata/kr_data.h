@@ -26,7 +26,7 @@ typedef struct _kr_data_t
 T_KRData *kr_data_construct(T_KRParam *ptParam, T_KRModule *ptModule);
 void kr_data_destruct(T_KRData *ptData);
 void kr_data_init(T_KRData *ptData);
-int kr_data_check(T_KRData *ptData);
+int kr_data_check(T_KRData *ptData, T_KRParam *ptParam);
 
 E_KRType kr_data_get_type(char kind, int id, void *param);
 void *kr_data_get_value(char kind, int id, void *param);

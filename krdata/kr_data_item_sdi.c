@@ -61,13 +61,15 @@ int kr_data_item_sdi_aggr(T_KRDataItem *ptDataItem, T_KRData *ptData)
     T_KRParamSdi *ptParamSdi = (T_KRParamSdi *)ptDataItem->ptDataItemDef;
     T_KRSdi *ptSdi = (T_KRSdi *)ptDataItem->ptPrivate;
     
-    //get record list 
+    //FIXME:get record list 
+    /*
     ptSdi->ptRecList = kr_db_select_by_record(ptData->ptCurrRec, 
         ptParamSdi->lStatisticsIndex, 
         ptParamSdi->lSdiId, //FIXME:tBeginTime
         ptParamSdi->lSdiId, //FIXME:tEndTime
         KR_FIELDID_TRANSTIME //FIXME:iSortFieldId
         );
+        */
 
     int iResult = -1, iAbsLoc = -1, iRelLoc = -1;
     
@@ -86,7 +88,7 @@ int kr_data_item_sdi_aggr(T_KRDataItem *ptDataItem, T_KRData *ptData)
         }
         
         if (ptParamSdi->lStatisticsDatasrc != \
-            kr_record_get_table_id(ptData->ptTravRec)) {
+            kr_record_get_input_id(ptData->ptTravRec)) {
             node = node->prev;
             continue;
         }

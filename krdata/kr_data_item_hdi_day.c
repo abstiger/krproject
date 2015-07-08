@@ -15,7 +15,7 @@ int kr_hdi_aggr_day(T_KRHdi *ptHdi, T_KRData *ptData, char *object)
     T_HdiDaySel stHdiDaySel = {0};
     strcpy(stHdiDaySel.caInDataObject, object);
     stHdiDaySel.lInDataId = ptHdi->lHdiId;
-    time_t tEndTime = kr_get_transtime(ptData->ptCurrRec);
+    time_t tEndTime = kr_record_get_transtime(ptData->ptCurrRec);
     time_t tBeginTime = tEndTime - ptHdi->ptParamHdiDef->lStatisticsValue;
     kr_ttime_to_date(tBeginTime, stHdiDaySel.caInDataDateBegin);
     kr_ttime_to_date(tEndTime, stHdiDaySel.caInDataDateEnd);

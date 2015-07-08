@@ -100,11 +100,13 @@ int kr_data_item_hdi_aggr(T_KRDataItem *ptDataItem, T_KRData *ptData)
     T_KRHdi *ptHdi = (T_KRHdi *)ptDataItem->ptPrivate;
 
     //FIXME:create hdi cache
+    /*
     gptHdiCache = kr_hdi_cache_create(1000);
     if (gptHdiCache == NULL) {
         KR_LOG(KR_LOGERROR, "kr_hdi_cache_create [%d] failed!");
         return -1;
     }
+    
 
     //get it from lru cache
     T_KRHdiCacheValue *ptHdiCacheValue = \
@@ -112,7 +114,7 @@ int kr_data_item_hdi_aggr(T_KRDataItem *ptDataItem, T_KRData *ptData)
     //TODO:replace "00000000" with sharememory's batchdate
     if (ptHdiCacheValue->eValueInd == KR_VALUE_SETED &&
         strcmp(ptHdiCacheValue->caDate, "00000000") >= 0) {
-        /*if cached and date valid, get it directly*/
+        //if cached and date valid, get it directly
         KR_LOG(KR_LOGDEBUG, "Get Hdi [%ld] value date cached!", ptDataItem->lDataItemId);
         switch(ptDataItem->eValueType)
         {
@@ -127,14 +129,14 @@ int kr_data_item_hdi_aggr(T_KRDataItem *ptDataItem, T_KRData *ptData)
                 break;
         }
     } else {
-        /*if not, compute it and set the cache*/
+        //if not, compute it and set the cache
         if (kr_data_item_hdi_compute(ptDataItem, ptData) != 0) {
             KR_LOG(KR_LOGDEBUG, "kr_data_item_hdi_compute [%ld] failed!", ptDataItem->lDataItemId);
             return -1;
         }
         
         ptHdiCacheValue->eValueType = ptDataItem->eValueType;
-        time_t tTransTime = kr_get_transtime(ptData->ptCurrRec);
+        time_t tTransTime = kr_record_get_transtime(ptData->ptCurrRec);
         kr_ttime_to_date(tTransTime, ptHdiCacheValue->caDate);
         switch(ptDataItem->eValueType)
         {
@@ -150,6 +152,7 @@ int kr_data_item_hdi_aggr(T_KRDataItem *ptDataItem, T_KRData *ptData)
         }
         ptHdiCacheValue->eValueInd = KR_VALUE_SETED;
     }
+    */
     return 0;
 }
 
