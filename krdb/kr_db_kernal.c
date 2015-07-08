@@ -1,86 +1,21 @@
 #include "kr_db_kernal.h"
 
 
-int kr_record_compare(T_KRRecord *ptRec1, T_KRRecord *ptRec2, int iFieldId)
-{
-    /*compare field type*/
-    E_KRType eType1 = kr_field_get_type(ptRec1, iFieldId);
-    E_KRType eType2 = kr_field_get_type(ptRec1, iFieldId);
-    if (eType1 != eType2) return 0;
-    
-    /*get value compare function*/
-    KRCompareFunc pfCompare = kr_get_compare_func(eType1);
-    if (pfCompare == NULL) return 0;
-
-    /*compare field value*/
-    void *pVal1 = kr_field_get_value(ptRec1, iFieldId);
-    void *pVal2 = kr_field_get_value(ptRec2, iFieldId);
-
-    return pfCompare(pVal1, pVal2);
-}
-
-
-T_KRRecord* kr_record_new(T_KRTable *ptTable)
-{
-    /*get current record address*/
-    size_t ulCurrRecOffset = ptTable->uiRecordLoc*ptTable->iRecordSize;
-    char *psCurrRecAddr = &ptTable->pRecordBuff[ulCurrRecOffset];
-    
-    /*delete and free old record*/
-    T_KRRecord *ptRecord = (T_KRRecord *)psCurrRecAddr;
-    if (ptRecord->ptTable != NULL) {
-        kr_record_delete(ptRecord);
-        kr_record_free(ptRecord);
-    }
-    
-    /*create and set new record*/
-    memset(psCurrRecAddr, 0x00, ptTable->iRecordSize);
-    ptRecord->pfFree = NULL;
-    ptRecord->ptTable = ptTable;
-    ptRecord->pRecBuf = psCurrRecAddr+sizeof(T_KRRecord);
-
-    /*move record location to the next*/
-    ptTable->uiRecordLoc = (++ptTable->uiRecordLoc)%ptTable->lKeepValue;
-
-    return ptRecord;
-}
-
-
-void kr_record_free(T_KRRecord *ptRecord)
-{
-    if (ptRecord->pfFree) {
-        ptRecord->pfFree(ptRecord);
-    }
-}
-
-
 static void kr_rebuild_index_ins(T_KRIndexTable *ptIndextable, T_KRRecord *ptRecord)
 {
-    void *key = kr_field_get_value(ptRecord, ptIndextable->iIndexFieldId);
+    void *key = kr_record_get_field_value(ptRecord, ptIndextable->iIndexFieldId);
     T_KRHashTable *pHashTable = ptIndextable->ptIndex->pHashTable;
 
     T_KRIndexSolt *ptIndexSlot = kr_hashtable_lookup(pHashTable, key);
     if (ptIndexSlot == NULL) {
         /*create slot if not found*/
         ptIndexSlot = kr_calloc(sizeof(*ptIndexSlot));
-        ptIndexSlot->eKeyType = 
-            kr_field_get_type(ptRecord, ptIndextable->iIndexFieldId);
+        ptIndexSlot->eKeyType = \
+            kr_record_get_field_type(ptRecord, ptIndextable->iIndexFieldId);
         KRDupFunc pfKeyDup = kr_get_dup_func(ptIndexSlot->eKeyType);
         ptIndexSlot->pKeyValue = pfKeyDup(key);
-        ptIndexSlot->tLocMinProcTime = kr_get_proctime(ptRecord);
-        ptIndexSlot->tLocMinTransTime = kr_get_transtime(ptRecord);
-        ptIndexSlot->tExtMaxProcTime = kr_get_proctime(ptRecord);
-        ptIndexSlot->tExtMaxTransTime = kr_get_transtime(ptRecord);
         ptIndexSlot->pRecList = kr_list_new();
         kr_hashtable_insert(pHashTable, ptIndexSlot->pKeyValue, ptIndexSlot);
-    }
-
-    /*modify statistical fields of local*/
-    if (kr_get_proctime(ptRecord) < ptIndexSlot->tLocMinProcTime) {
-        ptIndexSlot->tLocMinProcTime = kr_get_proctime(ptRecord);
-    }
-    if (kr_get_transtime(ptRecord) < ptIndexSlot->tLocMinTransTime) {
-        ptIndexSlot->tLocMinTransTime = kr_get_transtime(ptRecord);
     }
 
     /*add record to list*/
@@ -90,18 +25,11 @@ static void kr_rebuild_index_ins(T_KRIndexTable *ptIndextable, T_KRRecord *ptRec
 
 static void kr_rebuild_index_del(T_KRIndexTable *ptIndextable, T_KRRecord *ptRecord)
 {
-    void *key = kr_field_get_value(ptRecord, ptIndextable->iIndexFieldId);
+    void *key = kr_record_get_field_value(ptRecord, ptIndextable->iIndexFieldId);
     T_KRHashTable *pHashTable = ptIndextable->ptIndex->pHashTable;
 
     T_KRIndexSolt *ptIndexSlot = kr_hashtable_lookup(pHashTable, key);
     if (ptIndexSlot != NULL) {
-        /*modify statistical fields of external*/
-        if (kr_get_proctime(ptRecord) > ptIndexSlot->tExtMaxProcTime) {
-            ptIndexSlot->tExtMaxProcTime = kr_get_proctime(ptRecord);
-        }
-        if (kr_get_transtime(ptRecord) > ptIndexSlot->tExtMaxTransTime) {
-            ptIndexSlot->tExtMaxTransTime = kr_get_transtime(ptRecord);
-        }
         /*remove record from list*/
         kr_list_remove(ptIndexSlot->pRecList, ptRecord);
 
@@ -116,85 +44,38 @@ static void kr_rebuild_index_del(T_KRIndexTable *ptIndextable, T_KRRecord *ptRec
 }
 
 
-void kr_record_insert(T_KRRecord *ptRecord)
-{    
-    T_KRTable *ptTable = ptRecord->ptTable;
+void kr_table_insert_record(T_KRTable *ptTable, T_KRRecord *ptRecord)
+{
+    /*first:insert into record list of table*/
+    kr_list_add_sorted(ptTable->pRecordList, ptRecord, ptTable->iSortFieldId);
     
-    /*first:rebuild all hash-indexes of this table with insert*/
+    /*then:rebuild all hash-indexes of this table with insert*/
     kr_list_foreach(ptTable->pIndexTableList, \
             (KRForEachFunc )kr_rebuild_index_ins, ptRecord);
 
-    /*secord:increase table records number*/
-    if (++ptTable->uiRecordNum > ptTable->lKeepValue) {
-        ptTable->uiRecordNum = ptTable->lKeepValue;
-    }
 }
 
 
-void kr_record_delete(T_KRRecord *ptRecord)
+void kr_table_delete_record(T_KRTable *ptTable, T_KRRecord *ptRecord)
 {
-    T_KRTable *ptTable = ptRecord->ptTable;
-    
     /*first:rebuild all hash-indexes of this table with delete*/
     kr_list_foreach(ptTable->pIndexTableList, \
             (KRForEachFunc )kr_rebuild_index_del, ptRecord);
 
-    /*secord:decrease table records number*/
-    if (--ptTable->uiRecordNum < 0) {
-        ptTable->uiRecordNum = 0;
-    }
+    /*then:delete from record list of table*/
+    kr_list_remove(ptTable->pRecordList, ptRecord);
 }
 
 
-static inline int kr_table_indexid_match(void *ptr, void *key)
+void kr_table_insert(T_KRTable *ptTable, T_KRRecord *ptRecord)
 {
-    T_KRIndexTable *ptIndexTable = (T_KRIndexTable *)ptr; 
-    return (*((const int*)&ptIndexTable->ptIndex->iIndexId) == *((const int*) key));
-}
-
-T_KRIndex* kr_index_create(T_KRDB *ptDB,
-        int iIndexId, char *psIndexName, 
-        E_KRType eIndexFieldType)
-{
-    T_KRIndex *ptIndex = (T_KRIndex *)kr_calloc(sizeof(T_KRIndex));
-    if (ptIndex == NULL) {
-        fprintf(stderr, "kr_calloc ptIndex failed!\n");
-        return NULL;
-    }
-    ptIndex->ptDB = ptDB;
-    ptIndex->iIndexId = iIndexId;
-    strncpy(ptIndex->caIndexName, psIndexName, sizeof(ptIndex->caIndexName));
-    ptIndex->eIndexFieldType = eIndexFieldType;
-    KRHashFunc hash_func = (KRHashFunc )kr_get_hash_func(eIndexFieldType);
-    KREqualFunc equal_func = (KREqualFunc )kr_get_equal_func(eIndexFieldType);
-    ptIndex->pHashTable = kr_hashtable_new(hash_func, equal_func);
-
-    ptIndex->pIndexTableList = kr_list_new();
-    kr_list_set_match(ptIndex->pIndexTableList, 
-            (KRCompareFunc )kr_table_indexid_match);
-
-    kr_list_add_tail(ptDB->pIndexList, ptIndex);
+    kr_table_insert_record(ptTable, ptRecord);
     
-    return ptIndex;
-}
-
-
-void kr_index_drop(T_KRIndex *ptIndex)
-{
-    kr_list_remove(ptIndex->ptDB->pIndexList, ptIndex);
-    kr_hashtable_destroy(ptIndex->pHashTable);
-    kr_list_destroy(ptIndex->pIndexTableList);
-    kr_free(ptIndex);
-}
-
-
-T_KRIndex* kr_index_get(T_KRDB *ptDB, int iIndexId)
-{
-    T_KRListNode *ptListNode = kr_list_search(ptDB->pIndexList, &iIndexId);
-    if (ptListNode != NULL) {
-        return (T_KRIndex *)kr_list_value(ptListNode);
+    if (kr_list_length(ptTable->pRecordList) > ptTable->lKeepValue) {
+        T_KRListNode *ptOldestNode = kr_list_first(ptTable->pRecordList);
+        T_KRRecord *ptOldestRecord = kr_list_value(ptOldestNode);
+        kr_table_delete_record(ptTable, ptOldestRecord);
     }
-    return NULL;
 }
 
 
@@ -215,10 +96,7 @@ static inline int kr_index_tableid_match(void *ptr, void *key)
     return (*((const int*)&ptIndexTable->ptTable->iTableId) == *((const int*) key));
 }
 
-T_KRTable* kr_table_create(T_KRDB *ptDB,
-        int iTableId, char *psTableName, 
-        E_KRSizeKeepMode eKeepMode, long lKeepValue, 
-        int iFieldCnt, T_KRFieldDef *ptFieldDef)
+T_KRTable* kr_table_create(T_KRDB *ptDB, int iTableId, char *psTableName)
 {
     T_KRTable *ptTable = kr_calloc(sizeof(T_KRTable));
     if (ptTable == NULL) {
@@ -229,19 +107,14 @@ T_KRTable* kr_table_create(T_KRDB *ptDB,
     ptTable->ptDB = ptDB;
     ptTable->iTableId = iTableId;
     strncpy(ptTable->caTableName, psTableName, sizeof(ptTable->caTableName));
-    ptTable->eKeepMode = eKeepMode;
-    ptTable->lKeepValue = lKeepValue;
-    ptTable->iFieldCnt = iFieldCnt;
-    //hard copy field define
-    ptTable->ptFieldDef = kr_calloc(ptTable->iFieldCnt*sizeof(T_KRFieldDef));
-    memcpy(ptTable->ptFieldDef, ptFieldDef, ptTable->iFieldCnt*sizeof(T_KRFieldDef));
-    
-    ptTable->uiRecordNum = 0;
-    ptTable->uiRecordLoc = 0;
 
+    ptTable->pRecordList = kr_list_new();
+    kr_list_set_compare(ptTable->pRecordList, (KRCompareDataFunc)kr_record_compare);
+    kr_list_set_free(ptTable->pRecordList, (KRFreeFunc )kr_record_free);
+    
     ptTable->pIndexTableList = kr_list_new();
-    kr_list_set_match(ptTable->pIndexTableList, 
-            (KRCompareFunc )kr_index_tableid_match);
+    kr_list_set_match(ptTable->pIndexTableList, \
+        (KRCompareFunc )kr_index_tableid_match);
 
     kr_list_add_tail(ptDB->pTableList, ptTable);
 
@@ -251,14 +124,14 @@ T_KRTable* kr_table_create(T_KRDB *ptDB,
 
 void kr_table_drop(T_KRTable *ptTable)
 {
-    kr_list_remove(ptTable->ptDB->pTableList, ptTable);
-    pthread_mutex_destroy(&ptTable->tLock);
-    kr_list_destroy(ptTable->pIndexTableList);
-    kr_free(ptTable->pRecordBuff);
-    kr_free(ptTable->ptFieldDef);
-    kr_free(ptTable);
+    if (ptTable) {
+        kr_list_remove(ptTable->ptDB->pTableList, ptTable);
+        pthread_mutex_destroy(&ptTable->tLock);
+        kr_list_destroy(ptTable->pIndexTableList);
+        kr_list_destroy(ptTable->pRecordList);
+        kr_free(ptTable);
+    }
 }
-
 
 
 T_KRTable* kr_table_get(T_KRDB *ptDB, int iTableId)
@@ -271,8 +144,63 @@ T_KRTable* kr_table_get(T_KRDB *ptDB, int iTableId)
 }
 
 
-T_KRIndexTable* kr_index_table_create(T_KRDB *ptDB,
-        int iIndexId, int iTableId,
+static inline int kr_table_indexid_match(void *ptr, void *key)
+{
+    T_KRIndexTable *ptIndexTable = (T_KRIndexTable *)ptr; 
+    return (*((const int*)&ptIndexTable->ptIndex->iIndexId) == *((const int*) key));
+}
+
+T_KRIndex* kr_index_create(T_KRDB *ptDB, int iIndexId, char *psIndexName, 
+        E_KRType eIndexFieldType)
+{
+    T_KRIndex *ptIndex = (T_KRIndex *)kr_calloc(sizeof(T_KRIndex));
+    if (ptIndex == NULL) {
+        fprintf(stderr, "kr_calloc ptIndex failed!\n");
+        return NULL;
+    }
+    ptIndex->ptDB = ptDB;
+    ptIndex->iIndexId = iIndexId;
+    strncpy(ptIndex->caIndexName, psIndexName, sizeof(ptIndex->caIndexName));
+    ptIndex->eIndexFieldType = eIndexFieldType;
+    KRHashFunc hash_func = (KRHashFunc )kr_get_hash_func(eIndexFieldType);
+    KREqualFunc equal_func = (KREqualFunc )kr_get_equal_func(eIndexFieldType);
+    ptIndex->pHashTable = kr_hashtable_new(hash_func, equal_func);
+
+    ptIndex->pIndexTableList = kr_list_new();
+    kr_list_set_match(ptIndex->pIndexTableList, \
+        (KRCompareFunc )kr_table_indexid_match);
+
+    kr_list_add_tail(ptDB->pIndexList, ptIndex);
+    
+    return ptIndex;
+}
+
+
+void kr_index_drop(T_KRIndex *ptIndex)
+{
+    if (ptIndex) {
+        kr_list_remove(ptIndex->ptDB->pIndexList, ptIndex);
+        kr_hashtable_destroy(ptIndex->pHashTable);
+        kr_list_destroy(ptIndex->pIndexTableList);
+        kr_free(ptIndex);
+    }
+}
+
+
+T_KRIndex* kr_index_get(T_KRDB *ptDB, int iIndexId)
+{
+    T_KRListNode *ptListNode = kr_list_search(ptDB->pIndexList, &iIndexId);
+    if (ptListNode != NULL) {
+        return (T_KRIndex *)kr_list_value(ptListNode);
+    }
+    return NULL;
+}
+
+
+
+
+
+T_KRIndexTable* kr_index_table_create(T_KRDB *ptDB, int iIndexId, int iTableId,
         int iIndexFieldId, int iSortFieldId)
 {
     T_KRIndex *ptIndex = kr_index_get(ptDB, iIndexId);
@@ -308,13 +236,15 @@ T_KRIndexTable* kr_index_table_create(T_KRDB *ptDB,
 
 void kr_index_table_drop(T_KRIndexTable *ptIndexTable)
 {
-    T_KRTable *ptTable = ptIndexTable->ptTable;
-    T_KRIndex *ptIndex = ptIndexTable->ptIndex;
+    if (ptIndexTable) {
+        T_KRTable *ptTable = ptIndexTable->ptTable;
+        T_KRIndex *ptIndex = ptIndexTable->ptIndex;
 
-    kr_list_remove(ptIndex->pIndexTableList, ptIndexTable);
-    kr_list_remove(ptTable->pIndexTableList, ptIndexTable);
+        kr_list_remove(ptIndex->pIndexTableList, ptIndexTable);
+        kr_list_remove(ptTable->pIndexTableList, ptIndexTable);
 
-    kr_free(ptIndexTable);
+        kr_free(ptIndexTable);
+    }
 }
 
 
@@ -346,7 +276,7 @@ static inline int kr_index_table_match(void *ptr, void *key)
     }
 }
 
-T_KRDB* kr_db_create(char *name, T_KRParam *ptParam)
+T_KRDB* kr_db_create(char *name)
 {
     T_KRDB *ptDB = (T_KRDB *)kr_calloc(sizeof(T_KRDB));
     if (ptDB == NULL) {
@@ -354,7 +284,6 @@ T_KRDB* kr_db_create(char *name, T_KRParam *ptParam)
         return NULL;
     }
     strncpy(ptDB->caDBName, name, sizeof(ptDB->caDBName));
-    ptDB->ptParam = ptParam;
 
     ptDB->pTableList = kr_list_new();
     kr_list_set_match(ptDB->pTableList, (KRCompareFunc )kr_tableid_match);
@@ -367,7 +296,6 @@ T_KRDB* kr_db_create(char *name, T_KRParam *ptParam)
     ptDB->pIndexTableList = kr_list_new();
     kr_list_set_match(ptDB->pIndexTableList, (KRCompareFunc )kr_index_table_match);
     kr_list_set_free(ptDB->pIndexTableList, (KRFreeFunc )kr_index_table_drop);
-
 
     return ptDB;
 }

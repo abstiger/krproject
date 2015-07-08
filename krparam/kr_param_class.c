@@ -1,6 +1,7 @@
 ﻿#include "kr_param_class.h"
 #include "kr_param_class_input.h"
 #include "kr_param_class_output.h"
+#include "kr_param_class_table.h"
 #include "kr_param_class_index.h"
 #include "kr_param_class_set.h"
 #include "kr_param_class_sdi.h"
@@ -29,6 +30,13 @@ T_KRParamClass gptParamClass[] =
     },
     
     //db
+    {
+        KR_PARAM_TABLE,
+        (KRParamSerFunc )kr_param_table_serialize,
+        (KRParamSerFreeFunc )kr_param_table_serialize_free,
+        (KRParamDeserFunc )kr_param_table_deserialize,
+        (KRParamDeserFreeFunc )kr_param_table_deserialize_free
+    },
     {
         KR_PARAM_INDEX,
         (KRParamSerFunc )kr_param_index_serialize,
