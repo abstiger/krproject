@@ -6,10 +6,6 @@
 #include "kr_engine_ctx.h"
 #include "assert.h"
 
-extern int kr_engine_register_default(T_KREngine *engine);
-
-static int kr_engine_handle(void *ctx, void *arg);
-
 /* engine inner declaration */
 struct _kr_engine_t
 {
@@ -20,6 +16,9 @@ struct _kr_engine_t
     T_KREngineCtx       *ctx;          /* context of this engine */
     T_KRThreadPool      *tp;           /* thread pool */
 };
+
+static int kr_engine_handle(void *ctx, void *arg);
+
 
 T_KREngine *kr_engine_startup(T_KREngineConfig *cfg, void *data)
 {
@@ -76,11 +75,6 @@ T_KREngine *kr_engine_startup(T_KREngineConfig *cfg, void *data)
         kr_threadpool_run(engine->tp);
     }
 
-    /* register default engine handles */
-    if (kr_engine_register_default(engine) != 0) {
-        KR_LOG(KR_LOGERROR, "kr_engine_register_default failed!");
-        goto FAILED;
-    }
     return engine;
 
 FAILED:

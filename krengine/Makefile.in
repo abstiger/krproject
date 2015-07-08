@@ -107,10 +107,11 @@ libkrengine_la_DEPENDENCIES = $(top_srcdir)/dbs/libdbsbas.la \
 	$(top_srcdir)/krutils/libkrutils.la \
 	$(top_srcdir)/krparam/libkrparam.la \
 	$(top_srcdir)/krcalc/libkrcalc.la \
+	$(top_srcdir)/krinput/libkrinput.la \
 	$(top_srcdir)/krdb/libkrdb.la \
 	$(top_srcdir)/krdata/libkrdata.la \
-	$(top_srcdir)/krflow/libkrflow.la \
-	$(top_srcdir)/krio/libkrio.la
+	$(top_srcdir)/kroutput/libkroutput.la \
+	$(top_srcdir)/krflow/libkrflow.la
 am_libkrengine_la_OBJECTS = libkrengine_la-kr_engine.lo \
 	libkrengine_la-kr_engine_env.lo \
 	libkrengine_la-kr_engine_ctx.lo
@@ -296,10 +297,11 @@ libkrengine_la_LIBADD = $(top_srcdir)/dbs/libdbsbas.la \
 	$(top_srcdir)/krutils/libkrutils.la \
 	$(top_srcdir)/krparam/libkrparam.la \
 	$(top_srcdir)/krcalc/libkrcalc.la \
+	$(top_srcdir)/krinput/libkrinput.la \
 	$(top_srcdir)/krdb/libkrdb.la \
 	$(top_srcdir)/krdata/libkrdata.la \
-	$(top_srcdir)/krflow/libkrflow.la \
-	$(top_srcdir)/krio/libkrio.la
+	$(top_srcdir)/kroutput/libkroutput.la \
+	$(top_srcdir)/krflow/libkrflow.la
 libkrengine_la_CPPFLAGS = 
 libkrengine_la_LDFLAGS = 
 all: all-am

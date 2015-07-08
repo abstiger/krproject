@@ -29,13 +29,6 @@ T_KREngineEnv *kr_engine_env_create(T_KREngineConfig *ptConfig)
         goto FAILED;
     }
     //TODO: load parameter 
-    
-    // create io module
-    ptEnv->ptIO = kr_io_create(ptEnv->ptParam, ptEnv->krdbModule);
-    if (ptEnv->ptIO == NULL) {
-        KR_LOG(KR_LOGERROR, "kr_io_create failed!");
-        goto FAILED;
-    }
 
     /* Start up krdb */
     ptEnv->ptDB = kr_db_new("KRDB", ptEnv->ptParam);
@@ -62,9 +55,8 @@ FAILED:
 void kr_engine_env_destroy(T_KREngineEnv *ptEnv)
 {
     if (ptEnv) {
-        if (ptEnv->ptParam) kr_param_destroy(ptEnv->ptParam);
         if (ptEnv->krdbModule) kr_module_close(ptEnv->krdbModule);
-        if (ptEnv->ptIO) kr_io_destroy(ptEnv->ptIO);
+        if (ptEnv->ptParam) kr_param_destroy(ptEnv->ptParam);
         if (ptEnv->ptDB) kr_db_free(ptEnv->ptDB);
         if (ptEnv->ptFuncTable) kr_functable_destroy(ptEnv->ptFuncTable);
         kr_free(ptEnv);

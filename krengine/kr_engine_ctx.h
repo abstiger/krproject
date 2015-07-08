@@ -7,9 +7,10 @@
 typedef struct _kr_engine_ctx_t
 {
     T_KRParam        *ptParam;     /* parameter, read only in thread */
-    T_KRIO           *ptIO;        /* interface module */
     T_KRDB           *ptDB;        /* krdb, read only in thread */
 
+    T_KRInput        *ptInput;     /* input */
+    T_KROutput       *ptOutput;    /* output */
     T_KRData         *ptData;
     T_KRFlow         *ptFlow;
 

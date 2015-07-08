@@ -20,6 +20,7 @@ typedef struct _kr_message_t
     char          msgid[30+1];
     char          method[20+1];
     int           datasrc;
+    char          msgfmt[10+1];
     size_t        msglen;
     char         *msgbuf;
 }T_KRMessage;
