@@ -152,5 +152,6 @@ short kr_param_dump(T_KRParam *ptParam, T_KRParamPersistConfig *ptConfig)
 
     /*close resource*/
     ptHandle->pfDumpPost(ptResource, ptConfig);
-
+    
+    return 0;
 }

@@ -22,6 +22,11 @@ void *kr_param_persist_odbc_load_pre(T_KRParamPersistConfig *ptParamPersistConfi
 void kr_param_persist_odbc_load_post(void *ptResource, T_KRParamPersistConfig *ptParamPersistConfig)
 {
     T_DbsEnv *ptDbsEnv = (T_DbsEnv *)ptResource;
+    if (ptDbsEnv->sqlcode != KR_DBOK) {
+        dbsRollback(ptDbsEnv);
+    } else {
+        dbsCommit(ptDbsEnv);
+    }
     dbsDisconnect(ptDbsEnv);
 }
 
@@ -51,7 +56,8 @@ int kr_param_persist_odbc_load(T_KRParam *ptParam, char *psParamVersion, char *p
             nRet = -1;
             break;
         } else if (iResult == KR_DBNOTFOUND) {
-            KR_LOG(KR_LOGDEBUG, "Load [%d] Objects Totally!", iCnt);
+            KR_LOG(KR_LOGDEBUG, "Load [%d] Objects of [%s] Totally!", \
+                iCnt, psParamClassName);
             break;
         }
         
@@ -84,7 +90,7 @@ void *kr_param_persist_odbc_dump_pre(T_KRParamPersistConfig *ptParamPersistConfi
     char *psDBPass = ptParamPersistConfig->value.odbc.pass;
     T_DbsEnv *ptDbsEnv = dbsConnect(psDBName, psDBUser, psDBPass);
     if (ptDbsEnv == NULL) {
-        KR_LOG(KR_LOGERROR, "dbsConnect [%s] [%s] [%s] failed!",
+        KR_LOG(KR_LOGERROR, "dbsConnect [%s] [%s] [%s] failed!", \
                     psDBName, psDBUser, psDBPass);
         return NULL;
     }
@@ -95,6 +101,11 @@ void *kr_param_persist_odbc_dump_pre(T_KRParamPersistConfig *ptParamPersistConfi
 void kr_param_persist_odbc_dump_post(void *ptResource, T_KRParamPersistConfig *ptParamPersistConfig)
 {
     T_DbsEnv *ptDbsEnv = (T_DbsEnv *)ptResource;
+    if (ptDbsEnv->sqlcode != KR_DBOK) {
+        dbsRollback(ptDbsEnv);
+    } else {
+        dbsCommit(ptDbsEnv);
+    }
     dbsDisconnect(ptDbsEnv);
 }
 
@@ -109,7 +120,8 @@ int kr_param_persist_odbc_dump(char *psParamVersion, char *psParamClassName, cha
     strcpy(stParamObjectIns.caInParamObjectKey, psParamObjectKey);
     strcpy(stParamObjectIns.caInParamObjectString, psParamObjectString);
     if (dbsParamObjectIns(ptDbsEnv, &stParamObjectIns) != 0) {
-        KR_LOG(KR_LOGERROR, "insert kr_param_object failed!");
+        KR_LOG(KR_LOGERROR, "insert kr_param_object failed![%d],[%s]", \
+            ptDbsEnv->sqlcode, ptDbsEnv->sqlerrmsg);
         return -1;
     }
 

@@ -75,7 +75,7 @@ static inline int kr_param_object_compare(void *a, void *b, void *data)
 static inline int kr_param_object_match(void *ptr, void *key)
 {
     T_KRParamObject *ptParamObject = (T_KRParamObject *)ptr; 
-    return strcmp(ptParamObject->psParamObjectKey, (char *)key);
+    return !strcmp(ptParamObject->psParamObjectKey, (char *)key);
 }    
 
 
@@ -191,8 +191,8 @@ int kr_param_object_foreach(T_KRParam *ptParam, char *psParamClassName, KRParamO
     
     T_KRParamSlot *ptParamSlot = kr_hashtable_lookup(ptCurrTable, psParamClassName);
     if (ptParamSlot == NULL) {
-        KR_LOG(KR_LOGERROR, "param class name %s not found!", psParamClassName);
-        return -1;
+        KR_LOG(KR_LOGDEBUG, "param class %s not found!", psParamClassName);
+        return 0;
     }
     
     T_KRListNode *node = kr_list_first(ptParamSlot->ptParamObjectList);
@@ -201,7 +201,8 @@ int kr_param_object_foreach(T_KRParam *ptParam, char *psParamClassName, KRParamO
         T_KRParamObject *ptParamObject = kr_list_value(node);
         if (pfParamObjectForEach(psParamClassName, ptParamObject->psParamObjectKey, 
             ptParamObject->psParamObjectString, ptParamObject->ptParamObject, data) != 0) {
-            KR_LOG(KR_LOGERROR, "call pfForEach %s failed!", ptParamObject->psParamObjectKey);
+            KR_LOG(KR_LOGERROR, "call pfForEach class:%s key:%s failed!", \
+                psParamClassName, ptParamObject->psParamObjectKey);
             return -1;
         }
         node = kr_list_next(node);
@@ -232,7 +233,7 @@ void *kr_param_object_get(T_KRParam *ptParam, char *psParamClassName, char *psPa
 }
 
 
-int kr_param_object_add(T_KRParam *ptParam, char *psParamClassName, char *psParamObjectKey, char *ptParamObjectString)
+int kr_param_object_add(T_KRParam *ptParam, char *psParamClassName, char *psParamObjectKey, char *psParamObjectString)
 {
     short nBackSecId = (ptParam->nSecId+1)%N_MAX_SEC;
     T_KRHashTable *ptBackTable = ptParam->ptHashTable[nBackSecId];
@@ -262,7 +263,7 @@ int kr_param_object_add(T_KRParam *ptParam, char *psParamClassName, char *psPara
     }
     
     T_KRParamObject *ptParamObject = kr_param_object_new(
-            ptParamSlot->ptParamClass, psParamObjectKey, ptParamObjectString);
+            ptParamSlot->ptParamClass, psParamObjectKey, psParamObjectString);
     if (ptParamObject == NULL) {
         KR_LOG(KR_LOGERROR, "kr_param_object_new %s failed!", psParamObjectKey);
         return -1;
@@ -270,6 +271,8 @@ int kr_param_object_add(T_KRParam *ptParam, char *psParamClassName, char *psPara
     
     kr_list_add_sorted(ptParamSlot->ptParamObjectList, 
         ptParamObject, ptParamObject->psParamObjectKey);
+    
+    return 0;
 }
 
 

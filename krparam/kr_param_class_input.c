@@ -32,10 +32,10 @@ char *kr_param_input_serialize(T_KRParamInput *ptParamInput)
     return str;
 }
 
-void kr_param_input_serialize_free(char *ptParamInputString)
+void kr_param_input_serialize_free(char *psParamInputString)
 {
-    if (ptParamInputString) {
-        kr_free(ptParamInputString);
+    if (psParamInputString) {
+        kr_free(psParamInputString);
     }
 }
 
@@ -50,11 +50,11 @@ static void kr_param_input_field_deserialize(cJSON *field, T_KRParamInputField *
 }
 
 
-T_KRParamInput *kr_param_input_deserialize(char *ptParamInputString)
+T_KRParamInput *kr_param_input_deserialize(char *psParamInputString)
 {
     T_KRParamInput *ptParamInput = kr_calloc(sizeof(*ptParamInput));
     
-    cJSON *input=cJSON_Parse(ptParamInputString);
+    cJSON *input=cJSON_Parse(psParamInputString);
     ptParamInput->lInputId = cJSON_GetNumber(input, "id");
     strcpy(ptParamInput->caInputName, cJSON_GetString(input, "name"));
     strcpy(ptParamInput->caInputDesc, cJSON_GetString(input, "desc"));
