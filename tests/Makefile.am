@@ -58,20 +58,30 @@ kr_cache_test_SOURCES           = kr_cache_test.c
 kr_cache_test_LDADD             = $(progs_ldadd)
 kr_cache_test_CPPFLAGS          = -g 
 
-TEST_PROGS                     += kr_param_test
-kr_param_test_SOURCES           = kr_param_test.c
-kr_param_test_LDADD             = $(progs_ldadd)
-kr_param_test_CPPFLAGS          = -g 
+TEST_PROGS                     += kr_odbc_test
+kr_odbc_test_SOURCES            = kr_odbc_test.c
+kr_odbc_test_LDADD              = $(progs_ldadd)
+kr_odbc_test_CPPFLAGS           = -g 
 
 TEST_PROGS                     += kr_calc_test
 kr_calc_test_SOURCES            = kr_calc_test.c
 kr_calc_test_LDADD              = $(progs_ldadd)
 kr_calc_test_CPPFLAGS           = -g 
 
-TEST_PROGS                     += kr_odbc_test
-kr_odbc_test_SOURCES            = kr_odbc_test.c
-kr_odbc_test_LDADD              = $(progs_ldadd)
-kr_odbc_test_CPPFLAGS           = -g 
+TEST_PROGS                     += kr_param_test
+kr_param_test_SOURCES           = kr_param_test.c
+kr_param_test_LDADD             = $(progs_ldadd)
+kr_param_test_CPPFLAGS          = -g 
+
+TEST_PROGS                     += kr_input_test
+kr_input_test_SOURCES           = kr_input_test.c
+kr_input_test_LDADD             = $(progs_ldadd)
+kr_input_test_CPPFLAGS          = -g 
+
+TEST_PROGS                     += kr_output_test
+kr_output_test_SOURCES          = kr_output_test.c
+kr_output_test_LDADD            = $(progs_ldadd)
+kr_output_test_CPPFLAGS         = -g 
 
 TEST_PROGS                     += kr_db_test
 kr_db_test_SOURCES              = kr_db_test.c

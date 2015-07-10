@@ -5,8 +5,8 @@
 /*record definition*/
 struct _kr_record_t
 {
-    KRFreeFunc         pfFree;
     T_KRInputDefine    *ptInputDefine;
+    size_t             szRecBuf;
     char               *pRecBuf;
 };
 
@@ -27,8 +27,8 @@ T_KRRecord* kr_record_new(T_KRInput *ptInput, int iInputId)
     }
     
     /*create and set new record*/
-    ptRecord->pfFree = NULL;
     ptRecord->ptInputDefine = ptInputDefine;
+    ptRecord->szRecBuf = ptInputDefine->iRecordSize;
     ptRecord->pRecBuf = (char *)ptRecord+sizeof(*ptRecord);
 
     return ptRecord;
@@ -38,9 +38,6 @@ T_KRRecord* kr_record_new(T_KRInput *ptInput, int iInputId)
 void kr_record_free(T_KRRecord *ptRecord)
 {
     if (ptRecord) {
-        if (ptRecord->pfFree) {
-            ptRecord->pfFree(ptRecord);
-        }
         kr_free(ptRecord);
     }
 }
@@ -48,14 +45,14 @@ void kr_record_free(T_KRRecord *ptRecord)
 
 T_KRRecord* kr_record_dup(T_KRRecord *ptRecord)
 {
-    T_KRRecord *ptRecordDup = kr_calloc(sizeof(*ptRecord)+ptRecord->ptInputDefine->iRecordSize);
+    T_KRRecord *ptRecordDup = kr_calloc(sizeof(*ptRecord)+ptRecord->szRecBuf);
     if (ptRecord == NULL) {
         KR_LOG(KR_LOGERROR, "kr_calloc ptRecordDup failed!");
         return NULL;
     }
     
     /*create and set new record*/
-    memcpy(ptRecordDup, ptRecord, sizeof(*ptRecord)+ptRecord->ptInputDefine->iRecordSize);
+    memcpy(ptRecordDup, ptRecord, sizeof(*ptRecord)+ptRecord->szRecBuf);
     ptRecordDup->pRecBuf = (char *)ptRecordDup+sizeof(*ptRecordDup);
     
     return ptRecordDup;

@@ -47,6 +47,7 @@ typedef struct _kr_iface_args_t
     int gen_source;
     int gen_makefile;
     int datasrc_id;
+    char param_version[50];
     char format_name[20];
     char output_path[1024];
 }T_KRIfaceArgs;
@@ -64,6 +65,10 @@ static int kr_generate_makefile(void);
 int main(int argc, char *argv[])
 {
     int ret = -1;
+    
+    kr_log_set_path(".");
+    kr_log_set_name("iface");
+    kr_log_set_level(KR_LOGDEBUG);
 
     /* Parse Arguments */
     ret = kr_parse_arguments(argc, argv);
@@ -78,7 +83,16 @@ int main(int argc, char *argv[])
         KR_LOG(KR_LOGERROR, "kr_param_create failed!");
         return -1;
     }
-    //TODO: load parameter 
+
+    /* load parameter */
+    T_KRParamPersistConfig stLoadConfig = {
+        .type = 'O',
+        .version = gstArgs.param_version,
+        .value.odbc.name = getenv("DBNAME"),
+        .value.odbc.user = getenv("DBUSER"),
+        .value.odbc.pass = getenv("DBPASS"),
+    };
+    kr_param_load(gptParam, &stLoadConfig);
 
     /* generate define file */
     if (gstArgs.gen_define) {
@@ -120,6 +134,7 @@ static void kr_usage(int argc, char *argv[])
             "  -s                     Generate Source File \n"
             "  -m                     Generate Make File \n"
             "  -i <datasrc id>        Specify Datasrc Id(default all) \n"
+            "  -v <param version>     Specify Param Version \n"
             "  -f <format name>       Specify Format Name(default all) \n"
             "  -o <output path>       Specify Output Directory(default .) \n"
             "  -h                     Show this usage\n"
@@ -132,7 +147,7 @@ static int kr_parse_arguments(int argc, char *argv[])
 {
     int opt;
 
-    while ((opt = getopt(argc, argv, "dsmi:f:o:h")) != -1)
+    while ((opt = getopt(argc, argv, "dsmi:v:f:o:h")) != -1)
     {
         switch (opt)
         {
@@ -148,6 +163,9 @@ static int kr_parse_arguments(int argc, char *argv[])
             case 'i':
                 gstArgs.datasrc_id = atoi(optarg);
                 break;
+            case 'v':
+                strcpy(gstArgs.param_version, optarg);
+                break;    
             case 'f':
                 strcpy(gstArgs.format_name, optarg);
                 break;
@@ -190,7 +208,7 @@ static T_KRIfaceFormat *kr_search_format(char *format_name, char *file_code)
 }
 
 
-static int _kr_input_define_new(char *psParamClassName, char *psParamObjectKey, char *psParamObjectString, void *ptParamObject, void *data)
+static int _kr_input_traversal(char *psParamClassName, char *psParamObjectKey, char *psParamObjectString, void *ptParamObject, void *data)
 {
     T_KRParamInput *ptParamInput = (T_KRParamInput *)ptParamObject;
     char *file_code = (char *)data;
@@ -203,17 +221,18 @@ static int _kr_input_define_new(char *psParamClassName, char *psParamObjectKey, 
 
     for (int i=0; i<sizeof(gptIfaceFormat)/sizeof(T_KRIfaceFormat); ++i) {
         T_KRIfaceFormat *iface_format = &gptIfaceFormat[i];
+        
         /* Judge If file code matched */
         if (strcasecmp(file_code, iface_format->file_code) != 0) {
-            return 0;
+            continue;
         }
 
         /* Judge If format name matched */
         if (gstArgs.format_name[0] != '\0' &&
                 strcasecmp(gstArgs.format_name, iface_format->format_name)) {
-            return 0;
+            continue;
         }
-
+                    
         /* Traversal Fields */
         int iFlag = kr_traversal_fields(ptParamInput, 
                 iface_format->datasrc_field_pre_func,
@@ -233,8 +252,8 @@ static int kr_traversal_datasrc(char *file_code)
 {
     /*create input list*/
     if (kr_param_object_foreach(gptParam, KR_PARAM_INPUT, 
-            _kr_input_define_new, file_code) != 0) {
-        KR_LOG(KR_LOGERROR, "_kr_db_build_table Error!");
+            _kr_input_traversal, file_code) != 0) {
+        fprintf(stderr, "_kr_input_traversal %s error!", file_code);
         return -1;
     }
 

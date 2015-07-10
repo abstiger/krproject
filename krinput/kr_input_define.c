@@ -1,5 +1,6 @@
 #include "kr_input_define.h"
 
+#define KR_MEMALIGN(size)   (((size) + 0xf) & ~(size_t) 0xf)
 
 T_KRInputDefine *kr_input_define_new(T_KRParamInput *ptParamInput)
 {
@@ -13,9 +14,15 @@ T_KRInputDefine *kr_input_define_new(T_KRParamInput *ptParamInput)
             sizeof(ptInputDefine->caInputName)-1);
     strncpy(ptInputDefine->caInputDesc, ptParamInput->caInputDesc, 
             sizeof(ptInputDefine->caInputDesc)-1);
-    
+    ptInputDefine->iFieldCnt = ptParamInput->lFieldCnt;
+    ptInputDefine->ptFieldDef = kr_calloc(ptInputDefine->iFieldCnt * sizeof(T_KRInputFieldDef));
+    if (ptInputDefine->ptFieldDef == NULL) {
+        KR_LOG(KR_LOGERROR, "kr_calloc ptInputDefine->ptFieldDef failed!");
+        kr_free(ptInputDefine);
+        return NULL;
+    }
     // load fields define
-    size_t ulFieldOffset = 0;
+    ptInputDefine->iRecordSize = 0;
     for (int i=0; i<ptParamInput->lFieldCnt; ++i) {
         T_KRParamInputField *ptParamInputField = &ptParamInput->ptFieldDef[i];
         T_KRInputFieldDef *ptFieldDef = &ptInputDefine->ptFieldDef[i];
@@ -25,13 +32,14 @@ T_KRInputDefine *kr_input_define_new(T_KRParamInput *ptParamInput)
                 sizeof(ptFieldDef->name));
         ptFieldDef->type = ptParamInputField->caFieldType[0];
         ptFieldDef->length = ptParamInputField->lFieldLength;
-        ptFieldDef->offset = ulFieldOffset;
-        ulFieldOffset += ptFieldDef->length;
+        ptFieldDef->offset = ptInputDefine->iRecordSize;
+        ptInputDefine->iRecordSize += ptFieldDef->length;
         /* String terminated with '\0' */
         if (ptFieldDef->type == KR_TYPE_STRING) {
-            ulFieldOffset += 1;
+            ptInputDefine->iRecordSize += 1;
         }
     }
+    ptInputDefine->iRecordSize = KR_MEMALIGN(ptInputDefine->iRecordSize);
     
     /*alloc input handle list*/
     ptInputDefine->ptInputHandleList = kr_list_new();
