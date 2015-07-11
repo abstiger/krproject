@@ -16,6 +16,8 @@ typedef struct _kr_engine_env_t
 {
     T_KRModule       *krdbModule;  /* module for krdb */
     T_KRParam        *ptParam;     /* parameter, read only in thread */
+    T_KRInput        *ptInput;     /* input, read only in thread */
+    T_KROutput       *ptOutput;    /* output, read only in thread */
     T_KRDB           *ptDB;        /* krdb, read only in thread */
     T_KRFuncTable    *ptFuncTable; /* function table */
     void             *extra;       /* engine startup extra data */

@@ -30,6 +30,20 @@ T_KREngineEnv *kr_engine_env_create(T_KREngineConfig *ptConfig)
     }
     //TODO: load parameter 
 
+    //FIME: remove krdbModule
+    ptEnv->ptInput = kr_input_construct(ptEnv->ptParam, ptEnv->krdbModule);
+    if (ptEnv->ptInput == NULL) {
+        KR_LOG(KR_LOGERROR, "kr_input_construct failed!");
+        return NULL;
+    }
+    
+    //FIME: remove krdbModule
+    ptEnv->ptOutput = kr_output_construct(ptEnv->ptParam, ptEnv->krdbModule);
+    if (ptEnv->ptOutput == NULL) {
+        KR_LOG(KR_LOGERROR, "kr_output_construct failed!");
+        return NULL;
+    }
+
     /* Start up krdb */
     ptEnv->ptDB = kr_db_new("KRDB", ptEnv->ptParam);
     if (ptEnv->ptDB == NULL) {
@@ -55,10 +69,12 @@ FAILED:
 void kr_engine_env_destroy(T_KREngineEnv *ptEnv)
 {
     if (ptEnv) {
-        if (ptEnv->krdbModule) kr_module_close(ptEnv->krdbModule);
-        if (ptEnv->ptParam) kr_param_destroy(ptEnv->ptParam);
-        if (ptEnv->ptDB) kr_db_free(ptEnv->ptDB);
         if (ptEnv->ptFuncTable) kr_functable_destroy(ptEnv->ptFuncTable);
+        if (ptEnv->ptDB) kr_db_free(ptEnv->ptDB);
+        if (ptEnv->ptInput) kr_input_destruct(ptEnv->ptInput);
+        if (ptEnv->ptOutput) kr_output_destruct(ptEnv->ptOutput);
+        if (ptEnv->ptParam) kr_param_destroy(ptEnv->ptParam);
+        if (ptEnv->krdbModule) kr_module_close(ptEnv->krdbModule);
         kr_free(ptEnv);
     }
 }

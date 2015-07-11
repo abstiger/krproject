@@ -1,8 +1,6 @@
 noinst_LTLIBRARIES     = libkrdata.la
 libkrdata_la_SOURCES   = kr_data.h \
 						 kr_data.c \
-						 kr_data_temp.h \
-						 kr_data_temp.c \
 						 kr_data_item.h \
 						 kr_data_item.c \
 						 kr_data_item_set.h \

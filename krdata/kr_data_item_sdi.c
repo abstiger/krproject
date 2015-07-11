@@ -1,5 +1,5 @@
 ﻿#include "kr_data_item_sdi.h"
-#include "krparam/kr_param_class_sdi.h"
+#include "krdb/kr_db.h"
 
 
 void *kr_data_item_sdi_new(T_KRDataItem *ptDataItem)
@@ -15,17 +15,20 @@ void *kr_data_item_sdi_new(T_KRDataItem *ptDataItem)
     ptSdi->ptFilterCalc = kr_calc_construct(
             ptParamSdi->caSdiFilterFormat[0], \
             ptParamSdi->caSdiFilterString, \
-            kr_data_get_type, kr_data_get_value);
+            ptDataItem->pfGetType, \
+            ptDataItem->pfGetValue);
     if (ptSdi->ptFilterCalc == NULL) {
         KR_LOG(KR_LOGERROR, "kr_calc_construct filter failed!");
         return NULL;
     }
 
+    //FIXME:add result calc
     /*
     ptSdi->ptResultCalc = kr_calc_construct(
             ptParamSdi->caSdiResultFormat[0], \
             ptParamSdi->caSdiResultString, \
-            kr_data_get_type, kr_data_get_value);
+            ptDataItem->pfGetType, \
+            ptDataItem->pfGetValue);
     if (ptSdi->ptResultCalc == NULL) {
         KR_LOG(KR_LOGERROR, "kr_calc_construct result failed!");
         return NULL;
@@ -56,27 +59,40 @@ void kr_data_item_sdi_free(void *priv)
 }
 
 
-int kr_data_item_sdi_aggr(T_KRDataItem *ptDataItem, T_KRData *ptData)
+int kr_data_item_sdi_aggr(T_KRDataItem *ptDataItem, T_KRContext *ptContext)
 {
     T_KRParamSdi *ptParamSdi = (T_KRParamSdi *)ptDataItem->ptDataItemDef;
     T_KRSdi *ptSdi = (T_KRSdi *)ptDataItem->ptPrivate;
     
-    //FIXME:get record list 
-    /*
-    ptSdi->ptRecList = kr_db_select_by_record(ptData->ptCurrRec, 
-        ptParamSdi->lStatisticsIndex, 
-        ptParamSdi->lSdiId, //FIXME:tBeginTime
-        ptParamSdi->lSdiId, //FIXME:tEndTime
-        KR_FIELDID_TRANSTIME //FIXME:iSortFieldId
-        );
-        */
+    T_KRRecord *ptCurrRec = kr_context_get_data(ptContext, "curr_rec");
+    if (ptCurrRec == NULL) {
+        KR_LOG(KR_LOGERROR, "no current record in context");
+        return -1;
+    }
+
+    T_KRDB *ptDB = kr_context_get_data(ptContext, "db");
+    if (ptDB == NULL) {
+        KR_LOG(KR_LOGERROR, "no db in context");
+        return -1;
+    }
+
+    time_t tCurrTime = kr_record_get_transtime(ptCurrRec);
+    //get record list 
+    ptSdi->ptRecList = kr_db_select(ptDB,
+            ptParamSdi->lStatisticsIndex, 
+            NULL, //FIXME:key
+            ptParamSdi->lSdiId, //FIXME:tBeginTime
+            ptParamSdi->lSdiId, //FIXME:tEndTime
+            KR_FIELDID_TRANSTIME //FIXME:iSortFieldId
+            );
 
     int iResult = -1, iAbsLoc = -1, iRelLoc = -1;
     
     T_KRListNode *node = ptSdi->ptRecList->tail;
     while(node)
     {
-        ptData->ptTravRec = (T_KRRecord *)kr_list_value(node);
+        T_KRRecord *ptTravRec = (T_KRRecord *)kr_list_value(node);
+        kr_context_add_data(ptContext, "trav_rec", ptTravRec);
         
         iAbsLoc++; 
                 
@@ -88,12 +104,12 @@ int kr_data_item_sdi_aggr(T_KRDataItem *ptDataItem, T_KRData *ptData)
         }
         
         if (ptParamSdi->lStatisticsDatasrc != \
-            kr_record_get_input_id(ptData->ptTravRec)) {
+                kr_record_get_input_id(ptTravRec)) {
             node = node->prev;
             continue;
         }
         
-        iResult = kr_calc_eval(ptSdi->ptFilterCalc, ptData);
+        iResult = kr_calc_eval(ptSdi->ptFilterCalc, ptContext);
         if (iResult != 0) {
             KR_LOG(KR_LOGERROR, "kr_calc_eval filter failed!");
             return -1;
@@ -115,7 +131,7 @@ int kr_data_item_sdi_aggr(T_KRDataItem *ptDataItem, T_KRData *ptData)
             }
         }
         
-        iResult = kr_calc_eval(ptSdi->ptResultCalc, ptData);
+        iResult = kr_calc_eval(ptSdi->ptResultCalc, ptContext);
         if (iResult != 0) {
             KR_LOG(KR_LOGERROR, "kr_calc_eval result failed!");
             return -1;
@@ -125,13 +141,14 @@ int kr_data_item_sdi_aggr(T_KRDataItem *ptDataItem, T_KRData *ptData)
         }
 
         /*add this record to related*/
-        kr_hashtable_insert(ptSdi->ptRelated, ptData->ptTravRec, ptData->ptTravRec);
+        kr_hashtable_insert(ptSdi->ptRelated, ptTravRec, ptTravRec);
     
         /* This is what the difference between SDI and DDI:
          * SDI only set once, while DDI still need to traversal all the list
          */
         ptDataItem->eValueInd = KR_VALUE_SETED;
-        memcpy(&ptDataItem->uValue, kr_calc_value(ptSdi->ptResultCalc), sizeof(ptDataItem->uValue));
+        memcpy(&ptDataItem->uValue, kr_calc_value(ptSdi->ptResultCalc), 
+                sizeof(ptDataItem->uValue));
         
         break;
     }
@@ -139,41 +156,3 @@ int kr_data_item_sdi_aggr(T_KRDataItem *ptDataItem, T_KRData *ptData)
     return 0;
 }
 
-
-static int _kr_data_item_sdi_load(char *psParamClassName, char *psParamObjectKey, 
-        char *psParamObjectString, void *ptParamObject, void *data)
-{
-    T_KRParamSdi *ptParamSdi = (T_KRParamSdi *)ptParamObject;
-    T_KRHashTable *ptItemTable = (T_KRHashTable *)data;
-
-    T_KRDataItem *ptDataItem = kr_data_item_new(
-            ptParamSdi,
-            ptParamSdi->caSdiName, //FIXME
-            ptParamSdi->lSdiId, 
-            kr_data_item_sdi_new,
-            kr_data_item_sdi_aggr,
-            kr_data_item_sdi_free);
-    if (ptDataItem == NULL) {
-        KR_LOG(KR_LOGERROR, "kr_data_item_create [%ld] failed!", \
-                ptParamSdi->lSdiId);
-        return -1; 
-    }
-
-    //insert into item table
-    kr_hashtable_replace(ptItemTable, ptDataItem->caDataItemId, ptDataItem);
-
-    return 0;
-}
-
-
-int kr_data_item_sdi_load(T_KRHashTable *ptItemTable, T_KRParam *ptParam)
-{
-    //load sdi
-    if (kr_param_object_foreach(ptParam, KR_PARAM_SDI, 
-                _kr_data_item_sdi_load, ptItemTable) != 0) {
-        KR_LOG(KR_LOGERROR, "kr_data_item_sdi_load Error!");
-        return -1;
-    }
-    
-    return 0;
-}

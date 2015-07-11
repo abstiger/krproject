@@ -1,5 +1,4 @@
 ﻿#include "kr_context.h"
-#include "krutils/kr_string.h"
 
 typedef struct _kr_bean_t
 {

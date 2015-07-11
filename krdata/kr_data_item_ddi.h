@@ -2,6 +2,7 @@
 #define __KR_DATA_ITEM_DDI_H__
 
 #include "kr_data_item.h"
+#include "krparam/kr_param_class_ddi.h"
 
 
 typedef enum {
@@ -34,8 +35,7 @@ typedef struct _kr_data_item_ddi
 //function declaration
 void *kr_data_item_ddi_new(T_KRDataItem *ptDataItem);
 void kr_data_item_ddi_free(void *priv);
-int kr_data_item_ddi_aggr(T_KRDataItem *ptDataItem, T_KRData *ptData);
-int kr_data_item_ddi_load(T_KRHashTable *ptItemTable, T_KRParam *ptParam);
+int kr_data_item_ddi_aggr(T_KRDataItem *ptDataItem, T_KRContext *ptContext);
 
 
 #endif /* __KR_DATA_ITEM_DDI_H__ */

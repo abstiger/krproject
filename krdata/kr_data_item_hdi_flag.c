@@ -5,7 +5,7 @@
 #include "dbs/dbs_basopr.h"
 #include "dbs/dbs/hdi_flag_sel.h"
 
-int kr_hdi_aggr_flag(T_KRHdi *ptHdi, T_KRData *ptData, char *object)
+int kr_hdi_aggr_flag(T_KRHdi *ptHdi, T_KRContext *ptContext, char *object)
 {
     int iResult = 0;
     char caDataDate[8+1] = {0};
@@ -47,7 +47,7 @@ int kr_hdi_aggr_flag(T_KRHdi *ptHdi, T_KRData *ptData, char *object)
 
 */
 
-int kr_hdi_aggr_flag(T_KRHdi *ptHdi, T_KRData *ptData, char *object)
+int kr_hdi_aggr_flag(T_KRHdi *ptHdi, T_KRContext *ptContext, char *object)
 {
     //FIXME:dummy implemention
     return 0;

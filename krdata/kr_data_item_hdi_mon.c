@@ -5,7 +5,7 @@
 #include "dbs/dbs_basopr.h"
 #include "dbs/dbs/hdi_mon_sel.h"
 
-int kr_hdi_aggr_mon(T_KRHdi *ptHdi, T_KRData *ptData, char *object)
+int kr_hdi_aggr_mon(T_KRHdi *ptHdi, T_KRContext *ptContext, char *object)
 {
     int iResult = 0;
     double dValue = 0.0;
@@ -72,7 +72,7 @@ int kr_hdi_aggr_mon(T_KRHdi *ptHdi, T_KRData *ptData, char *object)
 }
 */
 
-int kr_hdi_aggr_mon(T_KRHdi *ptHdi, T_KRData *ptData, char *object)
+int kr_hdi_aggr_mon(T_KRHdi *ptHdi, T_KRContext *ptContext, char *object)
 {
     //FIXME:dummy implemention
     return 0;

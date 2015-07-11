@@ -1,6 +1,7 @@
 ﻿#ifndef __KR_CONTEXT_H__
 #define __KR_CONTEXT_H__
 
+#include "krutils/kr_string.h"
 #include "krutils/kr_hashtable.h"
 
 typedef void* (*KRBeanConstructFunc)(void *ptEnv);

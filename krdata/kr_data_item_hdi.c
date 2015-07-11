@@ -1,11 +1,10 @@
 ﻿#include "kr_data_item_hdi.h"
 #include "kr_data_item_hdi_cache.h"
-#include "krparam/kr_param_class_hdi.h"
 
 
-extern int kr_hdi_aggr_day(T_KRHdi *ptHdi, T_KRData *ptData, char *object);
-extern int kr_hdi_aggr_mon(T_KRHdi *ptHdi, T_KRData *ptData, char *object);
-extern int kr_hdi_aggr_flag(T_KRHdi *ptHdi, T_KRData *ptData, char *object);
+extern int kr_hdi_aggr_day(T_KRHdi *ptHdi, T_KRContext *ptContext, char *object);
+extern int kr_hdi_aggr_mon(T_KRHdi *ptHdi, T_KRContext *ptContext, char *object);
+extern int kr_hdi_aggr_flag(T_KRHdi *ptHdi, T_KRContext *ptContext, char *object);
 
 void *kr_data_item_hdi_new(T_KRDataItem *ptDataItem)
 {
@@ -30,7 +29,7 @@ void kr_data_item_hdi_free(void *priv)
 }
 
 
-static int kr_data_item_hdi_compute(T_KRDataItem *ptDataItem, T_KRData *ptData)
+static int kr_data_item_hdi_compute(T_KRDataItem *ptDataItem, T_KRContext *ptContext)
 {
     T_KRParamHdi *ptParamHdi = (T_KRParamHdi *)ptDataItem->ptDataItemDef;
     T_KRHdi *ptHdi = (T_KRHdi *)ptDataItem->ptPrivate;
@@ -65,19 +64,19 @@ static int kr_data_item_hdi_compute(T_KRDataItem *ptDataItem, T_KRData *ptData)
     switch(ptParamHdi->caStatisticsType[0])
     {
         case KR_HDI_STATISTICS_DAY:
-            nRet = kr_hdi_aggr_day(ptHdi, ptData, caDataObject);
+            nRet = kr_hdi_aggr_day(ptHdi, ptContext, caDataObject);
             if (nRet != 0) {
                 KR_LOG(KR_LOGERROR, "kr_hdi_aggr_day Error!");
             }
             break;
         case KR_HDI_STATISTICS_MONTH:
-            nRet = kr_hdi_aggr_mon(ptHdi, ptData, caDataObject);
+            nRet = kr_hdi_aggr_mon(ptHdi, ptContext, caDataObject);
             if (nRet != 0) {
                 KR_LOG(KR_LOGERROR, "kr_hdi_aggr_mon Error!");
             }
             break;
         case KR_HDI_STATISTICS_FLAG:
-            nRet = kr_hdi_aggr_flag(ptHdi, ptData, caDataObject);
+            nRet = kr_hdi_aggr_flag(ptHdi, ptContext, caDataObject);
             if (nRet != 0) {
                 KR_LOG(KR_LOGERROR, "kr_hdi_aggr_flag Error!");
             }
@@ -94,7 +93,7 @@ static int kr_data_item_hdi_compute(T_KRDataItem *ptDataItem, T_KRData *ptData)
 }
 
 
-int kr_data_item_hdi_aggr(T_KRDataItem *ptDataItem, T_KRData *ptData)
+int kr_data_item_hdi_aggr(T_KRDataItem *ptDataItem, T_KRContext *ptContext)
 {
     T_KRParamHdi *ptParamHdi = (T_KRParamHdi *)ptDataItem->ptDataItemDef;
     T_KRHdi *ptHdi = (T_KRHdi *)ptDataItem->ptPrivate;
@@ -130,13 +129,13 @@ int kr_data_item_hdi_aggr(T_KRDataItem *ptDataItem, T_KRData *ptData)
         }
     } else {
         //if not, compute it and set the cache
-        if (kr_data_item_hdi_compute(ptDataItem, ptData) != 0) {
+        if (kr_data_item_hdi_compute(ptDataItem, ptContext) != 0) {
             KR_LOG(KR_LOGDEBUG, "kr_data_item_hdi_compute [%ld] failed!", ptDataItem->lDataItemId);
             return -1;
         }
         
         ptHdiCacheValue->eValueType = ptDataItem->eValueType;
-        time_t tTransTime = kr_record_get_transtime(ptData->ptCurrRec);
+        time_t tTransTime = kr_record_get_transtime(ptContext->ptCurrRec);
         kr_ttime_to_date(tTransTime, ptHdiCacheValue->caDate);
         switch(ptDataItem->eValueType)
         {
@@ -156,41 +155,3 @@ int kr_data_item_hdi_aggr(T_KRDataItem *ptDataItem, T_KRData *ptData)
     return 0;
 }
 
-
-static int _kr_data_item_hdi_load(char *psParamClassName, char *psParamObjectKey, 
-        char *psParamObjectString, void *ptParamObject, void *data)
-{
-    T_KRParamHdi *ptParamHdi = (T_KRParamHdi *)ptParamObject;
-    T_KRHashTable *ptItemTable = (T_KRHashTable *)data;
-
-    T_KRDataItem *ptDataItem = kr_data_item_new(
-            ptParamHdi,
-            ptParamHdi->caHdiName[0], //FIXME: 
-            ptParamHdi->lHdiId, 
-            kr_data_item_hdi_new,
-            kr_data_item_hdi_aggr,
-            kr_data_item_hdi_free);
-    if (ptDataItem == NULL) {
-        KR_LOG(KR_LOGERROR, "kr_data_item_create [%ld] failed!", \
-                ptParamHdi->lHdiId);
-        return -1; 
-    }
-
-    //insert into item table
-    kr_hashtable_replace(ptItemTable, ptDataItem->caDataItemId, ptDataItem);
-
-    return 0;
-}
-
-
-int kr_data_item_hdi_load(T_KRHashTable *ptItemTable, T_KRParam *ptParam)
-{
-    //load hdi
-    if (kr_param_object_foreach(ptParam, KR_PARAM_HDI, 
-                _kr_data_item_hdi_load, ptItemTable) != 0) {
-        KR_LOG(KR_LOGERROR, "kr_data_item_hdi_load Error!");
-        return -1;
-    }
-    
-    return 0;   
-}

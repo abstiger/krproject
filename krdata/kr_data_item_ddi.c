@@ -1,5 +1,5 @@
 ﻿#include "kr_data_item_ddi.h"
-#include "krparam/kr_param_class_ddi.h"
+#include "krdb/kr_db.h"
 
 
 void *kr_data_item_ddi_new(T_KRDataItem *ptDataItem)
@@ -15,7 +15,8 @@ void *kr_data_item_ddi_new(T_KRDataItem *ptDataItem)
     ptDdi->ptFilterCalc = kr_calc_construct(
             ptParamDdi->caDdiFilterFormat[0], \
             ptParamDdi->caDdiFilterString, \
-            kr_data_get_type, kr_data_get_value);
+            ptDataItem->pfGetType, \
+            ptDataItem->pfGetValue);
     if (ptDdi->ptFilterCalc == NULL) {
         KR_LOG(KR_LOGERROR, "kr_calc_construct filter failed!");
         return NULL;
@@ -25,7 +26,8 @@ void *kr_data_item_ddi_new(T_KRDataItem *ptDataItem)
     ptDdi->ptResultCalc = kr_calc_construct(
             ptParamSdi->caSdiResultFormat[0], \
             ptParamSdi->caSdiResultString, \
-            kr_data_get_type, kr_data_get_value);
+            ptDataItem->pfGetType, \
+            ptDataItem->pfGetValue);
     if (ptDdi->ptResultCalc == NULL) {
         KR_LOG(KR_LOGERROR, "kr_calc_construct result failed!");
         return NULL;
@@ -56,51 +58,62 @@ void kr_data_item_ddi_free(void *priv)
 }
 
 
-int kr_data_item_ddi_aggr(T_KRDataItem *ptDataItem, T_KRData *ptData)
+int kr_data_item_ddi_aggr(T_KRDataItem *ptDataItem, T_KRContext *ptContext)
 {
     T_KRParamDdi *ptParamDdi = (T_KRParamDdi *)ptDataItem->ptDataItemDef;
     T_KRDdi *ptDdi = (T_KRDdi *)ptDataItem->ptPrivate;
 
-    //FIXME:get record list 
-    /*
-    ptDdi->ptRecList = kr_db_select_by_record(ptData->ptCurrRec, 
-        ptParamDdi->lStatisticsIndex, 
-        ptParamDdi->lDdiId, //FIXME:tBeginTime
-        ptParamDdi->lDdiId, //FIXME:tEndTime
-        KR_FIELDID_TRANSTIME //FIXME:iSortFieldId
-        );
-        */
+    T_KRRecord *ptCurrRec = kr_context_get_data(ptContext, "curr_rec");
+    if (ptCurrRec == NULL) {
+        KR_LOG(KR_LOGERROR, "no current record in context");
+        return -1;
+    }
+
+    T_KRDB *ptDB = kr_context_get_data(ptContext, "db");
+    if (ptDB == NULL) {
+        KR_LOG(KR_LOGERROR, "no db in context");
+        return -1;
+    }
+
+    //get record list 
+    ptDdi->ptRecList = kr_db_select(ptDB,
+            ptParamDdi->lStatisticsIndex, 
+            NULL, //FIXME:key
+            ptParamDdi->lDdiId, //FIXME:tBeginTime
+            ptParamDdi->lDdiId, //FIXME:tEndTime
+            KR_FIELDID_TRANSTIME //FIXME:iSortFieldId
+            );
 
     int iResult = -1, iAbsLoc = -1, iRelLoc = -1;
     
     T_KRListNode *node = ptDdi->ptRecList->tail;
     while(node)
     {
-        ptData->ptTravRec = (T_KRRecord *)kr_list_value(node);
+        T_KRRecord *ptTravRec = (T_KRRecord *)kr_list_value(node);
+        kr_context_add_data(ptContext, "trav_rec", ptTravRec);
         
         iAbsLoc++; 
         
         if ((ptParamDdi->caStatisticsType[0] == \
-             KR_DDI_STATISTICS_EXCLUDE) && 
-            (ptData->ptTravRec == ptData->ptCurrRec)) {
+             KR_DDI_STATISTICS_EXCLUDE) && (ptTravRec == ptCurrRec)) {
             node = node->prev;
             continue;
         }
         
         if (ptParamDdi->lStatisticsDatasrc != \
-            kr_record_get_input_id(ptData->ptTravRec)) {
+            kr_record_get_input_id(ptTravRec)) {
             node = node->prev;
             continue;
         }
         
-        time_t tCurrTransTime = kr_record_get_transtime(ptData->ptCurrRec);
-        time_t tRecTransTime = kr_record_get_transtime(ptData->ptTravRec);
+        time_t tCurrTransTime = kr_record_get_transtime(ptCurrRec);
+        time_t tRecTransTime = kr_record_get_transtime(ptTravRec);
         if ((tCurrTransTime - tRecTransTime) > ptParamDdi->lStatisticsValue ) {
             node = node->prev;
             continue;
         }
         
-        iResult = kr_calc_eval(ptDdi->ptFilterCalc, ptData);
+        iResult = kr_calc_eval(ptDdi->ptFilterCalc, ptContext);
         if (iResult != 0) {
             KR_LOG(KR_LOGERROR, "kr_calc_eval filter failed!");
             return -1;
@@ -115,8 +128,8 @@ int kr_data_item_ddi_aggr(T_KRDataItem *ptDataItem, T_KRData *ptData)
     
         iRelLoc++; 
                         
-        E_KRType type = kr_record_get_field_type(ptData->ptTravRec, ptParamDdi->lStatisticsField);
-        void *val = kr_record_get_field_value(ptData->ptTravRec, ptParamDdi->lStatisticsField);
+        E_KRType type = kr_record_get_field_type(ptTravRec, ptParamDdi->lStatisticsField);
+        void *val = kr_record_get_field_value(ptTravRec, ptParamDdi->lStatisticsField);
         U_KRValue stValue = {0};
         switch(type)
         {
@@ -229,8 +242,7 @@ int kr_data_item_ddi_aggr(T_KRDataItem *ptDataItem, T_KRData *ptData)
         */
         
         /*add this record to related*/
-        kr_hashtable_insert(ptDdi->ptRelated, \
-                ptData->ptTravRec, ptData->ptTravRec);
+        kr_hashtable_insert(ptDdi->ptRelated, ptTravRec, ptTravRec);
         
         node = node->prev;
     }
@@ -243,41 +255,3 @@ int kr_data_item_ddi_aggr(T_KRDataItem *ptDataItem, T_KRData *ptData)
     return 0;
 }
 
-
-static int _kr_data_item_ddi_load(char *psParamClassName, char *psParamObjectKey, 
-        char *psParamObjectString, void *ptParamObject, void *data)
-{
-    T_KRParamDdi *ptParamDdi = (T_KRParamDdi *)ptParamObject;
-    T_KRHashTable *ptItemTable = (T_KRHashTable *)data;
-
-    T_KRDataItem *ptDataItem = kr_data_item_new(
-            ptParamDdi,
-            ptParamDdi->caDdiName[0], //FIXME
-            ptParamDdi->lDdiId, 
-            kr_data_item_ddi_new,
-            kr_data_item_ddi_aggr,
-            kr_data_item_ddi_free);
-    if (ptDataItem == NULL) {
-        KR_LOG(KR_LOGERROR, "kr_data_item_create [%ld] failed!", \
-                ptParamDdi->lDdiId);
-        return -1; 
-    }
-
-    //insert into item table
-    kr_hashtable_replace(ptItemTable, ptDataItem->caDataItemId, ptDataItem);
-
-    return 0;
-}
-
-
-int kr_data_item_ddi_load(T_KRHashTable *ptItemTable, T_KRParam *ptParam)
-{
-    //load ddi
-    if (kr_param_object_foreach(ptParam, KR_PARAM_DDI, 
-                _kr_data_item_ddi_load, ptItemTable) != 0) {
-        KR_LOG(KR_LOGERROR, "kr_data_item_ddi_load Error!");
-        return -1;
-    }
-    
-    return 0;
-}

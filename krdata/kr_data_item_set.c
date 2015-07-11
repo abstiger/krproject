@@ -1,5 +1,4 @@
 ﻿#include "kr_data_item_set.h"
-#include "krparam/kr_param_class_set.h"
 
 
 void *kr_data_item_set_new(T_KRDataItem *ptDataItem)
@@ -48,49 +47,11 @@ void kr_data_item_set_free(void *priv)
 }
 
 
-int kr_data_item_set_aggr(T_KRDataItem *ptDataItem, T_KRData *ptData)
+int kr_data_item_set_aggr(T_KRDataItem *ptDataItem, T_KRContext *ptContext)
 {
     //TODO:set value type and value
     ptDataItem->eValueInd = KR_VALUE_SETED;
 
-
 }
 
 
-static int _kr_data_item_set_load(char *psParamClassName, char *psParamObjectKey, 
-        char *psParamObjectString, void *ptParamObject, void *data)
-{
-    T_KRParamSet *ptParamSet = (T_KRParamSet *)ptParamObject;
-    T_KRHashTable *ptItemTable = (T_KRHashTable *)data;
-
-    T_KRDataItem *ptDataItem = kr_data_item_new(
-            ptParamSet,
-            ptParamSet->caSetName, //FIXME
-            ptParamSet->lSetId, 
-            kr_data_item_set_new,
-            kr_data_item_set_aggr,
-            kr_data_item_set_free);
-    if (ptDataItem == NULL) {
-        KR_LOG(KR_LOGERROR, "kr_data_item_create [%ld] failed!", \
-                ptParamSet->lSetId);
-        return -1; 
-    }
-
-    //insert into item table
-    kr_hashtable_replace(ptItemTable, ptDataItem->caDataItemId, ptDataItem);
-
-    return 0;
-}
-
-
-int kr_data_item_set_load(T_KRHashTable *ptItemTable, T_KRParam *ptParam)
-{
-    //load set
-    if (kr_param_object_foreach(ptParam, KR_PARAM_SET, 
-                _kr_data_item_set_load, ptItemTable) != 0) {
-        KR_LOG(KR_LOGERROR, "kr_data_item_set_load Error!");
-        return -1;
-    }
-    
-    return 0;
-}

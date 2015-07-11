@@ -2,6 +2,7 @@
 #define __KR_DATA_ITEM_SDI_H__
 
 #include "kr_data_item.h"
+#include "krparam/kr_param_class_sdi.h"
 
 typedef enum {
     KR_LOC_ABSOLUTE     = '0', 
@@ -22,8 +23,7 @@ typedef struct _kr_data_item_sdi
 //function declaration
 void *kr_data_item_sdi_new(T_KRDataItem *ptDataItem);
 void kr_data_item_sdi_free(void *priv);
-int kr_data_item_sdi_aggr(T_KRDataItem *ptDataItem, T_KRData *ptData);
-int kr_data_item_sdi_load(T_KRHashTable *ptItemTable, T_KRParam *ptParam);
+int kr_data_item_sdi_aggr(T_KRDataItem *ptDataItem, T_KRContext *ptContext);
 
 
 #endif /* __KR_DATA_ITEM_SDI_H__ */

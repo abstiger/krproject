@@ -13,7 +13,7 @@ struct _kr_engine_t
     char                *info;         /* information of engine */
 
     T_KREngineEnv       *env;          /* environment of this engine */
-    T_KREngineCtx       *ctx;          /* context of this engine */
+    T_KRContext       *ctx;          /* context of this engine */
     T_KRThreadPool      *tp;           /* thread pool */
 };
 
@@ -123,53 +123,83 @@ int kr_engine_run(T_KREngine *engine, T_KREngineArg *arg)
 
 static int kr_engine_handle(void *ctx, void *arg)
 {
-    T_KREngineCtx *krctx = (T_KREngineCtx *)ctx;
-    T_KREngineArg *krarg = (T_KREngineArg *)arg;
-    T_KRMessage *apply = (T_KRMessage *)krarg->apply;
-    T_KRMessage *reply = (T_KRMessage *)krarg->reply;
+    T_KRContext *ptCtx = (T_KRContext *)ctx;
+    T_KREngineArg *ptArg = (T_KREngineArg *)arg;
+    T_KRMessage *apply = (T_KRMessage *)ptArg->apply;
+    T_KRMessage *reply = (T_KRMessage *)ptArg->reply;
+
+    /* set argument */
+    kr_context_add_data(ptCtx, "arg", ptArg);
 
     //check context, reload if parameter changed
+    if (kr_engine_ctx_check(ptCtx) != 0) {
+        KR_LOG(KR_LOGERROR, "kr_engine_ctx_check failed!");
+        //FIXME:set error code
+        //reply->msgtype = KR_MSGTYPE_ERROR;
+        goto RESP;
+    }
     
-    /*TODO: call interface module to process apply message */
-
-    /* set context with arg */
-    /*
-    if (kr_context_set(krctx, krarg) != 0) {
-        KR_LOG(KR_LOGERROR, "kr_context_set [%p] failed!", krarg);
+    T_KRInput *ptInput = kr_context_get_data(ptCtx, "input");
+    if (ptInput == NULL) {
+        KR_LOG(KR_LOGERROR, "kr_context_get_data input failed!");
         //FIXME:set error code
         //reply->msgtype = KR_MSGTYPE_ERROR;
         goto RESP;
     }
-    */
 
-    /* search handle for this apply message */
-    /*
-    KRFunc handle_func = kr_functable_search(\
-            krctx->ptEnv->ptFuncTable, apply->method);
-    if (handle_func == NULL) {
-        KR_LOG(KR_LOGERROR, "unsupported method[%d]!", apply->method);
+    T_KROutput *ptOutput = kr_context_get_data(ptCtx, "output");
+    if (ptOutput == NULL) {
+        KR_LOG(KR_LOGERROR, "kr_context_get_data output failed!");
         //FIXME:set error code
         //reply->msgtype = KR_MSGTYPE_ERROR;
         goto RESP;
     }
-    */
 
-    /* excute handle function */
-    /*
-    KR_LOG(KR_LOGDEBUG, "invoking handle for method [%s]...", apply->method);
-    handle_func(krctx, krarg);
-    */
+    T_KRFlow *ptFlow = kr_context_get_data(ptCtx, "flow");
+    if (ptFlow == NULL) {
+        KR_LOG(KR_LOGERROR, "kr_context_get_data flow failed!");
+        //FIXME:set error code
+        //reply->msgtype = KR_MSGTYPE_ERROR;
+        goto RESP;
+    }
+
+
+    /*call input module to process apply message */
+    T_KRRecord *ptCurrRec = kr_input_process(ptInput, apply);
+    if (ptCurrRec == NULL) {
+        KR_LOG(KR_LOGERROR, "kr_input_process failed!");
+        //FIXME:set error code
+        //reply->msgtype = KR_MSGTYPE_ERROR;
+        goto RESP;
+    }
+
+    /* set current record */
+    kr_context_add_data(ptCtx, "curr_rec", ptCurrRec);
+
+    /* invoke flow */
+    if (kr_flow_process(ptFlow, ptCtx) != 0) {
+        KR_LOG(KR_LOGERROR, "kr_flow_process failed!");
+        //FIXME:set error code
+        //reply->msgtype = KR_MSGTYPE_ERROR;
+        goto RESP;
+    }
 
 RESP:
-    /*TODO: call interface module to genrate reply message */
+    /*call output module to genrate reply message */
+    reply = kr_output_process(ptOutput, ptCtx);
+    if (reply == NULL) {
+        KR_LOG(KR_LOGERROR, "kr_output_process failed!");
+        return -1;
+    }
 
     /* run user's callback function */
-    if (krarg->cb_func) {
-        krarg->cb_func(apply, reply, krarg->data);
+    if (ptArg->cb_func) {
+        ptArg->cb_func(apply, reply, ptArg->data);
     }
 
     /* clean context */
-    //kr_context_clean(krctx);
+    kr_engine_ctx_clean(ptCtx);
+
     return 0;
 }
 

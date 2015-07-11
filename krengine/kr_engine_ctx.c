@@ -1,38 +1,28 @@
 #include "kr_engine_ctx.h"
 
 /* engine context */
-T_KREngineCtx *kr_engine_ctx_create(T_KREngineEnv *ptEnv)
+T_KRContext *kr_engine_ctx_create(T_KREngineEnv *ptEnv)
 {
-    T_KREngineCtx *ptCtx = kr_calloc(sizeof(*ptCtx));
+    T_KRContext *ptCtx = kr_context_create(ptEnv);
     if (ptCtx == NULL) {
-        KR_LOG(KR_LOGERROR, "kr_calloc ptCtx failed!");
+        KR_LOG(KR_LOGERROR, "kr_context_create ptCtx failed!");
         return NULL;
     }
+
+    kr_context_add_data(ptCtx, "param", ptEnv->ptParam);
+    kr_context_add_data(ptCtx, "input", ptEnv->ptInput);
+    kr_context_add_data(ptCtx, "output", ptEnv->ptOutput);
+    kr_context_add_data(ptCtx, "db", ptEnv->ptDB);
     
-    ptCtx->ptParam = ptEnv->ptParam;
-    ptCtx->ptDB = ptEnv->ptDB;
-    
-    //FIME: remove krdbModule
-    ptCtx->ptInput = kr_input_construct(ptEnv->ptParam, ptEnv->krdbModule);
-    if (ptCtx->ptData == NULL) {
-        KR_LOG(KR_LOGERROR, "kr_input_construct failed!");
-        return NULL;
-    }
-    
-    //FIME: remove krdbModule
-    ptCtx->ptOutput = kr_output_construct(ptEnv->ptParam, ptEnv->krdbModule);
-    if (ptCtx->ptData == NULL) {
-        KR_LOG(KR_LOGERROR, "kr_output_construct failed!");
-        return NULL;
-    }
-    
-    //FIME: remove krdbModule
+    //TODO: construct data
+    /*
     ptCtx->ptData = kr_data_construct(ptEnv->ptParam, ptEnv->krdbModule);
     if (ptCtx->ptData == NULL) {
         KR_LOG(KR_LOGERROR, "kr_data_construct failed!");
         return NULL;
     }
-    /*TODO: construct flow */
+    */
+    //TODO: construct flow
     /*
     ptCtx->ptFlow = kr_flow_construct(ptEnv->ptParam);
     if (ptCtx->ptFlow == NULL) {
@@ -44,39 +34,38 @@ T_KREngineCtx *kr_engine_ctx_create(T_KREngineEnv *ptEnv)
     return ptCtx;
 }
 
-void kr_engine_ctx_destroy(T_KREngineCtx *ptCtx)
+void kr_engine_ctx_destroy(T_KRContext *ptCtx)
 {
     if (ptCtx) {
-        kr_input_destruct(ptCtx->ptInput);
-        kr_output_destruct(ptCtx->ptOutput);
-        kr_data_destruct(ptCtx->ptData);
-        //kr_flow_destruct(ptCtx->ptFlow);
-        kr_free(ptCtx);
+        kr_context_destroy(ptCtx);
     }
 }
 
-int kr_engine_ctx_set(T_KREngineCtx *ptCtx, T_KREngineArg *ptArg)
+int kr_engine_ctx_check(T_KRContext *ptCtx)
 {
-    /* set argument */
-    ptCtx->ptArg = ptArg;
-
     /* check input, reload if needed */
+    /*
     if (kr_input_check(ptCtx->ptInput, ptCtx->ptParam) != 0) {
         KR_LOG(KR_LOGERROR, "kr_input_check failed");
         return -1;
     }
+    */
     
     /* check output, reload if needed */
+    /*
     if (kr_output_check(ptCtx->ptOutput, ptCtx->ptParam) != 0) {
         KR_LOG(KR_LOGERROR, "kr_output_check failed");
         return -1;
     }
+    */
     
     /* check data, reload if needed */
+    /*
     if (kr_data_check(ptCtx->ptData, ptCtx->ptParam) != 0) {
         KR_LOG(KR_LOGERROR, "kr_data_check failed");
         return -1;
     }
+    */
     
     /* check flow, reload if needed */
     /*
@@ -89,7 +78,7 @@ int kr_engine_ctx_set(T_KREngineCtx *ptCtx, T_KREngineArg *ptArg)
     return 0;
 }
 
-void kr_engine_ctx_clean(T_KREngineCtx *ptCtx)
+void kr_engine_ctx_clean(T_KRContext *ptCtx)
 {
     /*initialize dynamic data memory*/
     //kr_data_init(ptCtx->ptData);
@@ -100,4 +89,66 @@ void kr_engine_ctx_clean(T_KREngineCtx *ptCtx)
     /*initialize others*/
     //ptCtx->ptArg = NULL;
     //ptCtx->ptCurrRec = NULL;
+}
+
+E_KRType kr_engine_ctx_get_type(char kind, int id, void *data)
+{
+    T_KRContext *ptCtx = (T_KRContext *)data;
+    switch(kind) 
+    {
+        case KR_CALCKIND_CID:
+            {
+                T_KRRecord *ptCurrRec = 
+                    (T_KRRecord *)kr_context_get_data(ptCtx, "curr_rec");
+                return kr_record_get_field_type(ptCurrRec, id);
+            }
+        case KR_CALCKIND_FID:
+            {
+                T_KRRecord *ptTravRec = 
+                    (T_KRRecord *)kr_context_get_data(ptCtx, "trav_rec");
+                return kr_record_get_field_type(ptTravRec, id);
+            }
+        case KR_CALCKIND_SET:
+        case KR_CALCKIND_SID:
+        case KR_CALCKIND_DID:
+        case KR_CALCKIND_HID:
+            {
+                T_KRData *ptData = 
+                    (T_KRData *)kr_context_get_data(ptCtx, "data");
+                return kr_data_get_type(ptData, kind, id, ptCtx);
+            }
+        default:
+            return KR_TYPE_UNKNOWN;
+    }
+}
+
+void *kr_engine_ctx_get_value(char kind, int id, void *data)
+{
+    T_KRContext *ptCtx = (T_KRContext *)data;
+    switch(kind) 
+    {
+        case KR_CALCKIND_CID:
+            {
+                T_KRRecord *ptCurrRec = 
+                    (T_KRRecord *)kr_context_get_data(ptCtx, "curr_rec");
+                return kr_record_get_field_value(ptCurrRec, id);
+            }
+        case KR_CALCKIND_FID:
+            {
+                T_KRRecord *ptTravRec = 
+                    (T_KRRecord *)kr_context_get_data(ptCtx, "trav_rec");
+                return kr_record_get_field_value(ptTravRec, id);
+            }
+        case KR_CALCKIND_SET:
+        case KR_CALCKIND_SID:
+        case KR_CALCKIND_DID:
+        case KR_CALCKIND_HID:
+            {
+                T_KRData *ptData = 
+                    (T_KRData *)kr_context_get_data(ptCtx, "data");
+                return kr_data_get_value(ptData, kind, id, ptCtx);
+            }
+        default:
+            return NULL;
+    }
 }
