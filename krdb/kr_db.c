@@ -5,12 +5,12 @@
 #include "krparam/kr_param_class_table.h"
 #include "krparam/kr_param_class_index.h"
 
-static int _kr_db_build_table(char *psParamClassName, char *psParamObjectKey, char *psParamObjectString, void *ptParamObject, void *data)
+static int _kr_db_build_table(char *psParamClassName, char *psParamObjectKey, 
+        char *psParamObjectString, void *ptParamObject, void *data)
 {
     T_KRParamTable *ptParamTable = (T_KRParamTable *)ptParamObject;
     T_KRDB *ptDB = (T_KRDB *)data;
     
-    //FIXME:create table when this input need krdb cache
     T_KRTable *ptTable = kr_table_create(ptDB, \
         ptParamTable->lTableId, ptParamTable->caTableName);
     if (ptTable == NULL) {
@@ -22,7 +22,8 @@ static int _kr_db_build_table(char *psParamClassName, char *psParamObjectKey, ch
     return 0;
 }
 
-static int _kr_db_build_index(char *psParamClassName, char *psParamObjectKey, char *psParamObjectString, void *ptParamObject, void *data)
+static int _kr_db_build_index(char *psParamClassName, char *psParamObjectKey, 
+        char *psParamObjectString, void *ptParamObject, void *data)
 {
     T_KRParamIndex *ptParamIndex = (T_KRParamIndex *)ptParamObject;
     T_KRDB *ptDB = (T_KRDB *)data;
@@ -137,9 +138,9 @@ T_KRList* kr_db_select(T_KRDB *ptDB, int iIndexId, void *key,
     /*get records from internal*/
     T_KRIndexSolt *ptIndexSlot = kr_hashtable_lookup(ptIndex->pHashTable, key);
 
-    /*get records from external*/
+    /*TODO:get records from external*/
 
-    /*alloc return record list*/
+    /*TODO:alloc return record list*/
     T_KRList *pRecList=kr_list_new();
     kr_list_set_compare(pRecList, (KRCompareDataFunc)kr_record_compare);
         
