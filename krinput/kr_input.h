@@ -18,7 +18,7 @@ typedef struct _kr_record_t T_KRRecord;
 
 
 //input functions
-extern T_KRInput* kr_input_construct(T_KRParam *ptParam, T_KRModule *ptInputModule);
+extern T_KRInput* kr_input_construct(T_KRParam *ptParam, char *psInputModule);
 extern void kr_input_destruct(T_KRInput* ptInput);
 extern int kr_input_check(T_KRInput* ptInput, T_KRParam *ptParam);
 extern T_KRRecord *kr_input_process(T_KRInput *ptInput, T_KRMessage *ptMessage);

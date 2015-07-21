@@ -10,7 +10,8 @@ struct _kr_input_t
 };
 
 
-static int _kr_input_define_new(char *psParamClassName, char *psParamObjectKey, char *psParamObjectString, void *ptParamObject, void *data)
+static int _kr_input_define_new(char *psParamClassName, char *psParamObjectKey, 
+        char *psParamObjectString, void *ptParamObject, void *data)
 {
     T_KRParamInput *ptParamInput = (T_KRParamInput *)ptParamObject;
     T_KRInput *ptInput = (T_KRInput *)data;
@@ -28,7 +29,7 @@ static int _kr_input_define_new(char *psParamClassName, char *psParamObjectKey, 
 }
 
 
-T_KRInput* kr_input_construct(T_KRParam *ptParam, T_KRModule *ptInputModule)
+T_KRInput* kr_input_construct(T_KRParam *ptParam, char *psInputModule)
 {
     T_KRInput *ptInput = kr_calloc(sizeof(*ptInput));
     if (ptInput == NULL) {
@@ -36,7 +37,13 @@ T_KRInput* kr_input_construct(T_KRParam *ptParam, T_KRModule *ptInputModule)
         return NULL;
     }
     
-    ptInput->ptInputModule = ptInputModule;
+    /* load input module */
+    ptInput->ptInputModule = kr_module_open(psInputModule, RTLD_LAZY);
+    if (ptInput->ptInputModule == NULL) {
+        KR_LOG(KR_LOGERROR, "kr_module_open %s failed!", psInputModule);
+        kr_input_destruct(ptInput);
+        return NULL;
+    }
     
     /*alloc input define list*/
     ptInput->ptInputDefineList = kr_list_new();
@@ -47,6 +54,7 @@ T_KRInput* kr_input_construct(T_KRParam *ptParam, T_KRModule *ptInputModule)
     if (kr_param_object_foreach(ptParam, KR_PARAM_INPUT, 
             _kr_input_define_new, ptInput) != 0) {
         KR_LOG(KR_LOGERROR, "_kr_db_build_table Error!");
+        kr_input_destruct(ptInput);
         return NULL;
     }
     
@@ -59,7 +67,12 @@ T_KRInput* kr_input_construct(T_KRParam *ptParam, T_KRModule *ptInputModule)
 void kr_input_destruct(T_KRInput* ptInput)
 {
     if (ptInput) {
-        kr_list_destroy(ptInput->ptInputDefineList);
+        if (ptInput->ptInputDefineList) {
+            kr_list_destroy(ptInput->ptInputDefineList);
+        }
+        if (ptInput->ptInputModule) {
+            kr_module_close(ptInput->ptInputModule);
+        }
         kr_free(ptInput);
     }
 }
@@ -89,12 +102,14 @@ T_KRInputDefine* kr_input_get_define(T_KRInput *ptInput, int iInputId)
 }
 
 
-int kr_input_handle_process(T_KRInputHandle *ptInputHandle, size_t size, void *buff, T_KRRecord *ptRecord)
+int kr_input_handle_process(T_KRInputHandle *ptInputHandle, 
+        T_KRInputDefine *ptInputDefine, size_t size, void *buff, 
+        T_KRRecord *ptRecord)
 {
     void *data = buff;
 
     if (ptInputHandle->pfInputPre) data=ptInputHandle->pfInputPre(buff);
-    for (int fldno=0; fldno<kr_record_get_field_cnt(ptRecord); fldno++) {
+    for (int fldno=0; fldno<ptInputDefine->iFieldCnt; fldno++) {
         int fldlen = kr_record_get_field_length(ptRecord, fldno);
         void *fldval = kr_record_get_field_value(ptRecord, fldno);
 
@@ -126,7 +141,7 @@ T_KRRecord *kr_input_process(T_KRInput *ptInput, T_KRMessage *ptMessage)
         return NULL;
     }
     
-    int iResult = kr_input_handle_process(ptInputHandle, ptMessage->msglen, ptMessage->msgbuf, ptRecord);
+    int iResult = kr_input_handle_process(ptInputHandle, ptInputDefine, ptMessage->msglen, ptMessage->msgbuf, ptRecord);
     if (iResult != 0) {
         KR_LOG(KR_LOGERROR, "kr_input_handle_process [%s] error!", ptMessage->msgid);
         kr_record_free(ptRecord);

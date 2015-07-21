@@ -15,7 +15,7 @@ T_KRInputHandle* kr_input_handle_new(int iInputId, char *psFormat, T_KRModule *p
     char caFuncName[100] = {0};
     memset(caFuncName, 0x00, sizeof(caFuncName));
     snprintf(caFuncName, sizeof(caFuncName), \
-            "%s_map_pre_func_%d", psFormat, iInputId);
+            "%s_input_source_pre_func_%d", psFormat, iInputId);
     ptInputHandle->pfInputPre = 
         (KRInputPreFunc )kr_module_symbol(ptModule, caFuncName);
     if (ptInputHandle->pfInputPre == NULL) {
@@ -26,7 +26,7 @@ T_KRInputHandle* kr_input_handle_new(int iInputId, char *psFormat, T_KRModule *p
 
     memset(caFuncName, 0x00, sizeof(caFuncName));
     snprintf(caFuncName, sizeof(caFuncName), \
-            "%s_map_func_%d", psFormat, iInputId);
+            "%s_input_source_func_%d", psFormat, iInputId);
     ptInputHandle->pfInput = 
         (KRInputFunc )kr_module_symbol(ptModule, caFuncName);
     if (ptInputHandle->pfInput == NULL) {
@@ -37,7 +37,7 @@ T_KRInputHandle* kr_input_handle_new(int iInputId, char *psFormat, T_KRModule *p
 
     memset(caFuncName, 0x00, sizeof(caFuncName));
     snprintf(caFuncName, sizeof(caFuncName), \
-            "%s_map_post_func_%d", psFormat, iInputId);
+            "%s_input_source_post_func_%d", psFormat, iInputId);
     ptInputHandle->pfInputPost = 
         (KRInputPostFunc )kr_module_symbol(ptModule, caFuncName);
     if (ptInputHandle->pfInputPost == NULL) {
