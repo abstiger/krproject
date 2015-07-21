@@ -1,8 +1,8 @@
 #include "kr_output_define.h"
-#include "kr_output_handle.h"
 
 
-T_KROutputDefine *kr_output_define_new(T_KRParamOutput *ptParamOutput)
+T_KROutputDefine *kr_output_define_new(T_KRParamOutput *ptParamOutput,
+        KRGetTypeFunc pfGetType, KRGetValueFunc pfGetValue)
 {
     T_KROutputDefine *ptOutputDefine = kr_calloc(sizeof(*ptOutputDefine));
     if (ptOutputDefine == NULL) {
@@ -14,7 +14,13 @@ T_KROutputDefine *kr_output_define_new(T_KRParamOutput *ptParamOutput)
             sizeof(ptOutputDefine->caOutputName)-1);
     strncpy(ptOutputDefine->caOutputDesc, ptParamOutput->caOutputDesc, 
             sizeof(ptOutputDefine->caOutputDesc)-1);
-    
+    ptOutputDefine->iFieldCnt = ptParamOutput->lFieldCnt;
+    ptOutputDefine->ptFieldDef = kr_calloc(ptOutputDefine->iFieldCnt * sizeof(T_KROutputFieldDef));
+    if (ptOutputDefine->ptFieldDef == NULL) {
+        KR_LOG(KR_LOGERROR, "kr_calloc ptOutputDefine->ptFieldDef failed!");
+        kr_free(ptOutputDefine);
+        return NULL;
+    }
     // load fields define
     size_t ulFieldOffset = 0;
     for (int i=0; i<ptParamOutput->lFieldCnt; ++i) {
@@ -31,6 +37,16 @@ T_KROutputDefine *kr_output_define_new(T_KRParamOutput *ptParamOutput)
         /* String terminated with '\0' */
         if (ptFieldDef->type == KR_TYPE_STRING) {
             ulFieldOffset += 1;
+        }
+
+        //construct field calc
+        ptFieldDef->calc = kr_calc_construct(ptParamOutputField->caCalcFormat[0], 
+                ptParamOutputField->caCalcString, pfGetType, pfGetValue);
+        if (ptFieldDef->calc == NULL) {
+            KR_LOG(KR_LOGERROR, "kr_calc_construct [%s]:[%s] failed!",
+                    ptParamOutputField->caCalcFormat,
+                    ptParamOutputField->caCalcString);
+            return NULL;
         }
     }
     
@@ -61,9 +77,11 @@ int kr_output_define_match(T_KROutputDefine *ptOutputDefine, int *piOutputId)
 }
 
 
-T_KROutputHandle* kr_output_define_get_handle(T_KROutputDefine *ptOutputDefine, char *psFormat, T_KRModule *ptModule)
+T_KROutputHandle* kr_output_define_get_handle(T_KROutputDefine *ptOutputDefine, 
+        char *psFormat, T_KRModule *ptModule)
 {
-    T_KRListNode *ptListNode = kr_list_search(ptOutputDefine->ptOutputHandleList, psFormat);
+    T_KRListNode *ptListNode = \
+        kr_list_search(ptOutputDefine->ptOutputHandleList, psFormat);
     if (ptListNode != NULL) {
         return (T_KROutputHandle *)kr_list_value(ptListNode);
     }

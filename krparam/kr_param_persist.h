@@ -3,9 +3,24 @@
 
 #include "kr_param.h"
 
+typedef struct _kr_param_persist_config_t 
+{
+    char   type[10+1];   /* odbc/file */
+    char   version[20+1];            
+    union {
+        struct {
+            char name[30+1];
+            char user[30+1];
+            char pass[30+1];
+        }odbc;
+        
+        char file[100+1];
+    }value;
+}T_KRParamPersistConfig;
+
 typedef struct _kr_param_persist_handle_t 
 {
-    char    type; /* 'O' for odbc, 'F' for file */
+    char    *type; /* odbc/file */
     
     void*   (*pfLoadPre)(T_KRParamPersistConfig *ptConfig);
     int     (*pfLoad)(T_KRParam *ptParam, char *psParamVersion, char *psParamClassName, void *ptResource);

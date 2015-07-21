@@ -9,6 +9,8 @@ static cJSON *kr_param_output_field_serialize(T_KRParamOutputField *ptParamOutpu
     cJSON_AddStringToObject(field, "desc", ptParamOutputField->caFieldDesc);
     cJSON_AddStringToObject(field, "type", ptParamOutputField->caFieldType);
     cJSON_AddNumberToObject(field, "length", ptParamOutputField->lFieldLength);
+    cJSON_AddStringToObject(field, "calc_format", ptParamOutputField->caCalcFormat);
+    cJSON_AddStringToObject(field, "calc_string", ptParamOutputField->caCalcString);
     return field;
 }
 
@@ -45,6 +47,8 @@ static void kr_param_output_field_deserialize(cJSON *field, T_KRParamOutputField
     strcpy(ptParamOutputField->caFieldDesc, cJSON_GetString(field, "desc"));
     strcpy(ptParamOutputField->caFieldType, cJSON_GetString(field, "type"));
     ptParamOutputField->lFieldLength = cJSON_GetNumber(field, "length");
+    strcpy(ptParamOutputField->caCalcFormat, cJSON_GetString(field, "calc_format"));
+    strcpy(ptParamOutputField->caCalcString, cJSON_GetString(field, "calc_string"));
 }
 
 

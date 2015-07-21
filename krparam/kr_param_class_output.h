@@ -12,6 +12,8 @@ typedef struct _kr_param_output_field_t
     char          caFieldDesc[100+1];
     char          caFieldType[1+1];
     long          lFieldLength;
+    char          caCalcFormat[1+1];
+    char          caCalcString[500+1];
 }T_KRParamOutputField;
 
 typedef struct _kr_param_output_t
