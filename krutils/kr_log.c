@@ -20,7 +20,7 @@ typedef struct _kr_log_t {
     KRLogLevel  loglevel;  
 }T_KRLog;
 
-T_KRLog gstKRLog = {".", "trace", KR_LOGWARNING};
+T_KRLog gstKRLog = {"\0", "\0", KR_LOGWARNING};
 
 cJSON *kr_log_dump_json(void)
 {
@@ -48,7 +48,7 @@ void kr_log_set_level(KRLogLevel level)
 
 void kr_log(const char *file, int line, KRLogLevel level, const char *fmt, ...)
 {
-    FILE *fp = NULL;
+    FILE *fp = stderr;
     va_list         vlVar;
     char            caTimeString[80];
     char            caLogFile[2*KR_LOGFILE_LEN+1];
@@ -57,12 +57,13 @@ void kr_log(const char *file, int line, KRLogLevel level, const char *fmt, ...)
         return;
     }
     
-    snprintf(caLogFile, sizeof(caLogFile), "%s/%s.%d.%lu.log", \
-        gstKRLog.logpath, gstKRLog.logname, \
-        (int)getpid(), (unsigned long)pthread_self());
-    
-    if ((fp = fopen(caLogFile, "a+")) == NULL) {
-        return;
+    if (gstKRLog.logpath[0] != '\0' && gstKRLog.logname[0] != '\0') {
+        snprintf(caLogFile, sizeof(caLogFile), "%s/%s.%d.%lu.log", \
+            gstKRLog.logpath, gstKRLog.logname, \
+            (int)getpid(), (unsigned long)pthread_self());
+        if ((fp = fopen(caLogFile, "a+")) == NULL) {
+            return;
+        }
     }
     
     fprintf(fp, "--------------------------------------------------------------------------------\n");
@@ -99,16 +100,18 @@ void kr_log(const char *file, int line, KRLogLevel level, const char *fmt, ...)
     vfprintf(fp, fmt, vlVar);
     fprintf(fp, "\n");
     va_end(vlVar);
-    
+
     fflush(fp);
     
-    fclose(fp);
+    if (fp != stderr) {
+        fclose(fp);
+    }
 }
 
 
 void kr_log_hex(const char *file, int line, KRLogLevel level, char *buf, int len)
 {
-    FILE *fp = NULL;
+    FILE *fp = stderr;
     va_list         vlVar;
     char            caTimeString[80];
     char            caLogFile[2*KR_LOGFILE_LEN+1];
@@ -117,12 +120,14 @@ void kr_log_hex(const char *file, int line, KRLogLevel level, char *buf, int len
         return;
     }
     
-    snprintf(caLogFile, sizeof(caLogFile), "%s/%s.%d.%lu.log", \
-        gstKRLog.logpath, gstKRLog.logname, \
-        (int)getpid(), (unsigned long)pthread_self());
+    if (gstKRLog.logpath[0] != '\0' && gstKRLog.logname[0] != '\0') {
+        snprintf(caLogFile, sizeof(caLogFile), "%s/%s.%d.%lu.log", \
+            gstKRLog.logpath, gstKRLog.logname, \
+            (int)getpid(), (unsigned long)pthread_self());
     
-    if ((fp = fopen(caLogFile, "a+")) == NULL) {
-        return;
+        if ((fp = fopen(caLogFile, "a+")) == NULL) {
+            return;
+        }
     }
 
     fprintf(fp, "--------------------------------------------------------------------------------\n");
@@ -159,7 +164,9 @@ void kr_log_hex(const char *file, int line, KRLogLevel level, char *buf, int len
     kr_hex_dump(fp, buf, len);
     fflush(fp);
     
-    fclose(fp);
+    if (fp != stderr) {
+        fclose(fp);
+    }
 }
 
 
