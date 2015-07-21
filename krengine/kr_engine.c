@@ -13,11 +13,9 @@ struct _kr_engine_t
     char                *info;         /* information of engine */
 
     T_KREngineEnv       *env;          /* environment of this engine */
-    T_KRContext       *ctx;          /* context of this engine */
+    T_KRContext         *ctx;          /* context of this engine */
     T_KRThreadPool      *tp;           /* thread pool */
 };
-
-static int kr_engine_handle(void *ctx, void *arg);
 
 
 T_KREngine *kr_engine_startup(T_KREngineConfig *cfg, void *data)
@@ -87,118 +85,35 @@ void kr_engine_shutdown(T_KREngine *engine)
 {
     KR_LOG(KR_LOGDEBUG, "kr_engine_shutdown...");
     
-    if (engine == NULL) return;
-    if (engine->ctx) {
+    if (engine) {
         /* destroy context */
-        kr_engine_ctx_destroy(engine->ctx);
-    } else { 
+        if (engine->ctx) kr_engine_ctx_destroy(engine->ctx);
         /* destroy threadpool */
-        kr_threadpool_destroy(engine->tp);
+        if (engine->tp) kr_threadpool_destroy(engine->tp);
+        /* destroy environment */
+        if (engine->env) kr_engine_env_destroy(engine->env);
+        if (engine->version) kr_free(engine->version);
+        if (engine->info) kr_free(engine->info);
+        kr_free(engine);
     }
-
-    /* destroy environment */
-    kr_engine_env_destroy(engine->env);
-
-    if (engine->version) kr_free(engine->version);
-    if (engine->info) kr_free(engine->info);
-    kr_free(engine);
 }
 
 
 int kr_engine_run(T_KREngine *engine, T_KREngineArg *arg)
 {
     if (engine->ctx) {
-        kr_engine_handle(engine->ctx, arg);
+        if (kr_engine_ctx_process(engine->ctx, arg) != 0) {
+            KR_LOG(KR_LOGERROR, "kr_engine_ctx_process failed!");
+            return -1;
+        }
     } else {
-        T_KRThreadPoolTask stTask = {kr_engine_handle, arg, sizeof(*arg)};
+        T_KRThreadPoolTask stTask = \
+            {(KRThdTaskFunc )kr_engine_ctx_process, arg, sizeof(*arg)};
         if (kr_threadpool_add_task(engine->tp, &stTask) != 0) {
             KR_LOG(KR_LOGERROR, "kr_threadpool_add_task failed!");
             return -1;
         }
     }
-
-    return 0;
-}
-
-
-static int kr_engine_handle(void *ctx, void *arg)
-{
-    T_KRContext *ptCtx = (T_KRContext *)ctx;
-    T_KREngineArg *ptArg = (T_KREngineArg *)arg;
-    T_KRMessage *apply = (T_KRMessage *)ptArg->apply;
-    T_KRMessage *reply = (T_KRMessage *)ptArg->reply;
-
-    /* set argument */
-    kr_context_add_data(ptCtx, "arg", ptArg);
-
-    //check context, reload if parameter changed
-    if (kr_engine_ctx_check(ptCtx) != 0) {
-        KR_LOG(KR_LOGERROR, "kr_engine_ctx_check failed!");
-        //FIXME:set error code
-        //reply->msgtype = KR_MSGTYPE_ERROR;
-        goto RESP;
-    }
-    
-    T_KRInput *ptInput = kr_context_get_data(ptCtx, "input");
-    if (ptInput == NULL) {
-        KR_LOG(KR_LOGERROR, "kr_context_get_data input failed!");
-        //FIXME:set error code
-        //reply->msgtype = KR_MSGTYPE_ERROR;
-        goto RESP;
-    }
-
-    T_KROutput *ptOutput = kr_context_get_data(ptCtx, "output");
-    if (ptOutput == NULL) {
-        KR_LOG(KR_LOGERROR, "kr_context_get_data output failed!");
-        //FIXME:set error code
-        //reply->msgtype = KR_MSGTYPE_ERROR;
-        goto RESP;
-    }
-
-    T_KRFlow *ptFlow = kr_context_get_data(ptCtx, "flow");
-    if (ptFlow == NULL) {
-        KR_LOG(KR_LOGERROR, "kr_context_get_data flow failed!");
-        //FIXME:set error code
-        //reply->msgtype = KR_MSGTYPE_ERROR;
-        goto RESP;
-    }
-
-
-    /*call input module to process apply message */
-    T_KRRecord *ptCurrRec = kr_input_process(ptInput, apply);
-    if (ptCurrRec == NULL) {
-        KR_LOG(KR_LOGERROR, "kr_input_process failed!");
-        //FIXME:set error code
-        //reply->msgtype = KR_MSGTYPE_ERROR;
-        goto RESP;
-    }
-
-    /* set current record */
-    kr_context_add_data(ptCtx, "curr_rec", ptCurrRec);
-
-    /* invoke flow */
-    if (kr_flow_process(ptFlow, ptCtx) != 0) {
-        KR_LOG(KR_LOGERROR, "kr_flow_process failed!");
-        //FIXME:set error code
-        //reply->msgtype = KR_MSGTYPE_ERROR;
-        goto RESP;
-    }
-
-RESP:
-    /*call output module to genrate reply message */
-    reply = kr_output_process(ptOutput, ptCtx);
-    if (reply == NULL) {
-        KR_LOG(KR_LOGERROR, "kr_output_process failed!");
-        return -1;
-    }
-
-    /* run user's callback function */
-    if (ptArg->cb_func) {
-        ptArg->cb_func(apply, reply, ptArg->data);
-    }
-
-    /* clean context */
-    kr_engine_ctx_clean(ptCtx);
 
     return 0;
 }

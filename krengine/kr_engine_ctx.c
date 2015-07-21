@@ -91,6 +91,89 @@ void kr_engine_ctx_clean(T_KRContext *ptCtx)
     //ptCtx->ptCurrRec = NULL;
 }
 
+
+int kr_engine_ctx_process(T_KRContext *ptCtx, T_KREngineArg *ptArg)
+{
+    T_KRMessage *apply = (T_KRMessage *)ptArg->apply;
+    T_KRMessage *reply = (T_KRMessage *)ptArg->reply;
+
+    /* set argument */
+    kr_context_add_data(ptCtx, "arg", ptArg);
+
+    //check context, reload if parameter changed
+    if (kr_engine_ctx_check(ptCtx) != 0) {
+        KR_LOG(KR_LOGERROR, "kr_engine_ctx_check failed!");
+        //FIXME:set error code
+        //reply->msgtype = KR_MSGTYPE_ERROR;
+        goto RESP;
+    }
+    
+    /*
+    T_KRInput *ptInput = kr_context_get_data(ptCtx, "input");
+    if (ptInput == NULL) {
+        KR_LOG(KR_LOGERROR, "kr_context_get_data input failed!");
+        //FIXME:set error code
+        //reply->msgtype = KR_MSGTYPE_ERROR;
+        goto RESP;
+    }
+
+    T_KROutput *ptOutput = kr_context_get_data(ptCtx, "output");
+    if (ptOutput == NULL) {
+        KR_LOG(KR_LOGERROR, "kr_context_get_data output failed!");
+        //FIXME:set error code
+        //reply->msgtype = KR_MSGTYPE_ERROR;
+        goto RESP;
+    }
+
+    //call input module to process apply message
+    T_KRRecord *ptCurrRec = kr_input_process(ptInput, apply);
+    if (ptCurrRec == NULL) {
+        KR_LOG(KR_LOGERROR, "kr_input_process failed!");
+        //FIXME:set error code
+        //reply->msgtype = KR_MSGTYPE_ERROR;
+        goto RESP;
+    }
+
+    // set current record
+    kr_context_add_data(ptCtx, "curr_rec", ptCurrRec);
+    
+    //call output module to genrate reply message
+    reply = kr_output_process(ptOutput, ptCtx);
+    if (reply == NULL) {
+        KR_LOG(KR_LOGERROR, "kr_output_process failed!");
+        return -1;
+    }
+    */
+
+    /* invoke flow */
+    T_KRFlow *ptFlow = kr_context_get_data(ptCtx, "flow");
+    if (ptFlow == NULL) {
+        KR_LOG(KR_LOGERROR, "kr_context_get_data flow failed!");
+        //FIXME:set error code
+        //reply->msgtype = KR_MSGTYPE_ERROR;
+        goto RESP;
+    }
+    
+    if (kr_flow_process(ptFlow, ptCtx) != 0) {
+        KR_LOG(KR_LOGERROR, "kr_flow_process failed!");
+        //FIXME:set error code
+        //reply->msgtype = KR_MSGTYPE_ERROR;
+        goto RESP;
+    }
+
+RESP:
+    /* run user's callback function */
+    if (ptArg->cb_func) {
+        ptArg->cb_func(apply, reply, ptArg->data);
+    }
+
+    /* clean context */
+    kr_engine_ctx_clean(ptCtx);
+
+    return 0;
+}
+
+
 E_KRType kr_engine_ctx_get_type(char kind, int id, void *data)
 {
     T_KRContext *ptCtx = (T_KRContext *)data;

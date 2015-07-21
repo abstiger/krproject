@@ -10,18 +10,6 @@ T_KREngineEnv *kr_engine_env_create(T_KREngineConfig *ptConfig)
         goto FAILED;
     }
 
-    /* load pludge-in modules */
-    if (ptConfig->krdb_module) {
-        ptEnv->krdbModule = kr_module_open(ptConfig->krdb_module, RTLD_LAZY);
-        if (ptEnv->krdbModule == NULL) {
-            KR_LOG(KR_LOGERROR, "kr_module_open %s failed!", ptConfig->krdb_module);
-            goto FAILED;
-        }
-    } else {
-        KR_LOG(KR_LOGERROR, "krdb-module-file not configured!");
-        goto FAILED;
-    }
-
     /* Create parameter memory */
     ptEnv->ptParam = kr_param_create();
     if (ptEnv->ptParam == NULL) {
@@ -31,14 +19,15 @@ T_KREngineEnv *kr_engine_env_create(T_KREngineConfig *ptConfig)
     //TODO: load parameter 
 
     //FIME: remove krdbModule
-    ptEnv->ptInput = kr_input_construct(ptEnv->ptParam, ptEnv->krdbModule);
+    ptEnv->ptInput = kr_input_construct(ptEnv->ptParam, ptConfig->krdb_module);
     if (ptEnv->ptInput == NULL) {
         KR_LOG(KR_LOGERROR, "kr_input_construct failed!");
         return NULL;
     }
     
     //FIME: remove krdbModule
-    ptEnv->ptOutput = kr_output_construct(ptEnv->ptParam, ptEnv->krdbModule);
+    ptEnv->ptOutput = kr_output_construct(ptEnv->ptParam, ptConfig->krdb_module, 
+            NULL, NULL); //FIXME:pfGetType and pfGetValue
     if (ptEnv->ptOutput == NULL) {
         KR_LOG(KR_LOGERROR, "kr_output_construct failed!");
         return NULL;
@@ -74,7 +63,6 @@ void kr_engine_env_destroy(T_KREngineEnv *ptEnv)
         if (ptEnv->ptInput) kr_input_destruct(ptEnv->ptInput);
         if (ptEnv->ptOutput) kr_output_destruct(ptEnv->ptOutput);
         if (ptEnv->ptParam) kr_param_destroy(ptEnv->ptParam);
-        if (ptEnv->krdbModule) kr_module_close(ptEnv->krdbModule);
         kr_free(ptEnv);
     }
 }

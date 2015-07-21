@@ -5,16 +5,15 @@
 #include "krparam/kr_param.h"
 #include "krcalc/kr_calc.h"
 #include "krinput/kr_input.h"
+#include "kroutput/kr_output.h"
 #include "krdb/kr_db.h"
 #include "krdata/kr_data.h"
 #include "krflow/kr_flow.h"
-#include "kroutput/kr_output.h"
 #include "kr_engine.h"
 
 /* engine environment, create with config */
 typedef struct _kr_engine_env_t
 {
-    T_KRModule       *krdbModule;  /* module for krdb */
     T_KRParam        *ptParam;     /* parameter, read only in thread */
     T_KRInput        *ptInput;     /* input, read only in thread */
     T_KROutput       *ptOutput;    /* output, read only in thread */
