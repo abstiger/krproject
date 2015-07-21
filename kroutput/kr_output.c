@@ -2,13 +2,23 @@
 #include "kr_output_define.h"
 #include "kr_output_handle.h"
 
+struct _kr_output_t
+{
+    T_KRModule       *ptOutputModule;
+    KRGetTypeFunc    pfGetType;
+    KRGetValueFunc   pfGetValue;
+    T_KRList         *ptOutputDefineList;
+    time_t           tConstructTime;
+};
 
-static int _kr_output_define_new(char *psParamClassName, char *psParamObjectKey, char *psParamObjectString, void *ptParamObject, void *data)
+static int _kr_output_define_new(char *psParamClassName, char *psParamObjectKey, 
+        char *psParamObjectString, void *ptParamObject, void *data)
 {
     T_KRParamOutput *ptParamOutput = (T_KRParamOutput *)ptParamObject;
     T_KROutput *ptOutput = (T_KROutput *)data;
     
-    T_KROutputDefine *ptOutputDefine = kr_output_define_new(ptParamOutput);
+    T_KROutputDefine *ptOutputDefine = kr_output_define_new(ptParamOutput, 
+            ptOutput->pfGetType, ptOutput->pfGetValue);
     if (ptOutputDefine == NULL) {
         KR_LOG(KR_LOGERROR, "kr_output_define_new [%ld] error!", \
             ptParamOutput->lOutputId);
@@ -21,7 +31,8 @@ static int _kr_output_define_new(char *psParamClassName, char *psParamObjectKey,
 }
 
 
-T_KROutput* kr_output_construct(T_KRParam *ptParam, T_KRModule *ptOutputModule)
+T_KROutput* kr_output_construct(T_KRParam *ptParam, char *psOutputModule, 
+        KRGetTypeFunc pfGetType, KRGetValueFunc pfGetValue)
 {
     T_KROutput *ptOutput = kr_calloc(sizeof(*ptOutput));
     if (ptOutput == NULL) {
@@ -29,7 +40,15 @@ T_KROutput* kr_output_construct(T_KRParam *ptParam, T_KRModule *ptOutputModule)
         return NULL;
     }
     
-    ptOutput->ptOutputModule = ptOutputModule;
+    /* load output module */
+    ptOutput->ptOutputModule = kr_module_open(psOutputModule, RTLD_LAZY);
+    if (ptOutput->ptOutputModule == NULL) {
+        KR_LOG(KR_LOGERROR, "kr_module_open %s failed!", psOutputModule);
+        kr_output_destruct(ptOutput);
+        return NULL;
+    }
+    ptOutput->pfGetType = pfGetType;
+    ptOutput->pfGetValue = pfGetValue;
     
     /*alloc output define list*/
     ptOutput->ptOutputDefineList = kr_list_new();
@@ -52,7 +71,12 @@ T_KROutput* kr_output_construct(T_KRParam *ptParam, T_KRModule *ptOutputModule)
 void kr_output_destruct(T_KROutput* ptOutput)
 {
     if (ptOutput) {
-        kr_list_destroy(ptOutput->ptOutputDefineList);
+        if (ptOutput->ptOutputDefineList) {
+            kr_list_destroy(ptOutput->ptOutputDefineList);
+        }
+        if (ptOutput->ptOutputModule) {
+            kr_module_close(ptOutput->ptOutputModule);
+        }
         kr_free(ptOutput);
     }
 }
@@ -62,7 +86,7 @@ int kr_output_check(T_KROutput* ptOutput, T_KRParam *ptParam)
 {
     /*check output param*/
     if (ptOutput->tConstructTime != kr_param_load_time(ptParam)) {
-        KR_LOG(KR_LOGDEBUG, "reload ...[%ld][%ld]", 
+        KR_LOG(KR_LOGDEBUG, "reload output ...[%ld][%ld]", 
                 ptOutput->tConstructTime, kr_param_load_time(ptParam));
 
         //TODO:reconstruct ptOutput
@@ -82,32 +106,63 @@ T_KROutputDefine* kr_output_get_define(T_KROutput *ptOutput, int iOutputId)
 }
 
 
-T_KRRecord *kr_output_process(T_KROutput *ptOutput, T_KRMessage *ptMessage)
+int kr_output_handle_process(T_KROutputHandle *ptOutputHandle, 
+        T_KROutputDefine *ptOutputDefine, size_t *size, char **buff, 
+        T_KRContext *ptContext)
 {
-    T_KROutputDefine *ptOutputDefine = kr_output_get_define(ptOutput, ptMessage->datasrc);
+    void *data = NULL;
+    
+    if (ptOutputHandle->pfOutputPre) data=ptOutputHandle->pfOutputPre();
+    for (int fldno=0; fldno<ptOutputDefine->iFieldCnt; fldno++) {
+        T_KROutputFieldDef *ptFieldDef = &ptOutputDefine->ptFieldDef[fldno];
+        
+        if (kr_calc_eval(ptFieldDef->calc, ptContext) != 0) {
+            KR_LOG(KR_LOGERROR, "kr_calc_eval field:[%d] failed!", fldno);
+            return -1;
+        }
+
+        void *fldval = kr_get_value(kr_calc_value(ptFieldDef->calc), 
+                                    kr_calc_type(ptFieldDef->calc));
+        ptOutputHandle->pfOutput(data, fldno, ptFieldDef->length, fldval);
+    }
+    if (ptOutputHandle->pfOutputPost) ptOutputHandle->pfOutputPost(data, size, buff);
+
+    return 0;
+}
+
+
+T_KRMessage *kr_output_process(T_KROutput *ptOutput, T_KRContext *ptContext)
+{
+    int iOutputId = *(int *)kr_context_get_data(ptContext, "output_id");
+    char *psOutputFmt = (char *)kr_context_get_data(ptContext, "output_fmt");
+     
+    T_KROutputDefine *ptOutputDefine = \
+        kr_output_get_define(ptOutput, iOutputId);
     if (ptOutputDefine == NULL) {
-        KR_LOG(KR_LOGERROR, "kr_output_get_define [%d] error!", ptMessage->datasrc);
+        KR_LOG(KR_LOGERROR, "kr_output_get_define [%d] error!", iOutputId);
         return NULL;
     }
     
-    T_KROutputHandle *ptOutputHandle = kr_output_define_get_handle(ptOutputDefine, ptMessage->msgfmt, ptOutput->ptOutputModule);
+    T_KROutputHandle *ptOutputHandle = \
+        kr_output_define_get_handle(ptOutputDefine, psOutputFmt, ptOutput->ptOutputModule);
     if (ptOutputHandle == NULL) {
-        KR_LOG(KR_LOGERROR, "kr_output_define_get_handle [%s] error!", ptMessage->msgfmt);
+        KR_LOG(KR_LOGERROR, "kr_output_define_get_handle [%s] error!", psOutputFmt);
         return NULL;
     }
     
-    T_KRRecord *ptRecord = kr_record_new(ptOutputDefine);
-    if (ptRecord == NULL) {
-        KR_LOG(KR_LOGERROR, "kr_record_new [%s] error!", ptOutputDefine->iOutputId);
+    T_KRMessage *ptMessage = kr_calloc(sizeof(*ptMessage));
+    if (ptMessage == NULL) {
+        KR_LOG(KR_LOGERROR, "kr_calloc ptMessage error!");
         return NULL;
     }
     
-    int iResult = kr_output_handle_process(ptOutputHandle, ptMessage->msglen, ptMessage->msgbuf, ptRecord);
+    int iResult = kr_output_handle_process(ptOutputHandle, ptOutputDefine, 
+                    &ptMessage->msglen, &ptMessage->msgbuf, ptContext);
     if (iResult != 0) {
-        KR_LOG(KR_LOGERROR, "kr_output_handle_process [%s] error!", ptMessage->msgid);
-        kr_record_free(ptRecord);
+        KR_LOG(KR_LOGERROR, "kr_output_handle_process [%d][%s] error!", iOutputId, psOutputFmt);
+        kr_free(ptMessage);
         return NULL;
     }
     
-    return ptRecord;
+    return ptMessage;
 }

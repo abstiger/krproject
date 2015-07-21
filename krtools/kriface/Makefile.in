@@ -75,9 +75,7 @@ CONFIG_CLEAN_VPATH_FILES =
 am__installdirs = "$(DESTDIR)$(bindir)"
 PROGRAMS = $(bin_PROGRAMS)
 am_kriface_OBJECTS = kriface-kr_iface.$(OBJEXT) \
-	kriface-kr_iface_fixed.$(OBJEXT) \
-	kriface-kr_iface_json.$(OBJEXT) \
-	kriface-kr_iface_avro.$(OBJEXT)
+	kriface-kr_iface_json.$(OBJEXT)
 kriface_OBJECTS = $(am_kriface_OBJECTS)
 kriface_DEPENDENCIES = $(top_srcdir)/krengine/libkrengine.la
 kriface_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
@@ -248,10 +246,10 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 kriface_SOURCES = kr_iface.h \
 					kr_iface.c \
-					kr_iface_fixed.c \
-					kr_iface_json.c \
-					kr_iface_avro.c
+					kr_iface_json.c
 
+
+#					kr_iface_fixed.c 
 kriface_LDADD = $(top_srcdir)/krengine/libkrengine.la
 kriface_LDFLAGS = 
 kriface_CPPFLAGS = 
@@ -346,8 +344,6 @@ distclean-compile:
 	-rm -f *.tab.c
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/kriface-kr_iface.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/kriface-kr_iface_avro.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/kriface-kr_iface_fixed.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/kriface-kr_iface_json.Po@am__quote@
 
 .c.o:
@@ -385,20 +381,6 @@ kriface-kr_iface.obj: kr_iface.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(kriface_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o kriface-kr_iface.obj `if test -f 'kr_iface.c'; then $(CYGPATH_W) 'kr_iface.c'; else $(CYGPATH_W) '$(srcdir)/kr_iface.c'; fi`
 
-kriface-kr_iface_fixed.o: kr_iface_fixed.c
-@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(kriface_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT kriface-kr_iface_fixed.o -MD -MP -MF $(DEPDIR)/kriface-kr_iface_fixed.Tpo -c -o kriface-kr_iface_fixed.o `test -f 'kr_iface_fixed.c' || echo '$(srcdir)/'`kr_iface_fixed.c
-@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/kriface-kr_iface_fixed.Tpo $(DEPDIR)/kriface-kr_iface_fixed.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='kr_iface_fixed.c' object='kriface-kr_iface_fixed.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(kriface_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o kriface-kr_iface_fixed.o `test -f 'kr_iface_fixed.c' || echo '$(srcdir)/'`kr_iface_fixed.c
-
-kriface-kr_iface_fixed.obj: kr_iface_fixed.c
-@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(kriface_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT kriface-kr_iface_fixed.obj -MD -MP -MF $(DEPDIR)/kriface-kr_iface_fixed.Tpo -c -o kriface-kr_iface_fixed.obj `if test -f 'kr_iface_fixed.c'; then $(CYGPATH_W) 'kr_iface_fixed.c'; else $(CYGPATH_W) '$(srcdir)/kr_iface_fixed.c'; fi`
-@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/kriface-kr_iface_fixed.Tpo $(DEPDIR)/kriface-kr_iface_fixed.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='kr_iface_fixed.c' object='kriface-kr_iface_fixed.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(kriface_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o kriface-kr_iface_fixed.obj `if test -f 'kr_iface_fixed.c'; then $(CYGPATH_W) 'kr_iface_fixed.c'; else $(CYGPATH_W) '$(srcdir)/kr_iface_fixed.c'; fi`
-
 kriface-kr_iface_json.o: kr_iface_json.c
 @am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(kriface_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT kriface-kr_iface_json.o -MD -MP -MF $(DEPDIR)/kriface-kr_iface_json.Tpo -c -o kriface-kr_iface_json.o `test -f 'kr_iface_json.c' || echo '$(srcdir)/'`kr_iface_json.c
 @am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/kriface-kr_iface_json.Tpo $(DEPDIR)/kriface-kr_iface_json.Po
@@ -412,20 +394,6 @@ kriface-kr_iface_json.obj: kr_iface_json.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='kr_iface_json.c' object='kriface-kr_iface_json.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(kriface_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o kriface-kr_iface_json.obj `if test -f 'kr_iface_json.c'; then $(CYGPATH_W) 'kr_iface_json.c'; else $(CYGPATH_W) '$(srcdir)/kr_iface_json.c'; fi`
-
-kriface-kr_iface_avro.o: kr_iface_avro.c
-@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(kriface_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT kriface-kr_iface_avro.o -MD -MP -MF $(DEPDIR)/kriface-kr_iface_avro.Tpo -c -o kriface-kr_iface_avro.o `test -f 'kr_iface_avro.c' || echo '$(srcdir)/'`kr_iface_avro.c
-@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/kriface-kr_iface_avro.Tpo $(DEPDIR)/kriface-kr_iface_avro.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='kr_iface_avro.c' object='kriface-kr_iface_avro.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(kriface_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o kriface-kr_iface_avro.o `test -f 'kr_iface_avro.c' || echo '$(srcdir)/'`kr_iface_avro.c
-
-kriface-kr_iface_avro.obj: kr_iface_avro.c
-@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(kriface_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT kriface-kr_iface_avro.obj -MD -MP -MF $(DEPDIR)/kriface-kr_iface_avro.Tpo -c -o kriface-kr_iface_avro.obj `if test -f 'kr_iface_avro.c'; then $(CYGPATH_W) 'kr_iface_avro.c'; else $(CYGPATH_W) '$(srcdir)/kr_iface_avro.c'; fi`
-@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/kriface-kr_iface_avro.Tpo $(DEPDIR)/kriface-kr_iface_avro.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='kr_iface_avro.c' object='kriface-kr_iface_avro.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(kriface_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o kriface-kr_iface_avro.obj `if test -f 'kr_iface_avro.c'; then $(CYGPATH_W) 'kr_iface_avro.c'; else $(CYGPATH_W) '$(srcdir)/kr_iface_avro.c'; fi`
 
 mostlyclean-libtool:
 	-rm -f *.lo

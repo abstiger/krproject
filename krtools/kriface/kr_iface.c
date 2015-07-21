@@ -1,43 +1,43 @@
 #include "kr_iface.h"
 #include <sys/stat.h>
 
-T_KRIfaceFormat gptIfaceFormat[]= 
+void *json_input_define_pre_func(T_KRParamInput *ptParamInput);
+int json_input_define_func(T_KRParamInputField *ptParamInputField, void *data);
+void json_input_define_post_func(void *data);
+
+void *json_input_source_pre_func(T_KRParamInput *ptParamInput);
+int json_input_source_func(T_KRParamInputField *ptParamInputField, void *data);
+void json_input_source_post_func(void *data);
+
+void *json_output_define_pre_func(T_KRParamOutput *ptParamOutput);
+int json_output_define_func(T_KRParamOutputField *ptParamOutputField, void *data);
+void json_output_define_post_func(void *data);
+
+void *json_output_source_pre_func(T_KRParamOutput *ptParamOutput);
+int json_output_source_func(T_KRParamOutputField *ptParamOutputField, void *data);
+void json_output_source_post_func(void *data);
+
+
+
+T_KRIfaceHandle gptIfaceHandle[]= 
 {
     {
-        "fixed", "define",
-        fixed_define_pre_func, 
-        fixed_define_func, 
-        fixed_define_post_func
-    },
-    {
-        "fixed", "source",
-        fixed_source_pre_func, 
-        fixed_source_func, 
-        fixed_source_post_func
-    },
-    {
-        "json", "define",
-        json_define_pre_func, 
-        json_define_func, 
-        json_define_post_func
-    },
-    {
-        "json", "source",
-        json_source_pre_func, 
-        json_source_func, 
-        json_source_post_func
-    },
-    {
-        "avro", "define",
-        avro_define_pre_func, 
-        avro_define_func, 
-        avro_define_post_func
-    },
-    {
-        "avro", "source",
-        avro_source_pre_func, 
-        avro_source_func, 
-        avro_source_post_func
+        "json", 
+        json_input_define_pre_func, 
+        json_input_define_func, 
+        json_input_define_post_func,
+        
+        json_input_source_pre_func, 
+        json_input_source_func, 
+        json_input_source_post_func,
+
+        json_output_define_pre_func, 
+        json_output_define_func, 
+        json_output_define_post_func,
+                
+        json_output_source_pre_func, 
+        json_output_source_func, 
+        json_output_source_post_func
     }
 };
 
@@ -46,225 +46,19 @@ typedef struct _kr_iface_args_t
     int gen_define;
     int gen_source;
     int gen_makefile;
-    int datasrc_id;
-    char param_version[50];
+    
+    char param_url[200];
+    int  input_id;
+    int  output_id;
     char format_name[20];
-    char output_path[1024];
+    char output_dir[1024];
 }T_KRIfaceArgs;
 
-static T_KRParam *gptParam = NULL;
 static T_KRIfaceArgs gstArgs = {0};
 
-static void kr_usage(int argc, char *argv[]);
-static int kr_parse_arguments(int argc, char *argv[]);
-static T_KRIfaceFormat *kr_search_format(char *format_name, char *file_code);
-static int kr_traversal_datasrc(char *file_code);
-static int kr_generate_makefile(void);
-
-
-int main(int argc, char *argv[])
-{
-    int ret = -1;
-    
-    kr_log_set_path(".");
-    kr_log_set_name("iface");
-    kr_log_set_level(KR_LOGDEBUG);
-
-    /* Parse Arguments */
-    ret = kr_parse_arguments(argc, argv);
-    if (ret != 0) {
-        fprintf(stderr, "kr_parse_arguments failed!\n");
-        return -1;
-    }
-
-    /* Create parameter memory */
-    gptParam = kr_param_create();
-    if (gptParam == NULL) {
-        KR_LOG(KR_LOGERROR, "kr_param_create failed!");
-        return -1;
-    }
-
-    /* load parameter */
-    T_KRParamPersistConfig stLoadConfig = {
-        .type = 'O',
-        .version = gstArgs.param_version,
-        .value.odbc.name = getenv("DBNAME"),
-        .value.odbc.user = getenv("DBUSER"),
-        .value.odbc.pass = getenv("DBPASS"),
-    };
-    kr_param_load(gptParam, &stLoadConfig);
-
-    /* generate define file */
-    if (gstArgs.gen_define) {
-        ret = kr_traversal_datasrc("define");
-        if (ret != 0) {
-            fprintf(stderr, "kr_traversal_datasrc define failed!\n");
-            goto clean;
-        }
-    }
-
-    /* generate source file */
-    if (gstArgs.gen_source) {
-        ret = kr_traversal_datasrc("source");
-        if (ret != 0) {
-            fprintf(stderr, "kr_traversal_datasrc source failed!\n");
-            goto clean;
-        }
-    }
-
-    /* Create Makefile */
-    if (gstArgs.gen_makefile) {
-        ret = kr_generate_makefile();
-        if (ret != 0) {
-            fprintf(stderr, "kr_generate_makefile failed!\n");
-            goto clean;
-        }
-    }
-
-clean:
-    kr_param_destroy(gptParam);
-    return ret;
-}
-
-
-static void kr_usage(int argc, char *argv[])
-{
-    fprintf(stderr, "Usage: kriface [OPTIONS]\n"
-            "  -d                     Generate Define File \n"
-            "  -s                     Generate Source File \n"
-            "  -m                     Generate Make File \n"
-            "  -i <datasrc id>        Specify Datasrc Id(default all) \n"
-            "  -v <param version>     Specify Param Version \n"
-            "  -f <format name>       Specify Format Name(default all) \n"
-            "  -o <output path>       Specify Output Directory(default .) \n"
-            "  -h                     Show this usage\n"
-            "\n");
-    return;
-}
-
-
-static int kr_parse_arguments(int argc, char *argv[])
-{
-    int opt;
-
-    while ((opt = getopt(argc, argv, "dsmi:v:f:o:h")) != -1)
-    {
-        switch (opt)
-        {
-            case 'd':
-                gstArgs.gen_define = 1;
-                break;
-            case 's':
-                gstArgs.gen_source = 1;
-                break;
-            case 'm':
-                gstArgs.gen_makefile = 1;
-                break;
-            case 'i':
-                gstArgs.datasrc_id = atoi(optarg);
-                break;
-            case 'v':
-                strcpy(gstArgs.param_version, optarg);
-                break;    
-            case 'f':
-                strcpy(gstArgs.format_name, optarg);
-                break;
-            case 'o':
-                strcpy(gstArgs.output_path, optarg);
-                break;
-            default:
-                kr_usage(argc, argv);
-                exit(1);
-        }
-    }
-
-    /* Change work directory */
-    if (gstArgs.output_path[0] != '\0') {
-        if (access(gstArgs.output_path, R_OK|W_OK|X_OK) != 0) {
-            mkdir(gstArgs.output_path, 0744);
-        }
-        if (chdir(gstArgs.output_path) != 0) {
-            fprintf(stderr, "chdir %s failed!\n", gstArgs.output_path);
-            return -1;
-        }
-    }
-
-    return 0;
-}
-
-
-static T_KRIfaceFormat *kr_search_format(char *format_name, char *file_code)
-{
-    T_KRIfaceFormat *iface_format = NULL;
-
-    for (int i=0; i<sizeof(gptIfaceFormat)/sizeof(T_KRIfaceFormat); ++i) {
-        iface_format = &gptIfaceFormat[i];
-        if (strcasecmp(format_name, iface_format->format_name) == 0 &&
-            strcasecmp(file_code, iface_format->file_code) == 0) {
-            return iface_format;
-        }
-    }
-    return NULL;
-}
-
-
-static int _kr_input_traversal(char *psParamClassName, char *psParamObjectKey, char *psParamObjectString, void *ptParamObject, void *data)
-{
-    T_KRParamInput *ptParamInput = (T_KRParamInput *)ptParamObject;
-    char *file_code = (char *)data;
-
-    /* Judge If datasrc matched */
-    if (gstArgs.datasrc_id != 0 && 
-            gstArgs.datasrc_id != ptParamInput->lInputId) {
-        return 0;
-    }
-
-    for (int i=0; i<sizeof(gptIfaceFormat)/sizeof(T_KRIfaceFormat); ++i) {
-        T_KRIfaceFormat *iface_format = &gptIfaceFormat[i];
-        
-        /* Judge If file code matched */
-        if (strcasecmp(file_code, iface_format->file_code) != 0) {
-            continue;
-        }
-
-        /* Judge If format name matched */
-        if (gstArgs.format_name[0] != '\0' &&
-                strcasecmp(gstArgs.format_name, iface_format->format_name)) {
-            continue;
-        }
-                    
-        /* Traversal Fields */
-        int iFlag = kr_traversal_fields(ptParamInput, 
-                iface_format->datasrc_field_pre_func,
-                iface_format->datasrc_field_func,
-                iface_format->datasrc_field_post_func);
-        if (iFlag != 0) {
-            fprintf(stderr, "kr_traversal_fields [%ld] failed!\n", \
-                    ptParamInput->lInputId);
-            return -1;
-        }
-    }
-
-    return 0;   
-}
-
-static int kr_traversal_datasrc(char *file_code)
-{
-    /*create input list*/
-    if (kr_param_object_foreach(gptParam, KR_PARAM_INPUT, 
-            _kr_input_traversal, file_code) != 0) {
-        fprintf(stderr, "_kr_input_traversal %s error!", file_code);
-        return -1;
-    }
-
-    return 0;
-}
-
-
-int kr_traversal_fields(T_KRParamInput *ptParamInput, 
-        DatasrcFieldPreFunc pre_func, 
-        DatasrcFieldFunc func, 
-        DatasrcFieldPostFunc post_func)
+static int kr_traversal_input_fields(T_KRParamInput *ptParamInput, 
+    KRInputPreFunc pre_func, KRInputFunc func, KRInputPostFunc post_func, 
+    void *priv)
 {
     int iFlag = 0;
     
@@ -277,10 +71,11 @@ int kr_traversal_fields(T_KRParamInput *ptParamInput,
     for (int i=0; i<ptParamInput->lFieldCnt; ++i) {
         /* run datasrc_field_func */
         if (func) {
-            iFlag = func(&ptParamInput->ptFieldDef[i], data);
+            T_KRParamInputField *ptFieldDef = &ptParamInput->ptFieldDef[i];
+            iFlag = func(ptFieldDef, data);
             if (iFlag != 0) {
-                fprintf(stderr, "run [%ld] datasrc_field_func failed!\n", 
-                        ptParamInput->lInputId);
+                fprintf(stderr, "run [%ld]:[%ld] func failed!\n", 
+                        ptParamInput->lInputId, ptFieldDef->lFieldId);
                 break;
             }
         }
@@ -288,10 +83,167 @@ int kr_traversal_fields(T_KRParamInput *ptParamInput,
    
     /* run datasrc_field_post_func */
     if (post_func) {
-        post_func(data, iFlag);
+        post_func(data);
     }
 
-    return iFlag;
+    return 0;
+}
+
+static int kr_traversal_output_fields(T_KRParamOutput *ptParamOutput, 
+    KROutputPreFunc pre_func, KROutputFunc func, KROutputPostFunc post_func, 
+    void *priv)
+{
+    int iFlag = 0;
+    
+    /* run datasrc_field_pre_func */
+    void *data = NULL;
+    if (pre_func) {
+        data = pre_func(ptParamOutput);
+    }
+    
+    for (int i=0; i<ptParamOutput->lFieldCnt; ++i) {
+        /* run datasrc_field_func */
+        if (func) {
+            T_KRParamOutputField *ptFieldDef = &ptParamOutput->ptFieldDef[i];
+            iFlag = func(ptFieldDef, data);
+            if (iFlag != 0) {
+                fprintf(stderr, "run [%ld]:[%ld] func failed!\n", 
+                        ptParamOutput->lOutputId, ptFieldDef->lFieldId);
+                break;
+            }
+        }
+    }
+   
+    /* run datasrc_field_post_func */
+    if (post_func) {
+        post_func(data);
+    }
+
+    return 0;
+}
+
+static int _kr_traversal_input(char *psParamClassName, char *psParamObjectKey, 
+            char *psParamObjectString, void *ptParamObject, void *data)
+{
+    T_KRParamInput *ptParamInput = (T_KRParamInput *)ptParamObject;
+
+    /* Judge If datasrc matched */
+    if (gstArgs.input_id != 0 && 
+            gstArgs.input_id != ptParamInput->lInputId) {
+        return 0;
+    }
+
+    for (int i=0; i<sizeof(gptIfaceHandle)/sizeof(T_KRIfaceHandle); ++i) {
+        T_KRIfaceHandle *ptIfaceHandle = &gptIfaceHandle[i];
+
+        /* Judge If format name matched */
+        if (gstArgs.format_name[0] != '\0' &&
+                strcasecmp(gstArgs.format_name, ptIfaceHandle->format_name)) {
+            continue;
+        }
+                    
+        /* generate define */
+        if (gstArgs.gen_define) {
+            int iFlag = kr_traversal_input_fields(ptParamInput, 
+                    ptIfaceHandle->input_define_pre_func,
+                    ptIfaceHandle->input_define_func,
+                    ptIfaceHandle->input_define_post_func, data);
+            if (iFlag != 0) {
+                fprintf(stderr, "kr_traversal_input_fields [%ld] failed!\n", \
+                        ptParamInput->lInputId);
+                return -1;
+            }
+        }
+        
+        /* generate source */
+        if (gstArgs.gen_source) {
+            int iFlag = kr_traversal_input_fields(ptParamInput, 
+                    ptIfaceHandle->input_source_pre_func,
+                    ptIfaceHandle->input_source_func,
+                    ptIfaceHandle->input_source_post_func, data);
+            if (iFlag != 0) {
+                fprintf(stderr, "kr_traversal_input_fields [%ld] failed!\n", \
+                        ptParamInput->lInputId);
+                return -1;
+            }
+        }
+    }
+
+    return 0;   
+}
+
+static int _kr_traversal_output(char *psParamClassName, char *psParamObjectKey, 
+            char *psParamObjectString, void *ptParamObject, void *data)
+{
+    T_KRParamOutput *ptParamOutput = (T_KRParamOutput *)ptParamObject;
+
+    /* Judge If datasrc matched */
+    if (gstArgs.output_id != 0 && 
+            gstArgs.output_id != ptParamOutput->lOutputId) {
+        return 0;
+    }
+
+    for (int i=0; i<sizeof(gptIfaceHandle)/sizeof(T_KRIfaceHandle); ++i) {
+        T_KRIfaceHandle *ptIfaceHandle = &gptIfaceHandle[i];
+
+        /* Judge If format name matched */
+        if (gstArgs.format_name[0] != '\0' &&
+                strcasecmp(gstArgs.format_name, ptIfaceHandle->format_name)) {
+            continue;
+        }
+                    
+        /* generate define */
+        if (gstArgs.gen_define) {
+            int iFlag = kr_traversal_output_fields(ptParamOutput, 
+                    ptIfaceHandle->output_define_pre_func,
+                    ptIfaceHandle->output_define_func,
+                    ptIfaceHandle->output_define_post_func, data);
+            if (iFlag != 0) {
+                fprintf(stderr, "kr_traversal_input_fields [%ld] failed!\n", \
+                        ptParamOutput->lOutputId);
+                return -1;
+            }
+        }
+        
+        /* generate source */
+        if (gstArgs.gen_source) {
+            int iFlag = kr_traversal_output_fields(ptParamOutput, 
+                    ptIfaceHandle->output_source_pre_func,
+                    ptIfaceHandle->output_source_func,
+                    ptIfaceHandle->output_source_post_func, data);
+            if (iFlag != 0) {
+                fprintf(stderr, "kr_traversal_output_fields [%ld] failed!\n", \
+                        ptParamOutput->lOutputId);
+                return -1;
+            }
+        }
+    }
+
+    return 0;   
+}
+
+static int kr_traversal_input(T_KRParam *ptParam, void *data)
+{
+    //traversal input list
+    if (kr_param_object_foreach(ptParam, KR_PARAM_INPUT, 
+            _kr_traversal_input, data) != 0) {
+        fprintf(stderr, "_kr_traversal_input error!");
+        return -1;
+    }
+
+    return 0;
+}
+
+static int kr_traversal_output(T_KRParam *ptParam, void *data)
+{
+    //traversal output list
+    if (kr_param_object_foreach(ptParam, KR_PARAM_OUTPUT, 
+            _kr_traversal_output, data) != 0) {
+        fprintf(stderr, "_kr_traversal_output error!");
+        return -1;
+    }
+
+    return 0;
 }
 
 static int kr_generate_makefile(void)
@@ -351,4 +303,138 @@ static int kr_generate_makefile(void)
     fclose(fp);
 
     return 0;
+}
+
+static void kr_usage(int argc, char *argv[])
+{
+    fprintf(stderr, "Usage: kriface [OPTIONS]\n"
+            "  -p <param url>         Specify Param persist url(required) \n"
+            "  -h                     Generate Define File(optional, default false) \n"
+            "  -s                     Generate Source File(optional, default false) \n"
+            "  -m                     Generate Make File(optional, default false) \n"
+            "  -i <input id>          Specify Input Id(optional, default all) \n"
+            "  -o <output id>         Specify Output Id(optional, default all) \n"
+            "  -f <format name>       Specify Format Name(optional, default all) \n"
+            "  -d <output dir>        Specify Output Directory(optional, default .) \n"
+            "  -?                     Show this usage\n"
+            "\n");
+    return;
+}
+
+
+static int kr_parse_arguments(int argc, char *argv[])
+{
+    int opt;
+
+    while ((opt = getopt(argc, argv, "hsmp:i:o:f:d:?")) != -1)
+    {
+        switch (opt)
+        {
+            case 'h':
+                gstArgs.gen_define = 1;
+                break;
+            case 's':
+                gstArgs.gen_source = 1;
+                break;
+            case 'm':
+                gstArgs.gen_makefile = 1;
+                break;
+            case 'p':
+                strcpy(gstArgs.param_url, optarg);
+                break;    
+            case 'i':
+                gstArgs.input_id = atoi(optarg);
+                break;
+            case 'o':
+                gstArgs.output_id = atoi(optarg);
+                break;
+            case 'f':
+                strcpy(gstArgs.format_name, optarg);
+                break;
+            case 'd':
+                strcpy(gstArgs.output_dir, optarg);
+                break;
+            default:
+                kr_usage(argc, argv);
+                return -1;
+        }
+    }
+
+    return 0;
+}
+
+
+int main(int argc, char *argv[])
+{
+    int ret = -1;
+    
+    kr_log_set_path(".");
+    kr_log_set_name("iface");
+    kr_log_set_level(KR_LOGDEBUG);
+
+    /* Parse Arguments */
+    ret = kr_parse_arguments(argc, argv);
+    if (ret != 0) {
+        fprintf(stderr, "kr_parse_arguments failed!\n");
+        return -1;
+    }
+
+    /* Change work directory */
+    if (gstArgs.output_dir[0] != '\0') {
+        if (access(gstArgs.output_dir, R_OK|W_OK|X_OK) != 0) {
+            mkdir(gstArgs.output_dir, 0744);
+        }
+        if (chdir(gstArgs.output_dir) != 0) {
+            fprintf(stderr, "chdir %s failed!\n", gstArgs.output_dir);
+            return -1;
+        }
+    }
+
+    if (gstArgs.param_url[0] == '\0') {
+        fprintf(stderr, "param url should set!");
+        return -1;
+    }
+
+    /* Create parameter memory */
+    T_KRParam *ptParam = kr_param_create();
+    if (ptParam == NULL) {
+        fprintf(stderr, "kr_param_create failed!\n");
+        goto clean;
+    }
+
+    /* load parameter */
+    ret = kr_param_load(ptParam, gstArgs.param_url);
+    if (ret < 0) {
+        fprintf(stderr, "kr_param_load %s failed!\n", gstArgs.param_url);
+        goto clean;
+    }
+
+    /* process input */
+    ret = kr_traversal_input(ptParam, NULL);
+    if (ret != 0) {
+        fprintf(stderr, "kr_traversal_input failed!\n");
+        goto clean;
+    }
+
+    /* process output */
+    ret = kr_traversal_output(ptParam, NULL);
+    if (ret != 0) {
+        fprintf(stderr, "kr_traversal_output failed!\n");
+        goto clean;
+    }
+
+    /* Create Makefile */
+    if (gstArgs.gen_makefile) {
+        ret = kr_generate_makefile();
+        if (ret != 0) {
+            fprintf(stderr, "kr_generate_makefile failed!\n");
+            goto clean;
+        }
+    }
+
+clean:
+    if (ptParam) {
+        kr_param_destroy(ptParam);
+    }
+    return ret;
 }
