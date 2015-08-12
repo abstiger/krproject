@@ -1,4 +1,7 @@
 noinst_LTLIBRARIES      = libkrutils.la
+include_HEADERS         = kr_request.h \
+						  kr_response.h
+
 libkrutils_la_SOURCES   = \
 						  kr_macros.h \
 						  kr_types.h \
@@ -41,6 +44,10 @@ libkrutils_la_SOURCES   = \
 						  kr_cache.c \
                           kr_context.h \
                           kr_context.c \
+                          kr_request.h \
+                          kr_request.c \
+                          kr_response.h \
+                          kr_response.c \
 						  kr_utils.h
 
 EXTRA_DIST = \
