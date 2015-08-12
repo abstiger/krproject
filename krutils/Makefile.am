@@ -13,12 +13,16 @@ libkrutils_la_SOURCES   = \
 						  kr_log.c \
 						  kr_list.h \
 						  kr_list.c \
-						  kr_ntree.h \
-						  kr_ntree.c \
+						  kr_queue.h \
+						  kr_queue.c \
 						  kr_hashtable.h \
 						  kr_hashtable.c \
 						  kr_hashset.h \
 						  kr_hashset.c \
+						  kr_skiplist.h \
+						  kr_skiplist.c \
+						  kr_conhash.h \
+						  kr_conhash.c \
 						  kr_functable.h \
 						  kr_functable.c \
 						  kr_regex.h \
@@ -27,14 +31,6 @@ libkrutils_la_SOURCES   = \
 						  kr_json.c \
 						  kr_module.h \
 						  kr_module.c \
-						  kr_skiplist.h \
-						  kr_skiplist.c \
-						  kr_conhash.h \
-						  kr_conhash.c \
-						  kr_queue.h \
-						  kr_queue.c \
-                          kr_context.h \
-                          kr_context.c \
 						  kr_threadpool.h \
 						  kr_threadpool.c \
 						  kr_net.h \
@@ -43,6 +39,8 @@ libkrutils_la_SOURCES   = \
 						  kr_event.c \
 						  kr_cache.h \
 						  kr_cache.c \
+                          kr_context.h \
+                          kr_context.c \
 						  kr_utils.h
 
 EXTRA_DIST = \

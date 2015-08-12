@@ -76,14 +76,13 @@ libkrutils_la_DEPENDENCIES =
 am_libkrutils_la_OBJECTS = libkrutils_la-kr_alloc.lo \
 	libkrutils_la-kr_datetime.lo libkrutils_la-kr_string.lo \
 	libkrutils_la-kr_log.lo libkrutils_la-kr_list.lo \
-	libkrutils_la-kr_ntree.lo libkrutils_la-kr_hashtable.lo \
-	libkrutils_la-kr_hashset.lo libkrutils_la-kr_functable.lo \
+	libkrutils_la-kr_queue.lo libkrutils_la-kr_hashtable.lo \
+	libkrutils_la-kr_hashset.lo libkrutils_la-kr_skiplist.lo \
+	libkrutils_la-kr_conhash.lo libkrutils_la-kr_functable.lo \
 	libkrutils_la-kr_regex.lo libkrutils_la-kr_json.lo \
-	libkrutils_la-kr_module.lo libkrutils_la-kr_skiplist.lo \
-	libkrutils_la-kr_conhash.lo libkrutils_la-kr_queue.lo \
-	libkrutils_la-kr_context.lo libkrutils_la-kr_threadpool.lo \
+	libkrutils_la-kr_module.lo libkrutils_la-kr_threadpool.lo \
 	libkrutils_la-kr_net.lo libkrutils_la-kr_event.lo \
-	libkrutils_la-kr_cache.lo
+	libkrutils_la-kr_cache.lo libkrutils_la-kr_context.lo
 libkrutils_la_OBJECTS = $(am_libkrutils_la_OBJECTS)
 libkrutils_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
@@ -266,12 +265,16 @@ libkrutils_la_SOURCES = \
 						  kr_log.c \
 						  kr_list.h \
 						  kr_list.c \
-						  kr_ntree.h \
-						  kr_ntree.c \
+						  kr_queue.h \
+						  kr_queue.c \
 						  kr_hashtable.h \
 						  kr_hashtable.c \
 						  kr_hashset.h \
 						  kr_hashset.c \
+						  kr_skiplist.h \
+						  kr_skiplist.c \
+						  kr_conhash.h \
+						  kr_conhash.c \
 						  kr_functable.h \
 						  kr_functable.c \
 						  kr_regex.h \
@@ -280,14 +283,6 @@ libkrutils_la_SOURCES = \
 						  kr_json.c \
 						  kr_module.h \
 						  kr_module.c \
-						  kr_skiplist.h \
-						  kr_skiplist.c \
-						  kr_conhash.h \
-						  kr_conhash.c \
-						  kr_queue.h \
-						  kr_queue.c \
-                          kr_context.h \
-                          kr_context.c \
 						  kr_threadpool.h \
 						  kr_threadpool.c \
 						  kr_net.h \
@@ -296,6 +291,8 @@ libkrutils_la_SOURCES = \
 						  kr_event.c \
 						  kr_cache.h \
 						  kr_cache.c \
+                          kr_context.h \
+                          kr_context.c \
 						  kr_utils.h
 
 EXTRA_DIST = \
@@ -372,7 +369,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkrutils_la-kr_log.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkrutils_la-kr_module.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkrutils_la-kr_net.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkrutils_la-kr_ntree.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkrutils_la-kr_queue.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkrutils_la-kr_regex.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkrutils_la-kr_skiplist.Plo@am__quote@
@@ -435,12 +431,12 @@ libkrutils_la-kr_list.lo: kr_list.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libkrutils_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libkrutils_la-kr_list.lo `test -f 'kr_list.c' || echo '$(srcdir)/'`kr_list.c
 
-libkrutils_la-kr_ntree.lo: kr_ntree.c
-@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libkrutils_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libkrutils_la-kr_ntree.lo -MD -MP -MF $(DEPDIR)/libkrutils_la-kr_ntree.Tpo -c -o libkrutils_la-kr_ntree.lo `test -f 'kr_ntree.c' || echo '$(srcdir)/'`kr_ntree.c
-@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/libkrutils_la-kr_ntree.Tpo $(DEPDIR)/libkrutils_la-kr_ntree.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='kr_ntree.c' object='libkrutils_la-kr_ntree.lo' libtool=yes @AMDEPBACKSLASH@
+libkrutils_la-kr_queue.lo: kr_queue.c
+@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libkrutils_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libkrutils_la-kr_queue.lo -MD -MP -MF $(DEPDIR)/libkrutils_la-kr_queue.Tpo -c -o libkrutils_la-kr_queue.lo `test -f 'kr_queue.c' || echo '$(srcdir)/'`kr_queue.c
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/libkrutils_la-kr_queue.Tpo $(DEPDIR)/libkrutils_la-kr_queue.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='kr_queue.c' object='libkrutils_la-kr_queue.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libkrutils_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libkrutils_la-kr_ntree.lo `test -f 'kr_ntree.c' || echo '$(srcdir)/'`kr_ntree.c
+@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libkrutils_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libkrutils_la-kr_queue.lo `test -f 'kr_queue.c' || echo '$(srcdir)/'`kr_queue.c
 
 libkrutils_la-kr_hashtable.lo: kr_hashtable.c
 @am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libkrutils_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libkrutils_la-kr_hashtable.lo -MD -MP -MF $(DEPDIR)/libkrutils_la-kr_hashtable.Tpo -c -o libkrutils_la-kr_hashtable.lo `test -f 'kr_hashtable.c' || echo '$(srcdir)/'`kr_hashtable.c
@@ -455,6 +451,20 @@ libkrutils_la-kr_hashset.lo: kr_hashset.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='kr_hashset.c' object='libkrutils_la-kr_hashset.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libkrutils_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libkrutils_la-kr_hashset.lo `test -f 'kr_hashset.c' || echo '$(srcdir)/'`kr_hashset.c
+
+libkrutils_la-kr_skiplist.lo: kr_skiplist.c
+@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libkrutils_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libkrutils_la-kr_skiplist.lo -MD -MP -MF $(DEPDIR)/libkrutils_la-kr_skiplist.Tpo -c -o libkrutils_la-kr_skiplist.lo `test -f 'kr_skiplist.c' || echo '$(srcdir)/'`kr_skiplist.c
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/libkrutils_la-kr_skiplist.Tpo $(DEPDIR)/libkrutils_la-kr_skiplist.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='kr_skiplist.c' object='libkrutils_la-kr_skiplist.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libkrutils_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libkrutils_la-kr_skiplist.lo `test -f 'kr_skiplist.c' || echo '$(srcdir)/'`kr_skiplist.c
+
+libkrutils_la-kr_conhash.lo: kr_conhash.c
+@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libkrutils_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libkrutils_la-kr_conhash.lo -MD -MP -MF $(DEPDIR)/libkrutils_la-kr_conhash.Tpo -c -o libkrutils_la-kr_conhash.lo `test -f 'kr_conhash.c' || echo '$(srcdir)/'`kr_conhash.c
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/libkrutils_la-kr_conhash.Tpo $(DEPDIR)/libkrutils_la-kr_conhash.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='kr_conhash.c' object='libkrutils_la-kr_conhash.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libkrutils_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libkrutils_la-kr_conhash.lo `test -f 'kr_conhash.c' || echo '$(srcdir)/'`kr_conhash.c
 
 libkrutils_la-kr_functable.lo: kr_functable.c
 @am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libkrutils_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libkrutils_la-kr_functable.lo -MD -MP -MF $(DEPDIR)/libkrutils_la-kr_functable.Tpo -c -o libkrutils_la-kr_functable.lo `test -f 'kr_functable.c' || echo '$(srcdir)/'`kr_functable.c
@@ -484,34 +494,6 @@ libkrutils_la-kr_module.lo: kr_module.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libkrutils_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libkrutils_la-kr_module.lo `test -f 'kr_module.c' || echo '$(srcdir)/'`kr_module.c
 
-libkrutils_la-kr_skiplist.lo: kr_skiplist.c
-@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libkrutils_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libkrutils_la-kr_skiplist.lo -MD -MP -MF $(DEPDIR)/libkrutils_la-kr_skiplist.Tpo -c -o libkrutils_la-kr_skiplist.lo `test -f 'kr_skiplist.c' || echo '$(srcdir)/'`kr_skiplist.c
-@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/libkrutils_la-kr_skiplist.Tpo $(DEPDIR)/libkrutils_la-kr_skiplist.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='kr_skiplist.c' object='libkrutils_la-kr_skiplist.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libkrutils_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libkrutils_la-kr_skiplist.lo `test -f 'kr_skiplist.c' || echo '$(srcdir)/'`kr_skiplist.c
-
-libkrutils_la-kr_conhash.lo: kr_conhash.c
-@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libkrutils_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libkrutils_la-kr_conhash.lo -MD -MP -MF $(DEPDIR)/libkrutils_la-kr_conhash.Tpo -c -o libkrutils_la-kr_conhash.lo `test -f 'kr_conhash.c' || echo '$(srcdir)/'`kr_conhash.c
-@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/libkrutils_la-kr_conhash.Tpo $(DEPDIR)/libkrutils_la-kr_conhash.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='kr_conhash.c' object='libkrutils_la-kr_conhash.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libkrutils_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libkrutils_la-kr_conhash.lo `test -f 'kr_conhash.c' || echo '$(srcdir)/'`kr_conhash.c
-
-libkrutils_la-kr_queue.lo: kr_queue.c
-@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libkrutils_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libkrutils_la-kr_queue.lo -MD -MP -MF $(DEPDIR)/libkrutils_la-kr_queue.Tpo -c -o libkrutils_la-kr_queue.lo `test -f 'kr_queue.c' || echo '$(srcdir)/'`kr_queue.c
-@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/libkrutils_la-kr_queue.Tpo $(DEPDIR)/libkrutils_la-kr_queue.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='kr_queue.c' object='libkrutils_la-kr_queue.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libkrutils_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libkrutils_la-kr_queue.lo `test -f 'kr_queue.c' || echo '$(srcdir)/'`kr_queue.c
-
-libkrutils_la-kr_context.lo: kr_context.c
-@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libkrutils_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libkrutils_la-kr_context.lo -MD -MP -MF $(DEPDIR)/libkrutils_la-kr_context.Tpo -c -o libkrutils_la-kr_context.lo `test -f 'kr_context.c' || echo '$(srcdir)/'`kr_context.c
-@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/libkrutils_la-kr_context.Tpo $(DEPDIR)/libkrutils_la-kr_context.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='kr_context.c' object='libkrutils_la-kr_context.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libkrutils_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libkrutils_la-kr_context.lo `test -f 'kr_context.c' || echo '$(srcdir)/'`kr_context.c
-
 libkrutils_la-kr_threadpool.lo: kr_threadpool.c
 @am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libkrutils_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libkrutils_la-kr_threadpool.lo -MD -MP -MF $(DEPDIR)/libkrutils_la-kr_threadpool.Tpo -c -o libkrutils_la-kr_threadpool.lo `test -f 'kr_threadpool.c' || echo '$(srcdir)/'`kr_threadpool.c
 @am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/libkrutils_la-kr_threadpool.Tpo $(DEPDIR)/libkrutils_la-kr_threadpool.Plo
@@ -539,6 +521,13 @@ libkrutils_la-kr_cache.lo: kr_cache.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='kr_cache.c' object='libkrutils_la-kr_cache.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libkrutils_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libkrutils_la-kr_cache.lo `test -f 'kr_cache.c' || echo '$(srcdir)/'`kr_cache.c
+
+libkrutils_la-kr_context.lo: kr_context.c
+@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libkrutils_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libkrutils_la-kr_context.lo -MD -MP -MF $(DEPDIR)/libkrutils_la-kr_context.Tpo -c -o libkrutils_la-kr_context.lo `test -f 'kr_context.c' || echo '$(srcdir)/'`kr_context.c
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/libkrutils_la-kr_context.Tpo $(DEPDIR)/libkrutils_la-kr_context.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='kr_context.c' object='libkrutils_la-kr_context.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libkrutils_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libkrutils_la-kr_context.lo `test -f 'kr_context.c' || echo '$(srcdir)/'`kr_context.c
 
 mostlyclean-libtool:
 	-rm -f *.lo

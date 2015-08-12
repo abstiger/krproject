@@ -14,7 +14,6 @@
 #include "kr_string.h"
 #include "kr_datetime.h"
 #include "kr_list.h"
-#include "kr_ntree.h"
 #include "kr_hashtable.h"
 #include "kr_functable.h"
 #include "kr_hashset.h"
