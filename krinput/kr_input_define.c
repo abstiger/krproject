@@ -43,8 +43,8 @@ T_KRInputDefine *kr_input_define_new(T_KRParamInput *ptParamInput)
     
     /*alloc input handle list*/
     ptInputDefine->ptInputHandleList = kr_list_new();
-    kr_list_set_match(ptInputDefine->ptInputHandleList, (KRCompareFunc )kr_input_handle_match);
-    kr_list_set_free(ptInputDefine->ptInputHandleList, (KRFreeFunc )kr_input_handle_free);
+    kr_list_set_match(ptInputDefine->ptInputHandleList, (KRListMatchFunc )kr_input_handle_match);
+    kr_list_set_free(ptInputDefine->ptInputHandleList, (KRListFreeFunc )kr_input_handle_free);
             
     return ptInputDefine;
 }

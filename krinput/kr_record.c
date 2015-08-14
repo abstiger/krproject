@@ -59,11 +59,11 @@ T_KRRecord* kr_record_dup(T_KRRecord *ptRecord)
 }
 
 
-int kr_record_compare(T_KRRecord *ptRec1, T_KRRecord *ptRec2, int iFieldId)
+int kr_record_compare(T_KRRecord *ptRec1, T_KRRecord *ptRec2, int *iFieldId)
 {
     /*compare field type*/
-    E_KRType eType1 = kr_record_get_field_type(ptRec1, iFieldId);
-    E_KRType eType2 = kr_record_get_field_type(ptRec1, iFieldId);
+    E_KRType eType1 = kr_record_get_field_type(ptRec1, *iFieldId);
+    E_KRType eType2 = kr_record_get_field_type(ptRec1, *iFieldId);
     if (eType1 != eType2) return 0;
     
     /*get value compare function*/
@@ -71,8 +71,8 @@ int kr_record_compare(T_KRRecord *ptRec1, T_KRRecord *ptRec2, int iFieldId)
     if (pfCompare == NULL) return 0;
 
     /*compare field value*/
-    void *pVal1 = kr_record_get_field_value(ptRec1, iFieldId);
-    void *pVal2 = kr_record_get_field_value(ptRec2, iFieldId);
+    void *pVal1 = kr_record_get_field_value(ptRec1, *iFieldId);
+    void *pVal2 = kr_record_get_field_value(ptRec2, *iFieldId);
 
     return pfCompare(pVal1, pVal2);
 }

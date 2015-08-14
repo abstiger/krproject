@@ -41,21 +41,18 @@ T_KRServerConfig *kr_server_config_parse(char *config_file)
         goto fail;
     }
     T_KREngineConfig *krengine = kr_calloc(sizeof(*krengine));
-    krengine->dbname = _dupenv(cJSON_GetString(engine, "dbname"));
-    krengine->dbuser = _dupenv(cJSON_GetString(engine, "dbuser"));
-    krengine->dbpass = _dupenv(cJSON_GetString(engine, "dbpass"));
-
     krengine->logpath = _dupenv(cJSON_GetString(engine, "logpath"));
     krengine->logname = _dupenv(cJSON_GetString(engine, "logname"));
     krengine->loglevel = (int )cJSON_GetNumber(engine, "loglevel");
 
-    krengine->krdb_module = _dupenv(cJSON_GetString(engine, "krdb_module"));
-    krengine->data_module = _dupenv(cJSON_GetString(engine, "data_module"));
-    krengine->rule_module = _dupenv(cJSON_GetString(engine, "rule_module"));
+    krengine->param_url = _dupenv(cJSON_GetString(engine, "param_url"));
 
+    krengine->input_module = _dupenv(cJSON_GetString(engine, "input_module"));
+    krengine->output_module = _dupenv(cJSON_GetString(engine, "output_module"));
+
+    krengine->hdi_cache_size = (int )cJSON_GetNumber(engine, "hdi_cache_size");
     krengine->thread_pool_size = (int )cJSON_GetNumber(engine, "thread_pool_size");
     krengine->high_water_mark = (int )cJSON_GetNumber(engine, "high_water_mark");
-    krengine->hdi_cache_size = (int )cJSON_GetNumber(engine, "hdi_cache_size");
     krserver->engine = krengine;
 
     /*cluster config section*/
@@ -98,12 +95,9 @@ void kr_server_config_free(T_KRServerConfig *server)
         T_KREngineConfig *engine = server->engine;
         if (engine->logpath) kr_free(engine->logpath);
         if (engine->logname) kr_free(engine->logname);
-        if (engine->dbname) kr_free(engine->dbname);
-        if (engine->dbuser) kr_free(engine->dbuser);
-        if (engine->dbpass) kr_free(engine->dbpass);
-        if (engine->krdb_module) kr_free(engine->krdb_module);
-        if (engine->data_module) kr_free(engine->data_module);
-        if (engine->rule_module) kr_free(engine->rule_module);
+        if (engine->param_url) kr_free(engine->param_url);
+        if (engine->input_module) kr_free(engine->input_module);
+        if (engine->output_module) kr_free(engine->output_module);
     }
 
     /*cluster config section*/

@@ -17,6 +17,46 @@ struct _kr_engine_t
     T_KRThreadPool      *tp;           /* thread pool */
 };
 
+T_KRRequest *kr_request_alloc(void)
+{
+    /*need calloc here*/
+    T_KRRequest *ptRequest = kr_calloc(sizeof(*ptRequest));
+    if (ptRequest == NULL) {
+        KR_LOG(KR_LOGERROR, "kr_calloc ptRequest failed!");
+        return NULL;
+    }
+    return ptRequest;
+}
+
+
+void kr_request_free(T_KRRequest *ptRequest)
+{
+    if (ptRequest) {
+        if (ptRequest->msgbuf) kr_free(ptRequest->msgbuf);
+        kr_free(ptRequest); 
+    }
+}
+
+
+T_KRResponse *kr_response_alloc(void)
+{
+    /*need calloc here*/
+    T_KRResponse *ptResponse = kr_calloc(sizeof(*ptResponse));
+    if (ptResponse == NULL) {
+        KR_LOG(KR_LOGERROR, "kr_calloc ptResponse failed!");
+        return NULL;
+    }
+    return ptResponse;
+}
+
+
+void kr_response_free(T_KRResponse *ptResponse)
+{
+    if (ptResponse) {
+        if (ptResponse->msgbuf) kr_free(ptResponse->msgbuf);
+        kr_free(ptResponse); 
+    }
+}
 
 T_KREngine *kr_engine_startup(T_KREngineConfig *cfg, void *data)
 {

@@ -121,29 +121,35 @@ int kr_input_handle_process(T_KRInputHandle *ptInputHandle,
 }
 
 
-T_KRRecord *kr_input_process(T_KRInput *ptInput, T_KRMessage *ptMessage)
+T_KRRecord *kr_input_process(T_KRInput *ptInput, T_KRRequest *ptRequest)
 {
-    T_KRInputDefine *ptInputDefine = kr_input_get_define(ptInput, ptMessage->datasrc);
+    char *msgid = ptRequest->msgid;
+    int msgsrc = ptRequest->msgsrc;
+    char *msgfmt = ptRequest->msgfmt;
+    size_t msglen = ptRequest->msglen;
+    char *msgbuf = ptRequest->msgbuf;
+
+    T_KRInputDefine *ptInputDefine = kr_input_get_define(ptInput, msgsrc);
     if (ptInputDefine == NULL) {
-        KR_LOG(KR_LOGERROR, "kr_input_get_define [%d] error!", ptMessage->datasrc);
+        KR_LOG(KR_LOGERROR, "kr_input_get_define [%d] error!", msgsrc);
         return NULL;
     }
     
-    T_KRInputHandle *ptInputHandle = kr_input_define_get_handle(ptInputDefine, ptMessage->msgfmt, ptInput->ptInputModule);
+    T_KRInputHandle *ptInputHandle = kr_input_define_get_handle(ptInputDefine, msgfmt, ptInput->ptInputModule);
     if (ptInputHandle == NULL) {
-        KR_LOG(KR_LOGERROR, "kr_input_define_get_handle [%s] error!", ptMessage->msgfmt);
+        KR_LOG(KR_LOGERROR, "kr_input_define_get_handle [%s] error!", msgfmt);
         return NULL;
     }
     
-    T_KRRecord *ptRecord = kr_record_new(ptInput, ptMessage->datasrc);
+    T_KRRecord *ptRecord = kr_record_new(ptInput, msgsrc);
     if (ptRecord == NULL) {
-        KR_LOG(KR_LOGERROR, "kr_record_new [%s] error!", ptMessage->datasrc);
+        KR_LOG(KR_LOGERROR, "kr_record_new [%s] error!", msgsrc);
         return NULL;
     }
     
-    int iResult = kr_input_handle_process(ptInputHandle, ptInputDefine, ptMessage->msglen, ptMessage->msgbuf, ptRecord);
+    int iResult = kr_input_handle_process(ptInputHandle, ptInputDefine, msglen, msgbuf, ptRecord);
     if (iResult != 0) {
-        KR_LOG(KR_LOGERROR, "kr_input_handle_process [%s] error!", ptMessage->msgid);
+        KR_LOG(KR_LOGERROR, "kr_input_handle_process [%s] error!", msgid);
         kr_record_free(ptRecord);
         return NULL;
     }

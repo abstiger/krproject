@@ -1,16 +1,15 @@
 #ifndef __KR_SHELL_PROTOCOL_H__
 #define __KR_SHELL_PROTOCOL_H__
 
-#include <stdio.h>
-#include <stdint.h>
+#include "krutils/kr_utils.h"
 #include "krengine/kr_engine.h"
 
 /* The message format for krproject communication:
- * |msgid(16b)|method(20b)|datasrc(4b)|msglen(4b)|message(msglen bytes)
+ * |msgid(16b)|msgsrc(4b)|msgfunc(20b)|msglen(4b)|message(msglen bytes)
  */
 #define KR_MSGID_LEN 16
-#define KR_METHOD_LEN 20
-#define KR_DATASRC_LEN 4
+#define KR_MSGSRC_LEN 4
+#define KR_MSGFUNC_LEN 20
 #define KR_MSGLEN_LEN 4
 #define KR_MSGHEADER_LEN 44
 
@@ -22,12 +21,6 @@ typedef struct _kr_buffer_t
     char          data[KR_BUFFER_MAX_LEN];
 }T_KRBuffer;
 
-/* basic functions of krmessage */
-T_KRMessage *kr_message_alloc(void);
-void kr_message_free(T_KRMessage *krmsg);
-int kr_message_parse(T_KRBuffer *krbuf, T_KRMessage *krmsg);
-int kr_message_dump(T_KRMessage *krmsg, T_KRBuffer *krbuf);
-
 
 static inline uint32_t kr_get_u32(const uint8_t *buf)
 {
@@ -37,7 +30,6 @@ static inline uint32_t kr_get_u32(const uint8_t *buf)
         ((uint32_t) buf [3]);
 }
 
-
 static inline void kr_put_u32(uint8_t *buf, uint32_t val)
 {
     buf [0] = (uint8_t) (((val) >> 24) & 0xff);
@@ -46,6 +38,13 @@ static inline void kr_put_u32(uint8_t *buf, uint32_t val)
     buf [3] = (uint8_t) (val & 0xff);
 }
 
+
+/* basic functions of krmessage */
+int kr_request_dump(T_KRRequest *req, T_KRBuffer *krbuf);
+int kr_request_parse(T_KRBuffer *krbuf, T_KRRequest *req);
+
+int kr_response_dump(T_KRResponse *resp, T_KRBuffer *krbuf);
+int kr_response_parse(T_KRBuffer *krbuf, T_KRResponse *resp);
 
 #endif  /*__KR_SHELL_PROTOCOL_H__*/
 

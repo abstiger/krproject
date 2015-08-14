@@ -29,10 +29,10 @@ static char *psParamInput1 = STR({
         ]
       });
 
-static T_KRMessage stInputMessage = {
-        .msgtype = 0,
+static T_KRRequest gstRequest = {
         .msgid = "000001",
-        .datasrc = 1,
+        .msgsrc = 1,
+        .msgfunc = "",
         .msgfmt = "json",
         .msglen = 40,
         .msgbuf = STR({"field_0": 10,"field_1": "haha"}),
@@ -56,7 +56,7 @@ int main(int argc,char *argv[])
         return -1;
     }
 
-    T_KRRecord *ptRecord = kr_input_process(ptInput, &stInputMessage);
+    T_KRRecord *ptRecord = kr_input_process(ptInput, &gstRequest);
     if (ptRecord == NULL) {
         fprintf(stderr, "kr_input_process failed!");
         return -1;

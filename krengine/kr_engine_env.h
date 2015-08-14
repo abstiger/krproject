@@ -14,6 +14,7 @@
 /* engine environment, create with config */
 typedef struct _kr_engine_env_t
 {
+    T_KREngineConfig *ptConfig;    /* config */
     T_KRParam        *ptParam;     /* parameter, read only in thread */
     T_KRInput        *ptInput;     /* input, read only in thread */
     T_KROutput       *ptOutput;    /* output, read only in thread */

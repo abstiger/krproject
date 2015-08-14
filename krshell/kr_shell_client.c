@@ -6,16 +6,16 @@
 #include <sys/socket.h>
 
 
-static T_KRMessage *kr_client_read_message(int fd)
+static T_KRResponse *kr_client_read_message(int fd)
 {
     int readLen = 0;
     T_KRBuffer krbuf = {0};
     size_t msglen;
 
-    /*alloc message*/
-    T_KRMessage *krmsg = kr_message_alloc();
-    if (krmsg == NULL) {
-        fprintf(stderr, "kr_message_alloc failed!\n");
+    /*alloc response message*/
+    T_KRResponse *resp = kr_response_alloc();
+    if (resp == NULL) {
+        fprintf(stderr, "kr_response_alloc failed!\n");
         return NULL;
     }
 
@@ -23,7 +23,7 @@ static T_KRMessage *kr_client_read_message(int fd)
     readLen = kr_net_read(fd, krbuf.data, KR_MSGHEADER_LEN);
     if (readLen <= 0) {
         fprintf(stderr, "kr_net_read msghead failed!\n");
-        kr_message_free(krmsg);
+        kr_response_free(resp);
         return NULL;
     }
     krbuf.size += readLen;
@@ -32,7 +32,7 @@ static T_KRMessage *kr_client_read_message(int fd)
     msglen = kr_get_u32(krbuf.data+KR_MSGHEADER_LEN-KR_MSGLEN_LEN);
     if (msglen < 0) {
         fprintf(stderr, "kr_get_u32 msglen failed!\n");
-        kr_message_free(krmsg);
+        kr_response_free(resp);
         return NULL;
     }
 
@@ -40,25 +40,24 @@ static T_KRMessage *kr_client_read_message(int fd)
     readLen = kr_net_read(fd, krbuf.data+krbuf.size, msglen);
     if (readLen != msglen) {
         fprintf(stderr, "kr_net_read msgbody failed!\n");
-        kr_message_free(krmsg);
+        kr_response_free(resp);
         return NULL;
     }
     krbuf.size += readLen;
 
     /* parse message buffer */
-    kr_message_parse(&krbuf, krmsg);
-
-    return krmsg;
+    kr_response_parse(&krbuf, resp);
+    return resp;
 }
 
 
-static int kr_client_write_message(int fd, T_KRMessage *krmsg)
+static int kr_client_write_message(int fd, T_KRRequest *req)
 {
     int writeLen = 0;
     T_KRBuffer krbuf = {0};
 
-    /* dump message */
-    if (kr_message_dump(krmsg, &krbuf) <= 0) {
+    /* dump request message */
+    if (kr_request_dump(req, &krbuf) <= 0) {
         fprintf(stderr, "kr_message_dump failed!\n");
         return -1;
     }
@@ -166,7 +165,7 @@ int kr_client_reconnect(T_KRClient *krclient)
     return 0;
 }
 
-T_KRMessage *kr_client_apply(T_KRClient *krclient, char *method, int datasrc, int msglen, void *msgbuf)
+T_KRResponse *kr_client_apply(T_KRClient *krclient, char *msgfunc, int msgsrc, int msglen, void *msgbuf)
 {
     /*if fd is not readable, reconnect it*/
     /*
@@ -179,51 +178,52 @@ T_KRMessage *kr_client_apply(T_KRClient *krclient, char *method, int datasrc, in
     */
 
     /*alloc request*/
-    T_KRMessage *apply = kr_message_alloc();
+    T_KRRequest *apply = kr_request_alloc();
     if (apply == NULL) {
-        fprintf(stderr, "kr_message_alloc request failed!\n");
+        fprintf(stderr, "kr_request_alloc failed!\n");
         return NULL;
     }
 
     /*set request*/
     char *msgid="0001";//FIXME
     strcpy(apply->msgid, msgid);
-    strcpy(apply->method, method);
-    apply->datasrc = datasrc;
+    strcpy(apply->msgfunc, msgfunc);
+    apply->msgsrc = msgsrc;
+    strcpy(apply->msgfmt, "json");
     apply->msglen = msglen;
     apply->msgbuf = msgbuf;
 
     /*send request*/
     if (kr_client_write_message(krclient->fd, apply) <= 0) {
         fprintf(stderr, "kr_client_write_message request failed!\n");
-        kr_message_free(apply);
+        kr_request_free(apply);
         return NULL;
     }
 
     /*get response*/
-    T_KRMessage *reply = kr_client_read_message(krclient->fd);
+    T_KRResponse *reply = kr_client_read_message(krclient->fd);
     if (reply == NULL) {
         fprintf(stderr, "kr_client_read_message response failed!\n");
-        kr_message_free(apply);
+        kr_request_free(apply);
         return NULL;
     }
 
-    kr_message_free(apply);
+    kr_request_free(apply);
     return reply;
 }
 
 
-T_KRMessage *kr_client_info(T_KRClient *krclient)
+T_KRResponse *kr_client_info(T_KRClient *krclient)
 {
     return kr_client_apply(krclient, "info_engine", 0, 0, NULL);
 }
 
-T_KRMessage *kr_client_info_log(T_KRClient *krclient)
+T_KRResponse *kr_client_info_log(T_KRClient *krclient)
 {
     return kr_client_apply(krclient, "info_log", 0, 0, NULL);
 }
 
-T_KRMessage *kr_client_set_logpath(T_KRClient *krclient, char *log_path)
+T_KRResponse *kr_client_set_logpath(T_KRClient *krclient, char *log_path)
 {
     cJSON *json = cJSON_CreateObject();
     cJSON_AddStringToObject(json, "log_path", log_path);
@@ -233,7 +233,7 @@ T_KRMessage *kr_client_set_logpath(T_KRClient *krclient, char *log_path)
     return kr_client_apply(krclient, "set_logpath", 0, strlen(msgbuf), msgbuf);
 }
 
-T_KRMessage *kr_client_set_logname(T_KRClient *krclient, char *log_name)
+T_KRResponse *kr_client_set_logname(T_KRClient *krclient, char *log_name)
 {
     cJSON *json = cJSON_CreateObject();
     cJSON_AddStringToObject(json, "log_name", log_name);
@@ -243,7 +243,7 @@ T_KRMessage *kr_client_set_logname(T_KRClient *krclient, char *log_name)
     return kr_client_apply(krclient, "set_logname", 0, strlen(msgbuf), msgbuf);
 }
 
-T_KRMessage *kr_client_set_loglevel(T_KRClient *krclient, int log_level)
+T_KRResponse *kr_client_set_loglevel(T_KRClient *krclient, int log_level)
 {
     cJSON *json = cJSON_CreateObject();
     cJSON_AddNumberToObject(json, "log_level", log_level);
@@ -253,17 +253,17 @@ T_KRMessage *kr_client_set_loglevel(T_KRClient *krclient, int log_level)
     return kr_client_apply(krclient, "set_loglevel", 0, strlen(msgbuf), msgbuf);
 }
 
-T_KRMessage *kr_client_info_krdb(T_KRClient *krclient)
+T_KRResponse *kr_client_info_krdb(T_KRClient *krclient)
 {
     return kr_client_apply(krclient, "info_krdb", 0, 0, NULL);
 }
 
-T_KRMessage *kr_client_info_table(T_KRClient *krclient, int table_id)
+T_KRResponse *kr_client_info_table(T_KRClient *krclient, int table_id)
 {
     return kr_client_apply(krclient, "info_table", table_id, 0, NULL);
 }
 
-T_KRMessage *kr_client_info_index(T_KRClient *krclient, int table_id, int index_id)
+T_KRResponse *kr_client_info_index(T_KRClient *krclient, int table_id, int index_id)
 {
     cJSON *json = cJSON_CreateObject();
     cJSON_AddNumberToObject(json, "index_id", index_id);
@@ -273,22 +273,22 @@ T_KRMessage *kr_client_info_index(T_KRClient *krclient, int table_id, int index_
     return kr_client_apply(krclient, "info_index", table_id, strlen(msgbuf), msgbuf);
 }
 
-T_KRMessage *kr_client_list_index_key(T_KRClient *krclient)
+T_KRResponse *kr_client_list_index_key(T_KRClient *krclient)
 {
     return kr_client_apply(krclient, "list_index_key", 0, 0, NULL);
 }
 
-T_KRMessage *kr_client_reload_param(T_KRClient *krclient)
+T_KRResponse *kr_client_reload_param(T_KRClient *krclient)
 {
     return kr_client_apply(krclient, "reload_param", 0, 0, NULL);
 }
 
-T_KRMessage *kr_client_info_param(T_KRClient *krclient)
+T_KRResponse *kr_client_info_param(T_KRClient *krclient)
 {
     return kr_client_apply(krclient, "info_param", 0, 0, NULL);
 }
 
-T_KRMessage *kr_client_info_group(T_KRClient *krclient, int group_id)
+T_KRResponse *kr_client_info_group(T_KRClient *krclient, int group_id)
 {
     cJSON *json = cJSON_CreateObject();
     cJSON_AddNumberToObject(json, "group_id", group_id);
@@ -298,7 +298,7 @@ T_KRMessage *kr_client_info_group(T_KRClient *krclient, int group_id)
     return kr_client_apply(krclient, "info_group", 0, strlen(msgbuf), msgbuf);
 }
 
-T_KRMessage *kr_client_info_group_rule(T_KRClient *krclient, int group_id, int rule_id)
+T_KRResponse *kr_client_info_group_rule(T_KRClient *krclient, int group_id, int rule_id)
 {
     cJSON *json = cJSON_CreateObject();
     cJSON_AddNumberToObject(json, "group_id", group_id);
@@ -309,7 +309,7 @@ T_KRMessage *kr_client_info_group_rule(T_KRClient *krclient, int group_id, int r
     return kr_client_apply(krclient, "info_rule", 0, strlen(msgbuf), msgbuf);
 }
 
-T_KRMessage *kr_client_info_set(T_KRClient *krclient, int set_id)
+T_KRResponse *kr_client_info_set(T_KRClient *krclient, int set_id)
 {
     cJSON *json = cJSON_CreateObject();
     cJSON_AddNumberToObject(json, "set_id", set_id);
@@ -319,7 +319,7 @@ T_KRMessage *kr_client_info_set(T_KRClient *krclient, int set_id)
     return kr_client_apply(krclient, "info_set", 0, strlen(msgbuf), msgbuf);
 }
 
-T_KRMessage *kr_client_info_sdi(T_KRClient *krclient, int sdi_id)
+T_KRResponse *kr_client_info_sdi(T_KRClient *krclient, int sdi_id)
 {
     cJSON *json = cJSON_CreateObject();
     cJSON_AddNumberToObject(json, "sdi_id", sdi_id);
@@ -329,7 +329,7 @@ T_KRMessage *kr_client_info_sdi(T_KRClient *krclient, int sdi_id)
     return kr_client_apply(krclient, "info_sdi", 0, strlen(msgbuf), msgbuf);
 }
 
-T_KRMessage *kr_client_info_ddi(T_KRClient *krclient, int ddi_id)
+T_KRResponse *kr_client_info_ddi(T_KRClient *krclient, int ddi_id)
 {
     cJSON *json = cJSON_CreateObject();
     cJSON_AddNumberToObject(json, "ddi_id", ddi_id);
@@ -339,7 +339,7 @@ T_KRMessage *kr_client_info_ddi(T_KRClient *krclient, int ddi_id)
     return kr_client_apply(krclient, "info_ddi", 0, strlen(msgbuf), msgbuf);
 }
 
-T_KRMessage *kr_client_info_hdi(T_KRClient *krclient, int hdi_id)
+T_KRResponse *kr_client_info_hdi(T_KRClient *krclient, int hdi_id)
 {
     cJSON *json = cJSON_CreateObject();
     cJSON_AddNumberToObject(json, "hdi_id", hdi_id);
@@ -349,13 +349,13 @@ T_KRMessage *kr_client_info_hdi(T_KRClient *krclient, int hdi_id)
     return kr_client_apply(krclient, "info_hdi", 0, strlen(msgbuf), msgbuf);
 }
 
-T_KRMessage *kr_client_insert_event(T_KRClient *krclient, int table_id, char *event)
+T_KRResponse *kr_client_insert_event(T_KRClient *krclient, int table_id, char *event)
 {
     char *msgbuf = strdup(event);
     return kr_client_apply(krclient, "insert_event", table_id, strlen(msgbuf), msgbuf);
 }
 
-T_KRMessage *kr_client_detect_event(T_KRClient *krclient, int table_id, char *event)
+T_KRResponse *kr_client_detect_event(T_KRClient *krclient, int table_id, char *event)
 {
     char *msgbuf = strdup(event);
     return kr_client_apply(krclient, "detect_event", table_id, strlen(msgbuf), msgbuf);
@@ -388,7 +388,7 @@ int kr_client_apply_file(T_KRClient *krclient, char *method, int table_id, char 
 
         /*apply this line*/
         char *msgbuf = strdup(buff);
-        T_KRMessage *reply = kr_client_apply(krclient, \
+        T_KRResponse *reply = kr_client_apply(krclient, \
                 method, table_id, strlen(msgbuf), msgbuf);
         if (reply == NULL) {
             fprintf(stderr, "kr_client_apply [%zu] [%s] failed!\n", 
@@ -403,7 +403,7 @@ int kr_client_apply_file(T_KRClient *krclient, char *method, int table_id, char 
             fprintf(stdout, "ERROR!\n");
         }
         */
-        kr_message_free(reply);
+        kr_response_free(reply);
 
         if(iCnt%1000 == 0 && iCnt != 0) {
             char caNum[20] = {0};

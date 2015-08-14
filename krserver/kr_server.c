@@ -1,4 +1,5 @@
 #include "kr_server.h"
+#include "kr_server_network.h"
 #include <signal.h>
 #include <fcntl.h>
 #include <errno.h>
@@ -129,11 +130,6 @@ static T_KRServer *kr_server_startup(char *config_file)
         kr_server_daemonize();
     }
 
-    /* Create Pidfile */
-    if (krserver->config->pidfile) {
-        kr_server_create_pidfile(krserver->config->pidfile); 
-    }
-
     /* Startup krengine */
     krserver->krengine = kr_engine_startup(krserver->config->engine, krserver);
     if (krserver->krengine == NULL) {
@@ -159,6 +155,11 @@ static T_KRServer *kr_server_startup(char *config_file)
         KR_LOG(KR_LOGERROR, "kr_server_network_startup failed!");
         return NULL;
     }
+
+    /* Create Pidfile */
+    if (krserver->config->pidfile) {
+        kr_server_create_pidfile(krserver->config->pidfile); 
+    }
     
     return krserver;
 }
@@ -176,32 +177,38 @@ static void kr_server_serve(T_KRServer *krserver)
 
 static void kr_server_shutdown(T_KRServer *krserver)
 {
-    /* Shutdown network */
-    kr_server_network_shutdown(krserver);
-    
-    /* Shutdown krengine */
-    kr_engine_shutdown(krserver->krengine);
+    if (krserver) {
+        /* Shutdown network */
+        kr_server_network_shutdown(krserver);
 
-    /* event loop delete */
-    kr_event_loop_stop(krserver->krel);
-    //kr_event_loop_delete(krserver->krel);
-
-    /* Server config free */
-    if (krserver->config) {
-        /* remove pidfile */
-        if (krserver->config->pidfile) {
-            kr_server_remove_pidfile(krserver->config->pidfile);
+        /* Shutdown krengine */
+        if (krserver->krengine) {
+            kr_engine_shutdown(krserver->krengine);
         }
-        kr_server_config_free(krserver->config);
-    }
 
-    /* free config file */
-    if (krserver->config_file) {
-        kr_free(krserver->config_file);
-    }
+        /* event loop delete */
+        if (krserver->krel) {
+            kr_event_loop_stop(krserver->krel);
+            //kr_event_loop_delete(krserver->krel);
+        }
 
-    /* free server */
-    kr_free(krserver);
+        /* Server config free */
+        if (krserver->config) {
+            /* remove pidfile */
+            if (krserver->config->pidfile) {
+                kr_server_remove_pidfile(krserver->config->pidfile);
+            }
+            kr_server_config_free(krserver->config);
+        }
+
+        /* free config file */
+        if (krserver->config_file) {
+            kr_free(krserver->config_file);
+        }
+
+        /* free server */
+        kr_free(krserver);
+    }
 }
 
 

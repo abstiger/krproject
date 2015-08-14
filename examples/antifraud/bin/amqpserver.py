@@ -37,10 +37,8 @@ def on_channel_open(channel_):
     global channel
     channel = channel_
     print "demo_receive: Received our Channel"
-    channel.queue_declare(queue="krqueue",
-                          durable=True,
-                          exclusive=False,
-                          auto_delete=False,
+    channel.queue_declare(queue="krqueue", durable=True,
+                          exclusive=False, auto_delete=False,
                           callback=on_queue_declared)
 
 

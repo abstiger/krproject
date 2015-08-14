@@ -50,7 +50,4 @@ void *kr_param_persist_file_dump_pre(T_KRParamPersistConfig *ptConfig);
 void kr_param_persist_file_dump_post(void *ptResource, T_KRParamPersistConfig *ptConfig);
 int kr_param_persist_file_dump(char *psParamVersion, char *psParamClassName, char *psParamObjectKey, char *psParamObjectString, void *ptResource);
 
-
-
-
 #endif  /*__KR_PARAM_PERSIST_H__*/

@@ -5,74 +5,6 @@
 #include "kr_data_item_ddi.h"
 #include "kr_data_item_hdi.h"
 
-T_KRData* kr_data_construct(T_KRParam *ptParam, T_KRModule *ptModule,
-        KRGetTypeFunc pfGetType, KRGetValueFunc pfGetValue)
-{
-    T_KRData *ptData = kr_malloc(sizeof(T_KRData));
-    if (ptData == NULL) {
-        KR_LOG(KR_LOGERROR, "kr_malloc ptData Failed!");
-        return NULL;
-    }
-    ptData->ptModule = ptModule;
-    ptData->pfGetType = pfGetType;
-    ptData->pfGetValue = pfGetValue;
-
-    ptData->ptItemTable = kr_hashtable_new_full(
-                              (KRHashFunc )kr_string_hash, \
-                              (KREqualFunc )kr_string_equal,\
-                              NULL, 
-                             (KRDestroyNotify )kr_data_item_free);
-    if (ptData->ptItemTable == NULL) {
-        KR_LOG(KR_LOGERROR, "kr_hashtable_new_full item table Failed!");
-        return NULL;
-    }
-
-    //load data item according parameter
-    if (kr_data_item_load(ptData, ptParam) != 0) {
-        KR_LOG(KR_LOGERROR, "load item table error!");
-        return NULL;
-    }
-    
-    ptData->tConstructTime = kr_param_load_time(ptParam);
-    
-    return ptData;
-}
-
-
-void kr_data_init(T_KRData *ptData)
-{
-    if (ptData) {
-        //kr_hashtable_remove_all(ptData->ptItemTable);
-    }
-}
-
-
-void kr_data_destruct(T_KRData *ptData)
-{
-    if (ptData) {
-        kr_hashtable_destroy(ptData->ptItemTable);
-        kr_free(ptData);
-    }
-}
-
-
-int kr_data_check(T_KRData *ptData, T_KRParam *ptParam)
-{  
-    /*check item table*/
-    if (ptData->tConstructTime != kr_param_load_time(ptParam)) {
-        KR_LOG(KR_LOGDEBUG, "reload ...[%ld][%ld]", 
-                ptData->tConstructTime, kr_param_load_time(ptParam));
-
-        kr_hashtable_remove_all(ptData->ptItemTable);
-        if (kr_data_item_load(ptData, ptParam) != 0) {
-            KR_LOG(KR_LOGERROR, "reload item table error!");
-            return -1;
-        }
-    }
-
-    return 0;
-}
-
 
 static int _kr_data_item_set_load(char *psParamClassName, 
         char *psParamObjectKey, char *psParamObjectString, 
@@ -83,7 +15,7 @@ static int _kr_data_item_set_load(char *psParamClassName,
 
     T_KRDataItem *ptDataItem = kr_data_item_new(
             ptParamSet,
-            ptParamSet->caSetName, //FIXME
+            ptParamSet->caSetName[0], //FIXME
             ptParamSet->lSetId, 
             ptData->pfGetType,
             ptData->pfGetValue,
@@ -190,7 +122,7 @@ static int _kr_data_item_hdi_load(char *psParamClassName,
 }
 
 
-int kr_data_item_load(T_KRData *ptData, T_KRParam *ptParam)
+static int kr_data_item_load(T_KRData *ptData, T_KRParam *ptParam)
 {
     //load set
     if (kr_param_object_foreach(ptParam, KR_PARAM_SET, 
@@ -222,6 +154,77 @@ int kr_data_item_load(T_KRData *ptData, T_KRParam *ptParam)
 
     return 0;
 }
+
+
+    
+T_KRData* kr_data_construct(T_KRParam *ptParam, T_KRModule *ptModule,
+        KRGetTypeFunc pfGetType, KRGetValueFunc pfGetValue)
+{
+    T_KRData *ptData = kr_malloc(sizeof(T_KRData));
+    if (ptData == NULL) {
+        KR_LOG(KR_LOGERROR, "kr_malloc ptData Failed!");
+        return NULL;
+    }
+    ptData->ptModule = ptModule;
+    ptData->pfGetType = pfGetType;
+    ptData->pfGetValue = pfGetValue;
+
+    ptData->ptItemTable = kr_hashtable_new_full(
+                              (KRHashFunc )kr_string_hash, \
+                              (KREqualFunc )kr_string_equal,\
+                              NULL, 
+                             (KRDestroyNotify )kr_data_item_free);
+    if (ptData->ptItemTable == NULL) {
+        KR_LOG(KR_LOGERROR, "kr_hashtable_new_full item table Failed!");
+        return NULL;
+    }
+
+    //load data item according parameter
+    if (kr_data_item_load(ptData, ptParam) != 0) {
+        KR_LOG(KR_LOGERROR, "load item table error!");
+        return NULL;
+    }
+    
+    ptData->tConstructTime = kr_param_load_time(ptParam);
+    
+    return ptData;
+}
+
+
+void kr_data_init(T_KRData *ptData)
+{
+    if (ptData) {
+        //kr_hashtable_remove_all(ptData->ptItemTable);
+    }
+}
+
+
+void kr_data_destruct(T_KRData *ptData)
+{
+    if (ptData) {
+        kr_hashtable_destroy(ptData->ptItemTable);
+        kr_free(ptData);
+    }
+}
+
+
+int kr_data_check(T_KRData *ptData, T_KRParam *ptParam)
+{  
+    /*check item table*/
+    if (ptData->tConstructTime != kr_param_load_time(ptParam)) {
+        KR_LOG(KR_LOGDEBUG, "reload ...[%ld][%ld]", 
+                ptData->tConstructTime, kr_param_load_time(ptParam));
+
+        kr_hashtable_remove_all(ptData->ptItemTable);
+        if (kr_data_item_load(ptData, ptParam) != 0) {
+            KR_LOG(KR_LOGERROR, "reload item table error!");
+            return -1;
+        }
+    }
+
+    return 0;
+}
+
 
 static T_KRDataItem *kr_data_item_get(T_KRData *ptData, char kind, int id, T_KRContext *ptContext)
 {

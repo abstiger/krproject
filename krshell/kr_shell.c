@@ -38,7 +38,7 @@ char *cmdline = NULL;
 static void kr_cmd_usage(int argc, char *argv[]);
 static void kr_cmd_exit(int argc, char *argv[]);
 
-static void kr_cmd_apply(T_KRMessage *apply);
+static void kr_cmd_apply(T_KRResponse *apply);
 static void kr_cmd_info(int argc, char *argv[]);
 static void kr_cmd_info_log(int argc, char *argv[]);
 static void kr_cmd_set_logpath(int argc, char *argv[]);
@@ -450,7 +450,7 @@ static void kr_cmd_exit(int argc, char *argv[])
     exit(1);
 }
 
-static void kr_cmd_print_reply(T_KRMessage *reply)
+static void kr_cmd_print_reply(T_KRResponse *reply)
 {
     if (reply == NULL) {
         fprintf(stderr, "kr_client_info failed!\n");
@@ -458,36 +458,38 @@ static void kr_cmd_print_reply(T_KRMessage *reply)
     } 
     
     /*print reply*/
+    /*
     if (reply->msgtype == KR_MSGTYPE_SUCCESS) {
         fprintf(stdout, "SUCCESS: %s\n", reply->msgbuf);
     } else {
         fprintf(stdout, "ERROR!\n");
     }
+    */
     
-    kr_message_free(reply);
+    kr_response_free(reply);
 }
 
 static void kr_cmd_info(int argc, char *argv[])
 {
-    T_KRMessage *reply = kr_client_info(krctx.krclient);
+    T_KRResponse *reply = kr_client_info(krctx.krclient);
     kr_cmd_print_reply(reply);
 }
 
 static void kr_cmd_info_log(int argc, char *argv[])
 {
-    T_KRMessage *reply = kr_client_info_log(krctx.krclient);
+    T_KRResponse *reply = kr_client_info_log(krctx.krclient);
     kr_cmd_print_reply(reply);
 }
 
 static void kr_cmd_set_logpath(int argc, char *argv[])
 {
-    T_KRMessage *reply = kr_client_set_logpath(krctx.krclient, argv[2]);
+    T_KRResponse *reply = kr_client_set_logpath(krctx.krclient, argv[2]);
     kr_cmd_print_reply(reply);
 }
 
 static void kr_cmd_set_logname(int argc, char *argv[])
 {
-    T_KRMessage *reply = kr_client_set_logname(krctx.krclient, argv[2]);
+    T_KRResponse *reply = kr_client_set_logname(krctx.krclient, argv[2]);
     kr_cmd_print_reply(reply);
 }
 
@@ -499,92 +501,92 @@ static void kr_cmd_set_loglevel(int argc, char *argv[])
         return;
     }
 
-    T_KRMessage *reply = kr_client_set_loglevel(krctx.krclient, atoi(argv[2]));
+    T_KRResponse *reply = kr_client_set_loglevel(krctx.krclient, atoi(argv[2]));
     kr_cmd_print_reply(reply);
 }
 
 static void kr_cmd_info_krdb(int argc, char *argv[])
 {
-    T_KRMessage *reply = kr_client_info_krdb(krctx.krclient);
+    T_KRResponse *reply = kr_client_info_krdb(krctx.krclient);
     kr_cmd_print_reply(reply);
 }
 
 static void kr_cmd_info_table(int argc, char *argv[])
 {
-    T_KRMessage *reply = kr_client_info_table(krctx.krclient, atoi(argv[2]));
+    T_KRResponse *reply = kr_client_info_table(krctx.krclient, atoi(argv[2]));
     kr_cmd_print_reply(reply);
 }
 
 static void kr_cmd_info_index(int argc, char *argv[])
 {
-    T_KRMessage *reply = kr_client_info_index(krctx.krclient, 
+    T_KRResponse *reply = kr_client_info_index(krctx.krclient, 
             atoi(argv[2]), atoi(argv[4]));
     kr_cmd_print_reply(reply);
 }
 
 static void kr_cmd_list_index_key(int argc, char *argv[])
 {
-    T_KRMessage *reply = kr_client_list_index_key(krctx.krclient);
+    T_KRResponse *reply = kr_client_list_index_key(krctx.krclient);
     kr_cmd_print_reply(reply);
 }
 
 static void kr_cmd_reload_param(int argc, char *argv[])
 {
-    T_KRMessage *reply = kr_client_reload_param(krctx.krclient);
+    T_KRResponse *reply = kr_client_reload_param(krctx.krclient);
     kr_cmd_print_reply(reply);
 }
 
 static void kr_cmd_info_param(int argc, char *argv[])
 {
-    T_KRMessage *reply = kr_client_info_param(krctx.krclient);
+    T_KRResponse *reply = kr_client_info_param(krctx.krclient);
     kr_cmd_print_reply(reply);
 }
 
 static void kr_cmd_info_group(int argc, char *argv[])
 {
-    T_KRMessage *reply = kr_client_info_group(krctx.krclient, atoi(argv[2]));
+    T_KRResponse *reply = kr_client_info_group(krctx.krclient, atoi(argv[2]));
     kr_cmd_print_reply(reply);
 }
 
 static void kr_cmd_info_group_rule(int argc, char *argv[])
 {
-    T_KRMessage *reply = kr_client_info_group_rule(krctx.krclient, atoi(argv[2]), atoi(argv[4]));
+    T_KRResponse *reply = kr_client_info_group_rule(krctx.krclient, atoi(argv[2]), atoi(argv[4]));
     kr_cmd_print_reply(reply);
 }
 
 static void kr_cmd_info_set(int argc, char *argv[])
 {
-    T_KRMessage *reply = kr_client_info_set(krctx.krclient, atoi(argv[2]));
+    T_KRResponse *reply = kr_client_info_set(krctx.krclient, atoi(argv[2]));
     kr_cmd_print_reply(reply);
 }
 
 static void kr_cmd_info_sdi(int argc, char *argv[])
 {
-    T_KRMessage *reply = kr_client_info_sdi(krctx.krclient, atoi(argv[2]));
+    T_KRResponse *reply = kr_client_info_sdi(krctx.krclient, atoi(argv[2]));
     kr_cmd_print_reply(reply);
 }
 
 static void kr_cmd_info_ddi(int argc, char *argv[])
 {
-    T_KRMessage *reply = kr_client_info_ddi(krctx.krclient, atoi(argv[2]));
+    T_KRResponse *reply = kr_client_info_ddi(krctx.krclient, atoi(argv[2]));
     kr_cmd_print_reply(reply);
 }
 
 static void kr_cmd_info_hdi(int argc, char *argv[])
 {
-    T_KRMessage *reply = kr_client_info_hdi(krctx.krclient, atoi(argv[2]));
+    T_KRResponse *reply = kr_client_info_hdi(krctx.krclient, atoi(argv[2]));
     kr_cmd_print_reply(reply);
 }
 
 static void kr_cmd_insert_event(int argc, char *argv[])
 {
-    T_KRMessage *reply = kr_client_insert_event(krctx.krclient, atoi(argv[1]), argv[3]);
+    T_KRResponse *reply = kr_client_insert_event(krctx.krclient, atoi(argv[1]), argv[3]);
     kr_cmd_print_reply(reply);
 }
 
 static void kr_cmd_detect_event(int argc, char *argv[])
 {
-    T_KRMessage *reply = kr_client_detect_event(krctx.krclient, atoi(argv[1]), argv[3]);
+    T_KRResponse *reply = kr_client_detect_event(krctx.krclient, atoi(argv[1]), argv[3]);
     kr_cmd_print_reply(reply);
 }
 

@@ -6,24 +6,27 @@
 /* forward declaration */
 typedef struct _kr_engine_t T_KREngine;
 
-/*reply msgtype*/
-typedef enum _kr_msgtype_t
+/* request message definetion */
+typedef struct _kr_request_t
 {
-    KR_MSGTYPE_SUCCESS     = 0,
-    KR_MSGTYPE_ERROR       = 1
-}E_KRMsgType;
-
-/* input and output message definetion */
-typedef struct _kr_message_t
-{
-    E_KRMsgType   msgtype;
     char          msgid[30+1];
-    char          method[20+1];
-    int           datasrc;
+    char          msgfunc[20+1];
+    int           msgsrc;
     char          msgfmt[10+1];
     size_t        msglen;
     char         *msgbuf;
-}T_KRMessage;
+}T_KRRequest;
+
+/* response message definetion */
+typedef struct _kr_response_t
+{
+    char          msgid[30+1];
+    char          msgfunc[20+1];
+    int           msgsrc;
+    char          msgfmt[10+1];
+    size_t        msglen;
+    char         *msgbuf;
+}T_KRResponse;
 
 /* initial configure of krengine */
 typedef struct _kr_engine_config_t 
@@ -32,13 +35,10 @@ typedef struct _kr_engine_config_t
     char          *logname;          /* name of log file */
     int            loglevel;         /* log level of this server */
     
-    char          *dbname;           /* database name, dsn */
-    char          *dbuser;           /* database username */
-    char          *dbpass;           /* database user password */
+    char          *param_url;        /* param persist url */
 
-    char          *krdb_module;      /* name of krdb's module */
-    char          *data_module;      /* name of data's module */
-    char          *rule_module;      /* name of rule's module */
+    char          *input_module;     /* path of input module file */
+    char          *output_module;    /* path of output module file */
 
     int            hdi_cache_size;   /* hdi cache size */
     int            thread_pool_size; /* thread pool size */
@@ -47,17 +47,22 @@ typedef struct _kr_engine_config_t
 
 
 /* kr_engine_run's argument, packed with this struct */
-typedef void (*KRCBFunc)(void *apply, void *reply, void *data);
+typedef void (*KRCBFunc)(T_KRRequest *req, T_KRResponse *resp, void *data);
 typedef struct _kr_engine_arg_t
 {
-    T_KRMessage      *apply;       /* request message */
-    T_KRMessage      *reply;       /* response message */
+    T_KRRequest      *apply;       /* request message */
+    T_KRResponse     *reply;       /* response message */
     KRCBFunc         cb_func;      /* call back function */
     void             *data;        /* pointer to user's data */
 }T_KREngineArg;
 
 
 /* basic functions of krengine */
+T_KRRequest *kr_request_alloc(void);
+void kr_request_free(T_KRRequest *ptRequest);
+T_KRResponse *kr_response_alloc(void);
+void kr_response_free(T_KRResponse *ptResponse);
+
 typedef void (*KRHandleFunc)(void *ctx, void *arg);
 T_KREngine *kr_engine_startup(T_KREngineConfig *arg, void *data);
 int kr_engine_register(T_KREngine *engine, char *method, KRHandleFunc func);

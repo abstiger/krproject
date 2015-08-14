@@ -21,13 +21,13 @@ typedef struct _kr_record_t T_KRRecord;
 extern T_KRInput* kr_input_construct(T_KRParam *ptParam, char *psInputModule);
 extern void kr_input_destruct(T_KRInput* ptInput);
 extern int kr_input_check(T_KRInput* ptInput, T_KRParam *ptParam);
-extern T_KRRecord *kr_input_process(T_KRInput *ptInput, T_KRMessage *ptMessage);
+extern T_KRRecord *kr_input_process(T_KRInput *ptInput, T_KRRequest *ptRequest);
 
 //record functions
 extern T_KRRecord* kr_record_new(T_KRInput *ptInput, int iInputId);
 extern void kr_record_free(T_KRRecord *ptRecord);
 extern T_KRRecord* kr_record_dup(T_KRRecord *ptRecord);
-extern int kr_record_compare(T_KRRecord *ptRec1, T_KRRecord *ptRec2, int iFieldId);
+extern int kr_record_compare(T_KRRecord *ptRec1, T_KRRecord *ptRec2, int *iFieldId);
 
 extern char* kr_record_get_field_name(T_KRRecord *ptRecord, int iFieldId);
 extern int kr_record_get_field_length(T_KRRecord *ptRecord, int iFieldId);

@@ -47,7 +47,7 @@ static void kr_rebuild_index_del(T_KRIndexTable *ptIndextable, T_KRRecord *ptRec
 void kr_table_insert_record(T_KRTable *ptTable, T_KRRecord *ptRecord)
 {
     /*first:insert into record list of table*/
-    kr_list_add_sorted(ptTable->pRecordList, ptRecord, ptTable->iSortFieldId);
+    kr_list_add_sorted(ptTable->pRecordList, ptRecord, &ptTable->iSortFieldId);
     
     /*then:rebuild all hash-indexes of this table with insert*/
     kr_list_foreach(ptTable->pIndexTableList, \
@@ -114,7 +114,7 @@ T_KRTable* kr_table_create(T_KRDB *ptDB, int iTableId, char *psTableName)
     
     ptTable->pIndexTableList = kr_list_new();
     kr_list_set_match(ptTable->pIndexTableList, \
-        (KRCompareFunc )kr_index_tableid_match);
+        (KRListMatchFunc )kr_index_tableid_match);
 
     kr_list_add_tail(ptDB->pTableList, ptTable);
 
@@ -168,7 +168,7 @@ T_KRIndex* kr_index_create(T_KRDB *ptDB, int iIndexId, char *psIndexName,
 
     ptIndex->pIndexTableList = kr_list_new();
     kr_list_set_match(ptIndex->pIndexTableList, \
-        (KRCompareFunc )kr_table_indexid_match);
+        (KRListMatchFunc )kr_table_indexid_match);
 
     kr_list_add_tail(ptDB->pIndexList, ptIndex);
     
@@ -286,16 +286,16 @@ T_KRDB* kr_db_create(char *name)
     strncpy(ptDB->caDBName, name, sizeof(ptDB->caDBName));
 
     ptDB->pTableList = kr_list_new();
-    kr_list_set_match(ptDB->pTableList, (KRCompareFunc )kr_tableid_match);
-    kr_list_set_free(ptDB->pTableList, (KRFreeFunc )kr_table_drop);
+    kr_list_set_match(ptDB->pTableList, (KRListMatchFunc )kr_tableid_match);
+    kr_list_set_free(ptDB->pTableList, (KRListFreeFunc )kr_table_drop);
 
     ptDB->pIndexList = kr_list_new();
-    kr_list_set_match(ptDB->pIndexList, (KRCompareFunc )kr_indexid_match);
-    kr_list_set_free(ptDB->pIndexList, (KRFreeFunc )kr_index_drop);
+    kr_list_set_match(ptDB->pIndexList, (KRListMatchFunc )kr_indexid_match);
+    kr_list_set_free(ptDB->pIndexList, (KRListFreeFunc )kr_index_drop);
 
     ptDB->pIndexTableList = kr_list_new();
-    kr_list_set_match(ptDB->pIndexTableList, (KRCompareFunc )kr_index_table_match);
-    kr_list_set_free(ptDB->pIndexTableList, (KRFreeFunc )kr_index_table_drop);
+    kr_list_set_match(ptDB->pIndexTableList, (KRListMatchFunc )kr_index_table_match);
+    kr_list_set_free(ptDB->pIndexTableList, (KRListFreeFunc )kr_index_table_drop);
 
     return ptDB;
 }

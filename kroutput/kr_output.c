@@ -131,7 +131,7 @@ int kr_output_handle_process(T_KROutputHandle *ptOutputHandle,
 }
 
 
-T_KRMessage *kr_output_process(T_KROutput *ptOutput, T_KRContext *ptContext)
+T_KRResponse *kr_output_process(T_KROutput *ptOutput, T_KRContext *ptContext)
 {
     int iOutputId = *(int *)kr_context_get_data(ptContext, "output_id");
     char *psOutputFmt = (char *)kr_context_get_data(ptContext, "output_fmt");
@@ -150,19 +150,21 @@ T_KRMessage *kr_output_process(T_KROutput *ptOutput, T_KRContext *ptContext)
         return NULL;
     }
     
-    T_KRMessage *ptMessage = kr_calloc(sizeof(*ptMessage));
-    if (ptMessage == NULL) {
-        KR_LOG(KR_LOGERROR, "kr_calloc ptMessage error!");
+    T_KRResponse *ptResponse = kr_response_alloc();
+    if (ptResponse == NULL) {
+        KR_LOG(KR_LOGERROR, "kr_response_alloc error!");
         return NULL;
     }
+    ptResponse->msgsrc = iOutputId;
+    strncpy(ptResponse->msgfmt, psOutputFmt, sizeof(ptResponse->msgfmt)-1);
     
     int iResult = kr_output_handle_process(ptOutputHandle, ptOutputDefine, 
-                    &ptMessage->msglen, &ptMessage->msgbuf, ptContext);
+                    &ptResponse->msglen, &ptResponse->msgbuf, ptContext);
     if (iResult != 0) {
         KR_LOG(KR_LOGERROR, "kr_output_handle_process [%d][%s] error!", iOutputId, psOutputFmt);
-        kr_free(ptMessage);
+        kr_response_free(ptResponse);
         return NULL;
     }
     
-    return ptMessage;
+    return ptResponse;
 }

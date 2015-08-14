@@ -32,7 +32,7 @@ def on_channel_open(channel_):
     global channel
     channel = channel_
     print "demo_send: Received our Channel"
-    channel.queue_declare(queue="test", durable=True,
+    channel.queue_declare(queue="krqueue", durable=True,
                           exclusive=False, auto_delete=False,
                           callback=on_queue_declared)
 
@@ -91,4 +91,4 @@ if __name__ == '__main__':
         connection.close()
 
         # Loop until the connection is closed
-        connection.ioloop.start()
+        connection.ioloop.stop()

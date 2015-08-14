@@ -3,6 +3,7 @@
 *.a
 .libs
 .deps
+old
 Makefile
 autom4te.cache
 config.guess

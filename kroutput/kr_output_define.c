@@ -52,8 +52,8 @@ T_KROutputDefine *kr_output_define_new(T_KRParamOutput *ptParamOutput,
     
     /*alloc output handle list*/
     ptOutputDefine->ptOutputHandleList = kr_list_new();
-    kr_list_set_match(ptOutputDefine->ptOutputHandleList, (KRCompareFunc )kr_output_handle_match);
-    kr_list_set_free(ptOutputDefine->ptOutputHandleList, (KRFreeFunc )kr_output_handle_free);
+    kr_list_set_match(ptOutputDefine->ptOutputHandleList, (KRListMatchFunc )kr_output_handle_match);
+    kr_list_set_free(ptOutputDefine->ptOutputHandleList, (KRListFreeFunc )kr_output_handle_free);
             
     return ptOutputDefine;
 }

@@ -327,7 +327,7 @@ int json_output_source_func(T_KRParamOutputField *ptParamOutputField, void *data
             fprintf(fp, "        json_t *field = json_real(*(double *)fldval);\n");
             break;
         case KR_TYPE_STRING:
-            fprintf(fp, "        json_t *field = json_stringn((char *)fldval, fldlen); \n");
+            fprintf(fp, "        json_t *field = json_string((char *)fldval); \n");
             break;
         default:
             break;

@@ -13,6 +13,6 @@ T_KROutput* kr_output_construct(T_KRParam *ptParam, char *psOutputModule,
 void kr_output_destruct(T_KROutput* ptOutput);
 int kr_output_check(T_KROutput* ptOutput, T_KRParam *ptParam);
 
-T_KRMessage *kr_output_process(T_KROutput *ptOutput, T_KRContext *ptContext);
+T_KRResponse *kr_output_process(T_KROutput *ptOutput, T_KRContext *ptContext);
 
 #endif /* __KR_OUTPUT_H__ */

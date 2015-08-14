@@ -17,7 +17,7 @@ struct _kr_client_t
     int               fd;
 
     T_KRBuffer        inbuf;
-    T_KRMessage      *inmsg;
+    T_KRRequest      *req;
     
     T_KRServer       *krserver;
 };

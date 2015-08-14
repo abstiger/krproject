@@ -33,13 +33,6 @@ static char *psParamOutput1 = STR({
 
 static char *psModuleFile = "/home/tiger/krproject/lib/libkriface.so";
 
-static T_KRMessage stOutputMessage = {
-        .msgtype = 0,
-        .msgid = "000001",
-        .datasrc = 1,
-        .msgfmt = "json",
-    };
-
 E_KRType my_get_type(char kind, int id, void *data)
 {
     return KR_TYPE_STRING;
@@ -71,20 +64,19 @@ int main(int argc,char *argv[])
     kr_context_add_data(ptContext, "output_id", &iOutputId);
     kr_context_add_data(ptContext, "output_fmt", psOutputFmt);
 
-    T_KRMessage *ptOutputMessage = kr_output_process(ptOutput, ptContext);
-    if (ptOutputMessage == NULL) {
+    T_KRResponse *ptResponse = kr_output_process(ptOutput, ptContext);
+    if (ptResponse == NULL) {
         fprintf(stderr, "kr_output_process failed!");
         return -1;
     }
 
     fprintf(stderr, "output msglen:%zu msgbuf:%s \n", 
-            ptOutputMessage->msglen,
-            ptOutputMessage->msgbuf);
-    
-    kr_context_destroy(ptContext);
-    
-    kr_output_destruct(ptOutput);
+            ptResponse->msglen,
+            ptResponse->msgbuf);
 
+    kr_response_free(ptResponse);
+    kr_context_destroy(ptContext);
+    kr_output_destruct(ptOutput);
     kr_param_destroy(ptParam);
 
     return 0;

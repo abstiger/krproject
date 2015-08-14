@@ -70,7 +70,7 @@ int kr_engine_ctx_check(T_KRContext *ptCtx)
     /* check flow, reload if needed */
     /*
     if (kr_flow_check(ptCtx->ptFlow, ptCtx->ptParam) != 0) {
-        KR_LOG(KR_LOGERROR, "kr_data_check failed");
+        KR_LOG(KR_LOGERROR, "kr_flow_check failed");
         return -1;
     }
     */
@@ -94,8 +94,8 @@ void kr_engine_ctx_clean(T_KRContext *ptCtx)
 
 int kr_engine_ctx_process(T_KRContext *ptCtx, T_KREngineArg *ptArg)
 {
-    T_KRMessage *apply = (T_KRMessage *)ptArg->apply;
-    T_KRMessage *reply = (T_KRMessage *)ptArg->reply;
+    T_KRRequest *apply = (T_KRRequest *)ptArg->apply;
+    T_KRResponse *reply = (T_KRResponse *)ptArg->reply;
 
     /* set argument */
     kr_context_add_data(ptCtx, "arg", ptArg);

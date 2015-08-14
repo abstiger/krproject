@@ -32,30 +32,33 @@ static int kr_client_match(T_KRClient *node, T_KRClient *key)
 }
 
 
-void kr_server_write_resp(T_KRMessage *inmsg, T_KRMessage *outmsg, void *data)
+void kr_server_write_resp(T_KRRequest *req, T_KRResponse *resp, void *data)
 {
     T_KRClient *krclient = (T_KRClient *)data;
 
     /* dump out message */
     T_KRBuffer outbuf = {0};
-    kr_message_dump(outmsg, &outbuf);
+    kr_response_dump(resp, &outbuf);
 
     /* write out buffer */
     kr_net_write(krclient->fd, outbuf.data, outbuf.size);
 
     /* free request&response message */
-    kr_message_free(inmsg);
-    kr_message_free(outmsg);
+    kr_request_free(req);
+    kr_response_free(resp);
 }
 
 static int 
-kr_server_process_input_message(T_KRMessage *inmsg, T_KRClient *krclient)
+kr_server_process_input_message(T_KRRequest *req, T_KRClient *krclient)
 {
+    KR_LOG(KR_LOGDEBUG, "process message msgid:%s, msgfunc:%s, msgsrc:%d, msgfmt:%s", \
+            req->msgid, req->msgfunc, req->msgsrc, req->msgfmt);
+
     /** store apply message */
-    T_KRMessage *apply = inmsg;
+    T_KRRequest *apply = req;
 
     /** alloc reply message */
-    T_KRMessage *reply = kr_message_alloc();
+    T_KRResponse *reply = kr_response_alloc();
 
     /** invoke krengine */
     T_KREngineArg stArg = {apply, reply, kr_server_write_resp, krclient};
@@ -67,14 +70,14 @@ kr_server_process_input_buffer(T_KRBuffer *krbuf, T_KRClient *krclient)
 {
     int ret = 0;
     while(krbuf->size) {
-        /** alloc inmsg */
-        if (krclient->inmsg == NULL) {
-            KR_LOG(KR_LOGDEBUG, "alloc new inmsg! %d", krbuf->size);
-            krclient->inmsg = kr_message_alloc();
+        /** alloc req */
+        if (krclient->req == NULL) {
+            KR_LOG(KR_LOGDEBUG, "alloc new req! %d", krbuf->size);
+            krclient->req = kr_request_alloc();
         }
 
         /** parse request message */
-        ret = kr_message_parse(&krclient->inbuf, krclient->inmsg);
+        ret = kr_request_parse(&krclient->inbuf, krclient->req);
         if (ret < 0) {
             KR_LOG(KR_LOGERROR, "kr_message_parse error:%d", ret);
             kr_client_free(krclient);
@@ -83,8 +86,8 @@ kr_server_process_input_buffer(T_KRBuffer *krbuf, T_KRClient *krclient)
             KR_LOG(KR_LOGDEBUG, "kr_message_parse need data!");
             return;
         } else if (ret == 0) {
-            kr_server_process_input_message(krclient->inmsg, krclient);
-            krclient->inmsg = NULL;
+            kr_server_process_input_message(krclient->req, krclient);
+            krclient->req = NULL;
         }
     }
 }
@@ -136,7 +139,7 @@ kr_server_on_connect(T_KREventLoop *krel, int fd, void *privdata, int mask)
         KR_LOG(KR_LOGERROR, "Accepting client failed:%s", krserver->neterr);
         return;
     }
-    KR_LOG(KR_LOGDEBUG, "Accepted %s:%d", cip, cport);
+    KR_LOG(KR_LOGDEBUG, "Client Accepted %s:%d", cip, cport);
 
     /*create client of this connection*/
     if (cfd != -1) {
@@ -164,12 +167,20 @@ kr_server_on_connect(T_KREventLoop *krel, int fd, void *privdata, int mask)
 
 void kr_server_network_shutdown(T_KRServer *krserver)
 {
-    /* delete accept event and close listening ipfd */
-    kr_event_file_delete(krserver->krel, krserver->ipfd, KR_EVENT_READABLE);
-    close(krserver->ipfd);
+    if (krserver) {
+        /* delete accept event */
+        if (krserver->krel) {
+            kr_event_file_delete(krserver->krel, krserver->ipfd, KR_EVENT_READABLE);
+        }
 
-    /* free all clients */
-    kr_list_destroy(krserver->clients);
+        /* close listening fd */
+        if (krserver->ipfd > 0) {
+            close(krserver->ipfd);
+        }
+
+        /* free all clients */
+        if (krserver->clients) kr_list_destroy(krserver->clients);
+    }
 }
 
 
@@ -205,7 +216,7 @@ int kr_server_network_startup(T_KRServer *krserver)
 
     /*create client list*/
     krserver->clients = kr_list_new();
-    kr_list_set_match(krserver->clients, kr_client_match);
+    kr_list_set_match(krserver->clients, (KRListMatchFunc )kr_client_match);
     
     return 0;
 }

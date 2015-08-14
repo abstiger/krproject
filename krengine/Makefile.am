@@ -1,5 +1,5 @@
 lib_LTLIBRARIES          = libkrengine.la
-include_HEADERS          = kr_engine.h
+include_HEADERS          = kr_engine.h 
 
 libkrengine_la_SOURCES   = kr_engine.h \
 						   kr_engine.c \
