@@ -58,7 +58,7 @@ it is now consist of:
 
 krproject is distributed under the terms of the MIT license.
 
-see LICENSE for details.
+see [LICENSE](LICENSE) for details.
 
 # Thanks
 
