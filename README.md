@@ -27,11 +27,11 @@ it is now consist of:
 2. Clone the [source] with `git`:
 
    ```sh
-   $ git clone https://github.com/AbsoluteTiger/krproject.git
+   $ git clone https://github.com/abstiger/krproject.git
    $ cd krproject
    ```
 
-[source]: https://github.com/AbsoluteTiger/krproject
+[source]: https://github.com/abstiger/krproject
 
 3. Build and install:
 
