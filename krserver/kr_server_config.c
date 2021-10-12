@@ -54,22 +54,6 @@ T_KRServerConfig *kr_server_config_parse(char *config_file)
     krengine->thread_pool_size = (int )cJSON_GetNumber(engine, "thread_pool_size");
     krengine->high_water_mark = (int )cJSON_GetNumber(engine, "high_water_mark");
     krserver->engine = krengine;
-
-    /*cluster config section*/
-    cJSON *cluster = cJSON_GetObjectItem(server, "cluster");
-    if (cluster == NULL) {
-        fprintf(stderr, "config_file %s miss cluster section!\n", config_file);
-        goto fail;
-    }
-    T_KRClusterConfig *krcluster = kr_calloc(sizeof(*krcluster));
-    krcluster->clustermode = (int )cJSON_GetNumber(cluster, "clustermode");
-    krcluster->weights = (int )cJSON_GetNumber(cluster, "weights");
-    krcluster->replica = (int )cJSON_GetNumber(cluster, "replica");
-    krcluster->coordip = _dupenv(cJSON_GetString(cluster, "coordip"));
-    krcluster->coordport = (int )cJSON_GetNumber(cluster, "coordport");
-    krcluster->retrytimes = (int )cJSON_GetNumber(cluster, "retrytimes");
-    krcluster->retryinterval = (int )cJSON_GetNumber(cluster, "retryinterval");
-    krserver->cluster = krcluster;
     
     cJSON_Delete(krjson);
     return krserver;
@@ -98,12 +82,6 @@ void kr_server_config_free(T_KRServerConfig *server)
         if (engine->param_url) kr_free(engine->param_url);
         if (engine->input_module) kr_free(engine->input_module);
         if (engine->output_module) kr_free(engine->output_module);
-    }
-
-    /*cluster config section*/
-    if (server->cluster) {
-        T_KRClusterConfig *cluster = server->cluster;
-        if (cluster->coordip) kr_free(cluster->coordip);
     }
 }
 

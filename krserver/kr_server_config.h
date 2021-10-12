@@ -3,18 +3,6 @@
 
 #include "krengine/kr_engine.h"
 
-typedef struct _kr_cluster_config_t
-{
-    int  clustermode;             /* Server in cluder:1 or not:0 */
-    int  weights;                 /* weights for this server in cluster mode */
-    int  replica;                 /* a replication server:1 or not:0*/
-    int  coordport;               /* Coordinator port */
-    char *coordip;                /* Coordinator ip */
-    int  retrytimes;              /* retry times for connecting cluster */
-    int  retryinterval;           /* retry interval for connecting cluster */
-}T_KRClusterConfig;
-
-
 typedef struct _kr_server_config_t
 {
     /* server config section */
@@ -24,12 +12,9 @@ typedef struct _kr_server_config_t
     int     tcpport;             /* TCP listening port */
     char   *tcpbindaddr;         /* Bind address or NULL */
 
-
     /* engine config section */
     T_KREngineConfig  *engine;
 
-    /* cluster config section*/
-    T_KRClusterConfig *cluster;
 }T_KRServerConfig;
 
 

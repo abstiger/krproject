@@ -5,7 +5,7 @@ AM_CPPFLAGS = -g -I$(includedir) -L$(libdir)
 
 SUBDIRS  = dbs krutils krcalc krparam \
 		   krinput krdb krdata krflow kroutput krengine \
-		   krserver krcoordi krshell krtools krweb \
+		   krserver krshell krtools krweb \
 		   tests examples etc doc 
 
 if ENABLE_PYTHON_BINDING

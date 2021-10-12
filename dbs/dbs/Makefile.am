@@ -18,5 +18,3 @@ RAPODBC=../rapodbc
 	@echo "rapodbc [$@] ..." 
 	$(RAPODBC) $*
 
-clean-local:
-	-rm -f *.c *.h

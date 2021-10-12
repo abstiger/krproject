@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.65])
-AC_INIT([krproject], [1.0.0], [huzai9999999990@163.com])
+AC_INIT([krproject], [1.0.0], [abstiger@krproject.org])
 AC_CONFIG_HEADERS([kr_config.h])
 AC_CONFIG_SRCDIR([krutils])
 AC_CONFIG_MACRO_DIR([m4])
@@ -99,7 +99,6 @@ krflow/Makefile
 kroutput/Makefile
 krengine/Makefile 
 krserver/Makefile
-krcoordi/Makefile
 krshell/Makefile
 krtools/Makefile
 krtools/kriface/Makefile

@@ -26,8 +26,8 @@ static char gszHeaderName[50+1] = {0};
 static char gszHeadDefine[50+1] = {0};
 static char gszRegulatedName[50+1] = {0};
 static char gszCfgFileName[200+1] = {0};
-static char gszHeadFileName[200+1] = {0};
-static char gszSrcFileName[200+1] = {0};
+static char gszHeadFileName[202+1] = {0};
+static char gszSrcFileName[202+1] = {0};
 
 static int giInputColumns=0;
 static int giOutputColumns=0;
@@ -285,11 +285,11 @@ static int ParseParameter(int argc, char *argv[])
 
     /* get header file name */
     memset(gszHeadFileName, 0x00, sizeof(gszHeadFileName));
-    sprintf(gszHeadFileName, "%s.h", &szArgName[9]);
+    snprintf(gszHeadFileName, sizeof(gszHeadFileName), "%s.h", &szArgName[9]);
 
     /* get c source file name */
     memset(gszSrcFileName, 0x00, sizeof(gszSrcFileName));
-    sprintf(gszSrcFileName, "%s.c", szArgName);
+    snprintf(gszSrcFileName, sizeof(gszSrcFileName), "%s.c", szArgName);
 
     printf("gszHeaderName=[%s], gszHeadDefine=[%s], gszRegulatedName=[%s]\n", 
             gszHeaderName, gszHeadDefine, gszRegulatedName);

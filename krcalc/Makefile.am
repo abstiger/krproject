@@ -29,6 +29,3 @@ kr_calc_parser_flex.c: kr_calc_parser_flex.l kr_calc_parser_bison.c
 kr_calc_parser_bison.c: kr_calc_parser_bison.y 
 	$(YACC) --defines=kr_calc_parser_flex.h --no-lines --output=$@ $< 
 
-clean-local:
-	-rm -f kr_calc_parser_flex.c kr_calc_parser_flex.h kr_calc_parser_bison.c
-

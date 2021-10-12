@@ -18,8 +18,6 @@ stamp-h1
 *.pyc
 *.pc
 tags
-/dbs/dbs/*.h
-/dbs/dbs/*.c
 bindings/java/krengine-1.0.0.jar
 bindings/java/krengine-java.stamp
 bindings/java/krengine_wrap.c
@@ -30,5 +28,4 @@ bindings/python/krengine.py
 /krtools/kriface/kriface
 /krserver/krserver
 /krshell/krshell
-/krcoordi/krcoordi
 /tests/*_test

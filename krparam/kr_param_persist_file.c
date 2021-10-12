@@ -10,18 +10,18 @@ void *kr_param_persist_file_load_pre(T_KRParamPersistConfig *ptConfig)
         return NULL;
     }
     fseek(fp, 0, SEEK_END); long len=ftell(fp); fseek(fp, 0, SEEK_SET);
-	char *data=(char*)kr_malloc(len+1); int n=fread(data,1,len,fp); fclose(fp);
-	cJSON *root=cJSON_Parse(data); kr_free(data);
-	if (root == NULL) {
-	    KR_LOG(KR_LOGERROR, "json parse %s failed! %s", data, cJSON_GetErrorPtr());
+    char *data=(char*)kr_malloc(len+1); int n=fread(data,1,len,fp); fclose(fp);
+    cJSON *root=cJSON_Parse(data); kr_free(data);
+    if (root == NULL) {
+        KR_LOG(KR_LOGERROR, "json parse %s failed! %s", data, cJSON_GetErrorPtr());
         return NULL;
-	}
-	char *version = cJSON_GetString(root, "version");
-	if (strcmp(ptConfig->version, version) != 0) {
-	    KR_LOG(KR_LOGERROR, "version mismatch expected:%s actual:%s", 
-	        ptConfig->version, version);
+    }
+    char *version = cJSON_GetString(root, "version");
+    if (strcmp(ptConfig->version, version) != 0) {
+        KR_LOG(KR_LOGERROR, "version mismatch expected:%s actual:%s", 
+        ptConfig->version, version);
         return NULL;
-	}
+    }
     return root;
 }
 
