@@ -14,22 +14,13 @@ T_KRContext *kr_engine_ctx_create(T_KREngineEnv *ptEnv)
     kr_context_add_data(ptCtx, "output", ptEnv->ptOutput);
     kr_context_add_data(ptCtx, "db", ptEnv->ptDB);
     
-    //TODO: construct data
-    /*
-    ptCtx->ptData = kr_data_construct(ptEnv->ptParam, ptEnv->krdbModule);
-    if (ptCtx->ptData == NULL) {
+    T_KRData *ptData = kr_data_construct(ptEnv->ptParam, NULL, 
+		    kr_engine_ctx_get_type, kr_engine_ctx_get_value);
+    if (ptData == NULL) {
         KR_LOG(KR_LOGERROR, "kr_data_construct failed!");
         return NULL;
     }
-    */
-    //TODO: construct flow
-    /*
-    ptCtx->ptFlow = kr_flow_construct(ptEnv->ptParam);
-    if (ptCtx->ptFlow == NULL) {
-        KR_LOG(KR_LOGERROR, "kr_flow_construct failed!");
-        return NULL;
-    }
-    */
+    kr_context_add_data(ptCtx, "data", ptData);
     
     return ptCtx;
 }
@@ -43,52 +34,48 @@ void kr_engine_ctx_destroy(T_KRContext *ptCtx)
 
 int kr_engine_ctx_check(T_KRContext *ptCtx)
 {
+    T_KRParam *ptParam = kr_context_get_data(ptCtx, "param");
+    if (ptParam == NULL) {
+        KR_LOG(KR_LOGERROR, "kr_context_get_data param failed");
+        return -1;
+    }
+
     /* check input, reload if needed */
-    /*
-    if (kr_input_check(ptCtx->ptInput, ptCtx->ptParam) != 0) {
+    T_KRInput *ptInput = kr_context_get_data(ptCtx, "input");
+    if (kr_input_check(ptInput, ptParam) != 0) {
         KR_LOG(KR_LOGERROR, "kr_input_check failed");
         return -1;
     }
-    */
     
     /* check output, reload if needed */
-    /*
-    if (kr_output_check(ptCtx->ptOutput, ptCtx->ptParam) != 0) {
+    T_KROutput *ptOutput = kr_context_get_data(ptCtx, "output");
+    if (kr_output_check(ptOutput, ptParam) != 0) {
         KR_LOG(KR_LOGERROR, "kr_output_check failed");
         return -1;
     }
-    */
     
     /* check data, reload if needed */
-    /*
-    if (kr_data_check(ptCtx->ptData, ptCtx->ptParam) != 0) {
+    T_KRData *ptData = kr_context_get_data(ptCtx, "data");
+    if (kr_data_check(ptData, ptParam) != 0) {
         KR_LOG(KR_LOGERROR, "kr_data_check failed");
         return -1;
     }
-    */
     
-    /* check flow, reload if needed */
-    /*
-    if (kr_flow_check(ptCtx->ptFlow, ptCtx->ptParam) != 0) {
-        KR_LOG(KR_LOGERROR, "kr_flow_check failed");
-        return -1;
-    }
-    */
-
     return 0;
 }
 
 void kr_engine_ctx_clean(T_KRContext *ptCtx)
 {
     /*initialize dynamic data memory*/
-    //kr_data_init(ptCtx->ptData);
-
-    /*initialize dynamic flow memory*/
-    //kr_flow_init(ptCtx->ptFlow);
+    T_KRData *ptData = kr_context_get_data(ptCtx, "data");
+    kr_data_init(ptData);
 
     /*initialize others*/
-    //ptCtx->ptArg = NULL;
-    //ptCtx->ptCurrRec = NULL;
+    T_KREngineArg *ptArg = kr_context_get_data(ptCtx, "arg");
+    ptArg = NULL;
+
+    T_KRRecord *ptCurrRec = kr_context_get_data(ptCtx, "curr_rec");
+    ptCurrRec = NULL;
 }
 
 
@@ -108,7 +95,6 @@ int kr_engine_ctx_process(T_KRContext *ptCtx, T_KREngineArg *ptArg)
         goto RESP;
     }
     
-    /*
     T_KRInput *ptInput = kr_context_get_data(ptCtx, "input");
     if (ptInput == NULL) {
         KR_LOG(KR_LOGERROR, "kr_context_get_data input failed!");
@@ -142,23 +128,6 @@ int kr_engine_ctx_process(T_KRContext *ptCtx, T_KREngineArg *ptArg)
     if (reply == NULL) {
         KR_LOG(KR_LOGERROR, "kr_output_process failed!");
         return -1;
-    }
-    */
-
-    /* invoke flow */
-    T_KRFlow *ptFlow = kr_context_get_data(ptCtx, "flow");
-    if (ptFlow == NULL) {
-        KR_LOG(KR_LOGERROR, "kr_context_get_data flow failed!");
-        //FIXME:set error code
-        //reply->msgtype = KR_MSGTYPE_ERROR;
-        goto RESP;
-    }
-    
-    if (kr_flow_process(ptFlow, ptCtx) != 0) {
-        KR_LOG(KR_LOGERROR, "kr_flow_process failed!");
-        //FIXME:set error code
-        //reply->msgtype = KR_MSGTYPE_ERROR;
-        goto RESP;
     }
 
 RESP:

@@ -201,9 +201,9 @@ am__define_uniq_tagged_files = \
 ETAGS = etags
 CTAGS = ctags
 CSCOPE = cscope
-DIST_SUBDIRS = dbs krutils krcalc krparam krinput krdb krdata krflow \
-	kroutput krengine krserver krshell krtools krweb tests \
-	examples etc doc bindings/python bindings/java
+DIST_SUBDIRS = dbs krutils krcalc krparam krinput krdb krdata kroutput \
+	krengine krserver krshell krtools krweb tests examples etc doc \
+	bindings/python bindings/java
 am__DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/kr_config.h.in \
 	$(srcdir)/krengine.pc.in ar-lib compile config.guess \
 	config.sub depcomp install-sh ltmain.sh missing py-compile \
@@ -395,9 +395,9 @@ top_srcdir = @top_srcdir@
 include_HEADERS = kr_config.h
 ACLOCAL_AMFLAGS = -I m4
 AM_CPPFLAGS = -g -I$(includedir) -L$(libdir)
-SUBDIRS = dbs krutils krcalc krparam krinput krdb krdata krflow \
-	kroutput krengine krserver krshell krtools krweb tests \
-	examples etc doc $(am__append_1) $(am__append_2)
+SUBDIRS = dbs krutils krcalc krparam krinput krdb krdata kroutput \
+	krengine krserver krshell krtools krweb tests examples etc doc \
+	$(am__append_1) $(am__append_2)
 EXTRA_DIST = README.md LICENSE 
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = krengine.pc

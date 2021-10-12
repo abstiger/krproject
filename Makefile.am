@@ -4,7 +4,7 @@ ACLOCAL_AMFLAGS = -I m4
 AM_CPPFLAGS = -g -I$(includedir) -L$(libdir)
 
 SUBDIRS  = dbs krutils krcalc krparam \
-		   krinput krdb krdata krflow kroutput krengine \
+		   krinput krdb krdata kroutput krengine \
 		   krserver krshell krtools krweb \
 		   tests examples etc doc 
 

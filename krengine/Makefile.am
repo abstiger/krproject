@@ -17,6 +17,5 @@ libkrengine_la_LIBADD   += $(top_srcdir)/krinput/libkrinput.la
 libkrengine_la_LIBADD   += $(top_srcdir)/krdb/libkrdb.la
 libkrengine_la_LIBADD   += $(top_srcdir)/krdata/libkrdata.la
 libkrengine_la_LIBADD   += $(top_srcdir)/kroutput/libkroutput.la
-libkrengine_la_LIBADD   += $(top_srcdir)/krflow/libkrflow.la
 libkrengine_la_CPPFLAGS  = 
 libkrengine_la_LDFLAGS   = 
