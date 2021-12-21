@@ -1,19 +1,21 @@
 # Introduction
 
-[![Build Status](https://travis-ci.org/AbsoluteTiger/krproject.svg?branch=master)](https://travis-ci.org/AbsoluteTiger/krproject)
+[![Build Status](https://travis-ci.org/abstiger/krproject.svg?branch=master)](https://travis-ci.org/abstiger/krproject)
 
-krproject is a **real-time streaming data analysis** system.
+krproject is a **rule-based real-time streaming data analysis system**. it is now consist of:
 
-This project is designed to be a powerful tool of bigdata's computation,
-it is now consist of:
-
-* __krengine__: the core process engine of this project
-* __kriface__: the interface generator, helper for IO processing
-* __krserver__: the tcp server, an wrapper of krengine
-* __krcoordi__: the coordinator, associated with krserver
-* __krshell__: the command line processor of krserver
-* __krweb__: the web frontend, editor for kengine
-
+* __krshell__: command line processor for krserver
+* __krweb__: web frontend editor for krserver
+* __krserver__: tcp server for krengine
+* __krtools__: useful tools for krengine
+* __krengine__: the core process engine
+* __krinput__: the input processor of krengine
+* __kroutput__: the output processor of krengine
+* __krdata__: data items of krengine
+* __krdb__: in-memory timeseries database of krengine
+* __krcalc__: an expression calculator of krengine
+* __krparam__: parameter definition of krengine
+* __krutils__: utilities of krengine
 
 # Install
 
