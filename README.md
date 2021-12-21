@@ -11,10 +11,10 @@ krproject is a **rule-based real-time streaming data analysis system**. it is no
 * __krengine__: the core process engine
 * __krinput__: the input processor of krengine
 * __kroutput__: the output processor of krengine
-* __krdata__: data items of krengine
-* __krdb__: in-memory timeseries database of krengine
-* __krcalc__: an expression calculator of krengine
-* __krparam__: parameter definition of krengine
+* __krdata__: dataitem definition and processing
+* __krdb__: in-memory timeseries database
+* __krparam__: parameter definition and processing
+* __krcalc__: an expression calculator
 * __krutils__: utilities of krengine
 
 # Install
