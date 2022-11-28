@@ -1,18 +1,25 @@
-# Introduction
+# krproject
 
 [![Build Status](https://travis-ci.org/abstiger/krproject.svg?branch=master)](https://travis-ci.org/abstiger/krproject)
 
-krproject is a real-time streaming data analysis system based on rules.
+## Introduction
 
-it is now consist of:
+krproject is a **rule-based real-time streaming data analysis system**. it is now consist of:
 
-* __krserver__: the tcp server, an wrapper of krengine
-* __krshell__: the command line processor of krserver
-* __krweb__: the web frontend, editor for kengine
-* __krengine__: the core process engine of this project
+* __krshell__: command line processor for krserver
+* __krweb__: web frontend editor for krserver
+* __krserver__: tcp server for krengine
+* __krtools__: useful tools for krengine
+* __krengine__: the core process engine
+* __krinput__: the input processor of krengine
+* __kroutput__: the output processor of krengine
+* __krdata__: dataitem definition and processing
+* __krdb__: in-memory timeseries database
+* __krparam__: parameter definition and processing
+* __krcalc__: an expression calculator
+* __krutils__: utilities of krengine
 
-
-# Install
+## Install
 
 1. Make sure you have installed the dependencies:
 
@@ -43,7 +50,7 @@ it is now consist of:
     > to `configure`. Various other options are also supported. Pass 
     > `--help` for more information on them.
 
-# Development
+## Development
 1. flex and bison
     ```sh
     sudo apt install flex bison swig 
@@ -57,13 +64,13 @@ it is now consist of:
 
 [swig]:http://www.swig.org/
 
-# License
+## License
 
 krproject is distributed under the terms of the MIT license.
 
 see [LICENSE](LICENSE) for details.
 
-# Thanks
+## Thanks
 
 Special thanks to Jennifer who named it, :)  
 
