@@ -139,7 +139,7 @@ void kr_engine_shutdown(T_KREngine *engine)
 }
 
 
-int kr_engine_run(T_KREngine *engine, T_KREngineArg *arg)
+int kr_engine_process(T_KREngine *engine, T_KREngineArg *arg)
 {
     if (engine->ctx) {
         if (kr_engine_ctx_process(engine->ctx, arg) != 0) {

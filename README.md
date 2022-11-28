@@ -1,18 +1,15 @@
 # Introduction
 
-[![Build Status](https://travis-ci.org/AbsoluteTiger/krproject.svg?branch=master)](https://travis-ci.org/AbsoluteTiger/krproject)
+[![Build Status](https://travis-ci.org/abstiger/krproject.svg?branch=master)](https://travis-ci.org/abstiger/krproject)
 
-krproject is a **real-time streaming data analysis** system.
+krproject is a real-time streaming data analysis system based on rules.
 
-This project is designed to be a powerful tool of bigdata's computation,
 it is now consist of:
 
-* __krengine__: the core process engine of this project
-* __kriface__: the interface generator, helper for IO processing
 * __krserver__: the tcp server, an wrapper of krengine
-* __krcoordi__: the coordinator, associated with krserver
 * __krshell__: the command line processor of krserver
 * __krweb__: the web frontend, editor for kengine
+* __krengine__: the core process engine of this project
 
 
 # Install
@@ -27,8 +24,8 @@ it is now consist of:
 2. Clone the [source] with `git`:
 
    ```sh
-   $ git clone https://github.com/abstiger/krproject.git
-   $ cd krproject
+   git clone https://github.com/abstiger/krproject.git
+   cd krproject
    ```
 
 [source]: https://github.com/abstiger/krproject
@@ -36,8 +33,8 @@ it is now consist of:
 3. Build and install:
 
     ```sh
-    $ ./configure
-    $ make && make install
+    ./configure
+    make && make install
     ```
 
     > ***Note:*** You may need to use `sudo make install` if you do not
@@ -46,6 +43,12 @@ it is now consist of:
     > to `configure`. Various other options are also supported. Pass 
     > `--help` for more information on them.
 
+# Development
+1. flex and bison
+    ```sh
+    sudo apt install flex bison swig 
+    ```
+ 
 4. Enable bindings: 
 
     To enable bindings, you need install [swig] first. then you can add 

@@ -62,7 +62,7 @@ kr_server_process_input_message(T_KRRequest *req, T_KRClient *krclient)
 
     /** invoke krengine */
     T_KREngineArg stArg = {apply, reply, kr_server_write_resp, krclient};
-    return kr_engine_run(krclient->krserver->krengine, &stArg);
+    return kr_engine_process(krclient->krserver->krengine, &stArg);
 }
 
 static void 

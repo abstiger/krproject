@@ -65,9 +65,9 @@ void kr_response_free(T_KRResponse *ptResponse);
 
 typedef void (*KRHandleFunc)(void *ctx, void *arg);
 T_KREngine *kr_engine_startup(T_KREngineConfig *arg, void *data);
-int kr_engine_register(T_KREngine *engine, char *method, KRHandleFunc func);
-int kr_engine_run(T_KREngine *engine, T_KREngineArg *arg);
 void kr_engine_shutdown(T_KREngine *engine);
+int kr_engine_register(T_KREngine *engine, char *method, KRHandleFunc func);
+int kr_engine_process(T_KREngine *engine, T_KREngineArg *arg);
 
 #endif  /*__KR_ENGINE_H__*/
 

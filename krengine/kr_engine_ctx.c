@@ -122,6 +122,8 @@ int kr_engine_ctx_process(T_KRContext *ptCtx, T_KREngineArg *ptArg)
 
     // set current record
     kr_context_add_data(ptCtx, "curr_rec", ptCurrRec);
+
+    //TODO:call functable by msgtype
     
     //call output module to genrate reply message
     reply = kr_output_process(ptOutput, ptCtx);
