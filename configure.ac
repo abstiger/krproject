@@ -105,7 +105,6 @@ krweb/Makefile
 bindings/python/Makefile
 bindings/java/Makefile
 etc/Makefile 
-doc/Makefile 
 tests/Makefile
 examples/Makefile
 examples/antifraud/Makefile

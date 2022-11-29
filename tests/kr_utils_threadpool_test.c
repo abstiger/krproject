@@ -8,7 +8,7 @@ int worker(void *ctx, void *task)
     fprintf(stdout, "worker [%lu] processing task[%s] \n", \
             pthread_self(), (char *)task);
     fflush(stdout);
-    sleep(1);
+    sleep(2);
     return 0;
 }
 

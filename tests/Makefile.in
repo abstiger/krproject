@@ -109,79 +109,88 @@ mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = $(top_builddir)/kr_config.h
 CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
-am__EXEEXT_1 = kr_alloc_test$(EXEEXT) kr_string_test$(EXEEXT) \
-	kr_datetime_test$(EXEEXT) kr_log_test$(EXEEXT) \
-	kr_list_test$(EXEEXT) kr_hashtable_test$(EXEEXT) \
-	kr_queue_test$(EXEEXT) kr_threadpool_test$(EXEEXT) \
-	kr_skiplist_test$(EXEEXT) kr_conhash_test$(EXEEXT) \
-	kr_cache_test$(EXEEXT) kr_odbc_test$(EXEEXT) \
+am__EXEEXT_1 = kr_utils_alloc_test$(EXEEXT) \
+	kr_utils_string_test$(EXEEXT) kr_utils_datetime_test$(EXEEXT) \
+	kr_utils_log_test$(EXEEXT) kr_utils_list_test$(EXEEXT) \
+	kr_utils_hashtable_test$(EXEEXT) kr_utils_queue_test$(EXEEXT) \
+	kr_utils_threadpool_test$(EXEEXT) \
+	kr_utils_skiplist_test$(EXEEXT) kr_utils_conhash_test$(EXEEXT) \
+	kr_utils_cache_test$(EXEEXT) kr_dbs_test$(EXEEXT) \
 	kr_calc_test$(EXEEXT) kr_param_test$(EXEEXT) \
 	kr_input_test$(EXEEXT) kr_output_test$(EXEEXT) \
 	kr_db_test$(EXEEXT) kr_data_test$(EXEEXT)
 PROGRAMS = $(noinst_PROGRAMS)
-am_kr_alloc_test_OBJECTS = kr_alloc_test-kr_alloc_test.$(OBJEXT)
-kr_alloc_test_OBJECTS = $(am_kr_alloc_test_OBJECTS)
-kr_alloc_test_DEPENDENCIES = $(progs_ldadd)
+am_kr_calc_test_OBJECTS = kr_calc_test-kr_calc_test.$(OBJEXT)
+kr_calc_test_OBJECTS = $(am_kr_calc_test_OBJECTS)
+kr_calc_test_DEPENDENCIES = $(progs_ldadd)
 AM_V_lt = $(am__v_lt_@AM_V@)
 am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
 am__v_lt_0 = --silent
 am__v_lt_1 = 
-am_kr_cache_test_OBJECTS = kr_cache_test-kr_cache_test.$(OBJEXT)
-kr_cache_test_OBJECTS = $(am_kr_cache_test_OBJECTS)
-kr_cache_test_DEPENDENCIES = $(progs_ldadd)
-am_kr_calc_test_OBJECTS = kr_calc_test-kr_calc_test.$(OBJEXT)
-kr_calc_test_OBJECTS = $(am_kr_calc_test_OBJECTS)
-kr_calc_test_DEPENDENCIES = $(progs_ldadd)
-am_kr_conhash_test_OBJECTS =  \
-	kr_conhash_test-kr_conhash_test.$(OBJEXT)
-kr_conhash_test_OBJECTS = $(am_kr_conhash_test_OBJECTS)
-kr_conhash_test_DEPENDENCIES = $(progs_ldadd)
 am_kr_data_test_OBJECTS = kr_data_test-kr_data_test.$(OBJEXT)
 kr_data_test_OBJECTS = $(am_kr_data_test_OBJECTS)
 kr_data_test_DEPENDENCIES = $(progs_ldadd)
-am_kr_datetime_test_OBJECTS =  \
-	kr_datetime_test-kr_datetime_test.$(OBJEXT)
-kr_datetime_test_OBJECTS = $(am_kr_datetime_test_OBJECTS)
-kr_datetime_test_DEPENDENCIES = $(progs_ldadd)
 am_kr_db_test_OBJECTS = kr_db_test-kr_db_test.$(OBJEXT)
 kr_db_test_OBJECTS = $(am_kr_db_test_OBJECTS)
 kr_db_test_DEPENDENCIES = $(progs_ldadd)
-am_kr_hashtable_test_OBJECTS =  \
-	kr_hashtable_test-kr_hashtable_test.$(OBJEXT)
-kr_hashtable_test_OBJECTS = $(am_kr_hashtable_test_OBJECTS)
-kr_hashtable_test_DEPENDENCIES = $(progs_ldadd)
+am_kr_dbs_test_OBJECTS = kr_dbs_test-kr_dbs_test.$(OBJEXT)
+kr_dbs_test_OBJECTS = $(am_kr_dbs_test_OBJECTS)
+kr_dbs_test_DEPENDENCIES = $(progs_ldadd)
 am_kr_input_test_OBJECTS = kr_input_test-kr_input_test.$(OBJEXT)
 kr_input_test_OBJECTS = $(am_kr_input_test_OBJECTS)
 kr_input_test_DEPENDENCIES = $(progs_ldadd)
-am_kr_list_test_OBJECTS = kr_list_test-kr_list_test.$(OBJEXT)
-kr_list_test_OBJECTS = $(am_kr_list_test_OBJECTS)
-kr_list_test_DEPENDENCIES = $(progs_ldadd)
-am_kr_log_test_OBJECTS = kr_log_test-kr_log_test.$(OBJEXT)
-kr_log_test_OBJECTS = $(am_kr_log_test_OBJECTS)
-kr_log_test_DEPENDENCIES = $(progs_ldadd)
-am_kr_odbc_test_OBJECTS = kr_odbc_test-kr_odbc_test.$(OBJEXT)
-kr_odbc_test_OBJECTS = $(am_kr_odbc_test_OBJECTS)
-kr_odbc_test_DEPENDENCIES = $(progs_ldadd)
 am_kr_output_test_OBJECTS = kr_output_test-kr_output_test.$(OBJEXT)
 kr_output_test_OBJECTS = $(am_kr_output_test_OBJECTS)
 kr_output_test_DEPENDENCIES = $(progs_ldadd)
 am_kr_param_test_OBJECTS = kr_param_test-kr_param_test.$(OBJEXT)
 kr_param_test_OBJECTS = $(am_kr_param_test_OBJECTS)
 kr_param_test_DEPENDENCIES = $(progs_ldadd)
-am_kr_queue_test_OBJECTS = kr_queue_test-kr_queue_test.$(OBJEXT)
-kr_queue_test_OBJECTS = $(am_kr_queue_test_OBJECTS)
-kr_queue_test_DEPENDENCIES = $(progs_ldadd)
-am_kr_skiplist_test_OBJECTS =  \
-	kr_skiplist_test-kr_skiplist_test.$(OBJEXT)
-kr_skiplist_test_OBJECTS = $(am_kr_skiplist_test_OBJECTS)
-kr_skiplist_test_DEPENDENCIES = $(progs_ldadd)
-am_kr_string_test_OBJECTS = kr_string_test-kr_string_test.$(OBJEXT)
-kr_string_test_OBJECTS = $(am_kr_string_test_OBJECTS)
-kr_string_test_DEPENDENCIES = $(progs_ldadd)
-am_kr_threadpool_test_OBJECTS =  \
-	kr_threadpool_test-kr_threadpool_test.$(OBJEXT)
-kr_threadpool_test_OBJECTS = $(am_kr_threadpool_test_OBJECTS)
-kr_threadpool_test_DEPENDENCIES = $(progs_ldadd)
+am_kr_utils_alloc_test_OBJECTS =  \
+	kr_utils_alloc_test-kr_utils_alloc_test.$(OBJEXT)
+kr_utils_alloc_test_OBJECTS = $(am_kr_utils_alloc_test_OBJECTS)
+kr_utils_alloc_test_DEPENDENCIES = $(progs_ldadd)
+am_kr_utils_cache_test_OBJECTS =  \
+	kr_utils_cache_test-kr_utils_cache_test.$(OBJEXT)
+kr_utils_cache_test_OBJECTS = $(am_kr_utils_cache_test_OBJECTS)
+kr_utils_cache_test_DEPENDENCIES = $(progs_ldadd)
+am_kr_utils_conhash_test_OBJECTS =  \
+	kr_utils_conhash_test-kr_utils_conhash_test.$(OBJEXT)
+kr_utils_conhash_test_OBJECTS = $(am_kr_utils_conhash_test_OBJECTS)
+kr_utils_conhash_test_DEPENDENCIES = $(progs_ldadd)
+am_kr_utils_datetime_test_OBJECTS =  \
+	kr_utils_datetime_test-kr_utils_datetime_test.$(OBJEXT)
+kr_utils_datetime_test_OBJECTS = $(am_kr_utils_datetime_test_OBJECTS)
+kr_utils_datetime_test_DEPENDENCIES = $(progs_ldadd)
+am_kr_utils_hashtable_test_OBJECTS =  \
+	kr_utils_hashtable_test-kr_utils_hashtable_test.$(OBJEXT)
+kr_utils_hashtable_test_OBJECTS =  \
+	$(am_kr_utils_hashtable_test_OBJECTS)
+kr_utils_hashtable_test_DEPENDENCIES = $(progs_ldadd)
+am_kr_utils_list_test_OBJECTS =  \
+	kr_utils_list_test-kr_utils_list_test.$(OBJEXT)
+kr_utils_list_test_OBJECTS = $(am_kr_utils_list_test_OBJECTS)
+kr_utils_list_test_DEPENDENCIES = $(progs_ldadd)
+am_kr_utils_log_test_OBJECTS =  \
+	kr_utils_log_test-kr_utils_log_test.$(OBJEXT)
+kr_utils_log_test_OBJECTS = $(am_kr_utils_log_test_OBJECTS)
+kr_utils_log_test_DEPENDENCIES = $(progs_ldadd)
+am_kr_utils_queue_test_OBJECTS =  \
+	kr_utils_queue_test-kr_utils_queue_test.$(OBJEXT)
+kr_utils_queue_test_OBJECTS = $(am_kr_utils_queue_test_OBJECTS)
+kr_utils_queue_test_DEPENDENCIES = $(progs_ldadd)
+am_kr_utils_skiplist_test_OBJECTS =  \
+	kr_utils_skiplist_test-kr_utils_skiplist_test.$(OBJEXT)
+kr_utils_skiplist_test_OBJECTS = $(am_kr_utils_skiplist_test_OBJECTS)
+kr_utils_skiplist_test_DEPENDENCIES = $(progs_ldadd)
+am_kr_utils_string_test_OBJECTS =  \
+	kr_utils_string_test-kr_utils_string_test.$(OBJEXT)
+kr_utils_string_test_OBJECTS = $(am_kr_utils_string_test_OBJECTS)
+kr_utils_string_test_DEPENDENCIES = $(progs_ldadd)
+am_kr_utils_threadpool_test_OBJECTS =  \
+	kr_utils_threadpool_test-kr_utils_threadpool_test.$(OBJEXT)
+kr_utils_threadpool_test_OBJECTS =  \
+	$(am_kr_utils_threadpool_test_OBJECTS)
+kr_utils_threadpool_test_DEPENDENCIES = $(progs_ldadd)
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
 am__v_P_0 = false
@@ -197,24 +206,24 @@ am__v_at_1 =
 DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__maybe_remake_depfiles = depfiles
-am__depfiles_remade = ./$(DEPDIR)/kr_alloc_test-kr_alloc_test.Po \
-	./$(DEPDIR)/kr_cache_test-kr_cache_test.Po \
-	./$(DEPDIR)/kr_calc_test-kr_calc_test.Po \
-	./$(DEPDIR)/kr_conhash_test-kr_conhash_test.Po \
+am__depfiles_remade = ./$(DEPDIR)/kr_calc_test-kr_calc_test.Po \
 	./$(DEPDIR)/kr_data_test-kr_data_test.Po \
-	./$(DEPDIR)/kr_datetime_test-kr_datetime_test.Po \
 	./$(DEPDIR)/kr_db_test-kr_db_test.Po \
-	./$(DEPDIR)/kr_hashtable_test-kr_hashtable_test.Po \
+	./$(DEPDIR)/kr_dbs_test-kr_dbs_test.Po \
 	./$(DEPDIR)/kr_input_test-kr_input_test.Po \
-	./$(DEPDIR)/kr_list_test-kr_list_test.Po \
-	./$(DEPDIR)/kr_log_test-kr_log_test.Po \
-	./$(DEPDIR)/kr_odbc_test-kr_odbc_test.Po \
 	./$(DEPDIR)/kr_output_test-kr_output_test.Po \
 	./$(DEPDIR)/kr_param_test-kr_param_test.Po \
-	./$(DEPDIR)/kr_queue_test-kr_queue_test.Po \
-	./$(DEPDIR)/kr_skiplist_test-kr_skiplist_test.Po \
-	./$(DEPDIR)/kr_string_test-kr_string_test.Po \
-	./$(DEPDIR)/kr_threadpool_test-kr_threadpool_test.Po
+	./$(DEPDIR)/kr_utils_alloc_test-kr_utils_alloc_test.Po \
+	./$(DEPDIR)/kr_utils_cache_test-kr_utils_cache_test.Po \
+	./$(DEPDIR)/kr_utils_conhash_test-kr_utils_conhash_test.Po \
+	./$(DEPDIR)/kr_utils_datetime_test-kr_utils_datetime_test.Po \
+	./$(DEPDIR)/kr_utils_hashtable_test-kr_utils_hashtable_test.Po \
+	./$(DEPDIR)/kr_utils_list_test-kr_utils_list_test.Po \
+	./$(DEPDIR)/kr_utils_log_test-kr_utils_log_test.Po \
+	./$(DEPDIR)/kr_utils_queue_test-kr_utils_queue_test.Po \
+	./$(DEPDIR)/kr_utils_skiplist_test-kr_utils_skiplist_test.Po \
+	./$(DEPDIR)/kr_utils_string_test-kr_utils_string_test.Po \
+	./$(DEPDIR)/kr_utils_threadpool_test-kr_utils_threadpool_test.Po
 am__mv = mv -f
 COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
 	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
@@ -234,24 +243,32 @@ AM_V_CCLD = $(am__v_CCLD_@AM_V@)
 am__v_CCLD_ = $(am__v_CCLD_@AM_DEFAULT_V@)
 am__v_CCLD_0 = @echo "  CCLD    " $@;
 am__v_CCLD_1 = 
-SOURCES = $(kr_alloc_test_SOURCES) $(kr_cache_test_SOURCES) \
-	$(kr_calc_test_SOURCES) $(kr_conhash_test_SOURCES) \
-	$(kr_data_test_SOURCES) $(kr_datetime_test_SOURCES) \
-	$(kr_db_test_SOURCES) $(kr_hashtable_test_SOURCES) \
-	$(kr_input_test_SOURCES) $(kr_list_test_SOURCES) \
-	$(kr_log_test_SOURCES) $(kr_odbc_test_SOURCES) \
-	$(kr_output_test_SOURCES) $(kr_param_test_SOURCES) \
-	$(kr_queue_test_SOURCES) $(kr_skiplist_test_SOURCES) \
-	$(kr_string_test_SOURCES) $(kr_threadpool_test_SOURCES)
-DIST_SOURCES = $(kr_alloc_test_SOURCES) $(kr_cache_test_SOURCES) \
-	$(kr_calc_test_SOURCES) $(kr_conhash_test_SOURCES) \
-	$(kr_data_test_SOURCES) $(kr_datetime_test_SOURCES) \
-	$(kr_db_test_SOURCES) $(kr_hashtable_test_SOURCES) \
-	$(kr_input_test_SOURCES) $(kr_list_test_SOURCES) \
-	$(kr_log_test_SOURCES) $(kr_odbc_test_SOURCES) \
-	$(kr_output_test_SOURCES) $(kr_param_test_SOURCES) \
-	$(kr_queue_test_SOURCES) $(kr_skiplist_test_SOURCES) \
-	$(kr_string_test_SOURCES) $(kr_threadpool_test_SOURCES)
+SOURCES = $(kr_calc_test_SOURCES) $(kr_data_test_SOURCES) \
+	$(kr_db_test_SOURCES) $(kr_dbs_test_SOURCES) \
+	$(kr_input_test_SOURCES) $(kr_output_test_SOURCES) \
+	$(kr_param_test_SOURCES) $(kr_utils_alloc_test_SOURCES) \
+	$(kr_utils_cache_test_SOURCES) \
+	$(kr_utils_conhash_test_SOURCES) \
+	$(kr_utils_datetime_test_SOURCES) \
+	$(kr_utils_hashtable_test_SOURCES) \
+	$(kr_utils_list_test_SOURCES) $(kr_utils_log_test_SOURCES) \
+	$(kr_utils_queue_test_SOURCES) \
+	$(kr_utils_skiplist_test_SOURCES) \
+	$(kr_utils_string_test_SOURCES) \
+	$(kr_utils_threadpool_test_SOURCES)
+DIST_SOURCES = $(kr_calc_test_SOURCES) $(kr_data_test_SOURCES) \
+	$(kr_db_test_SOURCES) $(kr_dbs_test_SOURCES) \
+	$(kr_input_test_SOURCES) $(kr_output_test_SOURCES) \
+	$(kr_param_test_SOURCES) $(kr_utils_alloc_test_SOURCES) \
+	$(kr_utils_cache_test_SOURCES) \
+	$(kr_utils_conhash_test_SOURCES) \
+	$(kr_utils_datetime_test_SOURCES) \
+	$(kr_utils_hashtable_test_SOURCES) \
+	$(kr_utils_list_test_SOURCES) $(kr_utils_log_test_SOURCES) \
+	$(kr_utils_queue_test_SOURCES) \
+	$(kr_utils_skiplist_test_SOURCES) \
+	$(kr_utils_string_test_SOURCES) \
+	$(kr_utils_threadpool_test_SOURCES)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -420,48 +437,50 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-TEST_PROGS = kr_alloc_test kr_string_test kr_datetime_test kr_log_test \
-	kr_list_test kr_hashtable_test kr_queue_test \
-	kr_threadpool_test kr_skiplist_test kr_conhash_test \
-	kr_cache_test kr_odbc_test kr_calc_test kr_param_test \
-	kr_input_test kr_output_test kr_db_test kr_data_test
+TEST_PROGS = kr_utils_alloc_test kr_utils_string_test \
+	kr_utils_datetime_test kr_utils_log_test kr_utils_list_test \
+	kr_utils_hashtable_test kr_utils_queue_test \
+	kr_utils_threadpool_test kr_utils_skiplist_test \
+	kr_utils_conhash_test kr_utils_cache_test kr_dbs_test \
+	kr_calc_test kr_param_test kr_input_test kr_output_test \
+	kr_db_test kr_data_test
 progs_ldadd = $(top_srcdir)/krengine/libkrengine.la
-kr_alloc_test_SOURCES = kr_alloc_test.c
-kr_alloc_test_LDADD = $(progs_ldadd)
-kr_alloc_test_CPPFLAGS = -g 
-kr_string_test_SOURCES = kr_string_test.c
-kr_string_test_LDADD = $(progs_ldadd)
-kr_string_test_CPPFLAGS = -g 
-kr_datetime_test_SOURCES = kr_datetime_test.c
-kr_datetime_test_LDADD = $(progs_ldadd)
-kr_datetime_test_CPPFLAGS = -g 
-kr_log_test_SOURCES = kr_log_test.c
-kr_log_test_LDADD = $(progs_ldadd)
-kr_log_test_CPPFLAGS = -g -I$(top_srcdir)/src
-kr_list_test_SOURCES = kr_list_test.c
-kr_list_test_LDADD = $(progs_ldadd)
-kr_list_test_CPPFLAGS = -g 
-kr_hashtable_test_SOURCES = kr_hashtable_test.c
-kr_hashtable_test_LDADD = $(progs_ldadd)
-kr_hashtable_test_CPPFLAGS = -g 
-kr_queue_test_SOURCES = kr_queue_test.c
-kr_queue_test_LDADD = $(progs_ldadd)
-kr_queue_test_CPPFLAGS = -g 
-kr_threadpool_test_SOURCES = kr_threadpool_test.c
-kr_threadpool_test_LDADD = $(progs_ldadd)
-kr_threadpool_test_CPPFLAGS = -g 
-kr_skiplist_test_SOURCES = kr_skiplist_test.c
-kr_skiplist_test_LDADD = $(progs_ldadd)
-kr_skiplist_test_CPPFLAGS = -g 
-kr_conhash_test_SOURCES = kr_conhash_test.c
-kr_conhash_test_LDADD = $(progs_ldadd)
-kr_conhash_test_CPPFLAGS = -g 
-kr_cache_test_SOURCES = kr_cache_test.c
-kr_cache_test_LDADD = $(progs_ldadd)
-kr_cache_test_CPPFLAGS = -g 
-kr_odbc_test_SOURCES = kr_odbc_test.c
-kr_odbc_test_LDADD = $(progs_ldadd)
-kr_odbc_test_CPPFLAGS = -g 
+kr_utils_alloc_test_SOURCES = kr_utils_alloc_test.c
+kr_utils_alloc_test_LDADD = $(progs_ldadd)
+kr_utils_alloc_test_CPPFLAGS = -g 
+kr_utils_string_test_SOURCES = kr_utils_string_test.c
+kr_utils_string_test_LDADD = $(progs_ldadd)
+kr_utils_string_test_CPPFLAGS = -g 
+kr_utils_datetime_test_SOURCES = kr_utils_datetime_test.c
+kr_utils_datetime_test_LDADD = $(progs_ldadd)
+kr_utils_datetime_test_CPPFLAGS = -g 
+kr_utils_log_test_SOURCES = kr_utils_log_test.c
+kr_utils_log_test_LDADD = $(progs_ldadd)
+kr_utils_log_test_CPPFLAGS = -g -I$(top_srcdir)/src
+kr_utils_list_test_SOURCES = kr_utils_list_test.c
+kr_utils_list_test_LDADD = $(progs_ldadd)
+kr_utils_list_test_CPPFLAGS = -g 
+kr_utils_hashtable_test_SOURCES = kr_utils_hashtable_test.c
+kr_utils_hashtable_test_LDADD = $(progs_ldadd)
+kr_utils_hashtable_test_CPPFLAGS = -g 
+kr_utils_queue_test_SOURCES = kr_utils_queue_test.c
+kr_utils_queue_test_LDADD = $(progs_ldadd)
+kr_utils_queue_test_CPPFLAGS = -g 
+kr_utils_threadpool_test_SOURCES = kr_utils_threadpool_test.c
+kr_utils_threadpool_test_LDADD = $(progs_ldadd)
+kr_utils_threadpool_test_CPPFLAGS = -g 
+kr_utils_skiplist_test_SOURCES = kr_utils_skiplist_test.c
+kr_utils_skiplist_test_LDADD = $(progs_ldadd)
+kr_utils_skiplist_test_CPPFLAGS = -g 
+kr_utils_conhash_test_SOURCES = kr_utils_conhash_test.c
+kr_utils_conhash_test_LDADD = $(progs_ldadd)
+kr_utils_conhash_test_CPPFLAGS = -g 
+kr_utils_cache_test_SOURCES = kr_utils_cache_test.c
+kr_utils_cache_test_LDADD = $(progs_ldadd)
+kr_utils_cache_test_CPPFLAGS = -g 
+kr_dbs_test_SOURCES = kr_dbs_test.c
+kr_dbs_test_LDADD = $(progs_ldadd)
+kr_dbs_test_CPPFLAGS = -g 
 kr_calc_test_SOURCES = kr_calc_test.c
 kr_calc_test_LDADD = $(progs_ldadd)
 kr_calc_test_CPPFLAGS = -g 
@@ -523,53 +542,25 @@ clean-noinstPROGRAMS:
 	echo " rm -f" $$list; \
 	rm -f $$list
 
-kr_alloc_test$(EXEEXT): $(kr_alloc_test_OBJECTS) $(kr_alloc_test_DEPENDENCIES) $(EXTRA_kr_alloc_test_DEPENDENCIES) 
-	@rm -f kr_alloc_test$(EXEEXT)
-	$(AM_V_CCLD)$(LINK) $(kr_alloc_test_OBJECTS) $(kr_alloc_test_LDADD) $(LIBS)
-
-kr_cache_test$(EXEEXT): $(kr_cache_test_OBJECTS) $(kr_cache_test_DEPENDENCIES) $(EXTRA_kr_cache_test_DEPENDENCIES) 
-	@rm -f kr_cache_test$(EXEEXT)
-	$(AM_V_CCLD)$(LINK) $(kr_cache_test_OBJECTS) $(kr_cache_test_LDADD) $(LIBS)
-
 kr_calc_test$(EXEEXT): $(kr_calc_test_OBJECTS) $(kr_calc_test_DEPENDENCIES) $(EXTRA_kr_calc_test_DEPENDENCIES) 
 	@rm -f kr_calc_test$(EXEEXT)
 	$(AM_V_CCLD)$(LINK) $(kr_calc_test_OBJECTS) $(kr_calc_test_LDADD) $(LIBS)
-
-kr_conhash_test$(EXEEXT): $(kr_conhash_test_OBJECTS) $(kr_conhash_test_DEPENDENCIES) $(EXTRA_kr_conhash_test_DEPENDENCIES) 
-	@rm -f kr_conhash_test$(EXEEXT)
-	$(AM_V_CCLD)$(LINK) $(kr_conhash_test_OBJECTS) $(kr_conhash_test_LDADD) $(LIBS)
 
 kr_data_test$(EXEEXT): $(kr_data_test_OBJECTS) $(kr_data_test_DEPENDENCIES) $(EXTRA_kr_data_test_DEPENDENCIES) 
 	@rm -f kr_data_test$(EXEEXT)
 	$(AM_V_CCLD)$(LINK) $(kr_data_test_OBJECTS) $(kr_data_test_LDADD) $(LIBS)
 
-kr_datetime_test$(EXEEXT): $(kr_datetime_test_OBJECTS) $(kr_datetime_test_DEPENDENCIES) $(EXTRA_kr_datetime_test_DEPENDENCIES) 
-	@rm -f kr_datetime_test$(EXEEXT)
-	$(AM_V_CCLD)$(LINK) $(kr_datetime_test_OBJECTS) $(kr_datetime_test_LDADD) $(LIBS)
-
 kr_db_test$(EXEEXT): $(kr_db_test_OBJECTS) $(kr_db_test_DEPENDENCIES) $(EXTRA_kr_db_test_DEPENDENCIES) 
 	@rm -f kr_db_test$(EXEEXT)
 	$(AM_V_CCLD)$(LINK) $(kr_db_test_OBJECTS) $(kr_db_test_LDADD) $(LIBS)
 
-kr_hashtable_test$(EXEEXT): $(kr_hashtable_test_OBJECTS) $(kr_hashtable_test_DEPENDENCIES) $(EXTRA_kr_hashtable_test_DEPENDENCIES) 
-	@rm -f kr_hashtable_test$(EXEEXT)
-	$(AM_V_CCLD)$(LINK) $(kr_hashtable_test_OBJECTS) $(kr_hashtable_test_LDADD) $(LIBS)
+kr_dbs_test$(EXEEXT): $(kr_dbs_test_OBJECTS) $(kr_dbs_test_DEPENDENCIES) $(EXTRA_kr_dbs_test_DEPENDENCIES) 
+	@rm -f kr_dbs_test$(EXEEXT)
+	$(AM_V_CCLD)$(LINK) $(kr_dbs_test_OBJECTS) $(kr_dbs_test_LDADD) $(LIBS)
 
 kr_input_test$(EXEEXT): $(kr_input_test_OBJECTS) $(kr_input_test_DEPENDENCIES) $(EXTRA_kr_input_test_DEPENDENCIES) 
 	@rm -f kr_input_test$(EXEEXT)
 	$(AM_V_CCLD)$(LINK) $(kr_input_test_OBJECTS) $(kr_input_test_LDADD) $(LIBS)
-
-kr_list_test$(EXEEXT): $(kr_list_test_OBJECTS) $(kr_list_test_DEPENDENCIES) $(EXTRA_kr_list_test_DEPENDENCIES) 
-	@rm -f kr_list_test$(EXEEXT)
-	$(AM_V_CCLD)$(LINK) $(kr_list_test_OBJECTS) $(kr_list_test_LDADD) $(LIBS)
-
-kr_log_test$(EXEEXT): $(kr_log_test_OBJECTS) $(kr_log_test_DEPENDENCIES) $(EXTRA_kr_log_test_DEPENDENCIES) 
-	@rm -f kr_log_test$(EXEEXT)
-	$(AM_V_CCLD)$(LINK) $(kr_log_test_OBJECTS) $(kr_log_test_LDADD) $(LIBS)
-
-kr_odbc_test$(EXEEXT): $(kr_odbc_test_OBJECTS) $(kr_odbc_test_DEPENDENCIES) $(EXTRA_kr_odbc_test_DEPENDENCIES) 
-	@rm -f kr_odbc_test$(EXEEXT)
-	$(AM_V_CCLD)$(LINK) $(kr_odbc_test_OBJECTS) $(kr_odbc_test_LDADD) $(LIBS)
 
 kr_output_test$(EXEEXT): $(kr_output_test_OBJECTS) $(kr_output_test_DEPENDENCIES) $(EXTRA_kr_output_test_DEPENDENCIES) 
 	@rm -f kr_output_test$(EXEEXT)
@@ -579,21 +570,49 @@ kr_param_test$(EXEEXT): $(kr_param_test_OBJECTS) $(kr_param_test_DEPENDENCIES) $
 	@rm -f kr_param_test$(EXEEXT)
 	$(AM_V_CCLD)$(LINK) $(kr_param_test_OBJECTS) $(kr_param_test_LDADD) $(LIBS)
 
-kr_queue_test$(EXEEXT): $(kr_queue_test_OBJECTS) $(kr_queue_test_DEPENDENCIES) $(EXTRA_kr_queue_test_DEPENDENCIES) 
-	@rm -f kr_queue_test$(EXEEXT)
-	$(AM_V_CCLD)$(LINK) $(kr_queue_test_OBJECTS) $(kr_queue_test_LDADD) $(LIBS)
+kr_utils_alloc_test$(EXEEXT): $(kr_utils_alloc_test_OBJECTS) $(kr_utils_alloc_test_DEPENDENCIES) $(EXTRA_kr_utils_alloc_test_DEPENDENCIES) 
+	@rm -f kr_utils_alloc_test$(EXEEXT)
+	$(AM_V_CCLD)$(LINK) $(kr_utils_alloc_test_OBJECTS) $(kr_utils_alloc_test_LDADD) $(LIBS)
 
-kr_skiplist_test$(EXEEXT): $(kr_skiplist_test_OBJECTS) $(kr_skiplist_test_DEPENDENCIES) $(EXTRA_kr_skiplist_test_DEPENDENCIES) 
-	@rm -f kr_skiplist_test$(EXEEXT)
-	$(AM_V_CCLD)$(LINK) $(kr_skiplist_test_OBJECTS) $(kr_skiplist_test_LDADD) $(LIBS)
+kr_utils_cache_test$(EXEEXT): $(kr_utils_cache_test_OBJECTS) $(kr_utils_cache_test_DEPENDENCIES) $(EXTRA_kr_utils_cache_test_DEPENDENCIES) 
+	@rm -f kr_utils_cache_test$(EXEEXT)
+	$(AM_V_CCLD)$(LINK) $(kr_utils_cache_test_OBJECTS) $(kr_utils_cache_test_LDADD) $(LIBS)
 
-kr_string_test$(EXEEXT): $(kr_string_test_OBJECTS) $(kr_string_test_DEPENDENCIES) $(EXTRA_kr_string_test_DEPENDENCIES) 
-	@rm -f kr_string_test$(EXEEXT)
-	$(AM_V_CCLD)$(LINK) $(kr_string_test_OBJECTS) $(kr_string_test_LDADD) $(LIBS)
+kr_utils_conhash_test$(EXEEXT): $(kr_utils_conhash_test_OBJECTS) $(kr_utils_conhash_test_DEPENDENCIES) $(EXTRA_kr_utils_conhash_test_DEPENDENCIES) 
+	@rm -f kr_utils_conhash_test$(EXEEXT)
+	$(AM_V_CCLD)$(LINK) $(kr_utils_conhash_test_OBJECTS) $(kr_utils_conhash_test_LDADD) $(LIBS)
 
-kr_threadpool_test$(EXEEXT): $(kr_threadpool_test_OBJECTS) $(kr_threadpool_test_DEPENDENCIES) $(EXTRA_kr_threadpool_test_DEPENDENCIES) 
-	@rm -f kr_threadpool_test$(EXEEXT)
-	$(AM_V_CCLD)$(LINK) $(kr_threadpool_test_OBJECTS) $(kr_threadpool_test_LDADD) $(LIBS)
+kr_utils_datetime_test$(EXEEXT): $(kr_utils_datetime_test_OBJECTS) $(kr_utils_datetime_test_DEPENDENCIES) $(EXTRA_kr_utils_datetime_test_DEPENDENCIES) 
+	@rm -f kr_utils_datetime_test$(EXEEXT)
+	$(AM_V_CCLD)$(LINK) $(kr_utils_datetime_test_OBJECTS) $(kr_utils_datetime_test_LDADD) $(LIBS)
+
+kr_utils_hashtable_test$(EXEEXT): $(kr_utils_hashtable_test_OBJECTS) $(kr_utils_hashtable_test_DEPENDENCIES) $(EXTRA_kr_utils_hashtable_test_DEPENDENCIES) 
+	@rm -f kr_utils_hashtable_test$(EXEEXT)
+	$(AM_V_CCLD)$(LINK) $(kr_utils_hashtable_test_OBJECTS) $(kr_utils_hashtable_test_LDADD) $(LIBS)
+
+kr_utils_list_test$(EXEEXT): $(kr_utils_list_test_OBJECTS) $(kr_utils_list_test_DEPENDENCIES) $(EXTRA_kr_utils_list_test_DEPENDENCIES) 
+	@rm -f kr_utils_list_test$(EXEEXT)
+	$(AM_V_CCLD)$(LINK) $(kr_utils_list_test_OBJECTS) $(kr_utils_list_test_LDADD) $(LIBS)
+
+kr_utils_log_test$(EXEEXT): $(kr_utils_log_test_OBJECTS) $(kr_utils_log_test_DEPENDENCIES) $(EXTRA_kr_utils_log_test_DEPENDENCIES) 
+	@rm -f kr_utils_log_test$(EXEEXT)
+	$(AM_V_CCLD)$(LINK) $(kr_utils_log_test_OBJECTS) $(kr_utils_log_test_LDADD) $(LIBS)
+
+kr_utils_queue_test$(EXEEXT): $(kr_utils_queue_test_OBJECTS) $(kr_utils_queue_test_DEPENDENCIES) $(EXTRA_kr_utils_queue_test_DEPENDENCIES) 
+	@rm -f kr_utils_queue_test$(EXEEXT)
+	$(AM_V_CCLD)$(LINK) $(kr_utils_queue_test_OBJECTS) $(kr_utils_queue_test_LDADD) $(LIBS)
+
+kr_utils_skiplist_test$(EXEEXT): $(kr_utils_skiplist_test_OBJECTS) $(kr_utils_skiplist_test_DEPENDENCIES) $(EXTRA_kr_utils_skiplist_test_DEPENDENCIES) 
+	@rm -f kr_utils_skiplist_test$(EXEEXT)
+	$(AM_V_CCLD)$(LINK) $(kr_utils_skiplist_test_OBJECTS) $(kr_utils_skiplist_test_LDADD) $(LIBS)
+
+kr_utils_string_test$(EXEEXT): $(kr_utils_string_test_OBJECTS) $(kr_utils_string_test_DEPENDENCIES) $(EXTRA_kr_utils_string_test_DEPENDENCIES) 
+	@rm -f kr_utils_string_test$(EXEEXT)
+	$(AM_V_CCLD)$(LINK) $(kr_utils_string_test_OBJECTS) $(kr_utils_string_test_LDADD) $(LIBS)
+
+kr_utils_threadpool_test$(EXEEXT): $(kr_utils_threadpool_test_OBJECTS) $(kr_utils_threadpool_test_DEPENDENCIES) $(EXTRA_kr_utils_threadpool_test_DEPENDENCIES) 
+	@rm -f kr_utils_threadpool_test$(EXEEXT)
+	$(AM_V_CCLD)$(LINK) $(kr_utils_threadpool_test_OBJECTS) $(kr_utils_threadpool_test_LDADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -601,24 +620,24 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/kr_alloc_test-kr_alloc_test.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/kr_cache_test-kr_cache_test.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/kr_calc_test-kr_calc_test.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/kr_conhash_test-kr_conhash_test.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/kr_data_test-kr_data_test.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/kr_datetime_test-kr_datetime_test.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/kr_db_test-kr_db_test.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/kr_hashtable_test-kr_hashtable_test.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/kr_dbs_test-kr_dbs_test.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/kr_input_test-kr_input_test.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/kr_list_test-kr_list_test.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/kr_log_test-kr_log_test.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/kr_odbc_test-kr_odbc_test.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/kr_output_test-kr_output_test.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/kr_param_test-kr_param_test.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/kr_queue_test-kr_queue_test.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/kr_skiplist_test-kr_skiplist_test.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/kr_string_test-kr_string_test.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/kr_threadpool_test-kr_threadpool_test.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/kr_utils_alloc_test-kr_utils_alloc_test.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/kr_utils_cache_test-kr_utils_cache_test.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/kr_utils_conhash_test-kr_utils_conhash_test.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/kr_utils_datetime_test-kr_utils_datetime_test.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/kr_utils_hashtable_test-kr_utils_hashtable_test.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/kr_utils_list_test-kr_utils_list_test.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/kr_utils_log_test-kr_utils_log_test.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/kr_utils_queue_test-kr_utils_queue_test.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/kr_utils_skiplist_test-kr_utils_skiplist_test.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/kr_utils_string_test-kr_utils_string_test.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/kr_utils_threadpool_test-kr_utils_threadpool_test.Po@am__quote@ # am--include-marker
 
 $(am__depfiles_remade):
 	@$(MKDIR_P) $(@D)
@@ -647,34 +666,6 @@ am--depfiles: $(am__depfiles_remade)
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LTCOMPILE) -c -o $@ $<
 
-kr_alloc_test-kr_alloc_test.o: kr_alloc_test.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(kr_alloc_test_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT kr_alloc_test-kr_alloc_test.o -MD -MP -MF $(DEPDIR)/kr_alloc_test-kr_alloc_test.Tpo -c -o kr_alloc_test-kr_alloc_test.o `test -f 'kr_alloc_test.c' || echo '$(srcdir)/'`kr_alloc_test.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/kr_alloc_test-kr_alloc_test.Tpo $(DEPDIR)/kr_alloc_test-kr_alloc_test.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='kr_alloc_test.c' object='kr_alloc_test-kr_alloc_test.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(kr_alloc_test_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o kr_alloc_test-kr_alloc_test.o `test -f 'kr_alloc_test.c' || echo '$(srcdir)/'`kr_alloc_test.c
-
-kr_alloc_test-kr_alloc_test.obj: kr_alloc_test.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(kr_alloc_test_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT kr_alloc_test-kr_alloc_test.obj -MD -MP -MF $(DEPDIR)/kr_alloc_test-kr_alloc_test.Tpo -c -o kr_alloc_test-kr_alloc_test.obj `if test -f 'kr_alloc_test.c'; then $(CYGPATH_W) 'kr_alloc_test.c'; else $(CYGPATH_W) '$(srcdir)/kr_alloc_test.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/kr_alloc_test-kr_alloc_test.Tpo $(DEPDIR)/kr_alloc_test-kr_alloc_test.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='kr_alloc_test.c' object='kr_alloc_test-kr_alloc_test.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(kr_alloc_test_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o kr_alloc_test-kr_alloc_test.obj `if test -f 'kr_alloc_test.c'; then $(CYGPATH_W) 'kr_alloc_test.c'; else $(CYGPATH_W) '$(srcdir)/kr_alloc_test.c'; fi`
-
-kr_cache_test-kr_cache_test.o: kr_cache_test.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(kr_cache_test_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT kr_cache_test-kr_cache_test.o -MD -MP -MF $(DEPDIR)/kr_cache_test-kr_cache_test.Tpo -c -o kr_cache_test-kr_cache_test.o `test -f 'kr_cache_test.c' || echo '$(srcdir)/'`kr_cache_test.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/kr_cache_test-kr_cache_test.Tpo $(DEPDIR)/kr_cache_test-kr_cache_test.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='kr_cache_test.c' object='kr_cache_test-kr_cache_test.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(kr_cache_test_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o kr_cache_test-kr_cache_test.o `test -f 'kr_cache_test.c' || echo '$(srcdir)/'`kr_cache_test.c
-
-kr_cache_test-kr_cache_test.obj: kr_cache_test.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(kr_cache_test_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT kr_cache_test-kr_cache_test.obj -MD -MP -MF $(DEPDIR)/kr_cache_test-kr_cache_test.Tpo -c -o kr_cache_test-kr_cache_test.obj `if test -f 'kr_cache_test.c'; then $(CYGPATH_W) 'kr_cache_test.c'; else $(CYGPATH_W) '$(srcdir)/kr_cache_test.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/kr_cache_test-kr_cache_test.Tpo $(DEPDIR)/kr_cache_test-kr_cache_test.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='kr_cache_test.c' object='kr_cache_test-kr_cache_test.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(kr_cache_test_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o kr_cache_test-kr_cache_test.obj `if test -f 'kr_cache_test.c'; then $(CYGPATH_W) 'kr_cache_test.c'; else $(CYGPATH_W) '$(srcdir)/kr_cache_test.c'; fi`
-
 kr_calc_test-kr_calc_test.o: kr_calc_test.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(kr_calc_test_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT kr_calc_test-kr_calc_test.o -MD -MP -MF $(DEPDIR)/kr_calc_test-kr_calc_test.Tpo -c -o kr_calc_test-kr_calc_test.o `test -f 'kr_calc_test.c' || echo '$(srcdir)/'`kr_calc_test.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/kr_calc_test-kr_calc_test.Tpo $(DEPDIR)/kr_calc_test-kr_calc_test.Po
@@ -688,20 +679,6 @@ kr_calc_test-kr_calc_test.obj: kr_calc_test.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='kr_calc_test.c' object='kr_calc_test-kr_calc_test.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(kr_calc_test_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o kr_calc_test-kr_calc_test.obj `if test -f 'kr_calc_test.c'; then $(CYGPATH_W) 'kr_calc_test.c'; else $(CYGPATH_W) '$(srcdir)/kr_calc_test.c'; fi`
-
-kr_conhash_test-kr_conhash_test.o: kr_conhash_test.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(kr_conhash_test_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT kr_conhash_test-kr_conhash_test.o -MD -MP -MF $(DEPDIR)/kr_conhash_test-kr_conhash_test.Tpo -c -o kr_conhash_test-kr_conhash_test.o `test -f 'kr_conhash_test.c' || echo '$(srcdir)/'`kr_conhash_test.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/kr_conhash_test-kr_conhash_test.Tpo $(DEPDIR)/kr_conhash_test-kr_conhash_test.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='kr_conhash_test.c' object='kr_conhash_test-kr_conhash_test.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(kr_conhash_test_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o kr_conhash_test-kr_conhash_test.o `test -f 'kr_conhash_test.c' || echo '$(srcdir)/'`kr_conhash_test.c
-
-kr_conhash_test-kr_conhash_test.obj: kr_conhash_test.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(kr_conhash_test_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT kr_conhash_test-kr_conhash_test.obj -MD -MP -MF $(DEPDIR)/kr_conhash_test-kr_conhash_test.Tpo -c -o kr_conhash_test-kr_conhash_test.obj `if test -f 'kr_conhash_test.c'; then $(CYGPATH_W) 'kr_conhash_test.c'; else $(CYGPATH_W) '$(srcdir)/kr_conhash_test.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/kr_conhash_test-kr_conhash_test.Tpo $(DEPDIR)/kr_conhash_test-kr_conhash_test.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='kr_conhash_test.c' object='kr_conhash_test-kr_conhash_test.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(kr_conhash_test_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o kr_conhash_test-kr_conhash_test.obj `if test -f 'kr_conhash_test.c'; then $(CYGPATH_W) 'kr_conhash_test.c'; else $(CYGPATH_W) '$(srcdir)/kr_conhash_test.c'; fi`
 
 kr_data_test-kr_data_test.o: kr_data_test.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(kr_data_test_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT kr_data_test-kr_data_test.o -MD -MP -MF $(DEPDIR)/kr_data_test-kr_data_test.Tpo -c -o kr_data_test-kr_data_test.o `test -f 'kr_data_test.c' || echo '$(srcdir)/'`kr_data_test.c
@@ -717,20 +694,6 @@ kr_data_test-kr_data_test.obj: kr_data_test.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(kr_data_test_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o kr_data_test-kr_data_test.obj `if test -f 'kr_data_test.c'; then $(CYGPATH_W) 'kr_data_test.c'; else $(CYGPATH_W) '$(srcdir)/kr_data_test.c'; fi`
 
-kr_datetime_test-kr_datetime_test.o: kr_datetime_test.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(kr_datetime_test_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT kr_datetime_test-kr_datetime_test.o -MD -MP -MF $(DEPDIR)/kr_datetime_test-kr_datetime_test.Tpo -c -o kr_datetime_test-kr_datetime_test.o `test -f 'kr_datetime_test.c' || echo '$(srcdir)/'`kr_datetime_test.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/kr_datetime_test-kr_datetime_test.Tpo $(DEPDIR)/kr_datetime_test-kr_datetime_test.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='kr_datetime_test.c' object='kr_datetime_test-kr_datetime_test.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(kr_datetime_test_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o kr_datetime_test-kr_datetime_test.o `test -f 'kr_datetime_test.c' || echo '$(srcdir)/'`kr_datetime_test.c
-
-kr_datetime_test-kr_datetime_test.obj: kr_datetime_test.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(kr_datetime_test_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT kr_datetime_test-kr_datetime_test.obj -MD -MP -MF $(DEPDIR)/kr_datetime_test-kr_datetime_test.Tpo -c -o kr_datetime_test-kr_datetime_test.obj `if test -f 'kr_datetime_test.c'; then $(CYGPATH_W) 'kr_datetime_test.c'; else $(CYGPATH_W) '$(srcdir)/kr_datetime_test.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/kr_datetime_test-kr_datetime_test.Tpo $(DEPDIR)/kr_datetime_test-kr_datetime_test.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='kr_datetime_test.c' object='kr_datetime_test-kr_datetime_test.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(kr_datetime_test_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o kr_datetime_test-kr_datetime_test.obj `if test -f 'kr_datetime_test.c'; then $(CYGPATH_W) 'kr_datetime_test.c'; else $(CYGPATH_W) '$(srcdir)/kr_datetime_test.c'; fi`
-
 kr_db_test-kr_db_test.o: kr_db_test.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(kr_db_test_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT kr_db_test-kr_db_test.o -MD -MP -MF $(DEPDIR)/kr_db_test-kr_db_test.Tpo -c -o kr_db_test-kr_db_test.o `test -f 'kr_db_test.c' || echo '$(srcdir)/'`kr_db_test.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/kr_db_test-kr_db_test.Tpo $(DEPDIR)/kr_db_test-kr_db_test.Po
@@ -745,19 +708,19 @@ kr_db_test-kr_db_test.obj: kr_db_test.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(kr_db_test_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o kr_db_test-kr_db_test.obj `if test -f 'kr_db_test.c'; then $(CYGPATH_W) 'kr_db_test.c'; else $(CYGPATH_W) '$(srcdir)/kr_db_test.c'; fi`
 
-kr_hashtable_test-kr_hashtable_test.o: kr_hashtable_test.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(kr_hashtable_test_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT kr_hashtable_test-kr_hashtable_test.o -MD -MP -MF $(DEPDIR)/kr_hashtable_test-kr_hashtable_test.Tpo -c -o kr_hashtable_test-kr_hashtable_test.o `test -f 'kr_hashtable_test.c' || echo '$(srcdir)/'`kr_hashtable_test.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/kr_hashtable_test-kr_hashtable_test.Tpo $(DEPDIR)/kr_hashtable_test-kr_hashtable_test.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='kr_hashtable_test.c' object='kr_hashtable_test-kr_hashtable_test.o' libtool=no @AMDEPBACKSLASH@
+kr_dbs_test-kr_dbs_test.o: kr_dbs_test.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(kr_dbs_test_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT kr_dbs_test-kr_dbs_test.o -MD -MP -MF $(DEPDIR)/kr_dbs_test-kr_dbs_test.Tpo -c -o kr_dbs_test-kr_dbs_test.o `test -f 'kr_dbs_test.c' || echo '$(srcdir)/'`kr_dbs_test.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/kr_dbs_test-kr_dbs_test.Tpo $(DEPDIR)/kr_dbs_test-kr_dbs_test.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='kr_dbs_test.c' object='kr_dbs_test-kr_dbs_test.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(kr_hashtable_test_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o kr_hashtable_test-kr_hashtable_test.o `test -f 'kr_hashtable_test.c' || echo '$(srcdir)/'`kr_hashtable_test.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(kr_dbs_test_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o kr_dbs_test-kr_dbs_test.o `test -f 'kr_dbs_test.c' || echo '$(srcdir)/'`kr_dbs_test.c
 
-kr_hashtable_test-kr_hashtable_test.obj: kr_hashtable_test.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(kr_hashtable_test_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT kr_hashtable_test-kr_hashtable_test.obj -MD -MP -MF $(DEPDIR)/kr_hashtable_test-kr_hashtable_test.Tpo -c -o kr_hashtable_test-kr_hashtable_test.obj `if test -f 'kr_hashtable_test.c'; then $(CYGPATH_W) 'kr_hashtable_test.c'; else $(CYGPATH_W) '$(srcdir)/kr_hashtable_test.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/kr_hashtable_test-kr_hashtable_test.Tpo $(DEPDIR)/kr_hashtable_test-kr_hashtable_test.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='kr_hashtable_test.c' object='kr_hashtable_test-kr_hashtable_test.obj' libtool=no @AMDEPBACKSLASH@
+kr_dbs_test-kr_dbs_test.obj: kr_dbs_test.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(kr_dbs_test_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT kr_dbs_test-kr_dbs_test.obj -MD -MP -MF $(DEPDIR)/kr_dbs_test-kr_dbs_test.Tpo -c -o kr_dbs_test-kr_dbs_test.obj `if test -f 'kr_dbs_test.c'; then $(CYGPATH_W) 'kr_dbs_test.c'; else $(CYGPATH_W) '$(srcdir)/kr_dbs_test.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/kr_dbs_test-kr_dbs_test.Tpo $(DEPDIR)/kr_dbs_test-kr_dbs_test.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='kr_dbs_test.c' object='kr_dbs_test-kr_dbs_test.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(kr_hashtable_test_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o kr_hashtable_test-kr_hashtable_test.obj `if test -f 'kr_hashtable_test.c'; then $(CYGPATH_W) 'kr_hashtable_test.c'; else $(CYGPATH_W) '$(srcdir)/kr_hashtable_test.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(kr_dbs_test_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o kr_dbs_test-kr_dbs_test.obj `if test -f 'kr_dbs_test.c'; then $(CYGPATH_W) 'kr_dbs_test.c'; else $(CYGPATH_W) '$(srcdir)/kr_dbs_test.c'; fi`
 
 kr_input_test-kr_input_test.o: kr_input_test.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(kr_input_test_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT kr_input_test-kr_input_test.o -MD -MP -MF $(DEPDIR)/kr_input_test-kr_input_test.Tpo -c -o kr_input_test-kr_input_test.o `test -f 'kr_input_test.c' || echo '$(srcdir)/'`kr_input_test.c
@@ -772,48 +735,6 @@ kr_input_test-kr_input_test.obj: kr_input_test.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='kr_input_test.c' object='kr_input_test-kr_input_test.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(kr_input_test_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o kr_input_test-kr_input_test.obj `if test -f 'kr_input_test.c'; then $(CYGPATH_W) 'kr_input_test.c'; else $(CYGPATH_W) '$(srcdir)/kr_input_test.c'; fi`
-
-kr_list_test-kr_list_test.o: kr_list_test.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(kr_list_test_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT kr_list_test-kr_list_test.o -MD -MP -MF $(DEPDIR)/kr_list_test-kr_list_test.Tpo -c -o kr_list_test-kr_list_test.o `test -f 'kr_list_test.c' || echo '$(srcdir)/'`kr_list_test.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/kr_list_test-kr_list_test.Tpo $(DEPDIR)/kr_list_test-kr_list_test.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='kr_list_test.c' object='kr_list_test-kr_list_test.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(kr_list_test_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o kr_list_test-kr_list_test.o `test -f 'kr_list_test.c' || echo '$(srcdir)/'`kr_list_test.c
-
-kr_list_test-kr_list_test.obj: kr_list_test.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(kr_list_test_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT kr_list_test-kr_list_test.obj -MD -MP -MF $(DEPDIR)/kr_list_test-kr_list_test.Tpo -c -o kr_list_test-kr_list_test.obj `if test -f 'kr_list_test.c'; then $(CYGPATH_W) 'kr_list_test.c'; else $(CYGPATH_W) '$(srcdir)/kr_list_test.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/kr_list_test-kr_list_test.Tpo $(DEPDIR)/kr_list_test-kr_list_test.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='kr_list_test.c' object='kr_list_test-kr_list_test.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(kr_list_test_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o kr_list_test-kr_list_test.obj `if test -f 'kr_list_test.c'; then $(CYGPATH_W) 'kr_list_test.c'; else $(CYGPATH_W) '$(srcdir)/kr_list_test.c'; fi`
-
-kr_log_test-kr_log_test.o: kr_log_test.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(kr_log_test_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT kr_log_test-kr_log_test.o -MD -MP -MF $(DEPDIR)/kr_log_test-kr_log_test.Tpo -c -o kr_log_test-kr_log_test.o `test -f 'kr_log_test.c' || echo '$(srcdir)/'`kr_log_test.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/kr_log_test-kr_log_test.Tpo $(DEPDIR)/kr_log_test-kr_log_test.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='kr_log_test.c' object='kr_log_test-kr_log_test.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(kr_log_test_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o kr_log_test-kr_log_test.o `test -f 'kr_log_test.c' || echo '$(srcdir)/'`kr_log_test.c
-
-kr_log_test-kr_log_test.obj: kr_log_test.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(kr_log_test_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT kr_log_test-kr_log_test.obj -MD -MP -MF $(DEPDIR)/kr_log_test-kr_log_test.Tpo -c -o kr_log_test-kr_log_test.obj `if test -f 'kr_log_test.c'; then $(CYGPATH_W) 'kr_log_test.c'; else $(CYGPATH_W) '$(srcdir)/kr_log_test.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/kr_log_test-kr_log_test.Tpo $(DEPDIR)/kr_log_test-kr_log_test.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='kr_log_test.c' object='kr_log_test-kr_log_test.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(kr_log_test_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o kr_log_test-kr_log_test.obj `if test -f 'kr_log_test.c'; then $(CYGPATH_W) 'kr_log_test.c'; else $(CYGPATH_W) '$(srcdir)/kr_log_test.c'; fi`
-
-kr_odbc_test-kr_odbc_test.o: kr_odbc_test.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(kr_odbc_test_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT kr_odbc_test-kr_odbc_test.o -MD -MP -MF $(DEPDIR)/kr_odbc_test-kr_odbc_test.Tpo -c -o kr_odbc_test-kr_odbc_test.o `test -f 'kr_odbc_test.c' || echo '$(srcdir)/'`kr_odbc_test.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/kr_odbc_test-kr_odbc_test.Tpo $(DEPDIR)/kr_odbc_test-kr_odbc_test.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='kr_odbc_test.c' object='kr_odbc_test-kr_odbc_test.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(kr_odbc_test_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o kr_odbc_test-kr_odbc_test.o `test -f 'kr_odbc_test.c' || echo '$(srcdir)/'`kr_odbc_test.c
-
-kr_odbc_test-kr_odbc_test.obj: kr_odbc_test.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(kr_odbc_test_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT kr_odbc_test-kr_odbc_test.obj -MD -MP -MF $(DEPDIR)/kr_odbc_test-kr_odbc_test.Tpo -c -o kr_odbc_test-kr_odbc_test.obj `if test -f 'kr_odbc_test.c'; then $(CYGPATH_W) 'kr_odbc_test.c'; else $(CYGPATH_W) '$(srcdir)/kr_odbc_test.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/kr_odbc_test-kr_odbc_test.Tpo $(DEPDIR)/kr_odbc_test-kr_odbc_test.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='kr_odbc_test.c' object='kr_odbc_test-kr_odbc_test.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(kr_odbc_test_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o kr_odbc_test-kr_odbc_test.obj `if test -f 'kr_odbc_test.c'; then $(CYGPATH_W) 'kr_odbc_test.c'; else $(CYGPATH_W) '$(srcdir)/kr_odbc_test.c'; fi`
 
 kr_output_test-kr_output_test.o: kr_output_test.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(kr_output_test_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT kr_output_test-kr_output_test.o -MD -MP -MF $(DEPDIR)/kr_output_test-kr_output_test.Tpo -c -o kr_output_test-kr_output_test.o `test -f 'kr_output_test.c' || echo '$(srcdir)/'`kr_output_test.c
@@ -843,61 +764,159 @@ kr_param_test-kr_param_test.obj: kr_param_test.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(kr_param_test_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o kr_param_test-kr_param_test.obj `if test -f 'kr_param_test.c'; then $(CYGPATH_W) 'kr_param_test.c'; else $(CYGPATH_W) '$(srcdir)/kr_param_test.c'; fi`
 
-kr_queue_test-kr_queue_test.o: kr_queue_test.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(kr_queue_test_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT kr_queue_test-kr_queue_test.o -MD -MP -MF $(DEPDIR)/kr_queue_test-kr_queue_test.Tpo -c -o kr_queue_test-kr_queue_test.o `test -f 'kr_queue_test.c' || echo '$(srcdir)/'`kr_queue_test.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/kr_queue_test-kr_queue_test.Tpo $(DEPDIR)/kr_queue_test-kr_queue_test.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='kr_queue_test.c' object='kr_queue_test-kr_queue_test.o' libtool=no @AMDEPBACKSLASH@
+kr_utils_alloc_test-kr_utils_alloc_test.o: kr_utils_alloc_test.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(kr_utils_alloc_test_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT kr_utils_alloc_test-kr_utils_alloc_test.o -MD -MP -MF $(DEPDIR)/kr_utils_alloc_test-kr_utils_alloc_test.Tpo -c -o kr_utils_alloc_test-kr_utils_alloc_test.o `test -f 'kr_utils_alloc_test.c' || echo '$(srcdir)/'`kr_utils_alloc_test.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/kr_utils_alloc_test-kr_utils_alloc_test.Tpo $(DEPDIR)/kr_utils_alloc_test-kr_utils_alloc_test.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='kr_utils_alloc_test.c' object='kr_utils_alloc_test-kr_utils_alloc_test.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(kr_queue_test_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o kr_queue_test-kr_queue_test.o `test -f 'kr_queue_test.c' || echo '$(srcdir)/'`kr_queue_test.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(kr_utils_alloc_test_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o kr_utils_alloc_test-kr_utils_alloc_test.o `test -f 'kr_utils_alloc_test.c' || echo '$(srcdir)/'`kr_utils_alloc_test.c
 
-kr_queue_test-kr_queue_test.obj: kr_queue_test.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(kr_queue_test_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT kr_queue_test-kr_queue_test.obj -MD -MP -MF $(DEPDIR)/kr_queue_test-kr_queue_test.Tpo -c -o kr_queue_test-kr_queue_test.obj `if test -f 'kr_queue_test.c'; then $(CYGPATH_W) 'kr_queue_test.c'; else $(CYGPATH_W) '$(srcdir)/kr_queue_test.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/kr_queue_test-kr_queue_test.Tpo $(DEPDIR)/kr_queue_test-kr_queue_test.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='kr_queue_test.c' object='kr_queue_test-kr_queue_test.obj' libtool=no @AMDEPBACKSLASH@
+kr_utils_alloc_test-kr_utils_alloc_test.obj: kr_utils_alloc_test.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(kr_utils_alloc_test_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT kr_utils_alloc_test-kr_utils_alloc_test.obj -MD -MP -MF $(DEPDIR)/kr_utils_alloc_test-kr_utils_alloc_test.Tpo -c -o kr_utils_alloc_test-kr_utils_alloc_test.obj `if test -f 'kr_utils_alloc_test.c'; then $(CYGPATH_W) 'kr_utils_alloc_test.c'; else $(CYGPATH_W) '$(srcdir)/kr_utils_alloc_test.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/kr_utils_alloc_test-kr_utils_alloc_test.Tpo $(DEPDIR)/kr_utils_alloc_test-kr_utils_alloc_test.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='kr_utils_alloc_test.c' object='kr_utils_alloc_test-kr_utils_alloc_test.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(kr_queue_test_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o kr_queue_test-kr_queue_test.obj `if test -f 'kr_queue_test.c'; then $(CYGPATH_W) 'kr_queue_test.c'; else $(CYGPATH_W) '$(srcdir)/kr_queue_test.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(kr_utils_alloc_test_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o kr_utils_alloc_test-kr_utils_alloc_test.obj `if test -f 'kr_utils_alloc_test.c'; then $(CYGPATH_W) 'kr_utils_alloc_test.c'; else $(CYGPATH_W) '$(srcdir)/kr_utils_alloc_test.c'; fi`
 
-kr_skiplist_test-kr_skiplist_test.o: kr_skiplist_test.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(kr_skiplist_test_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT kr_skiplist_test-kr_skiplist_test.o -MD -MP -MF $(DEPDIR)/kr_skiplist_test-kr_skiplist_test.Tpo -c -o kr_skiplist_test-kr_skiplist_test.o `test -f 'kr_skiplist_test.c' || echo '$(srcdir)/'`kr_skiplist_test.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/kr_skiplist_test-kr_skiplist_test.Tpo $(DEPDIR)/kr_skiplist_test-kr_skiplist_test.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='kr_skiplist_test.c' object='kr_skiplist_test-kr_skiplist_test.o' libtool=no @AMDEPBACKSLASH@
+kr_utils_cache_test-kr_utils_cache_test.o: kr_utils_cache_test.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(kr_utils_cache_test_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT kr_utils_cache_test-kr_utils_cache_test.o -MD -MP -MF $(DEPDIR)/kr_utils_cache_test-kr_utils_cache_test.Tpo -c -o kr_utils_cache_test-kr_utils_cache_test.o `test -f 'kr_utils_cache_test.c' || echo '$(srcdir)/'`kr_utils_cache_test.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/kr_utils_cache_test-kr_utils_cache_test.Tpo $(DEPDIR)/kr_utils_cache_test-kr_utils_cache_test.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='kr_utils_cache_test.c' object='kr_utils_cache_test-kr_utils_cache_test.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(kr_skiplist_test_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o kr_skiplist_test-kr_skiplist_test.o `test -f 'kr_skiplist_test.c' || echo '$(srcdir)/'`kr_skiplist_test.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(kr_utils_cache_test_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o kr_utils_cache_test-kr_utils_cache_test.o `test -f 'kr_utils_cache_test.c' || echo '$(srcdir)/'`kr_utils_cache_test.c
 
-kr_skiplist_test-kr_skiplist_test.obj: kr_skiplist_test.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(kr_skiplist_test_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT kr_skiplist_test-kr_skiplist_test.obj -MD -MP -MF $(DEPDIR)/kr_skiplist_test-kr_skiplist_test.Tpo -c -o kr_skiplist_test-kr_skiplist_test.obj `if test -f 'kr_skiplist_test.c'; then $(CYGPATH_W) 'kr_skiplist_test.c'; else $(CYGPATH_W) '$(srcdir)/kr_skiplist_test.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/kr_skiplist_test-kr_skiplist_test.Tpo $(DEPDIR)/kr_skiplist_test-kr_skiplist_test.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='kr_skiplist_test.c' object='kr_skiplist_test-kr_skiplist_test.obj' libtool=no @AMDEPBACKSLASH@
+kr_utils_cache_test-kr_utils_cache_test.obj: kr_utils_cache_test.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(kr_utils_cache_test_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT kr_utils_cache_test-kr_utils_cache_test.obj -MD -MP -MF $(DEPDIR)/kr_utils_cache_test-kr_utils_cache_test.Tpo -c -o kr_utils_cache_test-kr_utils_cache_test.obj `if test -f 'kr_utils_cache_test.c'; then $(CYGPATH_W) 'kr_utils_cache_test.c'; else $(CYGPATH_W) '$(srcdir)/kr_utils_cache_test.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/kr_utils_cache_test-kr_utils_cache_test.Tpo $(DEPDIR)/kr_utils_cache_test-kr_utils_cache_test.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='kr_utils_cache_test.c' object='kr_utils_cache_test-kr_utils_cache_test.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(kr_skiplist_test_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o kr_skiplist_test-kr_skiplist_test.obj `if test -f 'kr_skiplist_test.c'; then $(CYGPATH_W) 'kr_skiplist_test.c'; else $(CYGPATH_W) '$(srcdir)/kr_skiplist_test.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(kr_utils_cache_test_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o kr_utils_cache_test-kr_utils_cache_test.obj `if test -f 'kr_utils_cache_test.c'; then $(CYGPATH_W) 'kr_utils_cache_test.c'; else $(CYGPATH_W) '$(srcdir)/kr_utils_cache_test.c'; fi`
 
-kr_string_test-kr_string_test.o: kr_string_test.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(kr_string_test_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT kr_string_test-kr_string_test.o -MD -MP -MF $(DEPDIR)/kr_string_test-kr_string_test.Tpo -c -o kr_string_test-kr_string_test.o `test -f 'kr_string_test.c' || echo '$(srcdir)/'`kr_string_test.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/kr_string_test-kr_string_test.Tpo $(DEPDIR)/kr_string_test-kr_string_test.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='kr_string_test.c' object='kr_string_test-kr_string_test.o' libtool=no @AMDEPBACKSLASH@
+kr_utils_conhash_test-kr_utils_conhash_test.o: kr_utils_conhash_test.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(kr_utils_conhash_test_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT kr_utils_conhash_test-kr_utils_conhash_test.o -MD -MP -MF $(DEPDIR)/kr_utils_conhash_test-kr_utils_conhash_test.Tpo -c -o kr_utils_conhash_test-kr_utils_conhash_test.o `test -f 'kr_utils_conhash_test.c' || echo '$(srcdir)/'`kr_utils_conhash_test.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/kr_utils_conhash_test-kr_utils_conhash_test.Tpo $(DEPDIR)/kr_utils_conhash_test-kr_utils_conhash_test.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='kr_utils_conhash_test.c' object='kr_utils_conhash_test-kr_utils_conhash_test.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(kr_string_test_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o kr_string_test-kr_string_test.o `test -f 'kr_string_test.c' || echo '$(srcdir)/'`kr_string_test.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(kr_utils_conhash_test_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o kr_utils_conhash_test-kr_utils_conhash_test.o `test -f 'kr_utils_conhash_test.c' || echo '$(srcdir)/'`kr_utils_conhash_test.c
 
-kr_string_test-kr_string_test.obj: kr_string_test.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(kr_string_test_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT kr_string_test-kr_string_test.obj -MD -MP -MF $(DEPDIR)/kr_string_test-kr_string_test.Tpo -c -o kr_string_test-kr_string_test.obj `if test -f 'kr_string_test.c'; then $(CYGPATH_W) 'kr_string_test.c'; else $(CYGPATH_W) '$(srcdir)/kr_string_test.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/kr_string_test-kr_string_test.Tpo $(DEPDIR)/kr_string_test-kr_string_test.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='kr_string_test.c' object='kr_string_test-kr_string_test.obj' libtool=no @AMDEPBACKSLASH@
+kr_utils_conhash_test-kr_utils_conhash_test.obj: kr_utils_conhash_test.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(kr_utils_conhash_test_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT kr_utils_conhash_test-kr_utils_conhash_test.obj -MD -MP -MF $(DEPDIR)/kr_utils_conhash_test-kr_utils_conhash_test.Tpo -c -o kr_utils_conhash_test-kr_utils_conhash_test.obj `if test -f 'kr_utils_conhash_test.c'; then $(CYGPATH_W) 'kr_utils_conhash_test.c'; else $(CYGPATH_W) '$(srcdir)/kr_utils_conhash_test.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/kr_utils_conhash_test-kr_utils_conhash_test.Tpo $(DEPDIR)/kr_utils_conhash_test-kr_utils_conhash_test.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='kr_utils_conhash_test.c' object='kr_utils_conhash_test-kr_utils_conhash_test.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(kr_string_test_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o kr_string_test-kr_string_test.obj `if test -f 'kr_string_test.c'; then $(CYGPATH_W) 'kr_string_test.c'; else $(CYGPATH_W) '$(srcdir)/kr_string_test.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(kr_utils_conhash_test_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o kr_utils_conhash_test-kr_utils_conhash_test.obj `if test -f 'kr_utils_conhash_test.c'; then $(CYGPATH_W) 'kr_utils_conhash_test.c'; else $(CYGPATH_W) '$(srcdir)/kr_utils_conhash_test.c'; fi`
 
-kr_threadpool_test-kr_threadpool_test.o: kr_threadpool_test.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(kr_threadpool_test_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT kr_threadpool_test-kr_threadpool_test.o -MD -MP -MF $(DEPDIR)/kr_threadpool_test-kr_threadpool_test.Tpo -c -o kr_threadpool_test-kr_threadpool_test.o `test -f 'kr_threadpool_test.c' || echo '$(srcdir)/'`kr_threadpool_test.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/kr_threadpool_test-kr_threadpool_test.Tpo $(DEPDIR)/kr_threadpool_test-kr_threadpool_test.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='kr_threadpool_test.c' object='kr_threadpool_test-kr_threadpool_test.o' libtool=no @AMDEPBACKSLASH@
+kr_utils_datetime_test-kr_utils_datetime_test.o: kr_utils_datetime_test.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(kr_utils_datetime_test_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT kr_utils_datetime_test-kr_utils_datetime_test.o -MD -MP -MF $(DEPDIR)/kr_utils_datetime_test-kr_utils_datetime_test.Tpo -c -o kr_utils_datetime_test-kr_utils_datetime_test.o `test -f 'kr_utils_datetime_test.c' || echo '$(srcdir)/'`kr_utils_datetime_test.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/kr_utils_datetime_test-kr_utils_datetime_test.Tpo $(DEPDIR)/kr_utils_datetime_test-kr_utils_datetime_test.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='kr_utils_datetime_test.c' object='kr_utils_datetime_test-kr_utils_datetime_test.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(kr_threadpool_test_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o kr_threadpool_test-kr_threadpool_test.o `test -f 'kr_threadpool_test.c' || echo '$(srcdir)/'`kr_threadpool_test.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(kr_utils_datetime_test_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o kr_utils_datetime_test-kr_utils_datetime_test.o `test -f 'kr_utils_datetime_test.c' || echo '$(srcdir)/'`kr_utils_datetime_test.c
 
-kr_threadpool_test-kr_threadpool_test.obj: kr_threadpool_test.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(kr_threadpool_test_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT kr_threadpool_test-kr_threadpool_test.obj -MD -MP -MF $(DEPDIR)/kr_threadpool_test-kr_threadpool_test.Tpo -c -o kr_threadpool_test-kr_threadpool_test.obj `if test -f 'kr_threadpool_test.c'; then $(CYGPATH_W) 'kr_threadpool_test.c'; else $(CYGPATH_W) '$(srcdir)/kr_threadpool_test.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/kr_threadpool_test-kr_threadpool_test.Tpo $(DEPDIR)/kr_threadpool_test-kr_threadpool_test.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='kr_threadpool_test.c' object='kr_threadpool_test-kr_threadpool_test.obj' libtool=no @AMDEPBACKSLASH@
+kr_utils_datetime_test-kr_utils_datetime_test.obj: kr_utils_datetime_test.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(kr_utils_datetime_test_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT kr_utils_datetime_test-kr_utils_datetime_test.obj -MD -MP -MF $(DEPDIR)/kr_utils_datetime_test-kr_utils_datetime_test.Tpo -c -o kr_utils_datetime_test-kr_utils_datetime_test.obj `if test -f 'kr_utils_datetime_test.c'; then $(CYGPATH_W) 'kr_utils_datetime_test.c'; else $(CYGPATH_W) '$(srcdir)/kr_utils_datetime_test.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/kr_utils_datetime_test-kr_utils_datetime_test.Tpo $(DEPDIR)/kr_utils_datetime_test-kr_utils_datetime_test.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='kr_utils_datetime_test.c' object='kr_utils_datetime_test-kr_utils_datetime_test.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(kr_threadpool_test_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o kr_threadpool_test-kr_threadpool_test.obj `if test -f 'kr_threadpool_test.c'; then $(CYGPATH_W) 'kr_threadpool_test.c'; else $(CYGPATH_W) '$(srcdir)/kr_threadpool_test.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(kr_utils_datetime_test_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o kr_utils_datetime_test-kr_utils_datetime_test.obj `if test -f 'kr_utils_datetime_test.c'; then $(CYGPATH_W) 'kr_utils_datetime_test.c'; else $(CYGPATH_W) '$(srcdir)/kr_utils_datetime_test.c'; fi`
+
+kr_utils_hashtable_test-kr_utils_hashtable_test.o: kr_utils_hashtable_test.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(kr_utils_hashtable_test_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT kr_utils_hashtable_test-kr_utils_hashtable_test.o -MD -MP -MF $(DEPDIR)/kr_utils_hashtable_test-kr_utils_hashtable_test.Tpo -c -o kr_utils_hashtable_test-kr_utils_hashtable_test.o `test -f 'kr_utils_hashtable_test.c' || echo '$(srcdir)/'`kr_utils_hashtable_test.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/kr_utils_hashtable_test-kr_utils_hashtable_test.Tpo $(DEPDIR)/kr_utils_hashtable_test-kr_utils_hashtable_test.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='kr_utils_hashtable_test.c' object='kr_utils_hashtable_test-kr_utils_hashtable_test.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(kr_utils_hashtable_test_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o kr_utils_hashtable_test-kr_utils_hashtable_test.o `test -f 'kr_utils_hashtable_test.c' || echo '$(srcdir)/'`kr_utils_hashtable_test.c
+
+kr_utils_hashtable_test-kr_utils_hashtable_test.obj: kr_utils_hashtable_test.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(kr_utils_hashtable_test_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT kr_utils_hashtable_test-kr_utils_hashtable_test.obj -MD -MP -MF $(DEPDIR)/kr_utils_hashtable_test-kr_utils_hashtable_test.Tpo -c -o kr_utils_hashtable_test-kr_utils_hashtable_test.obj `if test -f 'kr_utils_hashtable_test.c'; then $(CYGPATH_W) 'kr_utils_hashtable_test.c'; else $(CYGPATH_W) '$(srcdir)/kr_utils_hashtable_test.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/kr_utils_hashtable_test-kr_utils_hashtable_test.Tpo $(DEPDIR)/kr_utils_hashtable_test-kr_utils_hashtable_test.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='kr_utils_hashtable_test.c' object='kr_utils_hashtable_test-kr_utils_hashtable_test.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(kr_utils_hashtable_test_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o kr_utils_hashtable_test-kr_utils_hashtable_test.obj `if test -f 'kr_utils_hashtable_test.c'; then $(CYGPATH_W) 'kr_utils_hashtable_test.c'; else $(CYGPATH_W) '$(srcdir)/kr_utils_hashtable_test.c'; fi`
+
+kr_utils_list_test-kr_utils_list_test.o: kr_utils_list_test.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(kr_utils_list_test_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT kr_utils_list_test-kr_utils_list_test.o -MD -MP -MF $(DEPDIR)/kr_utils_list_test-kr_utils_list_test.Tpo -c -o kr_utils_list_test-kr_utils_list_test.o `test -f 'kr_utils_list_test.c' || echo '$(srcdir)/'`kr_utils_list_test.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/kr_utils_list_test-kr_utils_list_test.Tpo $(DEPDIR)/kr_utils_list_test-kr_utils_list_test.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='kr_utils_list_test.c' object='kr_utils_list_test-kr_utils_list_test.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(kr_utils_list_test_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o kr_utils_list_test-kr_utils_list_test.o `test -f 'kr_utils_list_test.c' || echo '$(srcdir)/'`kr_utils_list_test.c
+
+kr_utils_list_test-kr_utils_list_test.obj: kr_utils_list_test.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(kr_utils_list_test_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT kr_utils_list_test-kr_utils_list_test.obj -MD -MP -MF $(DEPDIR)/kr_utils_list_test-kr_utils_list_test.Tpo -c -o kr_utils_list_test-kr_utils_list_test.obj `if test -f 'kr_utils_list_test.c'; then $(CYGPATH_W) 'kr_utils_list_test.c'; else $(CYGPATH_W) '$(srcdir)/kr_utils_list_test.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/kr_utils_list_test-kr_utils_list_test.Tpo $(DEPDIR)/kr_utils_list_test-kr_utils_list_test.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='kr_utils_list_test.c' object='kr_utils_list_test-kr_utils_list_test.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(kr_utils_list_test_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o kr_utils_list_test-kr_utils_list_test.obj `if test -f 'kr_utils_list_test.c'; then $(CYGPATH_W) 'kr_utils_list_test.c'; else $(CYGPATH_W) '$(srcdir)/kr_utils_list_test.c'; fi`
+
+kr_utils_log_test-kr_utils_log_test.o: kr_utils_log_test.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(kr_utils_log_test_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT kr_utils_log_test-kr_utils_log_test.o -MD -MP -MF $(DEPDIR)/kr_utils_log_test-kr_utils_log_test.Tpo -c -o kr_utils_log_test-kr_utils_log_test.o `test -f 'kr_utils_log_test.c' || echo '$(srcdir)/'`kr_utils_log_test.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/kr_utils_log_test-kr_utils_log_test.Tpo $(DEPDIR)/kr_utils_log_test-kr_utils_log_test.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='kr_utils_log_test.c' object='kr_utils_log_test-kr_utils_log_test.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(kr_utils_log_test_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o kr_utils_log_test-kr_utils_log_test.o `test -f 'kr_utils_log_test.c' || echo '$(srcdir)/'`kr_utils_log_test.c
+
+kr_utils_log_test-kr_utils_log_test.obj: kr_utils_log_test.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(kr_utils_log_test_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT kr_utils_log_test-kr_utils_log_test.obj -MD -MP -MF $(DEPDIR)/kr_utils_log_test-kr_utils_log_test.Tpo -c -o kr_utils_log_test-kr_utils_log_test.obj `if test -f 'kr_utils_log_test.c'; then $(CYGPATH_W) 'kr_utils_log_test.c'; else $(CYGPATH_W) '$(srcdir)/kr_utils_log_test.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/kr_utils_log_test-kr_utils_log_test.Tpo $(DEPDIR)/kr_utils_log_test-kr_utils_log_test.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='kr_utils_log_test.c' object='kr_utils_log_test-kr_utils_log_test.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(kr_utils_log_test_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o kr_utils_log_test-kr_utils_log_test.obj `if test -f 'kr_utils_log_test.c'; then $(CYGPATH_W) 'kr_utils_log_test.c'; else $(CYGPATH_W) '$(srcdir)/kr_utils_log_test.c'; fi`
+
+kr_utils_queue_test-kr_utils_queue_test.o: kr_utils_queue_test.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(kr_utils_queue_test_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT kr_utils_queue_test-kr_utils_queue_test.o -MD -MP -MF $(DEPDIR)/kr_utils_queue_test-kr_utils_queue_test.Tpo -c -o kr_utils_queue_test-kr_utils_queue_test.o `test -f 'kr_utils_queue_test.c' || echo '$(srcdir)/'`kr_utils_queue_test.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/kr_utils_queue_test-kr_utils_queue_test.Tpo $(DEPDIR)/kr_utils_queue_test-kr_utils_queue_test.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='kr_utils_queue_test.c' object='kr_utils_queue_test-kr_utils_queue_test.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(kr_utils_queue_test_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o kr_utils_queue_test-kr_utils_queue_test.o `test -f 'kr_utils_queue_test.c' || echo '$(srcdir)/'`kr_utils_queue_test.c
+
+kr_utils_queue_test-kr_utils_queue_test.obj: kr_utils_queue_test.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(kr_utils_queue_test_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT kr_utils_queue_test-kr_utils_queue_test.obj -MD -MP -MF $(DEPDIR)/kr_utils_queue_test-kr_utils_queue_test.Tpo -c -o kr_utils_queue_test-kr_utils_queue_test.obj `if test -f 'kr_utils_queue_test.c'; then $(CYGPATH_W) 'kr_utils_queue_test.c'; else $(CYGPATH_W) '$(srcdir)/kr_utils_queue_test.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/kr_utils_queue_test-kr_utils_queue_test.Tpo $(DEPDIR)/kr_utils_queue_test-kr_utils_queue_test.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='kr_utils_queue_test.c' object='kr_utils_queue_test-kr_utils_queue_test.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(kr_utils_queue_test_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o kr_utils_queue_test-kr_utils_queue_test.obj `if test -f 'kr_utils_queue_test.c'; then $(CYGPATH_W) 'kr_utils_queue_test.c'; else $(CYGPATH_W) '$(srcdir)/kr_utils_queue_test.c'; fi`
+
+kr_utils_skiplist_test-kr_utils_skiplist_test.o: kr_utils_skiplist_test.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(kr_utils_skiplist_test_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT kr_utils_skiplist_test-kr_utils_skiplist_test.o -MD -MP -MF $(DEPDIR)/kr_utils_skiplist_test-kr_utils_skiplist_test.Tpo -c -o kr_utils_skiplist_test-kr_utils_skiplist_test.o `test -f 'kr_utils_skiplist_test.c' || echo '$(srcdir)/'`kr_utils_skiplist_test.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/kr_utils_skiplist_test-kr_utils_skiplist_test.Tpo $(DEPDIR)/kr_utils_skiplist_test-kr_utils_skiplist_test.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='kr_utils_skiplist_test.c' object='kr_utils_skiplist_test-kr_utils_skiplist_test.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(kr_utils_skiplist_test_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o kr_utils_skiplist_test-kr_utils_skiplist_test.o `test -f 'kr_utils_skiplist_test.c' || echo '$(srcdir)/'`kr_utils_skiplist_test.c
+
+kr_utils_skiplist_test-kr_utils_skiplist_test.obj: kr_utils_skiplist_test.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(kr_utils_skiplist_test_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT kr_utils_skiplist_test-kr_utils_skiplist_test.obj -MD -MP -MF $(DEPDIR)/kr_utils_skiplist_test-kr_utils_skiplist_test.Tpo -c -o kr_utils_skiplist_test-kr_utils_skiplist_test.obj `if test -f 'kr_utils_skiplist_test.c'; then $(CYGPATH_W) 'kr_utils_skiplist_test.c'; else $(CYGPATH_W) '$(srcdir)/kr_utils_skiplist_test.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/kr_utils_skiplist_test-kr_utils_skiplist_test.Tpo $(DEPDIR)/kr_utils_skiplist_test-kr_utils_skiplist_test.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='kr_utils_skiplist_test.c' object='kr_utils_skiplist_test-kr_utils_skiplist_test.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(kr_utils_skiplist_test_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o kr_utils_skiplist_test-kr_utils_skiplist_test.obj `if test -f 'kr_utils_skiplist_test.c'; then $(CYGPATH_W) 'kr_utils_skiplist_test.c'; else $(CYGPATH_W) '$(srcdir)/kr_utils_skiplist_test.c'; fi`
+
+kr_utils_string_test-kr_utils_string_test.o: kr_utils_string_test.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(kr_utils_string_test_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT kr_utils_string_test-kr_utils_string_test.o -MD -MP -MF $(DEPDIR)/kr_utils_string_test-kr_utils_string_test.Tpo -c -o kr_utils_string_test-kr_utils_string_test.o `test -f 'kr_utils_string_test.c' || echo '$(srcdir)/'`kr_utils_string_test.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/kr_utils_string_test-kr_utils_string_test.Tpo $(DEPDIR)/kr_utils_string_test-kr_utils_string_test.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='kr_utils_string_test.c' object='kr_utils_string_test-kr_utils_string_test.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(kr_utils_string_test_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o kr_utils_string_test-kr_utils_string_test.o `test -f 'kr_utils_string_test.c' || echo '$(srcdir)/'`kr_utils_string_test.c
+
+kr_utils_string_test-kr_utils_string_test.obj: kr_utils_string_test.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(kr_utils_string_test_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT kr_utils_string_test-kr_utils_string_test.obj -MD -MP -MF $(DEPDIR)/kr_utils_string_test-kr_utils_string_test.Tpo -c -o kr_utils_string_test-kr_utils_string_test.obj `if test -f 'kr_utils_string_test.c'; then $(CYGPATH_W) 'kr_utils_string_test.c'; else $(CYGPATH_W) '$(srcdir)/kr_utils_string_test.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/kr_utils_string_test-kr_utils_string_test.Tpo $(DEPDIR)/kr_utils_string_test-kr_utils_string_test.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='kr_utils_string_test.c' object='kr_utils_string_test-kr_utils_string_test.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(kr_utils_string_test_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o kr_utils_string_test-kr_utils_string_test.obj `if test -f 'kr_utils_string_test.c'; then $(CYGPATH_W) 'kr_utils_string_test.c'; else $(CYGPATH_W) '$(srcdir)/kr_utils_string_test.c'; fi`
+
+kr_utils_threadpool_test-kr_utils_threadpool_test.o: kr_utils_threadpool_test.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(kr_utils_threadpool_test_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT kr_utils_threadpool_test-kr_utils_threadpool_test.o -MD -MP -MF $(DEPDIR)/kr_utils_threadpool_test-kr_utils_threadpool_test.Tpo -c -o kr_utils_threadpool_test-kr_utils_threadpool_test.o `test -f 'kr_utils_threadpool_test.c' || echo '$(srcdir)/'`kr_utils_threadpool_test.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/kr_utils_threadpool_test-kr_utils_threadpool_test.Tpo $(DEPDIR)/kr_utils_threadpool_test-kr_utils_threadpool_test.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='kr_utils_threadpool_test.c' object='kr_utils_threadpool_test-kr_utils_threadpool_test.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(kr_utils_threadpool_test_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o kr_utils_threadpool_test-kr_utils_threadpool_test.o `test -f 'kr_utils_threadpool_test.c' || echo '$(srcdir)/'`kr_utils_threadpool_test.c
+
+kr_utils_threadpool_test-kr_utils_threadpool_test.obj: kr_utils_threadpool_test.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(kr_utils_threadpool_test_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT kr_utils_threadpool_test-kr_utils_threadpool_test.obj -MD -MP -MF $(DEPDIR)/kr_utils_threadpool_test-kr_utils_threadpool_test.Tpo -c -o kr_utils_threadpool_test-kr_utils_threadpool_test.obj `if test -f 'kr_utils_threadpool_test.c'; then $(CYGPATH_W) 'kr_utils_threadpool_test.c'; else $(CYGPATH_W) '$(srcdir)/kr_utils_threadpool_test.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/kr_utils_threadpool_test-kr_utils_threadpool_test.Tpo $(DEPDIR)/kr_utils_threadpool_test-kr_utils_threadpool_test.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='kr_utils_threadpool_test.c' object='kr_utils_threadpool_test-kr_utils_threadpool_test.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(kr_utils_threadpool_test_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o kr_utils_threadpool_test-kr_utils_threadpool_test.obj `if test -f 'kr_utils_threadpool_test.c'; then $(CYGPATH_W) 'kr_utils_threadpool_test.c'; else $(CYGPATH_W) '$(srcdir)/kr_utils_threadpool_test.c'; fi`
 
 mostlyclean-libtool:
 	-rm -f *.lo
@@ -1030,24 +1049,24 @@ clean-am: clean-generic clean-libtool clean-noinstPROGRAMS \
 	mostlyclean-am
 
 distclean: distclean-am
-		-rm -f ./$(DEPDIR)/kr_alloc_test-kr_alloc_test.Po
-	-rm -f ./$(DEPDIR)/kr_cache_test-kr_cache_test.Po
-	-rm -f ./$(DEPDIR)/kr_calc_test-kr_calc_test.Po
-	-rm -f ./$(DEPDIR)/kr_conhash_test-kr_conhash_test.Po
+		-rm -f ./$(DEPDIR)/kr_calc_test-kr_calc_test.Po
 	-rm -f ./$(DEPDIR)/kr_data_test-kr_data_test.Po
-	-rm -f ./$(DEPDIR)/kr_datetime_test-kr_datetime_test.Po
 	-rm -f ./$(DEPDIR)/kr_db_test-kr_db_test.Po
-	-rm -f ./$(DEPDIR)/kr_hashtable_test-kr_hashtable_test.Po
+	-rm -f ./$(DEPDIR)/kr_dbs_test-kr_dbs_test.Po
 	-rm -f ./$(DEPDIR)/kr_input_test-kr_input_test.Po
-	-rm -f ./$(DEPDIR)/kr_list_test-kr_list_test.Po
-	-rm -f ./$(DEPDIR)/kr_log_test-kr_log_test.Po
-	-rm -f ./$(DEPDIR)/kr_odbc_test-kr_odbc_test.Po
 	-rm -f ./$(DEPDIR)/kr_output_test-kr_output_test.Po
 	-rm -f ./$(DEPDIR)/kr_param_test-kr_param_test.Po
-	-rm -f ./$(DEPDIR)/kr_queue_test-kr_queue_test.Po
-	-rm -f ./$(DEPDIR)/kr_skiplist_test-kr_skiplist_test.Po
-	-rm -f ./$(DEPDIR)/kr_string_test-kr_string_test.Po
-	-rm -f ./$(DEPDIR)/kr_threadpool_test-kr_threadpool_test.Po
+	-rm -f ./$(DEPDIR)/kr_utils_alloc_test-kr_utils_alloc_test.Po
+	-rm -f ./$(DEPDIR)/kr_utils_cache_test-kr_utils_cache_test.Po
+	-rm -f ./$(DEPDIR)/kr_utils_conhash_test-kr_utils_conhash_test.Po
+	-rm -f ./$(DEPDIR)/kr_utils_datetime_test-kr_utils_datetime_test.Po
+	-rm -f ./$(DEPDIR)/kr_utils_hashtable_test-kr_utils_hashtable_test.Po
+	-rm -f ./$(DEPDIR)/kr_utils_list_test-kr_utils_list_test.Po
+	-rm -f ./$(DEPDIR)/kr_utils_log_test-kr_utils_log_test.Po
+	-rm -f ./$(DEPDIR)/kr_utils_queue_test-kr_utils_queue_test.Po
+	-rm -f ./$(DEPDIR)/kr_utils_skiplist_test-kr_utils_skiplist_test.Po
+	-rm -f ./$(DEPDIR)/kr_utils_string_test-kr_utils_string_test.Po
+	-rm -f ./$(DEPDIR)/kr_utils_threadpool_test-kr_utils_threadpool_test.Po
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
 	distclean-tags
@@ -1093,24 +1112,24 @@ install-ps-am:
 installcheck-am:
 
 maintainer-clean: maintainer-clean-am
-		-rm -f ./$(DEPDIR)/kr_alloc_test-kr_alloc_test.Po
-	-rm -f ./$(DEPDIR)/kr_cache_test-kr_cache_test.Po
-	-rm -f ./$(DEPDIR)/kr_calc_test-kr_calc_test.Po
-	-rm -f ./$(DEPDIR)/kr_conhash_test-kr_conhash_test.Po
+		-rm -f ./$(DEPDIR)/kr_calc_test-kr_calc_test.Po
 	-rm -f ./$(DEPDIR)/kr_data_test-kr_data_test.Po
-	-rm -f ./$(DEPDIR)/kr_datetime_test-kr_datetime_test.Po
 	-rm -f ./$(DEPDIR)/kr_db_test-kr_db_test.Po
-	-rm -f ./$(DEPDIR)/kr_hashtable_test-kr_hashtable_test.Po
+	-rm -f ./$(DEPDIR)/kr_dbs_test-kr_dbs_test.Po
 	-rm -f ./$(DEPDIR)/kr_input_test-kr_input_test.Po
-	-rm -f ./$(DEPDIR)/kr_list_test-kr_list_test.Po
-	-rm -f ./$(DEPDIR)/kr_log_test-kr_log_test.Po
-	-rm -f ./$(DEPDIR)/kr_odbc_test-kr_odbc_test.Po
 	-rm -f ./$(DEPDIR)/kr_output_test-kr_output_test.Po
 	-rm -f ./$(DEPDIR)/kr_param_test-kr_param_test.Po
-	-rm -f ./$(DEPDIR)/kr_queue_test-kr_queue_test.Po
-	-rm -f ./$(DEPDIR)/kr_skiplist_test-kr_skiplist_test.Po
-	-rm -f ./$(DEPDIR)/kr_string_test-kr_string_test.Po
-	-rm -f ./$(DEPDIR)/kr_threadpool_test-kr_threadpool_test.Po
+	-rm -f ./$(DEPDIR)/kr_utils_alloc_test-kr_utils_alloc_test.Po
+	-rm -f ./$(DEPDIR)/kr_utils_cache_test-kr_utils_cache_test.Po
+	-rm -f ./$(DEPDIR)/kr_utils_conhash_test-kr_utils_conhash_test.Po
+	-rm -f ./$(DEPDIR)/kr_utils_datetime_test-kr_utils_datetime_test.Po
+	-rm -f ./$(DEPDIR)/kr_utils_hashtable_test-kr_utils_hashtable_test.Po
+	-rm -f ./$(DEPDIR)/kr_utils_list_test-kr_utils_list_test.Po
+	-rm -f ./$(DEPDIR)/kr_utils_log_test-kr_utils_log_test.Po
+	-rm -f ./$(DEPDIR)/kr_utils_queue_test-kr_utils_queue_test.Po
+	-rm -f ./$(DEPDIR)/kr_utils_skiplist_test-kr_utils_skiplist_test.Po
+	-rm -f ./$(DEPDIR)/kr_utils_string_test-kr_utils_string_test.Po
+	-rm -f ./$(DEPDIR)/kr_utils_threadpool_test-kr_utils_threadpool_test.Po
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
 

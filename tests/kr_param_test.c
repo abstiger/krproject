@@ -6,6 +6,7 @@ int main(int argc,char *argv[])
     //kr_log_set_path(".");
     //kr_log_set_name("param");
     //kr_log_set_level(KR_LOGDEBUG);
+    //
     
     T_KRParam *ptParam = kr_param_create();
 
